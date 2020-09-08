@@ -273,6 +273,311 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../解决国内访问github过慢的问题.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../解决国内访问github过慢的问题.html" itemprop="url">解决国内访问github过慢的问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-19T14:03:51+08:00">
+                2020-06-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>通过查看下载链接，能够发现最终被指向到Amazon的服务器（<a href="http://github-cloud.s3.amazonaws.com）了。由于国内访问亚马逊网站非常慢，我们需要修改Hosts文件来实现流畅访问。" target="_blank" rel="noopener">http://github-cloud.s3.amazonaws.com）了。由于国内访问亚马逊网站非常慢，我们需要修改Hosts文件来实现流畅访问。</a></p>
+<h3 id="第一步，打开本机上的Hosts文件"><a href="#第一步，打开本机上的Hosts文件" class="headerlink" title="第一步，打开本机上的Hosts文件"></a>第一步，打开本机上的Hosts文件</h3><p>首先，什么是Hosts文件？</p>
+<blockquote>
+<p>在互联网协议中，host表示能够同其他机器互相访问的本地计算机。一台本地机有唯一标志代码，同网络掩码一起组成IP地址，如果通过点到点协议通过ISP访问互联网，那么在连接期间将会拥有唯一的IP地址，这段时间内，你的主机就是一个host。</p>
+<p>在这种情况下，host表示一个网络节点。host是根据TCP/IP for Windows 的标准来工作的，它的作用是包含IP地址和Host name(主机名)的映射关系，是一个映射IP地址和Host name(主机名)的规定，规定要求每段只能包括一个映射关系，IP地址要放在每段的最前面，空格后再写上映射的Host name主机名　。对于这段的映射说明用“#”分割后用文字说明。</p>
+</blockquote>
+<h4 id="Windows"><a href="#Windows" class="headerlink" title="~Windows"></a>~Windows</h4><p>Hosts文件的路径是：</p>
+<blockquote>
+<p><em>C:\Windows\System32\drivers\etc</em></p>
+</blockquote>
+<p>由于文件没有后缀名，可以利用鼠标右键点击，选择用记事本打开</p>
+<h4 id="Mac"><a href="#Mac" class="headerlink" title="~Mac"></a>~Mac</h4><p>终端内输入：</p>
+<blockquote>
+<p>sudo vim /etc/hosts</p>
+</blockquote>
+<p>打开之后，我们就要向里面追加信息了。</p>
+<h3 id="第二步，追加域名的IP地址"><a href="#第二步，追加域名的IP地址" class="headerlink" title="第二步，追加域名的IP地址"></a>第二步，追加域名的IP地址</h3><p>我们可以利用<a href="https://www.ipaddress.com/" target="_blank" rel="noopener">https://www.ipaddress.com/</a> 来获得以下两个GitHub域名的IP地址：</p>
+<p>(1) github.com</p>
+<p>(2) github.global.ssl.fastly.net</p>
+<p>打开网页后，利用输入框内分别查询两个域名：<a href="http://github.global.ssl.fastly.net.ipaddress.com/#ipinfo" target="_blank" rel="noopener">
+</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200619140841.png" alt></p>
+<p>先试一下github.com（也可直接访问）：<a href="http://github.com.ipaddress.com/#ipinfo" target="_blank" rel="noopener">http://github.com.ipaddress.com/#ipinfo</a> </p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200619140934.png" alt></p>
+<p> 在标注的IP地址中，任选一个记录下来。</p>
+<p>再来是github.global.ssl.fastly.net（也可直接访问）：<a href="http://github.global.ssl.fastly.net.ipaddress.com/#ipinfo" target="_blank" rel="noopener">http://github.global.ssl.fastly.net.ipaddress.com/#ipinfo</a> </p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200619140954.png" alt></p>
+<p>将以上两段IP写入Hosts文件中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">151.101.185.194 github.global.ssl.fastly.net</span><br><span class="line">192.30.253.112 github.com</span><br></pre></td></tr></table></figure>
+
+<p> 保存。</p>
+<h3 id="第三步，刷新-DNS-缓存"><a href="#第三步，刷新-DNS-缓存" class="headerlink" title="第三步，刷新 DNS 缓存"></a>第三步，刷新 DNS 缓存</h3><p>在终端或CMD中，执行以下命令：</p>
+<blockquote>
+<p>ipconfig /flushdns</p>
+</blockquote>
+<p>收工。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../H5通过scheme跳转指定Activity的几种方式.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../H5通过scheme跳转指定Activity的几种方式.html" itemprop="url">H5通过scheme跳转指定Activity的几种方式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-20T11:30:21+08:00">
+                2020-05-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=3857517106,2525057362&fm=26&gp=0.jpg" alt></p>
+<h3 id="如果是App内部WebView点击跳转指定Activity"><a href="#如果是App内部WebView点击跳转指定Activity" class="headerlink" title="如果是App内部WebView点击跳转指定Activity"></a>如果是App内部WebView点击跳转指定Activity</h3><h4 id="第一种-在清单文件配置intent-filter"><a href="#第一种-在清单文件配置intent-filter" class="headerlink" title="第一种 在清单文件配置intent-filter"></a>第一种 在清单文件配置intent-filter</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;intent-filter&gt;</span><br><span class="line">    &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;</span><br><span class="line">    &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;</span><br><span class="line">    &lt;data</span><br><span class="line">        android:host=&quot;personal_page_info&quot;</span><br><span class="line">        android:scheme=&quot;$&#123;app_scheme&#125;&quot; /&gt;</span><br><span class="line">&lt;/intent-filter&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>WebView设置:</strong></p>
+<pre><code>mWebView.setWebViewClient(new WebViewClient() {
+@Override
+public void onPageStarted(WebView view, String url, Bitmap favicon) {
+
+}
+@Override
+public boolean shouldOverrideUrlLoading(WebView view, String httpurl) {
+    if (httpurl.startsWith(&quot;app:&quot;)) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(httpurl));
+        startActivity(intent);
+    }
+    return false;
+}
+});</code></pre><p><strong>如果还需要传值的话, 在Activity中进行数据解析:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if (intent.dataString.orEmpty().isNotEmpty()) &#123;</span><br><span class="line">       mUserId = intent.dataString.orEmpty().parseValue(&quot;userid&quot;, 0)</span><br><span class="line">   &#125; else &#123;</span><br><span class="line">       ActivityLauncher.bind(this)</span><br><span class="line">   &#125;</span><br><span class="line">   if (mUserId == 0) finish()</span><br></pre></td></tr></table></figure>
+
+<h4 id="第二种-不配置intent-filter的方式"><a href="#第二种-不配置intent-filter的方式" class="headerlink" title="第二种 不配置intent-filter的方式"></a>第二种 不配置intent-filter的方式</h4><p>只需在WebView的shouldOverrideUrlLoading方法中进行内链解析处理即可:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">  @Override</span><br><span class="line">public boolean shouldOverrideUrlLoading(WebView view, String httpurl) &#123;</span><br><span class="line">    if (httpurl.startsWith(&quot;app://jump_activity&quot;)) &#123;</span><br><span class="line">        Intent intent = new Intent(context, XXXActivity.class));</span><br><span class="line">        startActivity(intent);</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="如果是外部浏览器页面点击跳转指定Activity"><a href="#如果是外部浏览器页面点击跳转指定Activity" class="headerlink" title="如果是外部浏览器页面点击跳转指定Activity"></a>如果是外部浏览器页面点击跳转指定Activity</h3><p>只需在清单文件中对指定Acticity做intent-filter配置即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;intent-filter&gt;</span><br><span class="line">    &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;</span><br><span class="line">    &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;</span><br><span class="line">    &lt;data</span><br><span class="line">        android:host=&quot;personal_page_info&quot;</span><br><span class="line">        android:scheme=&quot;$&#123;app_scheme&#125;&quot; /&gt;</span><br><span class="line">&lt;/intent-filter&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Hexo-NexT-主题集成-utterance-评论系统.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1909,352 +2214,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Android-Studio-自定义Gradle插件.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../Android-Studio-自定义Gradle插件.html" itemprop="url">Android Studio 自定义Gradle插件</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-14T18:20:13+08:00">
-                2020-05-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>本文内容包括:</p>
-<ul>
-<li>利用AndroidStudio,编写自定义Gradle plugin</li>
-<li>MavenDeployer 发布plugin</li>
-<li>使用Gradle plugin</li>
-</ul>
-<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>之前写了一个Android中的AOP框架Cooker.<br>这里总结一下里面用到的两块小知识:</p>
-<p>1)自定义 Gradle plugin<br>2)发布自己的jar到 maven仓库</p>
-<p>项目中引入自定义Gradle plugin一般有三种方法:</p>
-<blockquote>
-<ol>
-<li>直接写在 build.gradle中.</li>
-<li>plugin源码放到rootProjectDir/buildSrc/src/main/groovy目录下</li>
-<li>plugin打包成jar, 发布到maven仓库, 然后项目通过Build Script依赖jar的形式引入</li>
-</ol>
-</blockquote>
-<p>下面介绍的是第3种方式.</p>
-<h2 id="一-用AndroidStudio中写plugin"><a href="#一-用AndroidStudio中写plugin" class="headerlink" title="一. 用AndroidStudio中写plugin"></a>一. 用AndroidStudio中写plugin</h2><h3 id="1-新建一个Android工程"><a href="#1-新建一个Android工程" class="headerlink" title="1.新建一个Android工程"></a>1.新建一个Android工程</h3><h3 id="2-在这个工程里面-新建一个Android-Library"><a href="#2-在这个工程里面-新建一个Android-Library" class="headerlink" title="2.在这个工程里面,新建一个Android Library"></a>2.在这个工程里面,新建一个Android Library</h3><p>先起名叫cooker-plugin吧, 我们将会用这个library写Gradle plugin</p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/4048192-c46c28de5172cdd9.webp" alt></p>
-<h3 id="3-建立plugin的目录结构"><a href="#3-建立plugin的目录结构" class="headerlink" title="3.建立plugin的目录结构"></a>3.建立plugin的目录结构</h3><p>把这个cooker-plugin中默认产生的文件都删除, 然后按照下面结构新建文件</p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/4048192-debed4cf882cc124.webp" alt></p>
-<h4 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h4><p>1.因为我们用Groovy写的插件, 插件代码放在 src/main/groovy下</p>
-<p>2.在src/main/resources/META-INF/gradle-plugins 里声明plugin信息<br>比如:新建<code>cooker-plugin.properties</code>文件,内容如下</p>
-<blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; </span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
-</blockquote>
-<p>implementation-class=com.helen.plugin.CookerPlugin</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&gt; 这里:  </span><br><span class="line">&gt; <span class="string">"cooker-plugin"</span> 是插件名称;    </span><br><span class="line">&gt; <span class="string">"com.helen.plugin.CookerPlugin"</span> 是对应的插件实现类  </span><br><span class="line"></span><br><span class="line"><span class="number">3.b</span>uild.gradle 声明用groovy开发      </span><br><span class="line"></span><br><span class="line">```java   </span><br><span class="line">apply plugin: <span class="string">'groovy'</span></span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    <span class="function">compile <span class="title">gradleApi</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    compile <span class="title">localGroovy</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">repositories</span> &#123;</span><br><span class="line">    mavenCentral()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-实现插件"><a href="#4-实现插件" class="headerlink" title="4.实现插件"></a>4.实现插件</h3><p>实现plugin,其实就是需要继承实现Plugin<project> 的接口</project></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.helen.plugin</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.gradle.api.Plugin</span><br><span class="line"><span class="keyword">import</span> org.gradle.api.Project</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CookerPlugin</span> <span class="keyword">implements</span> <span class="title">Plugin</span>&lt;<span class="title">Project</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">apply</span><span class="params">(Project project)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//这里实现plugin的逻辑</span></span><br><span class="line">        <span class="comment">//巴拉巴拉巴拉</span></span><br><span class="line">        println <span class="string">"hello, this is cooker plugin!"</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//cooker-plugin</span></span><br><span class="line">        <span class="comment">//比如这里加一个简单的task</span></span><br><span class="line">        project.task(<span class="string">'cooker-test-task'</span>) &lt;&lt; &#123;</span><br><span class="line">            println <span class="string">"hello, this is cooker test task!"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="5-一个简单的plugin就写好了"><a href="#5-一个简单的plugin就写好了" class="headerlink" title="5.一个简单的plugin就写好了"></a>5.一个简单的plugin就写好了</h3><p>在cooker-plugin项目中, build一下.<br>就能在build/libs下生成对应的plugin插件了</p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/4048192-177dc91cce18091e.webp" alt></p>
-<p>这个插件就能使用了. 可以发布在本地仓库或者Maven仓库.</p>
-<h2 id="二-mavenDeployer发布插件"><a href="#二-mavenDeployer发布插件" class="headerlink" title="二. mavenDeployer发布插件"></a>二. mavenDeployer发布插件</h2><p>下面介绍一下利用mavenDeployer发布在本地仓库.</p>
-<h3 id="1-引入-mavenDeplayer插件"><a href="#1-引入-mavenDeplayer插件" class="headerlink" title="1. 引入 mavenDeplayer插件"></a>1. 引入 mavenDeplayer插件</h3><p>修改cooker-plugin的build.gradle, 修改后如下:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: <span class="string">'groovy'</span></span><br><span class="line"><span class="comment">//添加maven plugin, 用于发布我们的jar</span></span><br><span class="line">apply plugin: <span class="string">'maven'</span></span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    <span class="function">compile <span class="title">gradleApi</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    compile <span class="title">localGroovy</span><span class="params">()</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">repositories </span>&#123;</span><br><span class="line">    mavenCentral()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//设置maven deployer</span></span><br><span class="line">uploadArchives &#123;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        mavenDeployer &#123;</span><br><span class="line">            <span class="comment">//设置插件的GAV参数</span></span><br><span class="line">            pom.groupId = <span class="string">'com.helen.plugin'</span></span><br><span class="line">            pom.artifactId = <span class="string">'cooker-plugin'</span></span><br><span class="line">            pom.version = <span class="number">1.0</span> </span><br><span class="line">            <span class="comment">//文件发布到下面目录</span></span><br><span class="line">            repository(url: uri(<span class="string">'../release'</span>))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-用uploadArchices发布"><a href="#2-用uploadArchices发布" class="headerlink" title="2.用uploadArchices发布"></a>2.用uploadArchices发布</h3><p>运行uploadArchives. 就能在设置的仓库路径中生成 cooker-plugin了</p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/4048192-200e613468863e3a.webp" alt></p>
-<h2 id="三-使用gradle-plugin"><a href="#三-使用gradle-plugin" class="headerlink" title="三. 使用gradle plugin"></a>三. 使用gradle plugin</h2><h3 id="1-在build-gradle引入-cooker-plugin"><a href="#1-在build-gradle引入-cooker-plugin" class="headerlink" title="1.在build.gradle引入 cooker-plugin"></a>1.在build.gradle引入 cooker-plugin</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: <span class="string">'com.android.application'</span></span><br><span class="line"><span class="comment">//使用cooker-plugin</span></span><br><span class="line">apply plugin: <span class="string">'cooker-plugin'</span></span><br><span class="line"></span><br><span class="line">buildscript &#123;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        maven &#123;</span><br><span class="line">            <span class="comment">//cooker-plugin 所在的仓库</span></span><br><span class="line">            <span class="comment">//这里是发布在本地文件夹了</span></span><br><span class="line">            <span class="function">url <span class="title">uri</span><span class="params">(<span class="string">'../release'</span>)</span></span></span><br><span class="line"><span class="function">        &#125;</span></span><br><span class="line"><span class="function">    &#125;</span></span><br><span class="line"><span class="function">    dependencies </span>&#123;</span><br><span class="line">        <span class="comment">//引入cooker-plugin</span></span><br><span class="line">        classpath <span class="string">'com.helen.plugin:cooker-plugin:1.0'</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-我们编译App的时候-cooker-plugin就会介入了"><a href="#2-我们编译App的时候-cooker-plugin就会介入了" class="headerlink" title="2. 我们编译App的时候,cooker-plugin就会介入了"></a>2. 我们编译App的时候,cooker-plugin就会介入了</h3><p>每次clean/build时, 在Gradle Console可以看到我们的log<br><code>hello, this is cooker plugin!</code></p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Configuration <span class="keyword">on</span> demand <span class="keyword">is</span> an incubating feature.</span><br><span class="line">hello, <span class="keyword">this</span> <span class="keyword">is</span> cooker plugin!</span><br><span class="line">Incremental java compilation <span class="keyword">is</span> an incubating feature.</span><br><span class="line">:app:preBuild UP-TO-DATE</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-使用cooker-plugin中定义的task"><a href="#3-使用cooker-plugin中定义的task" class="headerlink" title="3.使用cooker-plugin中定义的task"></a>3.使用cooker-plugin中定义的task</h3><p>前面demo中, 我们新建了一个task: <code>cooker-test-task</code>, 他简单输出一句log.下面测试运行一下这个task.<br>在控制台输入 <code>gradle cooker-test-task</code> 运行结果如下</p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/4048192-0e73dc69b9dad25f.webp" alt></p>
-<h2 id="四-总结"><a href="#四-总结" class="headerlink" title="四. 总结"></a>四. 总结</h2><p><a href="https://link.jianshu.com/?t=https://github.com/helen-x/gradle-plugin-demo" target="_blank" rel="noopener">Demo地址-Github</a><br>到此为止, 自定义Gradle plugin就介绍完了.<br>结合AndroidStudio, 自定义Gradle plugin可以完成很多功能.</p>
-<p>比如cooker的plugin完成了:<br>1)添加编译依赖<br>2)进行Aspecj编译<br>3)自动生成混淆配置</p>
-<h1 id="五-开发只针对当前项目的Gradle插件-附"><a href="#五-开发只针对当前项目的Gradle插件-附" class="headerlink" title="五. 开发只针对当前项目的Gradle插件(附)"></a>五. 开发只针对当前项目的Gradle插件(附)</h1><p>前面我们讲了如何自定义gradle插件并且打包出去，可能步骤比较多。有时候，你可能并不需要打包出去，只是在这一个项目中使用而已，那么你无需打包这个过程。</p>
-<p>只是针对当前项目开发的Gradle插件相对较简单。步骤之前所提到的很类似，只是有几点需要注意：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.新建的Module名称必须为BuildSrc</span><br><span class="line">2.无需resources目录</span><br></pre></td></tr></table></figure>
-
-<p>目录结构如下所示：</p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20160702135323958" alt></p>
-<p>其中，build.gradle内容为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: &apos;groovy&apos;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    compile gradleApi()//gradle sdk</span><br><span class="line">    compile localGroovy()//groovy sdk</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">repositories &#123;</span><br><span class="line">    jcenter()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>SecondPlugin.groovy内容为：</strong></p>
-<p>SecondPlugin.groovy内容为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">package  com.hc.second</span><br><span class="line"></span><br><span class="line">import org.gradle.api.Plugin</span><br><span class="line">import org.gradle.api.Project</span><br><span class="line"></span><br><span class="line">public class SecondPlugin implements Plugin&lt;Project&gt; &#123;</span><br><span class="line"></span><br><span class="line">void apply(Project project) &#123;</span><br><span class="line">    System.out.println(&quot;========================&quot;);</span><br><span class="line">    System.out.println(&quot;这是第二个插件!&quot;);</span><br><span class="line">    System.out.println(&quot;========================&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>在app这个Module中如何使用呢</strong>？直接在app的build.gradle下加入</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: com.hc.second.SecondPlugin</span><br></pre></td></tr></table></figure>
-
-<p>clean一下，再make project，messages窗口信息如下<br><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20160702135750329" alt></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Android-中使用WebViewJavaScriptBridge进行H5和原生的交互.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../Android-中使用WebViewJavaScriptBridge进行H5和原生的交互.html" itemprop="url">Android 中使用WebViewJavaScriptBridge进行H5和原生的交互</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-14T18:17:37+08:00">
-                2020-05-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/fdfs.jpg" alt></p>
-<h3 id="1-概述"><a href="#1-概述" class="headerlink" title="1.  概述"></a>1.  概述</h3><blockquote>
-<p>当我们采用H5与Native原生结合开发，使用H5去开发一些功能的时候，肯定会涉及到Android与Js互相调用的问题，通常有两种实现方式，</p>
-</blockquote>
-<p>*<em>第一种 *</em>使用原生的addJavascriptInterface()来解决</p>
-<p>*<em>第二种 *</em>使用第三方框架WebViewJavascriptBridge   这也是我今天要分享的部分</p>
-<h3 id="2-为什么要使用WebViewJavascriptBridge"><a href="#2-为什么要使用WebViewJavascriptBridge" class="headerlink" title="2.为什么要使用WebViewJavascriptBridge"></a>2.为什么要使用WebViewJavascriptBridge</h3><p>对于安卓开发有一段时间的人来说，知道安卓4.4以前谷歌的webview存在安全漏洞，网站可以通过js注入就可以随便拿到客户端的重要信息，甚至轻而易举的调用本地代码进行流氓行为，谷歌后来发现有此漏洞后，增加了防御措施，如果要是js调用本地代码，开发者必须在代码中申明<code>JavascriptInterface</code>，</p>
-<p> 列如在4.0之前我们要使得webView加载js只需如下代码：   </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mWebView.addJavascriptInterface(new JsToJava(), &quot;myjsfunction&quot;);</span><br></pre></td></tr></table></figure>
-
-<p>4.4之后调用需要在调用方法加入加入@JavascriptInterface注解，如果代码无此申明，那么也就无法使得js生效，也就是说这样就可以避免恶意网页利用js对安卓客户端的窃取和攻击。</p>
-<p>但是即使这样，我们很多时候需要在js记载本地代码的时候，要做一些判断和限制，或者有可能也会做些过滤和对用户友好提示，因此JavascriptInterface也就无法满足我们的需求了，特此有大神就写出了WebViewJavascriptBridge框架。</p>
-<h3 id="3-开始使用"><a href="#3-开始使用" class="headerlink" title="3.开始使用"></a>3.开始使用</h3><h5 id="第一步-Android-Studio-导包"><a href="#第一步-Android-Studio-导包" class="headerlink" title="第一步.Android Studio 导包"></a>第一步.Android Studio 导包</h5><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">repositories &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    maven &#123; url <span class="string">"https://jitpack.io"</span> &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    compile <span class="string">'com.github.lzyzsd:jsbridge:1.0.4'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h5 id="第二步-在布局文件中添加"><a href="#第二步-在布局文件中添加" class="headerlink" title="第二步.在布局文件中添加"></a>第二步.在布局文件中添加</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;com.github.lzyzsd.jsbridge.BridgeWebView</span><br><span class="line">    android:id=&quot;@+id/wv_web_view&quot;</span><br><span class="line">    android:layout_width=&quot;match_parent&quot;</span><br><span class="line">    android:layout_height=&quot;match_parent&quot; /&gt;</span><br></pre></td></tr></table></figure>
-
-<h5 id="第三步-代码中添加交互方法"><a href="#第三步-代码中添加交互方法" class="headerlink" title="第三步.代码中添加交互方法"></a>第三步.代码中添加交互方法</h5><p><strong>H5调android方法</strong></p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//android端代码</span></span><br><span class="line">mWebView.registerHandler(<span class="string">"test"</span>, <span class="keyword">new</span> BridgeHandler() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public <span class="keyword">void</span> handler(<span class="built_in">String</span> data, CallBackFunction <span class="function"><span class="keyword">function</span>) </span>&#123;</span><br><span class="line">           <span class="function"><span class="keyword">function</span>.<span class="title">onCallBack</span>(<span class="params"><span class="string">"指定Handler收到Web发来的数据，回传数据给你"</span></span>);</span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">//<span class="title">H5</span>端代码</span></span><br><span class="line"><span class="function"><span class="title">function</span> <span class="title">test</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">           <span class="comment">//调用本地java方法</span></span><br><span class="line">           <span class="comment">//第一个参数是 调用java的函数名字 第二个参数是要传递的数据 第三个参数js在被回调后具体执行方法，responseData为java层回传数据</span></span><br><span class="line">           <span class="keyword">var</span> data=<span class="string">'发送消息给java代码指定接收'</span>;</span><br><span class="line">           <span class="built_in">window</span>.WebViewJavascriptBridge.callHandler(</span><br><span class="line">               <span class="string">'test'</span></span><br><span class="line">               ,data</span><br><span class="line">               , <span class="function"><span class="keyword">function</span>(<span class="params">responseData</span>) </span>&#123;</span><br><span class="line">                   bridgeLog(<span class="string">'来自Java的回传数据： '</span> + responseData);</span><br><span class="line">               &#125;</span><br><span class="line">           );</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
-
-<p>或者</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//android端代码 </span></span><br><span class="line">mWebView.setDefaultHandler(<span class="keyword">new</span> BridgeHandler() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public <span class="keyword">void</span> handler(<span class="built_in">String</span> data, CallBackFunction <span class="function"><span class="keyword">function</span>) </span>&#123;</span><br><span class="line">                <span class="function"><span class="keyword">function</span>.<span class="title">onCallBack</span>(<span class="params"><span class="string">"指定Handler收到Web发来的数据，回传数据给你"</span></span>);</span></span><br><span class="line"><span class="function">            &#125;</span></span><br><span class="line"><span class="function">        &#125;);</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">//<span class="title">H5</span>端代码</span></span><br><span class="line"><span class="function"><span class="title">function</span> <span class="title">test</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">           <span class="comment">//发送消息给java代码</span></span><br><span class="line">           <span class="keyword">var</span> data = <span class="string">'发送消息给java代码全局接收'</span>;</span><br><span class="line"></span><br><span class="line">           <span class="built_in">window</span>.WebViewJavascriptBridge.send(</span><br><span class="line">               data</span><br><span class="line">               , <span class="function"><span class="keyword">function</span>(<span class="params">responseData</span>) </span>&#123;</span><br><span class="line">                  bridgeLog(<span class="string">'来自Java的回传数据： '</span> +responseData);</span><br><span class="line">               &#125;</span><br><span class="line">           );</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
-
-<p>以上两种方式 一个是指定调具体协定好的方法,一个是全局调用</p>
-<p><strong>android调H5</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//android端代码 </span></span><br><span class="line">mWebView.send(<span class="string">"发送数据给web默认接收"</span>,<span class="keyword">new</span> CallBackFunction()&#123;</span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCallBack</span><span class="params">(String data)</span> </span>&#123;</span><br><span class="line">                        Log.e(TAG, <span class="string">"来自web的回传数据："</span> + data);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//H5端代码 </span></span><br><span class="line"><span class="comment">//注册回调函数，第一次连接时调用 初始化函数</span></span><br><span class="line">connectWebViewJavascriptBridge(function(bridge) &#123;</span><br><span class="line">           bridge.init(function(message, responseCallback) &#123;</span><br><span class="line">               bridgeLog(<span class="string">'默认接收收到来自Java数据： '</span> + message);</span><br><span class="line">               <span class="keyword">var</span> responseData = <span class="string">'默认接收收到来自Java的数据，回传数据给你'</span>;</span><br><span class="line">               responseCallback(responseData);</span><br><span class="line">           &#125;);</span><br><span class="line"></span><br><span class="line">          </span><br><span class="line">       &#125;)</span><br></pre></td></tr></table></figure>
-
-<p>或者</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//android端代码 </span></span><br><span class="line">mWebView.callHandler(<span class="string">"test"</span>,<span class="string">"发送数据给web指定接收"</span>,<span class="keyword">new</span> CallBackFunction()&#123;</span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCallBack</span><span class="params">(String data)</span> </span>&#123;</span><br><span class="line">                        Log.e(TAG, <span class="string">"来自web的回传数据："</span> + data);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line"><span class="comment">//H5端代码 </span></span><br><span class="line">   connectWebViewJavascriptBridge(function(bridge) &#123;</span><br><span class="line">          bridge.registerHandler(<span class="string">"test"</span>, function(data, responseCallback) &#123;</span><br><span class="line">               bridgeLog(<span class="string">'指定接收收到来自Java数据： '</span> + data);</span><br><span class="line">               <span class="keyword">var</span> responseData = <span class="string">'指定接收收到来自Java的数据，回传数据给你'</span>;</span><br><span class="line">               responseCallback(responseData);</span><br><span class="line">           &#125;);</span><br><span class="line">       &#125;)</span><br></pre></td></tr></table></figure>
-
-<p>同样 两种方式一个是不指定方法,另一个是指定具体方法</p>
-<p> <strong>到此为止还无法交互,还需要配置setWebViewClient</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mWebView.setWebViewClient(new BridgeWebViewClient(mWebView));</span><br></pre></td></tr></table></figure>
-
-<p>这步非常关键,如果不配置 测试点击压根就不响应,如果你需要自定义WebViewClient,必须实现对应构造方法,而且重写的方法必须调用父类方法,如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">private class MyWebViewClient extends BridgeWebViewClient &#123;</span><br><span class="line">	//必须</span><br><span class="line">    public MyWebViewClient(BridgeWebView webView) &#123;</span><br><span class="line">        super(webView);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) &#123;</span><br><span class="line">        super.onReceivedError(view, request, error);//这个不能省略</span><br><span class="line">        // 避免出现默认的错误界面</span><br><span class="line">        view.loadUrl(&quot;about:blank&quot;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>到此为止,配置完毕,H5和Android就可以互相调用了</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2305,7 +2264,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">101</span>
+                  <span class="site-state-item-count">103</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2318,7 +2277,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-count">45</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

@@ -273,6 +273,321 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cnAjax-跨域问题及其解决方案.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="Ajax-跨域问题及其解决方案.html" itemprop="url">Ajax 跨域问题及其解决方案</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-08T11:14:22+08:00">
+                2020-09-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="什么是-ajax-跨域"><a href="#什么是-ajax-跨域" class="headerlink" title="什么是 ajax 跨域"></a>什么是 ajax 跨域</h2><p>主流的<strong>前后端分离模式</strong>下，当前端调用后台接口时，由于是在非同一个域下的请求，从而会引发<strong>浏览器</strong>的自我安全保护机制，最终结果是<strong>接口成功请求并响应</strong>，但<strong>前端不能正常处理该返回数据</strong>。</p>
+<p><img src="https://i.loli.net/2020/09/08/EGern4xhRwqF7gU.png" alt="Access-Control-Allow-Origin"></p>
+<p>因此，当<strong>同时满足</strong>以下三个条件的情况下，就会出现跨域问题：</p>
+<ol>
+<li>浏览器限制</li>
+<li>非同源请求（跨域）</li>
+<li>发送的是 XHR ( XMLHttpRequest ) 请求</li>
+</ol>
+<p><img src="https://i.loli.net/2020/09/08/u8D62HznvwgcM1W.png" alt="跨域问题"></p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>想要彻底解决跨域问题，只需要破坏以上三个条件的任一即可：</p>
+<h4 id="1-修改浏览器（不推荐）"><a href="#1-修改浏览器（不推荐）" class="headerlink" title="1. 修改浏览器（不推荐）"></a>1. 修改浏览器（<strong>不推荐</strong>）</h4><p>添加浏览器启动参数：<code>chrome --disable-web-security</code>，但是极不推荐这种解决方式。</p>
+<h4 id="2-JSONP请求（不常用）"><a href="#2-JSONP请求（不常用）" class="headerlink" title="2. JSONP请求（不常用）"></a>2. JSONP请求（<strong>不常用</strong>）</h4><p>Jsonp，全称 <code>JSON with Padding</code>，一种非官方的协议，而是一种约定；前端通过向后台发送 <code>script</code> 类型请求解决跨域，此时接口响应的 <code>application/javascript</code> 类型的数据会作为 <code>callback</code> 函数的参数进行处理。</p>
+<p><img src="https://i.loli.net/2020/09/08/1RqpuXFLGTlMjI7.png" alt="Jsonp Request"></p>
+<p>所以，后台也需要做相应的处理。以 Java 为例，添加如下配置即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@ControllerAdvice</span><br><span class="line">public class JsonpAdvice extends AbstractJsonpResponseBodyAdvice &#123;</span><br><span class="line"></span><br><span class="line">    public JsonpAdvice() &#123;</span><br><span class="line">		// 前后端约定的jsonp参数名，默认值是callback</span><br><span class="line">        super(&quot;callback&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意，<code>Spring 4.1</code> 版本之后，官方已不再推荐使用上述允许 <code>jsonp</code> 请求的配置，建议使用 <code>CROS</code> 配置来解决跨域问题，详情可查看<a href="https://docs.spring.io/spring/docs/5.0.x/spring-framework-reference/web.html#mvc-cors" target="_blank" rel="noopener">这里</a></p>
+</blockquote>
+<p>综上，<code>jsonp</code> 请求存在以下几个弊端：</p>
+<ol>
+<li>服务端需要改动代码进行支持；</li>
+<li>只支持发送 <code>Get</code> 请求，请求头中更改其它类型的请求方式是无效的；</li>
+<li>发送的不是 <code>XHR</code> 请求，而是 <code>script</code> 类型，无法享受到相关的特性。</li>
+</ol>
+<h4 id="3-调用方隐藏跨域"><a href="#3-调用方隐藏跨域" class="headerlink" title="3. 调用方隐藏跨域"></a>3. 调用方隐藏跨域</h4><p>用 <code>Nginx</code> 或 <code>Apache</code> 来代理调用方的请求（<strong>客户端变更为相对路径请求，而非绝对路径</strong>），此时对于浏览器来说，由于请求是同源的，因此就不存在跨域问题。</p>
+<h4 id="4-被调用方允许跨域（最常用）"><a href="#4-被调用方允许跨域（最常用）" class="headerlink" title="4. 被调用方允许跨域（最常用）"></a>4. 被调用方允许跨域（<strong>最常用</strong>）</h4><ul>
+<li>服务端配置</li>
+</ul>
+<p>以 Java 应用为例，添加如下全局配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">public class CorsConfig implements WebMvcConfigurer &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void addCorsMappings(CorsRegistry registry) &#123;</span><br><span class="line">        registry.addMapping(&quot;/**&quot;)  // 允许跨域的接口</span><br><span class="line">                .allowedOrigins(&quot;*&quot;)  // 允许跨域的请求源</span><br><span class="line">                .allowedMethods(&quot;*&quot;)  // 允许跨域的请求方式</span><br><span class="line">                .allowedHeaders(&quot;*&quot;) // 允许跨域的请求头</span><br><span class="line">                .allowCredentials(true)  // 带cookie请求的时候需要开启，且allowedOrigins需要指定为具体的请求源（最好是动态配置）</span><br><span class="line">                .maxAge(60 * 60 * 24); // 设定options请求预检命令的缓存时长</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果只想针对某个类下的接口，或者是某个具体的接口配置允许跨域，只需要在相应的地方添加注解 <code>@CrossOrigin</code> 即可。</p>
+<ul>
+<li>Nginx 配置</li>
+</ul>
+<p>如果配置了 <code>nginx</code> 作为代理服务器，那么只需要为 <code>nginx</code> 添加支持跨域请求即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">	listen 80;</span><br><span class="line">	server_name xxx.com;</span><br><span class="line"></span><br><span class="line">	location / &#123;</span><br><span class="line">		proxy_pass http://localhost:8080/;</span><br><span class="line"></span><br><span class="line">		# 配置允许跨域</span><br><span class="line">		add_header Access-Control-Allow-Origin $http_origin;</span><br><span class="line">		add_header Access-Control-Allow-Methods *;</span><br><span class="line">		add_header Access-Control-Allow-Headers $http_access_control_request_headers;</span><br><span class="line">		add_header Access-Control-Max-Age 3600;</span><br><span class="line">		add_header Access-Control-Allow-Credentials true;</span><br><span class="line">		</span><br><span class="line">		# 对于options预检请求，直接响应200</span><br><span class="line">		if ($request_method = OPTIONS) &#123;</span><br><span class="line">			return 200;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="扩展思考"><a href="#扩展思考" class="headerlink" title="扩展思考"></a>扩展思考</h2><p>Q1：浏览器在执行跨域请求时，是先执行后判断，还是先判断后执行？<br>A1：都有可能，这需要根据所发送的请求是<strong>简单请求</strong>还是<strong>非简单请求</strong>来判断；如果是非简单请求，浏览器每次在执行真正的请求之前，还会先发送一个 <code>options</code> 请求方式的预检命令【 <strong>可设定缓存时长，取消每次请求都要预检，提高效率，参考上面的服务端配置</strong> 】。关于两种请求的区分及定义，参考下图说明：</p>
+<p><img src="https://i.loli.net/2020/09/08/TWOvdB8wLxclq65.png" alt="简单请求 VS 非简单请求"></p>
+<p>Q2：如果是允许带（<strong>被调用方</strong>） <code>cookie</code> 的跨域请求，此时服务端同样配置为 <code>Access-Control-Allow-Origin</code> 等于 <code>*</code>，前端是否还可以请求成功？<br>A2：不可以，此时要将 <code>Access-Control-Allow-Origin</code> 指定为<strong>调用方</strong>具体的域【 <strong>可以先取得调用方的域再动态配置，这样就不存在多个域请求的限制问题</strong> 】，并且添加配置 <code>Access-Control-Allow-Credentials</code> 为 <code>true</code>。</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn向谷歌搜索引擎主动推送网页的教程-Google-Indexing-API-接口实现.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="向谷歌搜索引擎主动推送网页的教程-Google-Indexing-API-接口实现.html" itemprop="url">向谷歌搜索引擎主动推送网页的教程 Google Indexing API 接口实现</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-08T11:04:25+08:00">
+                2020-09-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/jHXAmlIOfwsvtep-20200908110823361.jpg" alt></p>
+<p>谷歌搜索引擎作为全球第一的搜索引擎早就支持了站长主动推送的功能，只不过不是面向普通用户的可视化界面，而是通过编程API接口实现的，有很多站长并不是专业的开发者，但由于谷歌需要验证网站所有权，所以我不能直接做一个可视化界面让站长自己填写自己的秘钥，所以只能对谷歌的接口进行二次封装，以降低使用的难度。</p>
+<p>源码项目地址：<a href="https://github.com/NeilRen/GoogleIndexing" target="_blank" rel="noopener">https://github.com/NeilRen/GoogleIndexing</a></p>
+<h2 id="环境要求"><a href="#环境要求" class="headerlink" title="环境要求"></a>环境要求</h2><p>首先，我是以Java为平台进行的封装，JDK版本为1.8，其他程序可能需要中间层才能打通，还不如自己实现，其他编程语言的同学我也没有办法，这个世界上编程语言太多了。</p>
+<p>其次，谷歌的Google Indexing API接口在中国大陆无法访问，所以程序需要运行在可以访问谷歌的网络环境中。</p>
+<h2 id="前提条件"><a href="#前提条件" class="headerlink" title="前提条件"></a>前提条件</h2><p>首先，你需要一个谷歌账号。你的项目是Java的，并且JDK为1.8以上。</p>
+<h2 id="创建-Google-API-项目"><a href="#创建-Google-API-项目" class="headerlink" title="创建 Google API 项目"></a>创建 Google API 项目</h2><p>然后在向 Indexing API 发送请求之前，您需要告知 Google 您的客户端并激活对 Indexing API 的访问权限。谷歌为我们提供了一个<a href="https://console.developers.google.com/start/api?id=indexing.googleapis.com&credential=client_key" target="_blank" rel="noopener">设置向导</a>，设置向导会引导您在 Google API 控制台中创建项目、启用 Indexing API 以及创建凭据。</p>
+<p>首先先跟着向导创建一个项目</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/M2ptE4nOaW6Z3qg.png" alt="Google Indexing API 设置向导"></p>
+<p>然后转到凭据，添加凭据</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200310210556-20200908110850707.png" alt="Google Indexing API 添加凭证"></p>
+<p>添加的凭据选择Indexing API、网页服务器(例如 node.js、Tomecat)，选择应用数据，点击“我需要哪些凭据？”到下一页</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200310210605-20200908110904033.png" alt="Google Indexing API 为项目添加凭证"></p>
+<p>创建一个服务账号，名称可以自己起一个名字，秘钥类型选择JSON，点击继续</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200310210613-20200908110918941.png" alt="Google Indexing API 创建服务账号"></p>
+<p>选择创建无角色账号即可</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200310210621-20200908110933400.png" alt="Google Indexing API 创建无角色账号"></p>
+<p>这时就会自动下载一个json文件，这个就是我们的私钥，要保存好</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200310210628-20200908110944503.png" alt="Google Indexing API 秘钥"></p>
+<h2 id="在-Search-Console-中验证网站所有权"><a href="#在-Search-Console-中验证网站所有权" class="headerlink" title="在 Search Console 中验证网站所有权"></a>在 Search Console 中验证网站所有权</h2><p>我们还需要到 <a href="https://www.google.com/webmasters/tools/home" target="_blank" rel="noopener">Search Console</a> 添加我们的网站，验证所有权，验证成功以后，注意我们要去<a href="https://www.google.com/webmasters/verification/home?pli=1" target="_blank" rel="noopener">旧版的控制台</a>，不要去新版的控制台！然后添加所有者</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200310210643-20200908110957641.png" alt="Google 旧版控制台">]</p>
+<p>所有者的邮箱填写我们上一步获得的私钥JSON文件中的邮箱地址。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200310210636-20200908111008115.png" alt="Google Indexing API 秘钥JSON"><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200310210654-20200908111018700.png" alt="Google 添加网站所有者"></p>
+<h2 id="在自己的项目中安装依赖"><a href="#在自己的项目中安装依赖" class="headerlink" title="在自己的项目中安装依赖"></a>在自己的项目中安装依赖</h2><p>如果您使用Apache Maven来管理Java项目，只需在项目的<code>pom.xml</code>文件加入相应的依赖项即可。您只需在<code>pom.xml</code>中声明以下依赖：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;net.renfei&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;googleindexing&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;1.0.0&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<p>编写代码调用服务，在实例化GoogleIndexing的时候，需要传一个String参数，这个参数是私钥JSON文件所在的文件地址：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSON;</span><br><span class="line">import com.google.api.services.indexing.v3.model.UrlNotificationMetadata;</span><br><span class="line">import net.renfei.googleindexing.GoogleIndexing;</span><br><span class="line">import net.renfei.googleindexing.entity.UrlNotification;</span><br><span class="line">import net.renfei.googleindexing.entity.UrlNotificationType;</span><br><span class="line"></span><br><span class="line">public class Demo &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            GoogleIndexing googleIndexing = new GoogleIndexing(&quot;/Users/renfei/Google/Ren-Fei-5a8df7c2b912.json&quot;);</span><br><span class="line">            UrlNotification urlNotification = new UrlNotification();</span><br><span class="line">            urlNotification.setUrl(&quot;https://www.renfei.net&quot;);</span><br><span class="line">            urlNotification.setType(UrlNotificationType.URL_UPDATED);</span><br><span class="line">            UrlNotificationMetadata urlNotificationMetadata = googleIndexing.publish(urlNotification);</span><br><span class="line">            System.out.printf(JSON.toJSONString(urlNotificationMetadata));</span><br><span class="line">        &#125; catch (Exception ex) &#123;</span><br><span class="line">            ex.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cnHugo博客百度SEO优化-自动提交.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1502,294 +1817,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn关于mv-移动文件时出现Argument-list-too-long的解决方案.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="关于mv-移动文件时出现Argument-list-too-long的解决方案.html" itemprop="url">关于mv 移动文件时出现Argument list too long的解决方案</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-03T11:07:28+08:00">
-                2020-09-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="移动所有文件到指定目录"><a href="#移动所有文件到指定目录" class="headerlink" title="移动所有文件到指定目录"></a>移动所有文件到指定目录</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv 需要移动的目录/* 目标目录/</span><br></pre></td></tr></table></figure>
-
-<p>当出现文件过多时报错:<code>Argument list too long</code></p>
-<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案:"></a>解决方案:</h4><p>移动文件：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find sourcePath/ -name &quot;*.txt&quot;  -exec mv &#123;&#125; targetPath/  \;</span><br></pre></td></tr></table></figure>
-
-<p>or:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find sourcePath/ -type f  -exec mv &#123;&#125; targetPath/  \;</span><br></pre></td></tr></table></figure>
-
-<p>查看所有行目录下所有txt文件的行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find sourcePath/ -name &quot;*.txt&quot; |xargs cat |wc -l</span><br></pre></td></tr></table></figure>
-
-<h3 id="只移动前5个文件"><a href="#只移动前5个文件" class="headerlink" title="只移动前5个文件"></a>只移动前5个文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv `ls |sed -n 1,5p  /post</span><br></pre></td></tr></table></figure>
-
-<h3 id="只拷贝前5个文件"><a href="#只拷贝前5个文件" class="headerlink" title="只拷贝前5个文件"></a>只拷贝前5个文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp -R `ls |sed -n 1,5p /post</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn关于linux指令sed的使用.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="关于linux指令sed的使用.html" itemprop="url">关于linux指令sed的使用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-01T18:59:05+08:00">
-                2020-09-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>sed -i</strong> 主要作用就是操作文本 如下:</p>
-<p><strong>去掉 “行首” 带“@”的首字母@</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;s/^@//&apos; file</span><br></pre></td></tr></table></figure>
-
-
-
-<p><strong>特定字符串的行前插入新行</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;/特定字符串/i 新行字符串&apos; file</span><br></pre></td></tr></table></figure>
-
-
-
-<p><strong>特定字符串的行后插入新行</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;/特定字符串/a 新行字符串&apos; file</span><br></pre></td></tr></table></figure>
-
-
-
-<p><strong>特定字符串的删除</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;/字符串/d&apos; file</span><br></pre></td></tr></table></figure>
-
-<p><strong>提示: 以上斜杠可以换成~ 一样实现相同功能</strong></p>
-<h4 id="问题场景："><a href="#问题场景：" class="headerlink" title="问题场景："></a>问题场景：</h4><p>在mac上，使用sed命令把当前目录的test.sql文件内容中的a替换为b，使用命令：sed -i “s/a/b/g” test.sql</p>
-<p>遇到报错：sed: 1: “grep …”: extra characters at the end of g command</p>
-<p><strong>解决：</strong></p>
-<p>在mac中使用sed命令在-i参数后面需要带一对双引号””，正确格式如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &quot;&quot; &quot;s/a/b/g&quot; test.sql</span><br></pre></td></tr></table></figure>
-
-<p><strong>原因</strong></p>
-<p>sed -i 后面的双引号中可写任意字符串或者为空，含义是用于生成源文件的备份文件的文件名。比如上面的例子：sed -i “_tmp” “s/a/b/g” test.sql，在替换test.sql的同时，还会生成test.sql_tmp的备份文件</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1840,7 +1867,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">101</span>
+                  <span class="site-state-item-count">103</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1853,7 +1880,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-count">45</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
