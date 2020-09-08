@@ -273,6 +273,155 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Hexo-NexT-主题集成-utterance-评论系统.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../Hexo-NexT-主题集成-utterance-评论系统.html" itemprop="url">Hexo NexT 主题集成 utterance 评论系统</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-20T10:40:24+08:00">
+                2020-05-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>使用 Hexo 的 Next 主题搭建的博客内置了很多种评论系统，如：gitalk，changyan 等。</p>
+<p>这里讲解集成另外一种评论系统：<code>utterance</code>（<a href="https://utteranc.es/）" target="_blank" rel="noopener">https://utteranc.es/）</a></p>
+<p>其配置非常简单，支持 Github 账号登录后才能评论。原理就是使用了 Github 的 Issues 功能来保存评论。</p>
+<h2 id="配置步骤"><a href="#配置步骤" class="headerlink" title="配置步骤"></a>配置步骤</h2><h3 id="创建-Github-仓库"><a href="#创建-Github-仓库" class="headerlink" title="创建 Github 仓库"></a>创建 Github 仓库</h3><p>上面提到，utterance 使用 Github 保存评论，那我们就需要创建一个 <code>repository</code> 专门保存评论。</p>
+<p><code>repository</code>名称可以根据自己喜好取，这个后面会用到。</p>
+<h3 id="授权"><a href="#授权" class="headerlink" title="授权"></a>授权</h3><p>用户在博客页面上输入评论，utterance 拿到这个评论后，自动的提交到上面刚创建仓库的 Issues 里。</p>
+<p>所以我们需要授权 utterance 应用能访问仓库的 Issues。</p>
+<p>点击链接： <a href="https://github.com/apps/utterances" target="_blank" rel="noopener">https://github.com/apps/utterances</a> ，如下图所示：</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200520123555.png" alt></p>
+<h3 id="主题配置"><a href="#主题配置" class="headerlink" title="主题配置"></a>主题配置</h3><p>一，在主题的配置文件 <code>_config.yml</code> 文件中，加入如下配置：</p>
+<p><em>位置可以放到其它评论配置的后面</em></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 整合 utterance 评论</span><br><span class="line">utterance:</span><br><span class="line">  enable: true</span><br><span class="line">  # 仓库名字，格式：你的用户 ID/ 仓库名称，如：zhangsan/utterance_repo</span><br><span class="line">  repo: </span><br><span class="line">  # 主题</span><br><span class="line">  theme: github-light</span><br><span class="line">  # 映射配置</span><br><span class="line">  issue_term: pathname</span><br></pre></td></tr></table></figure>
+
+<p>二，在主题的 <code>layout\_third-party\comments</code> 文件夹下，创建 <code>utterance.swig</code> 文件，添加如下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=&quot;text/javascript&quot;&gt;</span><br><span class="line">    (function() &#123;</span><br><span class="line">        // 匿名函数，防止污染全局变量</span><br><span class="line">        var utterances = document.createElement(&apos;script&apos;);</span><br><span class="line">        utterances.type = &apos;text/javascript&apos;;</span><br><span class="line">        utterances.async = true;</span><br><span class="line">        utterances.setAttribute(&apos;issue-term&apos;,&apos;&#123;&#123; theme.utterance.issue_term &#125;&#125;&apos;)</span><br><span class="line">        utterances.setAttribute(&apos;theme&apos;,&apos;&#123;&#123; theme.utterance.theme &#125;&#125;&apos;)</span><br><span class="line">        utterances.setAttribute(&apos;repo&apos;,&apos;&#123;&#123; theme.utterance.repo &#125;&#125;&apos;)</span><br><span class="line">        utterances.crossorigin = &apos;anonymous&apos;;</span><br><span class="line">        utterances.src = &apos;https://utteranc.es/client.js&apos;;</span><br><span class="line">        // content 是要插入评论的地方</span><br><span class="line">        document.getElementById(&apos;gitment-container&apos;).appendChild(utterances);</span><br><span class="line">    &#125;)();</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>三，还是刚才那个文件夹，找到 <code>index.swig</code> 文件，加入如下配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;% elif theme.utterance.enable %&#125;</span><br><span class="line">  &#123;% include &apos;utterance.swig&apos; %&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意加在 <code>endif</code> 后面，如：</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200520123610.png" alt></p>
+<p>四，以上只是添加了脚本，还需添加 comment 样式。找到 <code>layout\_partials\comments.swig</code> 文件。在最后加入内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;% elif theme.utterance.enable %&#125;</span><br><span class="line">  &lt;div class=&quot;comments&quot; id=&quot;comments&quot;&gt;</span><br><span class="line">      &lt;div id=&quot;gitment-container&quot;&gt;&lt;/div&gt;</span><br><span class="line">  &lt;/div&gt;</span><br></pre></td></tr></table></figure>
+
+<p>如：</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200520123626.png" alt></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以上就是整个集成 utterance 评论的流程，按照流程一步一步来应该是没问题的。</p>
+<p><strong>本文转载自:</strong><a href="https://zhangzw.com/posts/20190720.html" target="_blank" rel="noopener">https://zhangzw.com/posts/20190720.html</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../如何给你的博客集成Gittalk-or-Gitment-第三方评论插件.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2106,146 +2255,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../如何在markdown中插入js和css.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../如何在markdown中插入js和css.html" itemprop="url">如何在markdown中插入js和css</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-14T14:03:18+08:00">
-                2020-05-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>有时候我们可能需要改动markdown 的样式。由于markdown的呈现形式是html，所以直接把以下部分添加到markdown中，即可更改默认的样式</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta charset=&quot;utf-8&quot;&gt;</span><br><span class="line">&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, user-scalable=yes&quot;&gt;</span><br><span class="line">&lt;style&gt;</span><br><span class="line">h1,</span><br><span class="line">h2,</span><br><span class="line">h3,</span><br><span class="line">h4,</span><br><span class="line">h5,</span><br><span class="line">h6,</span><br><span class="line">p,</span><br><span class="line">blockquote &#123;</span><br><span class="line">    margin: 0;</span><br><span class="line">    padding: 0;</span><br><span class="line">&#125;</span><br><span class="line">body &#123;</span><br><span class="line">    font-family: &quot;Helvetica Neue&quot;, Helvetica, &quot;Hiragino Sans GB&quot;, Arial, sans-serif;</span><br><span class="line">    font-size: 13px;</span><br><span class="line">    line-height: 18px;</span><br><span class="line">    color: #737373;</span><br><span class="line">    background-color: white;</span><br><span class="line">    margin: 10px 13px 10px 13px;</span><br><span class="line">&#125;</span><br><span class="line">table &#123;</span><br><span class="line">    margin: 10px 0 15px 0;</span><br><span class="line">    border-collapse: collapse;</span><br><span class="line">&#125;</span><br><span class="line">td,th &#123; </span><br><span class="line">    border: 1px solid #ddd;</span><br><span class="line">    padding: 3px 10px;</span><br><span class="line">&#125;</span><br><span class="line">th &#123;</span><br><span class="line">    padding: 5px 10px;  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">a &#123;</span><br><span class="line">    color: #0069d6;</span><br><span class="line">&#125;</span><br><span class="line">a:hover &#123;</span><br><span class="line">    color: #0050a3;</span><br><span class="line">    text-decoration: none;</span><br><span class="line">&#125;</span><br><span class="line">a img &#123;</span><br><span class="line">    border: none;</span><br><span class="line">&#125;</span><br><span class="line">p &#123;</span><br><span class="line">    margin-bottom: 9px;</span><br><span class="line">&#125;</span><br><span class="line">h1,</span><br><span class="line">h2,</span><br><span class="line">h3,</span><br><span class="line">h4,</span><br><span class="line">h5,</span><br><span class="line">h6 &#123;</span><br><span class="line">    color: #404040;</span><br><span class="line">    line-height: 36px;</span><br><span class="line">&#125;</span><br><span class="line">h1 &#123;</span><br><span class="line">    margin-bottom: 18px;</span><br><span class="line">    font-size: 30px;</span><br><span class="line">&#125;</span><br><span class="line">h2 &#123;</span><br><span class="line">    font-size: 24px;</span><br><span class="line">&#125;</span><br><span class="line">h3 &#123;</span><br><span class="line">    font-size: 18px;</span><br><span class="line">&#125;</span><br><span class="line">h4 &#123;</span><br><span class="line">    font-size: 16px;</span><br><span class="line">&#125;</span><br><span class="line">h5 &#123;</span><br><span class="line">    font-size: 14px;</span><br><span class="line">&#125;</span><br><span class="line">h6 &#123;</span><br><span class="line">    font-size: 13px;</span><br><span class="line">&#125;</span><br><span class="line">hr &#123;</span><br><span class="line">    margin: 0 0 19px;</span><br><span class="line">    border: 0;</span><br><span class="line">    border-bottom: 1px solid #ccc;</span><br><span class="line">&#125;</span><br><span class="line">blockquote &#123;</span><br><span class="line">    padding: 13px 13px 21px 15px;</span><br><span class="line">    margin-bottom: 18px;</span><br><span class="line">    font-family:georgia,serif;</span><br><span class="line">    font-style: italic;</span><br><span class="line">&#125;</span><br><span class="line">blockquote:before &#123;</span><br><span class="line">    content:&quot;\201C&quot;;</span><br><span class="line">    font-size:40px;</span><br><span class="line">    margin-left:-10px;</span><br><span class="line">    font-family:georgia,serif;</span><br><span class="line">    color:#eee;</span><br><span class="line">&#125;</span><br><span class="line">blockquote p &#123;</span><br><span class="line">    font-size: 14px;</span><br><span class="line">    font-weight: 300;</span><br><span class="line">    line-height: 18px;</span><br><span class="line">    margin-bottom: 0;</span><br><span class="line">    font-style: italic;</span><br><span class="line">&#125;</span><br><span class="line">code, pre &#123;</span><br><span class="line">    font-family: Monaco, Andale Mono, Courier New, monospace;</span><br><span class="line">&#125;</span><br><span class="line">code &#123;</span><br><span class="line">    background-color: #fee9cc;</span><br><span class="line">    color: rgba(0, 0, 0, 0.75);</span><br><span class="line">    padding: 1px 3px;</span><br><span class="line">    font-size: 12px;</span><br><span class="line">    -webkit-border-radius: 3px;</span><br><span class="line">    -moz-border-radius: 3px;</span><br><span class="line">    border-radius: 3px;</span><br><span class="line">&#125;</span><br><span class="line">pre &#123;</span><br><span class="line">    display: block;</span><br><span class="line">    padding: 14px;</span><br><span class="line">    margin: 0 0 18px;</span><br><span class="line">    line-height: 16px;</span><br><span class="line">    font-size: 11px;</span><br><span class="line">    border: 1px solid #d9d9d9;</span><br><span class="line">    white-space: pre-wrap;</span><br><span class="line">    word-wrap: break-word;</span><br><span class="line">&#125;</span><br><span class="line">pre code &#123;</span><br><span class="line">    background-color: #fff;</span><br><span class="line">    color:#737373;</span><br><span class="line">    font-size: 11px;</span><br><span class="line">    padding: 0;</span><br><span class="line">&#125;</span><br><span class="line">sup &#123;</span><br><span class="line">    font-size: 0.83em;</span><br><span class="line">    vertical-align: super;</span><br><span class="line">    line-height: 0;</span><br><span class="line">&#125;</span><br><span class="line">* &#123;</span><br><span class="line">    -webkit-print-color-adjust: exact;</span><br><span class="line">&#125;</span><br><span class="line">@media screen and (min-width: 914px) &#123;</span><br><span class="line">    body &#123;</span><br><span class="line">        width: 854px;</span><br><span class="line">        margin:10px auto;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">@media print &#123;</span><br><span class="line">    body,code,pre code,h1,h2,h3,h4,h5,h6 &#123;</span><br><span class="line">        color: black;</span><br><span class="line">    &#125;</span><br><span class="line">    table, pre &#123;</span><br><span class="line">        page-break-inside: avoid;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
-
-<h4 id="如何在Hexo发布博客的Md文件中引入JS代码"><a href="#如何在Hexo发布博客的Md文件中引入JS代码" class="headerlink" title="如何在Hexo发布博客的Md文件中引入JS代码"></a>如何在Hexo发布博客的Md文件中引入JS代码</h4><p>跟引入css样式一样 直接插入js代码即可</p>
-<p><strong>第一种 引用第三方js文件</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=&quot;text/javascript&quot; src=&quot;/js/src/echarts.min.js&quot;&gt;&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>第二种 常规写法</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">​`</span><br></pre></td></tr></table></figure>
-
-<p>var bmapChart=echarts.init(document.getElementById(“map-wrap”));<br>​<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure></p>
-<p><strong>本帖附件</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="../2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><a class="page-number" href="../2/">2</a><span class="page-number current">3</span><a class="page-number" href="../4/">4</a><span class="space">&hellip;</span><a class="page-number" href="../10/">10</a><a class="extend next" rel="next" href="../4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="../2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><a class="page-number" href="../2/">2</a><span class="page-number current">3</span><a class="page-number" href="../4/">4</a><span class="space">&hellip;</span><a class="page-number" href="../11/">11</a><a class="extend next" rel="next" href="../4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2291,7 +2305,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">100</span>
+                  <span class="site-state-item-count">101</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2304,7 +2318,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-count">44</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
