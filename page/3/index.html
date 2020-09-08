@@ -273,6 +273,303 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../关于Andriod热更新.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../关于Andriod热更新.html" itemprop="url">关于Andriod热更新</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-19T14:12:11+08:00">
+                2020-06-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>项目场景：</p>
+<ul>
+<li>紧急发现了一个bug，影响用户体验，阻断项目流程。这个时候，只能紧急发布一个强制更新的新版本，让用户升级。</li>
+<li>最近百团大战开始。需要增加一个活动弹窗入口，越快越好。这个时候，只能紧急发布一个强制更新的新版本，让用户升级。</li>
+</ul>
+<p>存在需求：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">可不可以不让用户重新安装就可以解决上述场景？</span><br></pre></td></tr></table></figure>
+
+<h3 id="什么是热更新："><a href="#什么是热更新：" class="headerlink" title="什么是热更新："></a>什么是热更新：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">让应用能够在无需重新安装的情况实现更新，帮助应用快速建立动态修复能力。</span><br></pre></td></tr></table></figure>
+
+<p>从上面的定义来看，热补丁节省Android大量应用市场发布的时间。同时用户也无需重新安装，只要上线就能无感知的更新。</p>
+<h3 id="热更新的原理："><a href="#热更新的原理：" class="headerlink" title="热更新的原理："></a>热更新的原理：</h3><p>现在市面上主流的几大热更新技术：</p>
+<ul>
+<li>淘宝 Dexposed</li>
+<li>支付宝 AndFix</li>
+<li>Qzone 超级热补丁</li>
+<li>微信 Tinker</li>
+</ul>
+<h4 id="Dexposed"><a href="#Dexposed" class="headerlink" title="Dexposed"></a>Dexposed</h4><p>基于 Xposed 实现的无侵入的运行时 AOP (Aspect-oriented Programming) 框架，可以实现在线修复 Bug，修复粒度方法级别，这也就意味着我们没有办法进行类的增减操作。而且由于对 ART 虚拟机不支持，导致其对 Android 5.0、6.0 均不支持，使用局限性太大。</p>
+<h3 id="AndFix"><a href="#AndFix" class="headerlink" title="AndFix"></a>AndFix</h3><p>native hook 方式，其核心部分在 JNI 层对方法进行替换，替换有问题的方法,修复粒度方法级别，无法在类中新增和删减字段，可以做到即时生效。也就是运行时生效。但是因为它的核心部分在JNI，所以会出现很多适配兼容的问题。因为国内的rom厂商多才多艺.</p>
+<h3 id="超级热补丁"><a href="#超级热补丁" class="headerlink" title="超级热补丁"></a>超级热补丁</h3><p>使用新的 ClassLoader 加载 patch.dex，hack 默认的 ClassLoader，替换有问题的类，修复粒度类级别，一般无法做到即时生效，需要在应用下一次启动时生效。但是在art虚拟机中，如果改变了类变量，和方法名，有可能导致内存错乱的问题，没有开源这个项目。但在github上的Nuwa采用了相同的方式，这个是开源。</p>
+<h3 id="Tinker"><a href="#Tinker" class="headerlink" title="Tinker"></a>Tinker</h3><p>dex 文件全量替换，基于 DexDiff 技术，对比修复前后的 dex 文件，生成 patch.dex，再根据 patch.dex 更新有问题的 dex 文件。简单来说，在编译时通过新旧两个Dex生成差异patch.dex。在运行时，将差异patch.dex重新跟原始安装包的旧Dex还原为新的Dex。这个过程可能比较耗费时间与内存，所以我们是单独放在一个后台进程:patch中。为了补丁包尽量的小，微信自研了DexDiff算法，它深度利用Dex的格式来减少差异的大小。</p>
+<h3 id="热更新方案的比较："><a href="#热更新方案的比较：" class="headerlink" title="热更新方案的比较："></a>热更新方案的比较：</h3><table>
+<thead>
+<tr>
+<th align="left">Tables</th>
+<th align="left">Tinker</th>
+<th align="left">Qzone</th>
+<th align="left">Andfix</th>
+<th align="left">Dexposed</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">类替换</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">no</td>
+</tr>
+<tr>
+<td align="left">lib替换</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">no</td>
+<td align="left">no</td>
+</tr>
+<tr>
+<td align="left">资源替换</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">no</td>
+</tr>
+<tr>
+<td align="left">全平台支持</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+</tr>
+<tr>
+<td align="left">即时生效</td>
+<td align="left">no</td>
+<td align="left">no</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+</tr>
+<tr>
+<td align="left">性能损耗</td>
+<td align="left">较小</td>
+<td align="left">较大</td>
+<td align="left">较小</td>
+<td align="left">较小</td>
+</tr>
+<tr>
+<td align="left">补丁包大小</td>
+<td align="left">较小</td>
+<td align="left">较大</td>
+<td align="left">一般</td>
+<td align="left">一般</td>
+</tr>
+<tr>
+<td align="left">开发透明</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">no</td>
+</tr>
+<tr>
+<td align="left">复杂度</td>
+<td align="left">较低</td>
+<td align="left">较低</td>
+<td align="left">复杂</td>
+<td align="left">复杂</td>
+</tr>
+<tr>
+<td align="left">gradle支持</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">no</td>
+</tr>
+<tr>
+<td align="left">接口文档</td>
+<td align="left">丰富</td>
+<td align="left">一般</td>
+<td align="left">一般</td>
+<td align="left">较少</td>
+</tr>
+<tr>
+<td align="left">占rom体积</td>
+<td align="left">较大</td>
+<td align="left">较小</td>
+<td align="left">较小</td>
+<td align="left">较小</td>
+</tr>
+<tr>
+<td align="left">成功率</td>
+<td align="left">较好</td>
+<td align="left">最高</td>
+<td align="left">一般</td>
+<td align="left">一般</td>
+</tr>
+</tbody></table>
+<h3 id="热更新的使用场景："><a href="#热更新的使用场景：" class="headerlink" title="热更新的使用场景："></a>热更新的使用场景：</h3><p>热补丁技术也可以理解为一个动态修改代码与资源的通道，它适合于修改量较少的情况。</p>
+<p>我们看一下微信的版本升级的情况：</p>
+<table>
+<thead>
+<tr>
+<th align="left">Tables</th>
+<th align="left">普通升级</th>
+<th align="left">布丁升级</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">数据大小</td>
+<td align="left">33M</td>
+<td align="left">145K</td>
+</tr>
+<tr>
+<td align="left">更新速度</td>
+<td align="left">10天</td>
+<td align="left">1天（70%）</td>
+</tr>
+<tr>
+<td align="left">自动升级</td>
+<td align="left">wifi</td>
+<td align="left">移动网络</td>
+</tr>
+</tbody></table>
+<p>以Android用户的升级习惯，即使是相对活跃的微信也需要10天以上的时间去覆盖50%的用户。使用补丁技术，我们能做到1天覆盖70%以上。这也是基于补丁体积较小，可以直接使用移动网络下载更新。</p>
+<h3 id="热更新使用限制"><a href="#热更新使用限制" class="headerlink" title="热更新使用限制"></a>热更新使用限制</h3><ul>
+<li>补丁只能针对单一客户端版本，随着版本差异变大补丁体积也会增大；</li>
+<li>补丁不能支持所有的修改，例如AndroidManifest；</li>
+<li>补丁无论对代码还是资源的更新成功率都无法达到100%。</li>
+</ul>
+<h3 id="如何在一个项目中增加热更新功能？"><a href="#如何在一个项目中增加热更新功能？" class="headerlink" title="如何在一个项目中增加热更新功能？"></a>如何在一个项目中增加热更新功能？</h3><ul>
+<li><p>在工程目录 build.gradle 文件中添加插件依赖。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">buildscript &#123;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        jcenter()</span><br><span class="line">    &#125;</span><br><span class="line">    dependencies &#123;</span><br><span class="line">        // tinkersupport插件，其中latest.release指代最新版本号，也可以指定明确的版本号，例如1.0.8</span><br><span class="line">        classpath &quot;com.tencent.bugly:tinker-support:latest.release&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在app module 下的build.gradle 文件中添加 配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">      compile &quot;com.android.support:multidex:1.0.1&quot; </span><br><span class="line">      compile &apos;com.tencent.bugly:crashreport_upgrade:latest.release&apos;</span><br><span class="line">&#125;</span><br><span class="line">// 依赖插件脚本</span><br><span class="line">apply from: &apos;tinker-support.gradle&apos;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在同级目录下创建 tinker-support.gradle</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: &apos;com.tencent.bugly.tinker-support&apos;</span><br><span class="line"></span><br><span class="line">def bakPath = file(&quot;$&#123;buildDir&#125;/bakApk/&quot;)</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 此处填写每次构建生成的基准包目录</span><br><span class="line"> */</span><br><span class="line">def baseApkDir = &quot;app-0912-17-04-44&quot;</span><br><span class="line">/**</span><br><span class="line"> * 对于插件各参数的详细解析请参考</span><br><span class="line"> */</span><br><span class="line">tinkerSupport &#123;</span><br><span class="line"></span><br><span class="line">    // 开启tinker-support插件，默认值true</span><br><span class="line">    enable = true</span><br><span class="line"></span><br><span class="line">    //自动生成tinkerId，无须关注此。默认为false</span><br><span class="line">    //autoGenerateTinkerId = true</span><br><span class="line"></span><br><span class="line">    tinkerEnable = true</span><br><span class="line"></span><br><span class="line">    // 指定归档目录，默认值当前module的子目录tinker</span><br><span class="line">    autoBackupApkDir = &quot;$&#123;bakPath&#125;&quot;</span><br><span class="line"></span><br><span class="line">    // 是否启用覆盖tinkerPatch配置功能，默认值false</span><br><span class="line">    // 开启后tinkerPatch配置不生效，即无需添加tinkerPatch</span><br><span class="line">    overrideTinkerPatchConfiguration = true</span><br><span class="line"></span><br><span class="line">    // 编译补丁包时，必需指定基线版本的apk，默认值为空</span><br><span class="line">    // 如果为空，则表示不是进行补丁包的编译</span><br><span class="line">    // @&#123;link tinkerPatch.oldApk &#125;</span><br><span class="line">    baseApk = &quot;$&#123;bakPath&#125;/$&#123;baseApkDir&#125;/com.nongfenqi.sherlock-release-v2.3.2_32.apk&quot;</span><br><span class="line">    // 对应tinker插件applyMapping</span><br><span class="line">    baseApkProguardMapping = &quot;$&#123;bakPath&#125;/$&#123;baseApkDir&#125;/app-release-mapping.txt&quot;</span><br><span class="line"></span><br><span class="line">    // 对应tinker插件applyResourceMapping</span><br><span class="line">    baseApkResourceMapping = &quot;$&#123;bakPath&#125;/$&#123;baseApkDir&#125;/app-release-R.txt&quot;</span><br><span class="line"></span><br><span class="line">    // 构建基准包和补丁包都要指定不同的tinkerId，并且必须保证唯一性</span><br><span class="line">    tinkerId = &quot;2.3.2-0912-patch&quot;</span><br><span class="line"></span><br><span class="line">    // 构建多渠道补丁时使用</span><br><span class="line">    // buildAllFlavorsDir = &quot;$&#123;bakPath&#125;/$&#123;baseApkDir&#125;&quot;</span><br><span class="line"></span><br><span class="line">    // 是否启用加固模式，默认为false.(tinker-spport 1.0.7起支持）</span><br><span class="line">    // isProtectedApp = true</span><br><span class="line"></span><br><span class="line">    // 是否开启反射Application模式</span><br><span class="line">    enableProxyApplication = false</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 一般来说,我们无需对下面的参数做任何的修改</span><br><span class="line"> * 对于各参数的详细介绍请参考:</span><br><span class="line"> * https://github.com/Tencent/tinker/wiki/Tinker-%E6%8E%A5%E5%85%A5%E6%8C%87%E5%8D%97</span><br><span class="line"> */</span><br><span class="line">tinkerPatch &#123;</span><br><span class="line">    //oldApk =&quot;$&#123;bakPath&#125;/$&#123;appName&#125;/app-release.apk&quot;</span><br><span class="line">    tinkerEnable = true</span><br><span class="line">    ignoreWarning = false</span><br><span class="line">    useSign = true</span><br><span class="line">    dex &#123;</span><br><span class="line">        dexMode = &quot;jar&quot;</span><br><span class="line">        pattern = [&quot;classes*.dex&quot;]</span><br><span class="line">        loader = []</span><br><span class="line">    &#125;</span><br><span class="line">    lib &#123;</span><br><span class="line">        pattern = [&quot;lib/*/*.so&quot;]</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    res &#123;</span><br><span class="line">        pattern = [&quot;res/*&quot;, &quot;r/*&quot;, &quot;assets/*&quot;, &quot;resources.arsc&quot;, &quot;AndroidManifest.xml&quot;]</span><br><span class="line">        ignoreChange = []</span><br><span class="line">        largeModSize = 100</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    packageConfig &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    sevenZip &#123;</span><br><span class="line">        zipArtifact = &quot;com.tencent.mm:SevenZip:1.1.10&quot;</span><br><span class="line">//        path = &quot;/usr/local/bin/7za&quot;</span><br><span class="line">    &#125;</span><br><span class="line">    buildConfig &#123;</span><br><span class="line">        keepDexApply = false</span><br><span class="line">        //tinkerId = &quot;1.0.1-base&quot;</span><br><span class="line">        //applyMapping = &quot;$&#123;bakPath&#125;/$&#123;appName&#125;/app-release-mapping.txt&quot; //  可选，设置mapping文件，建议保持旧apk的proguard混淆方式</span><br><span class="line">        //applyResourceMapping = &quot;$&#123;bakPath&#125;/$&#123;appName&#125;/app-release-R.txt&quot; // 可选，设置R.txt文件，通过旧apk文件保持ResId的分配</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>权限配置以及activity配置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;uses-permission android:name=&quot;android.permission.READ_PHONE_STATE&quot; /&gt;</span><br><span class="line">&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;</span><br><span class="line">&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;</span><br><span class="line">&lt;uses-permission android:name=&quot;android.permission.ACCESS_WIFI_STATE&quot; /&gt;</span><br><span class="line">&lt;uses-permission android:name=&quot;android.permission.READ_LOGS&quot; /&gt;</span><br><span class="line">&lt;uses-permission android:name=&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot; /&gt;</span><br><span class="line">&lt;uses-permission android:name=&quot;android.permission.READ_EXTERNAL_STORAGE&quot;/&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&lt;activity</span><br><span class="line">    android:name=&quot;com.tencent.bugly.beta.ui.BetaActivity&quot;</span><br><span class="line">    android:theme=&quot;@android:style/Theme.Translucent&quot; /&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>混淆配置</p>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-dontwarn com.tencent.bugly.**</span><br><span class="line">-keep public <span class="class"><span class="keyword">class</span> <span class="title">com</span>.<span class="title">tencent</span>.<span class="title">bugly</span>.**</span>&#123;*;&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>本文转载自：<a href="https://www.dazhuanlan.com/2019/12/31/5e0b56c7943ed/" target="_blank" rel="noopener">https://www.dazhuanlan.com/2019/12/31/5e0b56c7943ed/</a></strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../解决国内访问github过慢的问题.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2001,219 +2298,6 @@ public boolean shouldOverrideUrlLoading(WebView view, String httpurl) {
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Android-Studio下JNI开发的基本步骤.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../Android-Studio下JNI开发的基本步骤.html" itemprop="url">Android Studio下JNI开发的基本步骤</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-14T18:22:42+08:00">
-                2020-05-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ul>
-<li>第一步 设置ndk路径 配置相应的开发环境</li>
-</ul>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1570498988042.png" alt></p>
-<ul>
-<li>第二步 配置快捷键 Settings -&gt; External tools中配置javah,javap,ndk-build快捷方式</li>
-</ul>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1570499176459.png" alt></p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1570525244895.png" alt></p>
-<p><em>javah参数配置(直接拷贝)：</em><br><strong>Program:</strong> $JDKPath$\bin\javah.exe<br><strong>Parameters:</strong> -classpath . -jni -o $ModuleFileDir$/src/main/jni/$Prompt$ $FileClass$<br><strong>Working directory:</strong> $ModuleFileDir$\src\main\Java<br><strong>Parameters的另外一种写法</strong>: -classpath . -jni -d $ModuleFileDir$/src/main/jni $FileClass$</p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1570499347400.png" alt></p>
-<p>javap参数配置(直接拷贝)：*<br><strong>Program:</strong> $JDKPath$\bin\javap<br><strong>Parameters:</strong> -s -p $FileClass$<br><strong>Working directory:</strong> $ModuleFileDir$\build\intermediates\classes\debug</p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1570499347400.png" alt></p>
-<p><em>ndk-build参数配置(直接拷贝)：</em></p>
-<p><strong>Program:</strong> D:\Android_NDK\android-ndk-r11b\ndk-build.cmd </p>
-<p><strong>Working directory:</strong> $ModuleFileDir$\src\main</p>
-<ul>
-<li>第三步 创建java类 引用即将创建的链接库,以及创建所需要的本地方法</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">static &#123;</span><br><span class="line">    System.loadLibrary(&quot;MyJni&quot;);//导入指定的so库文件名称 </span><br><span class="line">&#125;</span><br><span class="line">public native String getStringFromNative();//本地方法</span><br><span class="line">public native String getString_From_c();</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>第四步 使用之前配置的javah快捷键快速生成.h头文件</li>
-</ul>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/909970-20161115184349967-1329241072.png" alt></p>
-<p><strong>此时 会自动创建jni目录并生成头文件</strong></p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/909970-20161115184350373-820716990.png" alt></p>
-<ul>
-<li>第五步 参考头文件 在jni目录下开始编写C/C++代码<img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/909970-20161115184350685-607675028.png" alt></li>
-</ul>
-<p><strong>注：</strong></p>
-<p>项目结构切换成 Android状态时，jni文件夹显示成 cpp名字！ </p>
-<p>当切换成project时就显示成jni文件夹！！</p>
-<p>如下图：</p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/909970-20161115184350998-1201697394.png" alt> <img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/909970-20161115184351263-1458780704.png" alt></p>
-<p>添加如下代码：</p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/909970-20161115184351560-1855950848.png" alt></p>
-<ul>
-<li>第六步 配置gradle </li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> ndk&#123;</span><br><span class="line">        moduleName &quot;MyJni&quot;//编译后so库的名字</span><br><span class="line">        ldLibs &quot;log&quot;//连接的库，可以有多个</span><br><span class="line">        abiFilters &quot;armeabi&quot;,&quot;armeabi-v7a&quot;,&quot;x86&quot;//指定so库运行的cpu架构，有armeabi armeabi-v7a arm64-v8a x86 x86_64 mips mips64这些，常用的是armeabi和armeabi-v7a</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>点击Androidstudio 菜单栏 Build -&gt;ReBuildProject 后自动生成Android.mk文件 </p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/909970-20161115184352513-848045712.png" alt></p>
-<p>把Android.mk文件拷贝到 main/jni文件夹下 然后右键—&gt;External Tools –&gt;ndk-build  生成 .so文件！！</p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1570500786572.png" alt></p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1570500816087.png" alt></p>
-<p>其次 在项目的gradle.properties 文件中添加</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">android.useDeprecatedNdk=true</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>第七步 运行java代码 调取c库</li>
-</ul>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/909970-20161115184354279-1935016921.png" alt></p>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ul>
-<li><p>加载生成的动态库指定的文件名（ System.loadLibrary(“MyJni”);）和生成.so时指定的名字（build.gradle中的ndk{moduleName “MyJni” }），还有Android.mk中LOCAL_MODULE := MyJni三者名称需要保持一致；</p>
-</li>
-<li><p>异常提示不支持c++</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Error: Flag android.useDeprecatedNdk is no longer supported and will be removed in the next version of Android Studio.  Please switch to a supported build system.</span><br><span class="line">  Consider using CMake or ndk-build integration. For more information, go to:</span><br><span class="line">   https://d.android.com/r/studio-ui/add-native-code.html#ndkCompile</span><br><span class="line">   To get started, you can use the sample ndk-build script the Android</span><br><span class="line">   plugin generated for you at:</span><br><span class="line">   E:\IT\youban\module_c++\build\intermediates\ndk\release\Android.mk</span><br><span class="line">  Alternatively, you can use the experimental plugin:</span><br><span class="line">   https://developer.android.com/r/tools/experimental-plugin.html</span><br><span class="line">  To continue using the deprecated NDK compile for another 60 days, set </span><br><span class="line">  android.deprecatedNdkCompileLease=1570504380180 in gradle.properties</span><br></pre></td></tr></table></figure>
-
-<p>解决方案:在build.gradle中添加如下配置即可:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">android&#123;</span><br><span class="line"></span><br><span class="line">//增加之后如下信息之后，右键项目的时候Link C++ Project with Gradle选项不再显示;</span><br><span class="line">//    externalNativeBuild &#123;</span><br><span class="line">//        ndkBuild &#123;</span><br><span class="line">//            path file(&apos;src/main/jni/Android.mk&apos;)</span><br><span class="line">//        &#125;</span><br><span class="line">//    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="附-C调java代码"><a href="#附-C调java代码" class="headerlink" title="附:C调java代码"></a>附:C调java代码</h3><h5 id="Java中代码如下"><a href="#Java中代码如下" class="headerlink" title="Java中代码如下:"></a>Java中代码如下:</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">static &#123;</span><br><span class="line">    </span><br><span class="line">    System.loadLibrary(&quot;MyJni&quot;);//导入指定的so库文件</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void show()&#123;</span><br><span class="line">    System.out.println(&quot;hahaha  C++调了我&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h5 id="C中代码如下"><a href="#C中代码如下" class="headerlink" title="C中代码如下:"></a>C中代码如下:</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">//在c代码里面调用java代码里面的方法</span><br><span class="line"></span><br><span class="line">//1 . 找到java代码的 class文件</span><br><span class="line">jclass dpclazz = (*env)-&gt;FindClass(env, &quot;com/insworks/module_ccc/CCCTestActivity&quot;);</span><br><span class="line">if (dpclazz == 0) &#123;</span><br><span class="line">    return (*(*env)).NewStringUTF(env, &quot;NDK 没有找到指定的类&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//2 寻找class里面的方法</span><br><span class="line">jmethodID method1 = (*env)-&gt;GetMethodID(env, dpclazz, &quot;show&quot;, &quot;()V&quot;);</span><br><span class="line">if (method1 == 0) &#123;</span><br><span class="line">    return (*(*env)).NewStringUTF(env, &quot;NDK 没有找到方法&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//3.实例化类</span><br><span class="line">jobject jobject1 = (*env)-&gt;AllocObject(env, dpclazz);</span><br><span class="line"></span><br><span class="line">//4 .调用这个方法</span><br><span class="line">(*env)-&gt;CallVoidMethod(env, jobject1, method1);</span><br></pre></td></tr></table></figure>
-
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20131221142524640.png" alt></p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20131221140115156.png" alt></p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20131221142910828.png" alt></p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20131221142742906.png" alt></p>
-<h3 id="注意事项-1"><a href="#注意事项-1" class="headerlink" title="注意事项:"></a>注意事项:</h3><ol>
-<li><strong>原生方法在C和C++的调用方式不同，例如：</strong></li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/* C */</span><br><span class="line">return (*env)-&gt;NewStringUTF(env, &quot;Hello World&quot;);</span><br><span class="line">/* C++ */</span><br><span class="line">return env-&gt;NewStringUTF(&quot;Hello World&quot;);</span><br></pre></td></tr></table></figure>
-
-<p>​    在C语言中，JNIEnv是指向JNINativeInterface结构的指针，使用它必须要解引用。而第一个参数还是env，学过C和C++语言都知道，C语言是面向过程语言，NewStringUTF只是一个函数指针，调用该方法还不清楚调用者，所以要传递env，而C++就不用，因为C++是面向对象语言，这个就不解释咯</p>
-<p>2.<strong>关于C++调用C函数或者变量</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//在C++中引用C语言中的函数和变量，在包含C语言头文件时(假设为cExample.h)，需进行以下处理：</span><br><span class="line">//  extern &quot;C&quot;</span><br><span class="line">//  &#123;</span><br><span class="line">//    #include &quot;cExample.h&quot;;</span><br><span class="line">//  &#125;</span><br></pre></td></tr></table></figure>
-
-<p>3.<strong>关于so文件的名称问题</strong></p>
-<p>Android.mk文件中的LOCAL_MODULE 决定了so文件的名称,LOCAL_MODULE 的名称可以手动修改也可以在build.gradle中配置:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">       ndk &#123;</span><br><span class="line">//            moduleName &quot;native_datahelp&quot;//编译后so库的名称</span><br><span class="line"></span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
-
-<p>4.<strong>关于System.loadLibrary();</strong></p>
-<p>为什么loadLibrary中填入的名称不一致,却能依然运行成功不报错?</p>
-<p>目前自测发现 build文件中出现很多编译后的so库 有可能是旧so库未及时清除的原因,可以过研究研究build文件夹,里面藏着非常多的秘密</p>
-<p>5.<strong>ndk-build不执行照样运行成功</strong></p>
-<p>C/C++源码文件改动后自动调用ndk-build编译生成新的so库存放在build文件夹中,可以拷贝直接使用,ndk-build生成正式的so库,这更apk打包是同样的道理 Android.mk文件是必须存在的,否则无法编译生成so库,也无法编译识别源文件</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2264,7 +2348,7 @@ public boolean shouldOverrideUrlLoading(WebView view, String httpurl) {
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">103</span>
+                  <span class="site-state-item-count">104</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

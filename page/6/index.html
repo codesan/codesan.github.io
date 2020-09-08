@@ -273,6 +273,174 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Git-Submodule的介绍与使用.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../Git-Submodule的介绍与使用.html" itemprop="url">Git Submodule的介绍与使用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-04T15:24:19+08:00">
+                2020-01-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200106104558.png" alt></p>
+<h3 id="场景复现"><a href="#场景复现" class="headerlink" title="场景复现"></a>场景复现</h3><p>公司有10个项目正在开发, 以后会陆陆续续增加新项目, 而这些项目都用到公共的一些类库, 如果你是技术负责人, 你会选择哪个方案?</p>
+<p><strong>方案一</strong>: 将公共类库依次拷贝至10个项目中 <strong>(不推荐  一旦类库需要修改, 你需要修改不只10遍)</strong></p>
+<p><strong>方案二</strong>: 将公共类库封装成第三方框架, 放在公共仓库, 每个项目各自引入,<strong>(使用方便, 但是不方便修改源代码 不推荐)</strong></p>
+<p><strong>方案三</strong>: 将公共类库源代码放在公有仓库, 每个项目下分别clone, <strong>( 方便修改类库代码, 也方便同步修改,但是主工程项目会将类库代码并入主工程提交, 两个仓库独立性不够, 有时候我可能只想先pull没有类库的代码, 这个时候就不方便了)</strong></p>
+<h3 id="引出Git-Submodule"><a href="#引出Git-Submodule" class="headerlink" title="引出Git Submodule"></a>引出Git Submodule</h3><p>为了增加公共类库与主项目的独立性, Git 给大家提供了子模块功能 允许你将一个 Git 仓库作为另一个 Git 仓库的子目录 ,  它能让你将另一个仓库克隆到自己的项目中，同时还保持提交的独立 </p>
+<h3 id="开始使用"><a href="#开始使用" class="headerlink" title="开始使用"></a>开始使用</h3><p>1.<strong>添加子模块</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule add &lt;仓库地址&gt; &lt;本地路径&gt;//如果不指定本地路径 默认放在当前目录下</span><br></pre></td></tr></table></figure>
+
+<p>2.<strong>如果子模块代码有修改需要同步至远程仓库</strong></p>
+<p>进入到子模块目录下, 指定分支:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout master //这里以master分支为例</span><br></pre></td></tr></table></figure>
+
+<p>然后</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git commit -am &quot;修改类库&quot;</span><br><span class="line">git push</span><br></pre></td></tr></table></figure>
+
+<p>3.<strong>如果需要从远程仓库更新代码</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule update --remote</span><br></pre></td></tr></table></figure>
+
+<p>或者</p>
+<p>直接进入到子模块目录下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git pull</span><br></pre></td></tr></table></figure>
+
+<p>两者效果都是一样的</p>
+<p><strong>注意:如果你的子模块内部也包含了一个子模块, 你可以使用:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule foreach git submodule update</span><br></pre></td></tr></table></figure>
+
+<p>进行遍历更新</p>
+<p><strong>4.如果你要删除子模块</strong></p>
+<ul>
+<li>1.删除.gitsubmodule里相关部分</li>
+<li>2.删除.git/config 文件里相关字段</li>
+<li>3.删除子仓库目录。</li>
+</ul>
+<p>然后执行命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rm --cached &lt;本地路径&gt;</span><br></pre></td></tr></table></figure>
+
+<p>即可完成删除。</p>
+<p><strong>5.团队开发的时候, 进来一个新的成员, 他首次clone项目的时候, 并不会将子模块一并clone进来</strong></p>
+<p>这个时候, 需要先初始化子模块:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 用来初始化本地配置文件</span><br><span class="line">git submodule init</span><br><span class="line"># 从该项目中抓取所有数据并检出父项目中列出的合适的提交(指定的提交)。</span><br><span class="line">git submodule update</span><br><span class="line">(以上两条命令也可以合并成一条组合命令：git submodule update --init --recursive)</span><br></pre></td></tr></table></figure>
+
+<p>或者直接:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># clone 父仓库的时候加上 --recursive，会自动初始化并更新仓库中的每一个子模块</span><br><span class="line">git clone --recursive https://gitee.com/xiaomumaozi/SubModule_Test.git</span><br></pre></td></tr></table></figure>
+
+<p><strong>本帖附件</strong></p>
+<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../使用计算器进行开方的两种方法.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1664,178 +1832,6 @@ gradlew clean build bintrayUpload -PbintrayUser=songjianziana -PbintrayKey=5e7f0
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../git-stash-详解.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../git-stash-详解.html" itemprop="url">git stash 详解</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-24T16:38:03+08:00">
-                2019-12-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><ol>
-<li>当正在dev分支上开发某个项目，这时项目中出现一个bug，需要紧急修复，但是正在开发的内容只是完成一半，还不想提交，这时可以用git stash命令将修改的内容保存至堆栈区，然后顺利切换到hotfix分支进行bug修复，修复完成后，再次切回到dev分支，从堆栈中恢复刚刚保存的内容。</li>
-<li>由于疏忽，本应该在dev分支开发的内容，却在master上进行了开发，需要重新切回到dev分支上进行开发，可以用git stash将内容保存至堆栈中，切回到dev分支后，再次恢复内容即可。</li>
-</ol>
-<p>总的来说，git stash命令的作用就是<strong>将目前还不想提交的但是已经修改的内容进行保存至堆栈中，后续可以在某个分支上恢复出堆栈中的内容</strong>。</p>
-<p>这也就是说，<strong>stash中的内容不仅仅可以恢复到原先开发的分支，也可以恢复到其他任意指定的分支上</strong>。git stash作用的范围包括工作区和暂存区中的内容，也就是说没有提交的内容都会保存至堆栈中。</p>
-<p><strong>注: stash只对被追踪的文件才有效, 也就是说 是针对被add的文件 。</strong></p>
-<h3 id="命令详解"><a href="#命令详解" class="headerlink" title="命令详解"></a>命令详解</h3><h4 id="1-git-stash"><a href="#1-git-stash" class="headerlink" title="1. git stash"></a>1. git stash</h4><blockquote>
-<p>能够将所有未提交的修改（工作区和暂存区）保存至堆栈中，用于后续恢复当前工作目录</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ git status</span><br><span class="line">On branch master</span><br><span class="line">Changes not staged for commit:</span><br><span class="line">  (use &quot;git add &lt;file&gt;...&quot; to update what will be committed)</span><br><span class="line">  (use &quot;git checkout -- &lt;file&gt;...&quot; to discard changes in working directory)</span><br><span class="line"></span><br><span class="line">        modified:   src/main/java/com/wy/CacheTest.java</span><br><span class="line">        modified:   src/main/java/com/wy/StringTest.java</span><br><span class="line"></span><br><span class="line">no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&quot;)</span><br><span class="line"></span><br><span class="line">$ git stash</span><br><span class="line">Saved working directory and index state WIP on master: b2f489c second</span><br><span class="line"></span><br><span class="line">$ git status</span><br><span class="line">On branch master</span><br><span class="line">nothing to commit, working tree clean</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-git-stash-save"><a href="#2-git-stash-save" class="headerlink" title="2. git stash save"></a>2. git stash save</h4><blockquote>
-<p>作用等同于git stash，区别是可以加一些注释，git stash save “test1”的效果 如下：</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stash@&#123;0&#125;: On master: test1</span><br></pre></td></tr></table></figure>
-
-<h4 id="3-git-stash-list"><a href="#3-git-stash-list" class="headerlink" title="3. git stash list"></a>3. git stash list</h4><blockquote>
-<p>查看当前stash中的内容</p>
-</blockquote>
-<h4 id="4-git-stash-pop"><a href="#4-git-stash-pop" class="headerlink" title="4. git stash pop"></a>4. git stash pop</h4><blockquote>
-<p>将当前stash中的内容弹出，并应用到当前分支对应的工作目录上。<br>注：该命令将堆栈中最近保存的内容删除（栈是先进后出）<br>顺序执行git stash save “test1”和git stash save “test2”命令，效果如下：</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ git stash list</span><br><span class="line">stash@&#123;0&#125;: On master: test2</span><br><span class="line">stash@&#123;1&#125;: On master: test1</span><br><span class="line"></span><br><span class="line">$ git stash pop</span><br><span class="line">On branch master</span><br><span class="line">Changes not staged for commit:</span><br><span class="line">  (use &quot;git add &lt;file&gt;...&quot; to update what will be committed)</span><br><span class="line">  (use &quot;git checkout -- &lt;file&gt;...&quot; to discard changes in working directory)</span><br><span class="line"></span><br><span class="line">        modified:   src/main/java/com/wy/StringTest.java</span><br><span class="line"></span><br><span class="line">no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&quot;)</span><br><span class="line">Dropped refs/stash@&#123;0&#125; (afc530377eacd4e80552d7ab1dad7234edf0145d)</span><br><span class="line"></span><br><span class="line">$ git stash list</span><br><span class="line">stash@&#123;0&#125;: On master: test1</span><br></pre></td></tr></table></figure>
-
-<p>可见，test2的stash是首先pop出来的。<br>如果从stash中恢复的内容和当前目录中的内容发生了冲突，也就是说，恢复的内容和当前目录修改了同一行的数据，那么会提示报错，需要解决冲突，可以通过创建新的分支来解决冲突。</p>
-<h4 id="5-git-stash-apply"><a href="#5-git-stash-apply" class="headerlink" title="5. git stash apply"></a>5. git stash apply</h4><blockquote>
-<p>将堆栈中的内容应用到当前目录，不同于git stash pop，该命令不会将内容从堆栈中删除，也就说该命令能够将堆栈的内容多次应用到工作目录中，适应于多个分支的情况。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ git stash apply</span><br><span class="line">On branch master</span><br><span class="line">Changes not staged for commit:</span><br><span class="line">  (use &quot;git add &lt;file&gt;...&quot; to update what will be committed)</span><br><span class="line">  (use &quot;git checkout -- &lt;file&gt;...&quot; to discard changes in working directory)</span><br><span class="line"></span><br><span class="line">        modified:   src/main/java/com/wy/StringTest.java</span><br><span class="line"></span><br><span class="line">no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&quot;)</span><br><span class="line"></span><br><span class="line">$ git stash list</span><br><span class="line">stash@&#123;0&#125;: On master: test2</span><br><span class="line">stash@&#123;1&#125;: On master: test1</span><br></pre></td></tr></table></figure>
-
-<p>堆栈中的内容并没有删除。<br>可以使用<code>git stash apply + stash名字</code>（如stash@{1}）指定恢复哪个stash到当前的工作目录。</p>
-<h4 id="6-git-stash-drop-名称"><a href="#6-git-stash-drop-名称" class="headerlink" title="6. git stash drop + 名称"></a>6. git stash drop + 名称</h4><blockquote>
-<p>从堆栈中移除某个指定的stash</p>
-</blockquote>
-<h4 id="7-git-stash-clear"><a href="#7-git-stash-clear" class="headerlink" title="7. git stash clear"></a>7. git stash clear</h4><p>清除堆栈中的所有 内容</p>
-<h4 id="8-git-stash-show"><a href="#8-git-stash-show" class="headerlink" title="8. git stash show"></a>8. git stash show</h4><blockquote>
-<p>查看堆栈中最新保存的stash和当前目录的差异。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git stash show</span><br><span class="line"> src/main/java/com/wy/StringTest.java | 2 +-</span><br><span class="line"> 1 file changed, 1 insertion(+), 1 deletion(-)</span><br></pre></td></tr></table></figure>
-
-<p><code>git stash show stash@{1}</code>查看指定的stash和当前目录差异。<br>通过 <code>git stash show -p</code> 查看详细的不同：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">$ git stash show -p</span><br><span class="line">diff --git a/src/main/java/com/wy/CacheTest.java b/src/main/java/com/wy/CacheTest.java</span><br><span class="line">index 6e90837..de0e47b 100644</span><br><span class="line">--- a/src/main/java/com/wy/CacheTest.java</span><br><span class="line">+++ b/src/main/java/com/wy/CacheTest.java</span><br><span class="line">@@ -7,6 +7,6 @@ package com.wy;</span><br><span class="line">  */</span><br><span class="line"> public class CacheTest &#123;</span><br><span class="line">     public static void main(String[] args) &#123;</span><br><span class="line">-        System.out.println(&quot;git stash test&quot;);</span><br><span class="line">+        System.out.println(&quot;git stash test1&quot;);</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br><span class="line">diff --git a/src/main/java/com/wy/StringTest.java b/src/main/java/com/wy/StringTest.java</span><br><span class="line">index a7e146c..711d63f 100644</span><br><span class="line">--- a/src/main/java/com/wy/StringTest.java</span><br><span class="line">+++ b/src/main/java/com/wy/StringTest.java</span><br><span class="line">@@ -12,7 +12,7 @@ public class StringTest &#123;</span><br><span class="line"></span><br><span class="line">     @Test</span><br><span class="line">     public void test1() &#123;</span><br><span class="line">-        System.out.println(&quot;=================&quot;);</span><br><span class="line">+        System.out.println(&quot;git stash test1&quot;);</span><br><span class="line">         System.out.println(Strings.isNullOrEmpty(&quot;&quot;));//true</span><br><span class="line">         System.out.println(Strings.isNullOrEmpty(&quot; &quot;));//false</span><br><span class="line">         System.out.println(Strings.nullToEmpty(null));//&quot;&quot;</span><br></pre></td></tr></table></figure>
-
-<p>同样，通过git stash show stash@{1} -p查看指定的stash的差异内容</p>
-<h4 id="9-git-stash-branch"><a href="#9-git-stash-branch" class="headerlink" title="9. git stash branch"></a>9. git stash branch</h4><blockquote>
-<p>从最新的stash创建分支。</p>
-</blockquote>
-<p><strong>应用场景</strong>：当储藏了部分工作，暂时不去理会，继续在当前分支进行开发，后续想将stash中的内容恢复到当前工作目录时，如果是针对同一个文件的修改（即便不是同行数据），那么可能会发生冲突，恢复失败，这里通过创建新的分支来解决。可以用于解决stash中的内容和当前目录的内容发生冲突的情景。<br>发生冲突时，需手动解决冲突。</p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1886,7 +1882,7 @@ gradlew clean build bintrayUpload -PbintrayUser=songjianziana -PbintrayKey=5e7f0
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">103</span>
+                  <span class="site-state-item-count">104</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
