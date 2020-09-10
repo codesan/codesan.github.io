@@ -273,7 +273,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../右脑记忆法之图像记忆.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../kotlin中-data-class-到底是个什么鬼.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -292,7 +292,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../右脑记忆法之图像记忆.html" itemprop="url">右脑记忆法之图像记忆</a></h1>
+                <a class="post-title-link" href="../../kotlin中-data-class-到底是个什么鬼.html" itemprop="url">kotlin中 data class 到底是个什么鬼</a></h1>
         
 
         <div class="post-meta">
@@ -304,8 +304,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-26T12:29:25+08:00">
-                2019-11-26
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-16T16:48:33+08:00">
+                2019-12-16
               </time>
             
 
@@ -344,7 +344,50 @@
       
         
           
-            <p><strong>本帖附件</strong></p>
+            <p>data class就是一个类中只包含一些数据字段，类似于vo,pojo,java bean。一般而言，我们在Java中定义了这个数据类之后要重写一下toString，equals等方法。要生成get,set方法。</p>
+<p>然而在Kotlin中这些都不在需要自己手动去敲了，编译器在背后默默给我们生成了如下的东西：</p>
+<ul>
+<li>equals()/hashCode()</li>
+<li>toString()方法</li>
+<li>componentN()方法</li>
+<li>copy()方法</li>
+</ul>
+<h4 id="如何申明一个简单的数据类？-有一下几点要求："><a href="#如何申明一个简单的数据类？-有一下几点要求：" class="headerlink" title="如何申明一个简单的数据类？ 有一下几点要求："></a>如何申明一个简单的数据类？ 有一下几点要求：</h4><ul>
+<li>主构造函数必须要至少有一个参数</li>
+<li>主构造函数中的所有参数必须被标记为val或者var</li>
+<li>数据类不能有以下修饰符：abstract，inner,open,sealed</li>
+<li>data class只能实现接口（Kotlin1.1以前的规则），现在也可以继承其它类</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data class User(var id: Int, var name: String)</span><br></pre></td></tr></table></figure>
+
+<p>就这么一行代码，你已然拥有了一个数据类</p>
+<p>主构造函数中的所有参数必须被标记为var或者val，var就表示可读写，val就表示只读，这就相当于表明了数据字段的访问权限</p>
+<h4 id="componentN-方法是干嘛用的"><a href="#componentN-方法是干嘛用的" class="headerlink" title="componentN()方法是干嘛用的?"></a>componentN()方法是干嘛用的?</h4><p>在主构造函数中有多少个参数，就会依次生成对应的component1,component2,component3……这些函数返回的就是对应字段的值</p>
+<p>componentN函数是用来实现解构申明的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">data class User(var id: Int,var name:String) </span><br><span class="line">fun main(args: Array&lt;String&gt;) &#123;</span><br><span class="line">    var user: User = User(123, &quot;liuliqianxiao&quot;)</span><br><span class="line">    var (id,name) = user//多重赋值</span><br><span class="line">    print(&quot;$id,$name&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>拿上面的例子来说，给id赋值，其实调用的是user.component1()，给name赋值其实调用的是component2()函数。</p>
+<p>有了这个解构申明，想在一个函数中返回多个结果，就可以申明一个简单的数据类来返回了，然后取值也很方便。</p>
+<h4 id="copy函数"><a href="#copy函数" class="headerlink" title="copy函数"></a>copy函数</h4><p>默认生成的copy函数就是用现在的数据字段生成了一个新的对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fun copy(id: Int = this.id,name: String = this.name) = User(id,name)</span><br></pre></td></tr></table></figure>
+
+<p>如果只想改变其中的某些字段，就可以在调用copy的时候采用命名参数的方法进行调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">fun main(args: Array&lt;String&gt;) &#123;</span><br><span class="line">    var user: User = User(123, &quot;liuliqianxiao&quot;)</span><br><span class="line">    var other: User = user.copy(name = &quot;mdzz&quot;)//只想改变名字</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+<iframe src="//player.bilibili.com/player.html?" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+
+
+
+<p><strong>本帖附件</strong></p>
 <p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
 <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
@@ -396,7 +439,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../右脑记忆法之联想记忆.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../java五大排序算法之选择排序.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -415,7 +458,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../右脑记忆法之联想记忆.html" itemprop="url">右脑记忆法之联想记忆</a></h1>
+                <a class="post-title-link" href="../../java五大排序算法之选择排序.html" itemprop="url">java五大排序算法之选择排序</a></h1>
         
 
         <div class="post-meta">
@@ -427,8 +470,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-26T11:48:31+08:00">
-                2019-11-26
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-09T12:23:51+08:00">
+                2019-12-09
               </time>
             
 
@@ -467,1594 +510,1310 @@
       
         
           
-            <p>严格来说 联想记忆不属于单独的右脑记忆法,由于在联想的过程中,涉及到图像 声音甚至是感觉,</p>
-<p>因此 联想记忆更像是一种记忆检测和整理的手段 通过画思维图并且利用联想的手段联想出脑袋中所有的知识 这些知识的载体多种多样 有可能是一幅幅图像 也有可能是一段声音,或者是一阵刺骨的疼痛</p>
-<p><strong>联想有检测右脑知识的功能  当然他也有记忆的功能</strong>, 通过联想手段记忆知识的<strong>特点</strong>是:</p>
-<p><strong>用已知的知识去联想新的知识,或者说将新知识关联到熟悉的知识上</strong></p>
-<p>这也是为什么懂得越多,学得越快</p>
-<h2 id="联想记忆重要分为两大种"><a href="#联想记忆重要分为两大种" class="headerlink" title="联想记忆重要分为两大种"></a>联想记忆重要分为两大种</h2><ol>
-<li>相似联想</li>
-<li>对比联想</li>
-</ol>
-<h4 id="相似联想"><a href="#相似联想" class="headerlink" title="相似联想"></a>相似联想</h4><p>新事物和脑海中已知事物(图像 声音等等)相似或者接近,类似举一反三</p>
-<h4 id="对比联想"><a href="#对比联想" class="headerlink" title="对比联想"></a>对比联想</h4><p>新事物和脑海中已知事物刚好是两个极端,例如水和火</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>联想记忆有</p>
-<ul>
-<li><p>总结复习和检测右脑知识的功能</p>
+            <h3 id="一-选择排序介绍"><a href="#一-选择排序介绍" class="headerlink" title="一.选择排序介绍"></a>一.选择排序介绍</h3><p>选出最小的一个数与第一个位置的数交换</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/7789414-5893f3ff1b915c38.gif" alt></p>
+<h3 id="二-选择排序原理分析"><a href="#二-选择排序原理分析" class="headerlink" title="二.选择排序原理分析"></a>二.选择排序原理分析</h3><p>第1趟比较：拿第1个元素依次和它后面的每个元素进行比较，如果第1个元素大于后面某个元素，交换它们，经过第1趟比较，数组中最小的元素被选出，它被排在第一位</p>
+<p>第2趟比较：拿第2个元素依次和它后面的每个元素进行比较，如果第2个元素大于后面某个元素，交换它们，经过第2趟比较，数组中第2小的元素被选出，它被排在第二位</p>
+<p>……</p>
+<p>第n-1趟比较：第n-1个元素和第n个元素作比较，如果第n-1个元素大于第n个元素，交换它们</p>
+<h3 id="三-选择排序代码实现"><a href="#三-选择排序代码实现" class="headerlink" title="三.选择排序代码实现"></a>三.选择排序代码实现</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">selectionSort</span>(<span class="params"><span class="keyword">int</span>[] nums</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (nums == <span class="literal">null</span> || nums.length &lt; <span class="number">2</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length - <span class="number">1</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = i + <span class="number">1</span>; j &lt; nums.length; j++) &#123;</span><br><span class="line">            <span class="keyword">if</span>(nums[i] &gt; nums[j]) &#123;</span><br><span class="line">                swap(nums, i, j);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">swap</span>(<span class="params"><span class="keyword">int</span>[] arr, <span class="keyword">int</span> i, <span class="keyword">int</span> j</span>)</span> &#123;</span><br><span class="line">    <span class="keyword">int</span> temp = arr[i];</span><br><span class="line">    arr[i] = arr[j];</span><br><span class="line">    arr[j] = temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="四-选择排序的优化"><a href="#四-选择排序的优化" class="headerlink" title="四.选择排序的优化"></a>四.选择排序的优化</h3><p>使用临时变量存储最小值的角标值,减少交换的次数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public static void selectSort(int[] numbers) &#123;</span><br><span class="line">int size = numbers.length; // 数组长度</span><br><span class="line">int temp = 0; // 中间变量</span><br><span class="line">for (int i = 0; i &lt; size-1; i++) &#123;</span><br><span class="line">    int k = i; // 待确定的位置</span><br><span class="line">    // 选择出应该在第i个位置的数</span><br><span class="line">    for (int j = size - 1; j &gt; i; j--) &#123;</span><br><span class="line">        if (numbers[j] &lt; numbers[k]) &#123;</span><br><span class="line">            k = j;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    // 交换两个数</span><br><span class="line">    temp = numbers[i];</span><br><span class="line">    numbers[i] = numbers[k];</span><br><span class="line">    numbers[k] = temp;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="五-选择排序的时间复杂度"><a href="#五-选择排序的时间复杂度" class="headerlink" title="五.选择排序的时间复杂度"></a>五.选择排序的时间复杂度</h3><p><strong>时间复杂度：O(n²)</strong></p>
+<p> <strong>空间复杂度：O(1)</strong>，只需要一个附加程序单元用于交换</p>
+<p>稳定性：选择排序是不稳定的排序算法，因为无法保证值相等的元素的相对位置不变，例如 [3, 4, 3, 1, 5]这个数组，第一次交换，第一个3和1交换位置，此时原来两个3的相对位置发生了变化。</p>
+<p><strong>本帖附件</strong></p>
+<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Java面试题之TCP和UDP的区别.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../Java面试题之TCP和UDP的区别.html" itemprop="url">Java面试题之TCP和UDP的区别</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-09T12:20:24+08:00">
+                2019-12-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="网络层的划分"><a href="#网络层的划分" class="headerlink" title="网络层的划分"></a>网络层的划分</h2><h3 id="一-网络层的划分"><a href="#一-网络层的划分" class="headerlink" title="一 网络层的划分"></a>一 网络层的划分</h3><ul>
+<li><p>物理层 :负责在物理线路上传输原始的二进制数据（0和1），该层数据以比特流的形式传输 </p>
 </li>
-<li><p>快速记忆新知识的功能 (将信息联想于已知事物,可能是相似也可能是对比)</p>
+<li><p>链路层:  负责在通信的实体间建立数据链路连接，该层数据以帧的形式传输 </p>
 </li>
-</ul>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Android面试题之Activity和Fragment生命周期-一次性记忆.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../Android面试题之Activity和Fragment生命周期-一次性记忆.html" itemprop="url">Android面试题之Activity和Fragment生命周期 一次性记忆</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-26T10:20:01+08:00">
-                2019-11-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>每当我们换工作面试之前,总是会不由自主的刷起面试题,大部分题我们反反复复不知道刷了多少遍,但是今天记住了,等下一次面试的时候又刷着相同的面试题,我就想问在座的各位,Activity的生命周期,你们到底刷过多少遍 [哭笑]  作为一名程序员  把时间浪费在重复性劳动上是极其不能忍受的  因此 为了让自己省去不必要的脑力开销 我给自己总结了一份面试相关的记忆技巧,在这里分享给大家   记忆不是目的  把知识变成自己的才最关键</p>
-</blockquote>
-<h2 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h2><p>需要熟悉Activity的生命周期 通过Activity的周期去对比理解和记忆Fragment生命周期</p>
-<h2 id="Activity的生命周期"><a href="#Activity的生命周期" class="headerlink" title="Activity的生命周期"></a>Activity的生命周期</h2><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20180405184622584" alt></p>
-<p><strong>假设你已经非常熟悉Activity的生命周期了,那么接下来咱们看Fragment的生命周期图</strong></p>
-<h2 id="Fragment的生命周期"><a href="#Fragment的生命周期" class="headerlink" title="Fragment的生命周期"></a>Fragment的生命周期</h2><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20180405184635884" alt></p>
-<p><strong>找出他和Activity的相同之处</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191126135718.png" alt></p>
-<p><strong>这部分完全和Activity一模一样 可以不用记忆它,咱们来看不同的地方</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20180405184635884.png" alt></p>
-<p>其实这部分才是人们最容易搞混和记不住的地方 那咱们来分析一下:</p>
-<p>Fragment比Activity多了几个生命周期的回调方法</p>
-<ul>
-<li><strong>onAttach(Activity)</strong> 当Fragment与Activity发生关联的时候调用</li>
-<li><strong>onCreateView(LayoutInflater, ViewGroup, Bundle)</strong> 创建该F</li>
-<li><strong>onActivityCreated(Bundle)</strong>当Activity的onCreated方法返回时调用</li>
-<li><strong>onDestroyView()</strong> 与onCreateView方法相对应，当该Fragment的视图被移除时调用</li>
-<li><strong>onDetach()</strong> 与onAttach方法相对应，当Fragment与Activity取消关联时调用<br><strong>PS：注意：除了onCreateView，其他的所有方法如果你重写了，必须调用父类对于该方法的实现</strong></li>
-</ul>
-<p>这些方法理解起来并不费劲 但是要完美记在脑子里  还是需要花上一番功夫的</p>
-<p>那咱们一个一个来 先从创建开始:</p>
-<p>1.<strong>首先 onAttach方法: 和Activity进行关联的时候调用  这个放在第一个 应该好理解</strong></p>
-<p>2.<strong>我们知道 Activity在onCreate方法中需要调用setContentVIew()进行布局的加载,那么在Fragment中onCreateView就相当于Activity中的setContentVIew</strong> </p>
-<p>3.<strong>onActivityCreate是一个额外的方法 为了告诉Fragment当前Activity的创建执行情况 方便Fragment的后续操作</strong></p>
-<h2 id="先后顺序"><a href="#先后顺序" class="headerlink" title="先后顺序"></a>先后顺序</h2><p>已知Fragment是依赖Activity而存在的 它们都有着相同的生命周期方法 那么先调用Activity的还是Fragment的呢?  这里分两种情况</p>
-<ul>
-<li><strong>如果是创建 那么先创建Activity 后创建Fragment</strong></li>
-<li><strong>如果是销毁 那么先销毁Fragment 后销毁Activity</strong></li>
-</ul>
-<p>网上有很多文章说Activity的onCreate方法在Fragment的onCreateView之后执行,这是不正确的  Fragment一般都是在Activity的onCreate()中创建 要么通过布局加载的方式 要么通过new创建Fragment对象的方式  如果没有Activity的onCreate 哪来的Fragment</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/1354170682_3824.png" alt></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>上面的理解好后,咱们再整理记忆一下</p>
-<p>一句话 <strong>Activity是老子 Fragment是小子  进门先让老子进 滚蛋先让小子滚   加载布局createView   老子完事吱一声(ActivityCreated)</strong></p>
-<p>希望有帮到你</p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../原生app如何跨进程调起微信小程序.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../原生app如何跨进程调起微信小程序.html" itemprop="url">原生app如何跨进程调起微信小程序</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-21T13:43:33+08:00">
-                2019-11-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../微信小程序开发入门篇.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../微信小程序开发入门篇.html" itemprop="url">微信小程序开发入门篇</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-21T13:40:08+08:00">
-                2019-11-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>对于初学者来讲,快速掌握一门新技能,不在于把每一步都搞透,而在于先把整个流程跑通,</p>
-<p>先控大局,再究其细节   这是快速学习的基本技巧之一</p>
-</blockquote>
-<h2 id="第一步-申请小程序账号"><a href="#第一步-申请小程序账号" class="headerlink" title="第一步 申请小程序账号"></a>第一步 申请小程序账号</h2><p><strong>注:一个邮箱只能申请一个小程序账号</strong></p>
-<p>注册链接:<a href="https://mp.weixin.qq.com/wxopen/waregister?action=step1" target="_blank" rel="noopener">https://mp.weixin.qq.com/wxopen/waregister?action=step1</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191121141714.png" alt></p>
-<h2 id="第二步-获取小程序Appid"><a href="#第二步-获取小程序Appid" class="headerlink" title="第二步 获取小程序Appid"></a>第二步 获取小程序Appid</h2><p><strong>注册成功后登陆账号</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191121141844.png" alt></p>
-<p><strong>进入开发设置界面  复制appid 一会开发需要用到</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191121141953.png" alt></p>
-<h2 id="第三步-下载小程序开发工具"><a href="#第三步-下载小程序开发工具" class="headerlink" title="第三步 下载小程序开发工具"></a>第三步 下载小程序开发工具</h2><p>官方下载地址:<a href="https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html" target="_blank" rel="noopener">https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191121142206.png" alt></p>
-<p><strong>安装完毕后打开,然后新建项目</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191121142516.png" alt></p>
-<p><strong>填入之前复制的appid,新手的话选择不使用云服务即可,这样目录相对简单一些</strong></p>
-<p><strong>创建成功后会自动生成一些目录和文件</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191121142955.png" alt></p>
-<h3 id="小程序初始化目录："><a href="#小程序初始化目录：" class="headerlink" title="小程序初始化目录："></a>小程序初始化目录：</h3><p>小程序包含一个描述整体程序的 <code>app</code> 和多个描述各自页面的 <code>page</code>。</p>
-<p>一个小程序主体部分由三个文件组成，必须放在项目的根目录，如下：</p>
-<table>
-<thead>
-<tr>
-<th align="left">文件</th>
-<th align="left">必需</th>
-<th align="left">作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left"><a href="https://developers.weixin.qq.com/miniprogram/dev/framework/app-service/app.html" target="_blank" rel="noopener">app.js</a></td>
-<td align="left">是</td>
-<td align="left">小程序逻辑</td>
-</tr>
-<tr>
-<td align="left"><a href="https://developers.weixin.qq.com/miniprogram/dev/framework/config.html" target="_blank" rel="noopener">app.json</a></td>
-<td align="left">是</td>
-<td align="left">小程序公共配置</td>
-</tr>
-<tr>
-<td align="left"><a href="https://developers.weixin.qq.com/miniprogram/dev/framework/view/wxss.html" target="_blank" rel="noopener">app.wxss</a></td>
-<td align="left">否</td>
-<td align="left">小程序公共样式表</td>
-</tr>
-</tbody></table>
-<p>一个小程序页面由四个文件组成，分别是：</p>
-<table>
-<thead>
-<tr>
-<th align="left">文件类型</th>
-<th align="left">必需</th>
-<th align="left">作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left"><a href="https://developers.weixin.qq.com/miniprogram/dev/framework/app-service/page.html" target="_blank" rel="noopener">js</a></td>
-<td align="left">是</td>
-<td align="left">页面逻辑</td>
-</tr>
-<tr>
-<td align="left"><a href="https://developers.weixin.qq.com/miniprogram/dev/framework/view/wxml/" target="_blank" rel="noopener">wxml</a></td>
-<td align="left">是</td>
-<td align="left">页面结构</td>
-</tr>
-<tr>
-<td align="left"><a href="https://developers.weixin.qq.com/miniprogram/dev/framework/config.html#页面配置" target="_blank" rel="noopener">json</a></td>
-<td align="left">否</td>
-<td align="left">页面配置</td>
-</tr>
-<tr>
-<td align="left"><a href="https://developers.weixin.qq.com/miniprogram/dev/framework/view/wxss.html" target="_blank" rel="noopener">wxss</a></td>
-<td align="left">否</td>
-<td align="left">页面样式表</td>
-</tr>
-</tbody></table>
-<p>1：page 页面文件夹 存放项目页面渲染相关文件</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/5640239-b6e071a3f3093ca4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/307/format/webp" alt="img"></p>
-<p>2：utils 存放js库和数字格式化文件</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/5640239-d19867a06ac74b5c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/305/format/webp" alt="img"></p>
-<p>3： 配置文件</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/5640239-24725361773bb62f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/296/format/webp" alt="img"></p>
-<h2 id="第四步-程序开发"><a href="#第四步-程序开发" class="headerlink" title="第四步 程序开发"></a>第四步 程序开发</h2><p>需要具备前端相关知识,如果还不具备,建议先学习html+css+js 基础</p>
-<p>个人开发大多以展示为主,可以不用开发后台</p>
-<h2 id="第五步-上传小程序"><a href="#第五步-上传小程序" class="headerlink" title="第五步 上传小程序"></a>第五步 上传小程序</h2><p>开发完之后，可以在开发工具选项点击上传按钮将代码至微信后台。如下：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191121151046.png" alt></p>
-<p><strong>填写版本号和项目备注</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191121151252.png" alt></p>
-<h2 id="第六步-提交审核"><a href="#第六步-提交审核" class="headerlink" title="第六步 提交审核"></a>第六步 提交审核</h2><p>上传成功后进入后台管理界面,将刚才上传的程序提交给微信官方审核</p>
-<p><img src="E:%5CIT%5CgitBlog%5Ccodesan%5Chexo%5Csource_posts%5C%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%BC%80%E5%8F%91%E5%85%A5%E9%97%A8%E7%AF%87%5C1574320522905.png" alt="1574320522905"></p>
-<p><strong>一般一两天就能查看审核结果，通过审核之后，还需要发布上线</strong></p>
-<p>线上版本发布后,这时你就可以在微信搜索中搜到我们自己的小程序了</p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../UE4-虚幻引擎-之常用快捷键.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../UE4-虚幻引擎-之常用快捷键.html" itemprop="url">UE4(虚幻引擎)之常用快捷键</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-21T13:38:27+08:00">
-                2019-11-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>虚幻4中有一些按键和快捷键很常用，牢记它们并运动到实际的项目开发中，将会大大地提高你的工作效率和使得工作更简便快捷。下面将列举它们出来：</p>
-<table>
-<thead>
-<tr>
-<th>按键</th>
-<th>动作</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>鼠标左键</td>
-<td>选择actor</td>
-</tr>
-<tr>
-<td>鼠标左键+拖动</td>
-<td>前后移动和左右旋转摄像头</td>
-</tr>
-<tr>
-<td>鼠标右键</td>
-<td>选择actor并打开右键菜单</td>
-</tr>
-<tr>
-<td>鼠标右键+拖动</td>
-<td>旋转摄像头方向</td>
-</tr>
-<tr>
-<td>鼠标左键+鼠标右键+拖动</td>
-<td>摄像头上下左右移动</td>
-</tr>
-<tr>
-<td>鼠标中键+拖动</td>
-<td>摄像头上下左右移动</td>
-</tr>
-<tr>
-<td>滑轮向上</td>
-<td>摄像机向前移动</td>
-</tr>
-<tr>
-<td>滑轮向下</td>
-<td>摄像机向后移动</td>
-</tr>
-<tr>
-<td>F</td>
-<td>聚焦选中的actor</td>
-</tr>
-<tr>
-<td>箭头方向键</td>
-<td>摄像机前后左右移动</td>
-</tr>
-<tr>
-<td>W</td>
-<td>选中平移工具</td>
-</tr>
-<tr>
-<td>E</td>
-<td>选中旋转工具</td>
-</tr>
-<tr>
-<td>R</td>
-<td>选中缩放工具</td>
-</tr>
-<tr>
-<td>W+任何鼠标按键</td>
-<td>摄像机向前移动</td>
-</tr>
-<tr>
-<td>S+任何鼠标按键</td>
-<td>摄像机向后移动</td>
-</tr>
-<tr>
-<td>A+任何鼠标按键</td>
-<td>摄像机向左移动</td>
-</tr>
-<tr>
-<td>D+任何鼠标按键</td>
-<td>摄像机向右移动</td>
-</tr>
-<tr>
-<td>E+任何鼠标按键</td>
-<td>摄相机向上移动</td>
-</tr>
-<tr>
-<td>Q+任何鼠标按键</td>
-<td>摄像机向下移动</td>
-</tr>
-<tr>
-<td>Z+任何鼠标按键</td>
-<td>增加视野（鼠标释放后会恢复原状）</td>
-</tr>
-<tr>
-<td>C+任何鼠标按键</td>
-<td>缩小视野（鼠标释放后会恢复原状）</td>
-</tr>
-<tr>
-<td>Ctrl+S</td>
-<td>保存场景</td>
-</tr>
-<tr>
-<td>Ctrl+N</td>
-<td>创建新场景</td>
-</tr>
-<tr>
-<td>Ctrl+O</td>
-<td>打开一个已有的场景</td>
-</tr>
-<tr>
-<td>Ctrl+Alt+S</td>
-<td>另存为新场景</td>
-</tr>
-<tr>
-<td>Alt+鼠标左键+拖动</td>
-<td>复制当前选中的actor</td>
-</tr>
-<tr>
-<td>Alt+鼠标右键+拖动</td>
-<td>摄像机前后移动</td>
-</tr>
-<tr>
-<td>Alt+P</td>
-<td>进入Play预览模式</td>
-</tr>
-<tr>
-<td>Esc</td>
-<td>退出预览模式</td>
-</tr>
-<tr>
-<td>F11</td>
-<td>进入仿真模式</td>
-</tr>
-</tbody></table>
-<h3 id="官方提供"><a href="#官方提供" class="headerlink" title="官方提供"></a>官方提供</h3><h2 id="Viewport"><a href="#Viewport" class="headerlink" title="Viewport"></a>Viewport</h2><table>
-<thead>
-<tr>
-<th align="left">Hotkey</th>
-<th align="left">Action</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">LMB</td>
-<td align="left">Select actor under cursor, replacing selection.</td>
-</tr>
-<tr>
-<td align="left">Ctrl + LMB</td>
-<td align="left">Add / Remove actor under cursor to selection.</td>
-</tr>
-<tr>
-<td align="left">Shift + LMB</td>
-<td align="left">Add actor under cursor to selection.</td>
-</tr>
-<tr>
-<td align="left">ESC</td>
-<td align="left">Clears selection.</td>
-</tr>
-<tr>
-<td align="left">TILDE</td>
-<td align="left">Toggles command console.</td>
-</tr>
-<tr>
-<td align="left"><strong>Perspective</strong></td>
-<td align="left"></td>
-</tr>
-<tr>
-<td align="left">RMB + Drag Forward / Backward</td>
-<td align="left">Rotate camera up / down.</td>
-</tr>
-<tr>
-<td align="left">RMB + Drag Left / Right</td>
-<td align="left">Rotate camera left / right.</td>
-</tr>
-<tr>
-<td align="left">( RMB + W ) | Numpad8 | Up</td>
-<td align="left">Move camera <em>forward</em>.</td>
-</tr>
-<tr>
-<td align="left">( RMB + S ) | Numpad2 | Down</td>
-<td align="left">Move camera <em>backward</em>.</td>
-</tr>
-<tr>
-<td align="left">( RMB + A ) | Numpad4 | Left</td>
-<td align="left">Move camera <em>left</em>.</td>
-</tr>
-<tr>
-<td align="left">( RMB + D ) | Numpad6 | Right</td>
-<td align="left">Move camera <em>right</em>.</td>
-</tr>
-<tr>
-<td align="left">( RMB + E ) | Numpad9 | Page Up</td>
-<td align="left">Move camera <em>up</em>.</td>
-</tr>
-<tr>
-<td align="left">( RMB + Q ) | Numpad7 | Page Dn</td>
-<td align="left">Move camera <em>down</em>.</td>
-</tr>
-<tr>
-<td align="left">( RMB + C ) | Numpad3</td>
-<td align="left">Zoom camera <em>in</em>.</td>
-</tr>
-<tr>
-<td align="left">( RMB + Z ) | Numpad1</td>
-<td align="left">Zoom camera <em>out</em>.</td>
-</tr>
-<tr>
-<td align="left">LMB + Drag Forward/Backward</td>
-<td align="left">Move camera <em>forward</em> /<em>backward</em></td>
-</tr>
-<tr>
-<td align="left">LMB + Drag Left/Right</td>
-<td align="left">Rotate camera <em>left</em> /<em>right</em></td>
-</tr>
-<tr>
-<td align="left">LMB + RMB + Drag</td>
-<td align="left">Move camera <em>up</em> /<em>down</em></td>
-</tr>
-<tr>
-<td align="left"><strong>Orthographic ( Top | Front | Side )</strong></td>
-<td align="left"></td>
-</tr>
-<tr>
-<td align="left">LMB + Drag</td>
-<td align="left">Creates selection box, selects contained actors, replacing selection.</td>
-</tr>
-<tr>
-<td align="left">Shift + LMB + Drag</td>
-<td align="left"><em>Add</em> actors in selection box to selection.</td>
-</tr>
-<tr>
-<td align="left">Ctrl + Alt + Drag</td>
-<td align="left"><em>Remove</em> actors in selection box from selection.</td>
-</tr>
-<tr>
-<td align="left">RMB + Drag</td>
-<td align="left"><em>Pan</em> camera.</td>
-</tr>
-<tr>
-<td align="left">LMB + RMB + Drag</td>
-<td align="left">Zoom camera <em>in</em> /<em>out</em>.</td>
-</tr>
-<tr>
-<td align="left"><strong>Focusing</strong></td>
-<td align="left"></td>
-</tr>
-<tr>
-<td align="left">F</td>
-<td align="left">Focus camera on selected object or group.</td>
-</tr>
-<tr>
-<td align="left"><strong>Camera view</strong></td>
-<td align="left"></td>
-</tr>
-<tr>
-<td align="left">Alt + G</td>
-<td align="left">Perspective camera.</td>
-</tr>
-<tr>
-<td align="left">Alt + K</td>
-<td align="left">Side camera.</td>
-</tr>
-<tr>
-<td align="left">Alt + J</td>
-<td align="left">Top camera.</td>
-</tr>
-<tr>
-<td align="left"><strong>Actor Manipulation</strong></td>
-<td align="left"></td>
-</tr>
-<tr>
-<td align="left">Space</td>
-<td align="left">Toggle between ( <em>Translate</em> | <em>Rotate</em> | <em>Scale</em> ), see toolbar for selection.</td>
-</tr>
-<tr>
-<td align="left">W</td>
-<td align="left">Selects <em>Move</em> tool.</td>
-</tr>
-<tr>
-<td align="left">E</td>
-<td align="left">Selects <em>Rotate</em> tool.</td>
-</tr>
-<tr>
-<td align="left">R</td>
-<td align="left">Selects <em>Scale</em> tool.</td>
-</tr>
-<tr>
-<td align="left">V</td>
-<td align="left">Toggles <em>vertex snapping</em>.</td>
-</tr>
-<tr>
-<td align="left">LMB + Transform Axis + Drag</td>
-<td align="left">Transforms selected actors depending on active tool.</td>
-</tr>
-<tr>
-<td align="left"><strong>Perspective</strong> (scale works evenly on all axes, rotate/move works as expected)</td>
-<td align="left"></td>
-</tr>
-<tr>
-<td align="left">Ctrl + LMB + Drag</td>
-<td align="left">Transform selected actor(s) along the x-axis.</td>
-</tr>
-<tr>
-<td align="left">Ctrl + RMB + Drag</td>
-<td align="left">Transform selected actor(s) along the y-axis.</td>
-</tr>
-<tr>
-<td align="left">Ctrl + LMB + RMB + Drag</td>
-<td align="left">Transform selected actor/s along the z-axis.</td>
-</tr>
-<tr>
-<td align="left"><strong>Orthographic</strong></td>
-<td align="left"></td>
-</tr>
-<tr>
-<td align="left">Ctrl + LMB + Drag</td>
-<td align="left">Transform selected actor(s) along the view plane axis.</td>
-</tr>
-<tr>
-<td align="left">Ctrl + RMB + Drag</td>
-<td align="left"><em>Rotate</em> selected actor(s) along the view plane axis.</td>
-</tr>
-<tr>
-<td align="left"><strong>Display</strong></td>
-<td align="left"></td>
-</tr>
-<tr>
-<td align="left">G</td>
-<td align="left">Toggles <em>Game Mode</em> rendering.</td>
-</tr>
-<tr>
-<td align="left">Ctrl + R</td>
-<td align="left">Toggles real-time <em>playback</em>.</td>
-</tr>
-<tr>
-<td align="left">F11</td>
-<td align="left">Toggles <em>Fullscreen</em>.</td>
-</tr>
-</tbody></table>
-<p>链接地址:<a href="https://leetnightshade.com/blog/unreal-engine-hotkeys" target="_blank" rel="noopener">https://leetnightshade.com/blog/unreal-engine-hotkeys</a></p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../告诉你为什么十六进制表示的颜色值是两位代表一种颜色.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../告诉你为什么十六进制表示的颜色值是两位代表一种颜色.html" itemprop="url">告诉你为什么十六进制表示的颜色值是两位代表一种颜色</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-20T11:50:26+08:00">
-                2019-11-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>学习本篇之前需要先了解《<a href="http://code.iww6.com/%E5%88%A9%E7%94%A88421%E6%B3%95%E8%BF%9B%E8%A1%8C%E5%8D%81%E5%85%AD%E8%BF%9B%E5%88%B6%E4%B8%8E%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%9A%84%E4%BA%92%E7%9B%B8%E8%BD%AC%E6%8D%A2-%E4%B8%80%E5%AD%A6%E5%B0%B1%E4%BC%9A.html" target="_blank" rel="noopener">十六进制和二进制的互相转换</a>》</p>
-</blockquote>
-<h3 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h3><p>我们知道每个像素都是由三原色红绿蓝三种颜色组成</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RGB //Red(红色)  Green(绿色)  Blue(蓝色)</span><br></pre></td></tr></table></figure>
-
-<p>一个像素点可以由4组8位二进制数表示(不要问为什么 重点)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1 1 1 1   1 1 1 1    第一组 表示红色 R</span><br><span class="line"></span><br><span class="line">0 0 1 1   0 1 0 0    第二组 表示绿色 G</span><br><span class="line"></span><br><span class="line">1 1 1 1   1 1 1 1    第一组 表示蓝色 B</span><br><span class="line"></span><br><span class="line">1 1 1 1   1 1 1 1    第一组 表示表明度 A</span><br></pre></td></tr></table></figure>
-
-<p>也就是我们熟知的<strong>RGBA</strong> </p>
-<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p>既然我们已经知道了二进制的颜色, 根据二进制转十六进制 利用8421法必然会将每个颜色的二进制分为两组 比如:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">8 4 2 1   8 4 2 1</span><br><span class="line">0 0 1 1   0 1 0 0</span><br></pre></td></tr></table></figure>
-
-<p><strong>第一组为:2+1=3</strong></p>
-<p><strong>第二组为:4</strong></p>
-<p>那么其对应的十六进制结果为<strong>0x34</strong></p>
-<p>所以<strong>RGBA</strong>每个通道需要两位十六进制进行表示</p>
-<p>你学会了吗</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191204104857.png" alt></p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../利用8421法进行十六进制与二进制的互相转换-一学就会.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../利用8421法进行十六进制与二进制的互相转换-一学就会.html" itemprop="url">利用8421法进行十六进制与二进制的互相转换 一学就会</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-20T11:19:32+08:00">
-                2019-11-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="二进制转十六进制"><a href="#二进制转十六进制" class="headerlink" title="二进制转十六进制"></a>二进制转十六进制</h2><p>已知二进制值 </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">110100</span><br></pre></td></tr></table></figure>
-
-<p>从右到左4位4位的进行分割(不要问为什么)，位数不足的在左边添0 得到两组二进制:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0011 0100</span><br></pre></td></tr></table></figure>
-
-<p>然后利用8421进行对应</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">8 4 2 1   8 4 2 1</span><br><span class="line">0 0 1 1   0 1 0 0</span><br></pre></td></tr></table></figure>
-
-<p>把0对应的值去掉 1对应的值相加得到:</p>
-<p><strong>第一组为:2+1=3</strong></p>
-<p><strong>第二组为:4</strong></p>
-<p>那么其对应的十六进制结果为<strong>0x34</strong></p>
-<h2 id="十六进制转二进制"><a href="#十六进制转二进制" class="headerlink" title="十六进制转二进制"></a>十六进制转二进制</h2><p>同理 已知十六进制</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0x52</span><br></pre></td></tr></table></figure>
-
-<p><strong>第一组是5 第二组是2</strong> 对应关系为:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">8 4 2 1   8 4 2 1</span><br><span class="line">0 1 0 1   0 0 1 0</span><br></pre></td></tr></table></figure>
-
-<p>由于4+1=5 所以第一组4和1下面为1其余为0,同样第二组2下面值为1</p>
-<p>最后得到二进制值为:<strong>01010010</strong></p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../十进制和二进制的快速转换-一学就会.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../十进制和二进制的快速转换-一学就会.html" itemprop="url">十进制和二进制的快速转换 一学就会</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-20T10:20:45+08:00">
-                2019-11-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="十进制转二进制"><a href="#十进制转二进制" class="headerlink" title="十进制转二进制"></a>十进制转二进制</h2><p>首先 我们需要背诵2的2到10的幂次方，这个我相信对大家都不难，它们分别是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1、 2、4、8、16、32、64、128、 256、 512 、1024</span><br></pre></td></tr></table></figure>
-
-<p>这些对应的二进制分别是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1、10、 100 、1000 、10000 、100000、 1000000 、10000000、 100000000 、1000000000.</span><br></pre></td></tr></table></figure>
-
-<p>接下来，就是开始心算的时候，比如：</p>
-<pre><code>9=8+1  对应二进制 1001 
-
-17=16+1 对应二进制  10001
-
- 34=32+2  对应二进制    100010
-
-  245=128+64+32+16+4+1  对应二进制 11110101</code></pre><p>每次从高位依次往下写，比如34 从32 往下写 依次是 </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">32、16 、8 、4 、2 、1</span><br></pre></td></tr></table></figure>
-
-<p>在该位数上分解的数有该数就写1，没有就写0。得到:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1、0、0、0、1、0 //也就是100010</span><br></pre></td></tr></table></figure>
-
-<h2 id="二进制转十进制"><a href="#二进制转十进制" class="headerlink" title="二进制转十进制"></a>二进制转十进制</h2><pre><code>同理，也是从高位开始计算，；先数二进制数比如：
-
-     101010   6个数  就从2的（6-1）次方开始计算
-
-          分别是32+8+2=42</code></pre><p>找到最大位，依次往下数，该位上是1的话，就写出该数，最后相求和即可。</p>
-<p>是不是很简单呢</p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../js十大邪术之一-图片隐写术.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../js十大邪术之一-图片隐写术.html" itemprop="url">js十大邪术之一  图片隐写术</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-19T17:00:14+08:00">
-                2019-11-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="1、什么是图片隐写术？"><a href="#1、什么是图片隐写术？" class="headerlink" title="1、什么是图片隐写术？"></a>1、什么是图片隐写术？</h2><p>权威的<a href="https://zh.wikipedia.org/wiki/隐写术" target="_blank" rel="noopener">wiki</a>说法是“<strong>隐写术</strong>是一门关于信息隐藏的技巧与科学，所谓信息隐藏指的是不让除预期的接收者之外的任何人知晓信息的传递事件或者信息的内容。”，图片隐写术简而言之就是利用图片来隐藏某些数据，让人一眼看去以为是很普通很正常的图片，但其实里面隐藏着某些“机密”数据。</p>
-<p>据传911事件里，KB份子就是通过黄色图片来传递信息而躲过了FBI的监控。还有大众点评也是通过图片隐写术来保护自身合法权益。所以图片隐写术是一个双刃剑，就看你用它做什么了。</p>
-<p>比如下面这张图片：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/25430-20171201151310992-247518948.png" alt></p>
-<p>看起来是一张很漂亮的风景照片，但其实它里面却藏着一张美女图（注：美女图片来源于淘宝某店），如下：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/25430-20171201151405898-1394445312.jpg" alt></p>
-<p>是不是很惊艳？看得你热血沸腾鼻血都往外冲呢？这就是图片隐写术的历害之处，“机密”隐藏于无形之中！</p>
-<h2 id="2、图片隐写术是怎么做到的？"><a href="#2、图片隐写术是怎么做到的？" class="headerlink" title="2、图片隐写术是怎么做到的？"></a>2、图片隐写术是怎么做到的？</h2><p>　　 图片隐写有多种方式，我这里介绍的是采用图片的最低有效位（LSB）进行隐写。其原理就是图片的像素点都是由三原色（RGB）构成（如下图），由这三原色可以组成各种颜色，如CSS里的颜色定义#FFFFFF，即是三原色的16进制值写法，每个颜色各占用8bit。而LSB隐写就是修改像素中每个颜色值的最低位值，而这些修改，人眼一般是分辨不出来的，从而达到数据隐藏的目的。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/25430-20171201152935430-1596403381.jpg" alt></p>
-<p>　　譬如我们想把’A’隐藏进来的话，如下图，就可以把A转成16进制的0x61再转成二进制的01100001，再修改为红色通道的最低位为这些二进制串。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/25430-20171201153039305-2068174246.jpg" alt></p>
-<p>（注：以上图片和示例来源于Wooyun）</p>
-<h2 id="3、Javascript实现的图片隐写术"><a href="#3、Javascript实现的图片隐写术" class="headerlink" title="3、Javascript实现的图片隐写术"></a>3、Javascript实现的图片隐写术</h2><p>　　代码项目见GitHub： <a href="https://github.com/kingthy/imagemask" target="_blank" rel="noopener">https://github.com/kingthy/imagemask</a></p>
-<ul>
-<li>在线演示 <a href="https://ipfs.io/ipfs/QmUG1TKotQYsp6bSw6pX4crFWfhJRNTnJre7buEaYYBV72" target="_blank" rel="noopener">https://ipfs.io/ipfs/QmUG1TKotQYsp6bSw6pX4crFWfhJRNTnJre7buEaYYBV72</a></li>
-<li>使用示例</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=&quot;text/javascript&quot; src=&quot;imagemask.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;script type=&quot;text/javascript&quot;&gt;</span><br><span class="line">var mask = new ImageMask(&#123;</span><br><span class="line">    debug: false,   //是否开启调试模式</span><br><span class="line">    charSize: 16,   //字符的字节位数，默认为16，即字符最大值为0xFFFF</span><br><span class="line">    mixCount: 2,    //隐写数据要混合到图片颜色值里的最低位数，值范围在1-5，默认为2，如果大于3，则图片会失真很严重</span><br><span class="line">    lengthSize: 24  //数据长度值的占用字节位数，默认为24，也即数据长度最大值为16777215</span><br><span class="line">&#125;);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-
-<p>　　</p>
-<ul>
-<li>隐写文本</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//脚本里传入页面的canvas对象和要隐写的文件</span><br><span class="line">var output = document.getElementById(&apos;output&apos;);</span><br><span class="line">var canvas = document.getElementById(&apos;canvas&apos;);</span><br><span class="line">var file = document.getElementById(&apos;file&apos;);</span><br><span class="line">mask.hideFile(canvas, file.files[0], , function(result)&#123;</span><br><span class="line">        if(result.success)&#123;</span><br><span class="line">            output.src = canvas.toDataURL();</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            alert(result.message);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-<p>　　</p>
-<ul>
-<li>隐写文件</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//脚本里传入页面的canvas对象和要隐写的文件</span><br><span class="line">var output = document.getElementById(&apos;output&apos;);</span><br><span class="line">var canvas = document.getElementById(&apos;canvas&apos;);</span><br><span class="line">var file = document.getElementById(&apos;file&apos;);</span><br><span class="line">mask.hideFile(canvas, file.files[0], , function(result)&#123;</span><br><span class="line">        if(result.success)&#123;</span><br><span class="line">            output.src = canvas.toDataURL();</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            alert(result.message);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-<p>　　</p>
-<ul>
-<li>读出图片里隐写的文本</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var canvas = document.getElementById(&apos;canvas&apos;);</span><br><span class="line">var message = mask.revealText(canvas);</span><br></pre></td></tr></table></figure>
-
-<p>　　</p>
-<ul>
-<li>读出图片里隐写的文件</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var canvas = document.getElementById(&apos;canvas&apos;);</span><br><span class="line">var file = mask.revealFile(canvas);       //file.name = 文件名称， file.data = 文件数据</span><br></pre></td></tr></table></figure>
-
-<p>　　</p>
-<h2 id="4、示例图片"><a href="#4、示例图片" class="headerlink" title="4、示例图片"></a>4、示例图片</h2><ul>
-<li>原图<br><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/25430-20171201154457711-816456262.jpg" alt></li>
-</ul>
-<ul>
-<li><p>隐写一章3千多字的小说内容后的图片效果</p>
+<li><p>网络层:  负责创建逻辑链路，以及实现数据包的分片和重组，实现拥塞控制、网络互连等功能，该层数据以IP数据报(IP分组)的形式传输 </p>
 </li>
-<li><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/25430-20171201154457711-816456262.jpg" alt>（隐写什么小说内容，各位有兴趣的将图片保存下来，然后在演示页面里读出来即可知道。）*</p>
+<li><p>传输层:   负责向用户提供端到端的通信服务，实现流量控制以及差错控制，这一层主要重点是两个协议 : <strong>UDP 和 TCP</strong> </p>
+</li>
+<li><p>应用层:  为应用程序提供了网络服务，应用层协议最著名的就是<strong>HTTP, FTP了</strong>, 还有一个重要的DNS </p>
+<h3 id="二、TCP和UDP的区别"><a href="#二、TCP和UDP的区别" class="headerlink" title="二、TCP和UDP的区别"></a>二、TCP和UDP的区别</h3></li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/1600629-20190325093559181-511608101.jpg" alt></p>
+<h3 id="三-TCP的三次握手"><a href="#三-TCP的三次握手" class="headerlink" title="三 TCP的三次握手"></a>三 TCP的三次握手</h3><ul>
+<li><strong>第一次握手：</strong>建立连接</li>
+<li><strong>第二次握手</strong>：响应连接</li>
+<li><strong>第三次握手：</strong>测试数据</li>
+</ul>
+<p><strong>本帖附件</strong></p>
+<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Source-Insight快捷键大全.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../Source-Insight快捷键大全.html" itemprop="url">Source Insight快捷键大全</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-06T18:34:25+08:00">
+                2019-12-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Source-Insight快捷键大全"><a href="#Source-Insight快捷键大全" class="headerlink" title="Source Insight快捷键大全"></a>Source Insight快捷键大全</h2><p>退出程序 : Alt+F4</p>
+<p>重画屏幕 : Ctrl+Alt+Space</p>
+<p>完成语法 : Ctrl+E</p>
+<p>复制一行 : Ctrl+K</p>
+<p>恰好复制该位置右边的该行的字符 : Ctrl+Shift+K</p>
+<p>复制到剪贴板 : Ctrl+Del</p>
+<p>剪切一行 : Ctrl+U</p>
+<p>剪切该位置右边的该行的字符 : Ctrl+;</p>
+<p>剪切到剪贴板 : Ctrl+Shift+X</p>
+<p>剪切一个字 : Ctrl+,</p>
+<p>左边缩进 : F9</p>
+<p>右边缩进 : F10</p>
+<p>插入一行 : Ctrl+I</p>
+<p>插入新行 : Ctrl+Enter</p>
+<p>加入一行 : Ctrl+J</p>
+<p>从剪切板粘贴 : Ctrl+Ins</p>
+<p>粘贴一行 : Ctrl+P</p>
+<p>重复上一个动作 : Ctrl+Y</p>
+<p>重新编号 : Ctrl+R</p>
+<p>重复输入 : Ctrl+</p>
+<p>替换 : Ctrl+H</p>
+<p>智能重命名 : Ctrl+’</p>
+<p>关闭文件 : Ctrl+W</p>
+<p>关闭所有文件 : Ctrl+Shift+W</p>
+<p>新建 : Ctrl+N</p>
+<p>转到下一个文件 : Ctrl+Shift+N</p>
+<p>打开 : Ctrl+O</p>
+<p>重新装载文件 : Ctrl+Shift+O</p>
+<p>另存为 : Ctrl+Shift+S</p>
+<p>显示文件状态 : Shift+F10</p>
+<p>激活语法窗口 : Alt+L</p>
+<p>回到该行的开始 : Home</p>
+<p>回到选择的开始 : Ctrl+Alt+[</p>
+<p>到块的下面 : Ctrl+Shift+]</p>
+<p>到块的上面 : Ctrl+Shift+[</p>
+<p>书签 : Ctrl+M</p>
+<p>到文件底部 : Ctrl+End, Ctrl+(KeyPad) End</p>
+<p>到窗口底部 : (KeyPad) End (小键盘的END)</p>
+<p>到一行的尾部 : End</p>
+<p>到选择部分的尾部 : Ctrl+Alt+]</p>
+<p>到下一个函数 : 小键盘 +</p>
+<p>上一个函数 : 小键盘 -</p>
+<p>后退 : Alt+,, Thumb 1 Click</p>
+<p>后退到索引 : Alt+M</p>
+<p>向前 : Alt+., Thumb 2 Click</p>
+<p>转到行 : F5, Ctrl+G</p>
+<p>转到下一个修改 : Alt+(KeyPad) +</p>
+<p>转到下一个链接 : Shift+F9, Ctrl+Shift+L</p>
+<p>回到前一个修改 : Alt+(KeyPad) -</p>
+<p>跳到连接(就是语法串口列表的地方) : Ctrl+L</p>
+<p>跳到匹配 : Alt+]</p>
+<p>下一页 : PgDn, (KeyPad) PgDn</p>
+<p>上一页 : PgUp, (KeyPad) PgUp</p>
+<p>向上滚动半屏 : Ctrl+PgDn, Ctrl+(KeyPad) PgDn, (KeyPad) *</p>
+<p>向下滚动半屏 : Ctrl+PgUp, Ctrl+(KeyPad) PgUp, (KeyPad) /</p>
+<p>左滚 : Alt+Left</p>
+<p>向上滚动一行 : Alt+Down</p>
+<p>向下滚动一行 : Alt+Up</p>
+<p>右滚 : Alt+Right</p>
+<p>选择一块 : Ctrl+-</p>
+<p>选择当前位置的左边一个字符 : Shift+Left</p>
+<p>选择当前位置右边一个字符 : Shift+Right</p>
+<p>选择一行 : Shift+F6</p>
+<p>从当前行其开始向下选择 : Shift+Down</p>
+<p>从当前行其开始向上选择 : Shift+Up</p>
+<p>选择上页 : Shift+PgDn, Shift+(KeyPad) PgDn</p>
+<p>选择下页 : Shift+PgUp, Shift+(KeyPad) PgUp</p>
+<p>选择句子(直到遇到一个 . 为止) : Shift+F7, Ctrl+.</p>
+<p>从当前位置选择到文件结束 : Ctrl+Shift+End</p>
+<p>从当前位置选择到行结束 : Shift+End</p>
+<p>从当前位置选择到行的开始 : Shift+Home</p>
+<p>从当前位置选择到文件顶部 : Ctrl+Shift+Home</p>
+<p>选择一个单词 : Shift+F5</p>
+<p>选择左边单词 : Ctrl+Shift+Left</p>
+<p>选择右边单词 : Ctrl+Shift+Right</p>
+<p>到文件顶部 : Ctrl+Home, Ctrl+(KeyPad) Home</p>
+<p>到窗口顶部 : (KeyPad) Home</p>
+<p>到单词左边(也就是到一个单词的开始) : Ctrl+Left</p>
+<p>到单词右边(到该单词的结束) : Ctrl+Right</p>
+<p>排列语法窗口(有三种排列方式分别按1,2,3次) : Alt+F7</p>
+<p>移除文件 : Alt+Shift+R</p>
+<p>同步文件 : Alt+Shift+S</p>
+<p>增量搜索(当用Ctrl + F 搜索,然后按F12就会转到下一个匹配) : F12</p>
+<p>替换文件 : Ctrl+Shift+H</p>
+<p>向后搜索 : F3</p>
+<p>在多个文件中搜索 : Ctrl+Shift+F</p>
+<p>向前搜索 : F4</p>
+<p>搜索选择的(比如选择了一个单词,shift+F4将搜索下一个) : Shift+F4</p>
+<p>搜索 : Ctrl+F</p>
+<p>浏览本地语法(弹出该文件语法列表窗口,如果你光标放到一个变量/函数等,那么列出本文件该变量/函数等的信息) : F8</p>
+<p>浏览工程语法 : F7, Alt+G</p>
+<p>跳到基本类型(即跳到原型) : Alt+0</p>
+<p>跳到定义出(也就是声明) : Ctrl+=, Ctrl+L Click (select), Ctrl+Double L Click</p>
+<p>检查引用 : Ctrl+/</p>
+<p>语法信息(弹出该语法的信息) : Alt+/, Ctrl+R Click (select)</p>
+<p>高亮当前单词 : Shift+F8</p>
+<p>语法窗口(隐藏/显示语法窗口) : Alt+F8</p>
+<p>关闭窗口 : Alt+F6, Ctrl+F4</p>
+<p>最后一个窗口 : Ctrl+Tab, Ctrl+Shift+Tab</p>
+<p><strong>本帖附件</strong></p>
+<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../linux下的线程与进程.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../linux下的线程与进程.html" itemprop="url">linux下的线程与进程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-06T18:24:00+08:00">
+                2019-12-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="两种线程设计模型"><a href="#两种线程设计模型" class="headerlink" title="两种线程设计模型"></a>两种线程设计模型</h2><ul>
+<li><p><strong>核心级线程设计模型</strong>:</p>
+<p>由操作系统内核实现, 特点是: 速度快  <em>windows系统采用的是这种设计模型</em></p>
+<p>可以比喻为用自己的大脑控制自己十根手指头</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/%E5%9B%BE%E7%89%871.png" alt></p>
+</li>
+<li><p><strong>用户级线程设计模型</strong>:</p>
+<p>操作系统核外实现的线程模式, 特点是: 线程调度在核外 速度不如核内 <em>Linux系统采用的是这种</em></p>
 </li>
 </ul>
-<p>以上两张（包括上面有美女的那张）图片效果几乎是一样的，人眼是看不出来有任何变化。</p>
-<h2 id="5、附加说明"><a href="#5、附加说明" class="headerlink" title="5、附加说明"></a>5、附加说明</h2><p>　　1）、LSB方式的隐写图片只能存储为PNG或者BMP图片格式，并且不允许再采用有损压缩（比如JPEG），否则会丢失隐写的数据！</p>
-<p>​       2）、图片里可以隐写任何数据，并且可以存储的数据多少由图片的大小（长宽）来决定。也许一张图片就能存储下一部圣经的所有文字。</p>
-<h2 id="6、脑洞时间"><a href="#6、脑洞时间" class="headerlink" title="6、脑洞时间"></a>6、脑洞时间</h2><p>　　工具是有了，我们可以用来做些什么呢？发挥你的想象吧：）</p>
-<p>​        1）、<strong>防采集</strong>：将文本内容隐写到图片里，这样就能防直接的采集（比如小说网站、内容原创网站）  ，当然了，只能防君子了。</p>
-<p>​        2）、<strong>版权水印</strong>：将版权水印（文字或者图片）或者其它身份识别标记（如公司里防泄密）隐写到图片里，如果对方直接盗用，则可以起到鉴别作用（如大众点评网案例）。当然了，如要防“攻击”（压缩，变形，涂改等）则需要更高深的隐写方式。有兴趣的可阅读啊里月饼事件引发的知乎讨论贴里的牛人回复。</p>
-<p>​                 传递门：<a href="https://www.zhihu.com/question/50735753/answer/122717091" target="_blank" rel="noopener">https://www.zhihu.com/question/50735753/answer/122717091</a></p>
-<p>​        3）、<strong>防监控</strong>：将文本或图片隐写到图片里，可以防机器（某墙？）监控（比如整网站都是好孩子图片或风景图，但其实都是坏孩子图片或者XX小说、XX内容）</p>
-<p>​        4）、<strong>文件下载</strong>： 直接将文件存于图片里，绕过文件格式限制问题。比如很多图床只能传图片，但经过隐写后就可以图片里藏任意文件了，比如大家都喜欢的种子，当然了，要求图床不会再进行图片再次压缩。</p>
+<p>​        可以比喻为自己的十根手指头需要借助外力才能动</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/%E5%9B%BE%E7%89%872.png" alt></p>
+<h2 id="Linux系统下有真正意义的多线程么"><a href="#Linux系统下有真正意义的多线程么" class="headerlink" title="Linux系统下有真正意义的多线程么?"></a>Linux系统下有真正意义的多线程么?</h2><p>由上面Linux采用的线程设计模型可知,Linux系统并没有真正意义上的多线程</p>
+<p>因此, Linux系统里处理多线程不如Windows强悍</p>
+<h2 id="Linux系统的两个线程库"><a href="#Linux系统的两个线程库" class="headerlink" title="Linux系统的两个线程库"></a>Linux系统的两个线程库</h2><ul>
+<li>LinuxThreads线程库</li>
+<li>RedHat的NPTL</li>
+</ul>
+<p>这两个线程库实际上并没有完全按照线程模式进行实现</p>
+<h2 id="进程的生命周期"><a href="#进程的生命周期" class="headerlink" title="进程的生命周期"></a>进程的生命周期</h2><h4 id="进程的创建及回收"><a href="#进程的创建及回收" class="headerlink" title="进程的创建及回收"></a>进程的创建及回收</h4><p>在Android中, ActivityThead的创建预示着进程的创建</p>
+<h4 id="进程的级别-由高到低"><a href="#进程的级别-由高到低" class="headerlink" title="进程的级别(由高到低)"></a>进程的级别(由高到低)</h4><ul>
+<li><strong>前台进程</strong>: 优先级最高, 正处于Activity Resume()状态, 杀死前台进程需要用户响应</li>
+<li><strong>可见进程</strong></li>
+<li><strong>服务进程</strong></li>
+<li><strong>后台进程</strong></li>
+<li><strong>空进程:</strong> 无组件启动,做进程缓存使用, 恢复速度快</li>
+</ul>
+<p>当一个应用启动的时候, 它的进程级别不是保持固定的, Android内部通过Handler进行轮询检测当前进程的状态,ActivityThread掌控的Activity 的生命周期, 如果栈中无Activity存在, 但是有Service存在的情况下, 此时的进程级别就会从前台进程降为服务进程</p>
+<p>如果想要查询当前进程的级别, 可以通过ActivityManager .RuningAppProcessInfo进行查询,内部有对应的变量和方法</p>
+<h4 id="进程级别的记忆方法"><a href="#进程级别的记忆方法" class="headerlink" title="进程级别的记忆方法"></a>进程级别的记忆方法</h4><p>前见服后空</p>
+<p>谐音: 权健服后空 (懂?)</p>
+<p><strong>本帖附件</strong></p>
+<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../从源码角度分析Activity与Window及View之间的关系.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../从源码角度分析Activity与Window及View之间的关系.html" itemprop="url">从源码角度分析Activity与Window及View之间的关系</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-06T16:21:46+08:00">
+                2019-12-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>我们都知道布局文件的加载是在Activity的onCreate()方法中,使用setContentView进行加载</p>
+<p>这个方法是个重载方法</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206162608.png" alt></p>
+<p><strong>它们无一例外都是使用的getWindow()进行加载</strong></p>
+<p><strong>那么window是在什么时候创建的呢?</strong> </p>
+<p><strong>我们知道Acitivity的生命周期是从onCreate开始的, 其实在它之前还有一个方法已经被执行了, 那就是attach方法</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206162844.png" alt></p>
+<p><strong>PolicyManager创建了一个新的Window对象</strong></p>
+<p><strong>接下来</strong></p>
+<p><strong>我们进入到PolicyManager类中</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206163344.png" alt></p>
+<p><strong>IPolicy是个接口</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206163509.png" alt></p>
+<p><strong>我们需要找到它的实现类,通过寻找发现Pollicy.java实现了IPolicy接口</strong><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206163925.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206164013.png" alt></p>
+<p><strong>实现代码如下:</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206164105.png" alt></p>
+<p><strong>直接创建了一个PhoneWindow对象,</strong></p>
+<p><strong>那么意味着 每创建一个Activity都会创建一个PhoneWindow对象</strong></p>
+<p><strong>那么PhoneWindow与Window到底是什么关系呢?</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206164400.png" alt></p>
+<p><strong>PhoneWindow是Window的子类</strong></p>
+<p><strong>那么到此为止, 我们知道了其实Activity中的setContentView实际上是PhoneWindow在处理</strong></p>
+<p><strong>我们找到PhoneWindow.java能发现其对应的方法</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206164818.png" alt></p>
+<p><strong>这里面的是三个重载方法咱们一个一个来分析</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206165008.png" alt></p>
+<p><strong>首先第一个</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206165609.png" alt></p>
+<p><strong>咱们平常开发时在xml中写的布局并不是根结点, 而是contentParent的子view</strong></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><h4 id="它们之间的关系可以大致理解为"><a href="#它们之间的关系可以大致理解为" class="headerlink" title="它们之间的关系可以大致理解为:"></a>它们之间的关系可以大致理解为:</h4><p><strong>Activity</strong>: 相当于一栋房子</p>
+<p><strong>Window</strong>: 相当于房子里的一扇窗户</p>
+<p><strong>View</strong>: 相当于窗户上的一朵窗花</p>
+<h4 id="它们三个的创建顺序为"><a href="#它们三个的创建顺序为" class="headerlink" title="它们三个的创建顺序为:"></a>它们三个的创建顺序为:</h4><p><strong>Activity—&gt;Window—&gt;View</strong></p>
+<p>具体时序图如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/Android%E7%9A%84Activity%E5%90%AF%E5%8A%A8%E6%97%B6%E5%BA%8F%E5%9B%BE.png" alt></p>
+<p><strong>本帖附件</strong></p>
+<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Android应用流程简介.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../Android应用流程简介.html" itemprop="url">Android应用流程简介</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-06T16:06:28+08:00">
+                2019-12-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>我们知道Android系统的启动是从Init.c开始</p>
+<p>那么Android应用的启动过程是从哪里开始呢?</p>
+<p>下面是具体的时序图参考:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/Android%E5%BA%94%E7%94%A8%E5%90%AF%E5%8A%A8%E6%97%B6%E5%BA%8F%E5%9B%BE.png" alt></p>
+<p>从Launcher.java开始 由于虚拟机的特性每个应用都会独占一个进程,ActivityThead是应用启动的标志</p>
+<p><strong>本帖附件</strong></p>
+<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../C-中类的构造函数和析构函数.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../C-中类的构造函数和析构函数.html" itemprop="url">C++中类的构造函数和析构函数</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-05T19:14:25+08:00">
+                2019-12-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><p>对象创建的时候执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">student s //空参构造函数 栈内存中</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">student s(&quot;测试&quot;)//带参构造函数 栈内存中</span><br></pre></td></tr></table></figure>
+
+<p>或者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">student *s=new student//空参构造函数 堆内存中</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">student *s=new student(&quot;测试&quot;)//带参构造函数 堆内存中</span><br></pre></td></tr></table></figure>
+
+<h3 id="析构函数"><a href="#析构函数" class="headerlink" title="析构函数"></a>析构函数</h3><p>对象销毁的时候执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">delete s</span><br></pre></td></tr></table></figure>
+
+<p><strong>在构造函数中分配的堆内存空间需要在析构函数中进行释放</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191205191346.png" alt></p>
+<p><strong>带参构造函数变量重名问题 使用关键字this解决</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191205192532.png" alt></p>
+<p><strong>本帖附件</strong></p>
+<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Android系统的启动流程详解.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../Android系统的启动流程详解.html" itemprop="url">Android系统的启动流程详解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-05T15:22:32+08:00">
+                2019-12-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Android系统启动流程"><a href="#Android系统启动流程" class="headerlink" title="Android系统启动流程."></a>Android系统启动流程.</h1><blockquote>
+<h4 id="当系统引导程序启动Linux内核时-内核会加载各种数据结构和驱动程序-有了驱动之后-开始启动Android系统并加载用户级别的第一个进程init-system-core-init-Init-c"><a href="#当系统引导程序启动Linux内核时-内核会加载各种数据结构和驱动程序-有了驱动之后-开始启动Android系统并加载用户级别的第一个进程init-system-core-init-Init-c" class="headerlink" title="当系统引导程序启动Linux内核时, 内核会加载各种数据结构和驱动程序. 有了驱动之后, 开始启动Android系统并加载用户级别的第一个进程init(system/core/init/Init.c)."></a>当系统引导程序启动Linux内核时, 内核会加载各种数据结构和驱动程序. 有了驱动之后, 开始启动Android系统并加载用户级别的第一个进程init(system/core/init/Init.c).</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">int main(int argc, char **argv)</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 创建各种文件夹和挂载目录.</span><br><span class="line">    mkdir(&quot;/dev&quot;, 0755);</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 初始化日志.</span><br><span class="line">    log_init();</span><br><span class="line"></span><br><span class="line">    // 解析配置文件.</span><br><span class="line">    init_parse_config_file(&quot;/init.rc&quot;);</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="加载Init-rc文件-主要启动了一个Zygote-孵化器-进程-此进程是Android系统启动关键服务的一个母进程"><a href="#加载Init-rc文件-主要启动了一个Zygote-孵化器-进程-此进程是Android系统启动关键服务的一个母进程" class="headerlink" title="加载Init.rc文件. 主要启动了一个Zygote(孵化器)进程, 此进程是Android系统启动关键服务的一个母进程."></a>加载Init.rc文件. 主要启动了一个Zygote(孵化器)进程, 此进程是Android系统启动关键服务的一个母进程.</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">service zygote /system/bin/app_process -Xzygote /system/bin --zygote --start-system-server</span><br><span class="line">    socket zygote stream 666</span><br><span class="line">    onrestart write /sys/android_power/request_state wake</span><br><span class="line">    onrestart write /sys/power/state on</span><br><span class="line">    onrestart restart media</span><br><span class="line">    onrestart restart netd</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="Zygote进程的初始化在App-main-cpp文件中开启-代码片段如下"><a href="#Zygote进程的初始化在App-main-cpp文件中开启-代码片段如下" class="headerlink" title="Zygote进程的初始化在App_main.cpp文件中开启, 代码片段如下:"></a>Zygote进程的初始化在App_main.cpp文件中开启, 代码片段如下:</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">int main(int argc, const char* const argv[])</span><br><span class="line">&#123;</span><br><span class="line">    // 定义Android运行时环境.</span><br><span class="line">    AppRuntime runtime;</span><br><span class="line">    int i = runtime.addVmArguments(argc, argv);</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    bool startSystemServer = (i &lt; argc) ? </span><br><span class="line">            strcmp(argv[i], &quot;--start-system-server&quot;) == 0 : false;</span><br><span class="line">    setArgv0(argv0, &quot;zygote&quot;);</span><br><span class="line">    set_process_name(&quot;zygote&quot;);</span><br><span class="line"></span><br><span class="line">    // 使用运行时环境启动Zygote的初始化类.</span><br><span class="line">    runtime.start(&quot;com.android.internal.os.ZygoteInit&quot;,</span><br><span class="line">        startSystemServer);</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="现在从c或c-代码进入到java代码中-ZygoteInit-java初始化类-代码如下"><a href="#现在从c或c-代码进入到java代码中-ZygoteInit-java初始化类-代码如下" class="headerlink" title="现在从c或c++代码进入到java代码中, ZygoteInit.java初始化类, 代码如下:"></a>现在从c或c++代码进入到java代码中, ZygoteInit.java初始化类, 代码如下:</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String argv[]) &#123;</span><br><span class="line">    // 加载系统运行依赖的class类.</span><br><span class="line">    preloadClasses();</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    if (argv[1].equals(&quot;true&quot;)) &#123;</span><br><span class="line">        // Zygote孵化器进程开始孵化系统核心服务.</span><br><span class="line">        startSystemServer();</span><br><span class="line">    &#125; else if (!argv[1].equals(&quot;false&quot;)) &#123;</span><br><span class="line">        throw new RuntimeException(argv[0] + USAGE_STRING);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static boolean startSystemServer()</span><br><span class="line">    throws MethodAndArgsCaller, RuntimeException &#123;</span><br><span class="line">    String args[] = &#123;</span><br><span class="line">        &quot;--setuid=1000&quot;,</span><br><span class="line">        &quot;--setgid=1000&quot;,</span><br><span class="line">        &quot;--setgroups=1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,3001,3002,3003&quot;,</span><br><span class="line">        &quot;--capabilities=130104352,130104352&quot;,</span><br><span class="line">        &quot;--runtime-init&quot;,</span><br><span class="line">        &quot;--nice-name=system_server&quot;,</span><br><span class="line">        &quot;com.android.server.SystemServer&quot;,</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 孵化器分叉开启SystemServer类, 并且把上面定义的参数.</span><br><span class="line">    // 传递给此类. 用于启动系统关键服务.</span><br><span class="line">    pid = Zygote.forkSystemServer(</span><br><span class="line">            parsedArgs.uid, parsedArgs.gid,</span><br><span class="line">            parsedArgs.gids, debugFlags, null,</span><br><span class="line">            parsedArgs.permittedCapabilities,</span><br><span class="line">            parsedArgs.effectiveCapabilities);</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="Zygote进程分叉出SystemServer类-main函数如下"><a href="#Zygote进程分叉出SystemServer类-main函数如下" class="headerlink" title="Zygote进程分叉出SystemServer类, main函数如下:"></a>Zygote进程分叉出SystemServer类, main函数如下:</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 加载本地的动态链接库.</span><br><span class="line">    System.loadLibrary(&quot;android_servers&quot;);</span><br><span class="line"></span><br><span class="line">    // 调用动态链接库中的c函数.</span><br><span class="line">    init1(args);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 这里init1的函数定义在frameworks\base\services\jni\com_android_server_SystemServer.cpp下的方法.</span><br><span class="line">native public static void init1(String[] args);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="comandroidserver-SystemServer-cpp的代码片段如下"><a href="#comandroidserver-SystemServer-cpp的代码片段如下" class="headerlink" title="comandroidserver_SystemServer.cpp的代码片段如下:"></a>com<em>android</em>server_SystemServer.cpp的代码片段如下:</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">static JNINativeMethod gMethods[] = &#123;</span><br><span class="line">    /* name, signature, funcPtr */</span><br><span class="line">    // 把native方法init1, 映射到android_server_SystemServer_init1. (这里是定义的函数指针)</span><br><span class="line">    &#123; &quot;init1&quot;, &quot;([Ljava/lang/String;)V&quot;, (void*) android_server_SystemServer_init1 &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">static void android_server_SystemServer_init1(JNIEnv* env, jobject clazz)</span><br><span class="line">&#123;</span><br><span class="line">    // 转调</span><br><span class="line">    system_init();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 此方法没有方法体.</span><br><span class="line">extern &quot;C&quot; int system_init();</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="system-init方法的方法体-在System-init-cpp类中-代码如下"><a href="#system-init方法的方法体-在System-init-cpp类中-代码如下" class="headerlink" title="system_init方法的方法体, 在System_init.cpp类中. 代码如下:"></a>system_init方法的方法体, 在System_init.cpp类中. 代码如下:</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">extern &quot;C&quot; status_t system_init()</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 开启一些硬件相关的服务.</span><br><span class="line">    SensorService::instantiate();</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 获取Android运行时环境</span><br><span class="line">    AndroidRuntime* runtime = AndroidRuntime::getRuntime();</span><br><span class="line"></span><br><span class="line">    LOGI(&quot;System server: starting Android services.\n&quot;);</span><br><span class="line">    // 调用SystemServer类中静态方法init2. 从native层转到java层.</span><br><span class="line">    runtime-&gt;callStatic(&quot;com/android/server/SystemServer&quot;, &quot;init2&quot;);</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="SystemServer下init2方法如下"><a href="#SystemServer下init2方法如下" class="headerlink" title="SystemServer下init2方法如下:"></a>SystemServer下init2方法如下:</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public static final void init2() &#123;</span><br><span class="line">    Slog.i(TAG, &quot;Entered the Android system server!&quot;);</span><br><span class="line"></span><br><span class="line">    // 进入Android系统服务的初始化.</span><br><span class="line">    Thread thr = new ServerThread();</span><br><span class="line">    thr.setName(&quot;android.server.ServerThread&quot;);</span><br><span class="line">    thr.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="ServerThread中的run方法如下"><a href="#ServerThread中的run方法如下" class="headerlink" title="ServerThread中的run方法如下:"></a>ServerThread中的run方法如下:</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void run() &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 初始化系统的服务, 并且把服务添加ServiceManager中, 便于以后系统进行统一管理.</span><br><span class="line">    ServiceManager.addService(&quot;entropy&quot;, new EntropyService());</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 调用了ActivityManagerService的systemReady的方法.</span><br><span class="line">    ((ActivityManagerService)ActivityManagerNative.getDefault())</span><br><span class="line">            .systemReady(new Runnable() &#123;</span><br><span class="line">        public void run() &#123;</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="ActivityManagerService下的systemReady方法如下"><a href="#ActivityManagerService下的systemReady方法如下" class="headerlink" title="ActivityManagerService下的systemReady方法如下:"></a>ActivityManagerService下的systemReady方法如下:</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public void systemReady(final Runnable goingCallback) &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 调用了ActivityStack中的resumeTopActivityLocked去启动Activity</span><br><span class="line">    mMainStack.resumeTopActivityLocked(null);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="ActivityStack中的resumeTopActivityLocked方法如下"><a href="#ActivityStack中的resumeTopActivityLocked方法如下" class="headerlink" title="ActivityStack中的resumeTopActivityLocked方法如下:"></a>ActivityStack中的resumeTopActivityLocked方法如下:</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">final boolean resumeTopActivityLocked(ActivityRecord prev) &#123;</span><br><span class="line">        // 找到第一个当前没有关闭的Activity, 系统刚刚系统没有任何Activity执行, 所以next为null</span><br><span class="line">        ActivityRecord next = topRunningActivityLocked(null);</span><br><span class="line"></span><br><span class="line">        // Remember how we&apos;ll process this pause/resume situation, and ensure</span><br><span class="line">        // that the state is reset however we wind up proceeding.</span><br><span class="line">        final boolean userLeaving = mUserLeaving;</span><br><span class="line">        mUserLeaving = false;</span><br><span class="line"></span><br><span class="line">        if (next == null) &#123;</span><br><span class="line">            // There are no more activities!  Let&apos;s just start up the</span><br><span class="line">            // Launcher...</span><br><span class="line">            if (mMainStack) &#123;</span><br><span class="line">                // 开启Launcher应用的第一个Activity界面.</span><br><span class="line">                return mService.startHomeActivityLocked();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="home界面显示-这时Android系统启动完毕-进入到待机画面"><a href="#home界面显示-这时Android系统启动完毕-进入到待机画面" class="headerlink" title="home界面显示, 这时Android系统启动完毕. 进入到待机画面."></a>home界面显示, 这时Android系统启动完毕. 进入到待机画面.</h4></blockquote>
+<p><strong>本帖附件</strong></p>
+<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Source-Insignt4-0的基本使用.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../Source-Insignt4-0的基本使用.html" itemprop="url">Source Insignt4.0的基本使用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-05T13:09:46+08:00">
+                2019-12-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="第一步-创建新工程"><a href="#第一步-创建新工程" class="headerlink" title="第一步 创建新工程"></a>第一步 创建新工程</h3><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191205131720.png" alt></p>
+<p><strong>选择默认配置即可</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191205131930.png" alt></p>
+<h3 id="第二步-加载源码文件"><a href="#第二步-加载源码文件" class="headerlink" title="第二步 加载源码文件"></a>第二步 加载源码文件</h3><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191205132148.png" alt></p>
+<p><strong>这里有三个Add选项</strong></p>
+<ul>
+<li>Add : 添加指定文件</li>
+<li>Add All: 将选中目录的所有文件加入到工程中</li>
+<li>Add Tree: 递归加入所有文件，它采用了部分打开文件的方式，没有用到的文件不会打开，所以，加入数千个文件也不用担心加入的文件超出程序的所能容忍的最大值 推荐使用这种</li>
+</ul>
+<p><strong>源码加载完成后关闭该窗口</strong></p>
+<p><img src="C:%5CUsers%5Csongjian%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20191205133308509.png" alt="image-20191205133308509"></p>
+<h3 id="第三步-熟悉主界面和源码搜索"><a href="#第三步-熟悉主界面和源码搜索" class="headerlink" title="第三步 熟悉主界面和源码搜索"></a>第三步 熟悉主界面和源码搜索</h3><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191205131410.png" alt></p>
+<h3 id="第四步-更改字体大小"><a href="#第四步-更改字体大小" class="headerlink" title="第四步 更改字体大小"></a>第四步 更改字体大小</h3><h5 id="面板字体设置"><a href="#面板字体设置" class="headerlink" title="面板字体设置"></a>面板字体设置</h5><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191205133619.png" alt></p>
+<p><strong>代码显示窗口字体设置</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191205134323.png" alt></p>
+<h3 id="常用快捷键介绍"><a href="#常用快捷键介绍" class="headerlink" title="常用快捷键介绍"></a>常用快捷键介绍</h3><p>各工具栏命令如下：</p>
+<p><img src="https://img-blog.csdn.net/20180820100831928?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2d1b3RhbzE5ODM=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="img">对应的文件菜单的功能</p>
+<p>New（快捷键ctrl+N）     新建一个文件</p>
+<p>Open（快捷键ctrl+O）     打开一个文件</p>
+<p>Save（快捷键ctrl+S）     保存当前打开的文件</p>
+<p>Save As（快捷键ctrl+shift+S） 将当前打开的文件保存为其它名子的文件</p>
+<p>Save All（快捷键ctrl+A）   保存所有打开的和修改过的文件</p>
+<p>Print              打印当前打开的文件</p>
+<p><img src="https://img-blog.csdn.net/20180820100831926?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2d1b3RhbzE5ODM=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="img">对应的编辑菜单功能</p>
+<p>Cut（快捷键ctrl+X）  </p>
+<p>Copy（快捷键ctrl+C）</p>
+<p>Paste(快捷键ctrl+V)</p>
+<p>Undo(快捷键ctrl+Z)</p>
+<p>Redo(快捷键ctrl+Y)</p>
+<p><img src="https://img-blog.csdn.net/20180820100831929?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2d1b3RhbzE5ODM=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="img">对应查找菜单功能</p>
+<p>Search（快捷键ctrl+F）      在当前打开的文件中查找</p>
+<p>Search Backward(快捷键F3)    在当前光标位置进行向后查找</p>
+<p>Search Forward(快捷键F4)     在当前光标位置进行向前查找</p>
+<p>Search Files(快捷键ctrl+shift+F) 在多文件（Source Insight工程中）中查找</p>
+<p>Replace(快捷键ctrl+H)      在当前文件中进行查找和替代</p>
+<p><img src="https://img-blog.csdn.net/20180820100831940?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2d1b3RhbzE5ODM=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="img"></p>
+<p>对应于窗口功能，与普通的多文档编辑器相同，用来设置打开多个文件时窗口显示方式和规则。</p>
+<p><img src="https://img-blog.csdn.net/2018082010083210?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2d1b3RhbzE5ODM=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="img"></p>
+<p>用来设置Project窗口、Context窗口、Relation窗口和Clip窗口的显示或关闭。当快捷键点亮时，所对应的窗口显示。</p>
+<p><img src="https://img-blog.csdn.net/20180820100832248?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2d1b3RhbzE5ODM=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="img"></p>
+<p>Jump To Definition(快捷键ctrl+=)  跳转到当前光标所在位置的函数或变量的定义处（并打开文件）</p>
+<p>Symbol Info             弹出一个窗口来显示当前光标位置的函数或变量的定义原型</p>
+<p>Browse Project Symbols(快捷键F7)  在整个工程中查找一个函数或变量的出现位置</p>
+<p>Lookup Reference(快捷键ctrl+/)    建立一个Reference链接，所对应的链接处会出现一个链接标志，通过链接标志可以方便的进行函数的查看。</p>
+<p><img src="https://img-blog.csdn.net/20180820100832263?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2d1b3RhbzE5ODM=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="img"></p>
+<p>Go To Previous Link    跳转到前一个Reference链接（此功能必须先建立一个Reference链接）</p>
+<p>Go To Next Link(shift+F9) 跳转到前一个Reference链接（同上）</p>
+<p>Go Back(Alt+))      光标调转到前一个历史操作位置</p>
+<p>Go Forward(Alt+.)     光标调转到后一个历史操作位置</p>
+<p>Go To Line(F5)      跳转到指定的行位置</p>
+<p>Bookmark(ctrl+M)     书签</p>
+<p><img src="https://img-blog.csdn.net/20180820100832305?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2d1b3RhbzE5ODM=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="img"></p>
+<p>帮助功能</p>
 <p><strong>本帖附件</strong></p>
 <p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
 <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
@@ -2098,7 +1857,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="../7/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../7/">7</a><span class="page-number current">8</span><a class="page-number" href="../9/">9</a><a class="extend next" rel="next" href="../9/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="../7/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../7/">7</a><span class="page-number current">8</span><a class="page-number" href="../9/">9</a><span class="space">&hellip;</span><a class="page-number" href="../11/">11</a><a class="extend next" rel="next" href="../9/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2144,7 +1903,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">83</span>
+                  <span class="site-state-item-count">105</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2157,7 +1916,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-count">46</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

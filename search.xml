@@ -4670,4 +4670,1069 @@ gradlew clean build bintrayUpload -PbintrayUser=songjianziana -PbintrayKey=5e7f0
         <tag>gradle插件</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Ajax 跨域问题及其解决方案</title>
+    <url>/Ajax-%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98%E5%8F%8A%E5%85%B6%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html</url>
+    <content><![CDATA[<h2 id="什么是-ajax-跨域"><a href="#什么是-ajax-跨域" class="headerlink" title="什么是 ajax 跨域"></a>什么是 ajax 跨域</h2><p>主流的<strong>前后端分离模式</strong>下，当前端调用后台接口时，由于是在非同一个域下的请求，从而会引发<strong>浏览器</strong>的自我安全保护机制，最终结果是<strong>接口成功请求并响应</strong>，但<strong>前端不能正常处理该返回数据</strong>。</p>
+<p><img src="https://i.loli.net/2020/09/08/EGern4xhRwqF7gU.png" alt="Access-Control-Allow-Origin"></p>
+<p>因此，当<strong>同时满足</strong>以下三个条件的情况下，就会出现跨域问题：</p>
+<ol>
+<li>浏览器限制</li>
+<li>非同源请求（跨域）</li>
+<li>发送的是 XHR ( XMLHttpRequest ) 请求</li>
+</ol>
+<p><img src="https://i.loli.net/2020/09/08/u8D62HznvwgcM1W.png" alt="跨域问题"></p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>想要彻底解决跨域问题，只需要破坏以上三个条件的任一即可：</p>
+<h4 id="1-修改浏览器（不推荐）"><a href="#1-修改浏览器（不推荐）" class="headerlink" title="1. 修改浏览器（不推荐）"></a>1. 修改浏览器（<strong>不推荐</strong>）</h4><p>添加浏览器启动参数：<code>chrome --disable-web-security</code>，但是极不推荐这种解决方式。</p>
+<h4 id="2-JSONP请求（不常用）"><a href="#2-JSONP请求（不常用）" class="headerlink" title="2. JSONP请求（不常用）"></a>2. JSONP请求（<strong>不常用</strong>）</h4><p>Jsonp，全称 <code>JSON with Padding</code>，一种非官方的协议，而是一种约定；前端通过向后台发送 <code>script</code> 类型请求解决跨域，此时接口响应的 <code>application/javascript</code> 类型的数据会作为 <code>callback</code> 函数的参数进行处理。</p>
+<p><img src="https://i.loli.net/2020/09/08/1RqpuXFLGTlMjI7.png" alt="Jsonp Request"></p>
+<p>所以，后台也需要做相应的处理。以 Java 为例，添加如下配置即可：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@ControllerAdvice</span><br><span class="line">public class JsonpAdvice extends AbstractJsonpResponseBodyAdvice &#123;</span><br><span class="line"></span><br><span class="line">    public JsonpAdvice() &#123;</span><br><span class="line">		// 前后端约定的jsonp参数名，默认值是callback</span><br><span class="line">        super(&quot;callback&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意，<code>Spring 4.1</code> 版本之后，官方已不再推荐使用上述允许 <code>jsonp</code> 请求的配置，建议使用 <code>CROS</code> 配置来解决跨域问题，详情可查看<a href="https://docs.spring.io/spring/docs/5.0.x/spring-framework-reference/web.html#mvc-cors" target="_blank" rel="noopener">这里</a></p>
+</blockquote>
+<p>综上，<code>jsonp</code> 请求存在以下几个弊端：</p>
+<ol>
+<li>服务端需要改动代码进行支持；</li>
+<li>只支持发送 <code>Get</code> 请求，请求头中更改其它类型的请求方式是无效的；</li>
+<li>发送的不是 <code>XHR</code> 请求，而是 <code>script</code> 类型，无法享受到相关的特性。</li>
+</ol>
+<h4 id="3-调用方隐藏跨域"><a href="#3-调用方隐藏跨域" class="headerlink" title="3. 调用方隐藏跨域"></a>3. 调用方隐藏跨域</h4><p>用 <code>Nginx</code> 或 <code>Apache</code> 来代理调用方的请求（<strong>客户端变更为相对路径请求，而非绝对路径</strong>），此时对于浏览器来说，由于请求是同源的，因此就不存在跨域问题。</p>
+<h4 id="4-被调用方允许跨域（最常用）"><a href="#4-被调用方允许跨域（最常用）" class="headerlink" title="4. 被调用方允许跨域（最常用）"></a>4. 被调用方允许跨域（<strong>最常用</strong>）</h4><ul>
+<li>服务端配置</li>
+</ul>
+<p>以 Java 应用为例，添加如下全局配置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">public class CorsConfig implements WebMvcConfigurer &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void addCorsMappings(CorsRegistry registry) &#123;</span><br><span class="line">        registry.addMapping(&quot;/**&quot;)  // 允许跨域的接口</span><br><span class="line">                .allowedOrigins(&quot;*&quot;)  // 允许跨域的请求源</span><br><span class="line">                .allowedMethods(&quot;*&quot;)  // 允许跨域的请求方式</span><br><span class="line">                .allowedHeaders(&quot;*&quot;) // 允许跨域的请求头</span><br><span class="line">                .allowCredentials(true)  // 带cookie请求的时候需要开启，且allowedOrigins需要指定为具体的请求源（最好是动态配置）</span><br><span class="line">                .maxAge(60 * 60 * 24); // 设定options请求预检命令的缓存时长</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果只想针对某个类下的接口，或者是某个具体的接口配置允许跨域，只需要在相应的地方添加注解 <code>@CrossOrigin</code> 即可。</p>
+<ul>
+<li>Nginx 配置</li>
+</ul>
+<p>如果配置了 <code>nginx</code> 作为代理服务器，那么只需要为 <code>nginx</code> 添加支持跨域请求即可：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">	listen 80;</span><br><span class="line">	server_name xxx.com;</span><br><span class="line"></span><br><span class="line">	location / &#123;</span><br><span class="line">		proxy_pass http://localhost:8080/;</span><br><span class="line"></span><br><span class="line">		# 配置允许跨域</span><br><span class="line">		add_header Access-Control-Allow-Origin $http_origin;</span><br><span class="line">		add_header Access-Control-Allow-Methods *;</span><br><span class="line">		add_header Access-Control-Allow-Headers $http_access_control_request_headers;</span><br><span class="line">		add_header Access-Control-Max-Age 3600;</span><br><span class="line">		add_header Access-Control-Allow-Credentials true;</span><br><span class="line">		</span><br><span class="line">		# 对于options预检请求，直接响应200</span><br><span class="line">		if ($request_method = OPTIONS) &#123;</span><br><span class="line">			return 200;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="扩展思考"><a href="#扩展思考" class="headerlink" title="扩展思考"></a>扩展思考</h2><p>Q1：浏览器在执行跨域请求时，是先执行后判断，还是先判断后执行？<br>A1：都有可能，这需要根据所发送的请求是<strong>简单请求</strong>还是<strong>非简单请求</strong>来判断；如果是非简单请求，浏览器每次在执行真正的请求之前，还会先发送一个 <code>options</code> 请求方式的预检命令【 <strong>可设定缓存时长，取消每次请求都要预检，提高效率，参考上面的服务端配置</strong> 】。关于两种请求的区分及定义，参考下图说明：</p>
+<p><img src="https://i.loli.net/2020/09/08/TWOvdB8wLxclq65.png" alt="简单请求 VS 非简单请求"></p>
+<p>Q2：如果是允许带（<strong>被调用方</strong>） <code>cookie</code> 的跨域请求，此时服务端同样配置为 <code>Access-Control-Allow-Origin</code> 等于 <code>*</code>，前端是否还可以请求成功？<br>A2：不可以，此时要将 <code>Access-Control-Allow-Origin</code> 指定为<strong>调用方</strong>具体的域【 <strong>可以先取得调用方的域再动态配置，这样就不存在多个域请求的限制问题</strong> 】，并且添加配置 <code>Access-Control-Allow-Credentials</code> 为 <code>true</code>。</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>前端</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>App自动化之Appium入门</title>
+    <url>/App%E8%87%AA%E5%8A%A8%E5%8C%96%E4%B9%8BAppium%E5%85%A5%E9%97%A8.html</url>
+    <content><![CDATA[<blockquote>
+<p>像<code>Selenium</code>可以操控Web浏览器，手机APP平台也有类似的自动化测试工具：<code>Appium</code>；<br>全文分基础介绍、环境搭建和案例演示三部分介绍<code>Appium</code>，以帮助Learner快速的上手。</p>
+</blockquote>
+<h3 id="基础介绍"><a href="#基础介绍" class="headerlink" title="基础介绍"></a>基础介绍</h3><p>Appium是一个开源的自动化测试框架，用于原生，混合和移动Web应用程序。 它使用WebDriver协议驱动iOS，Android和Windows应用程序。关于它的运作流程，用图来介绍会更加生动形象一些：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/Nd9GcRnhRoLusz8RMt6P3dBn_po4ozGjHWB-20200907103239987.png" alt="Appium运行流程、原理"></p>
+<p>在上图中，左边这部分是<code>Appium-Client</code>，通俗点来说，是用于间接驱动最右边的设备执行预定的自动化测试流程，支持使用多种主流的编程语言进行编写，这也是测试开发人员需要关注的核心部分；中间的<code>Appium-Server</code>是衔接左边客户端以及右边APP设备端的重要桥梁，一般仅需要配置好环境及启动运行；右边这块，当然就是实际执行自动化测试的终端，如IOS真机、Android真机，或者是模拟器。</p>
+<h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><ul>
+<li>NodeJS</li>
+</ul>
+<p>Appium是使用nodejs实现的，因此Node是解释器，首先要确认安装好</p>
+<ul>
+<li>Appium-Server<ul>
+<li>nodejs</li>
+<li><a href="https://github.com/appium/appium-desktop/releases" target="_blank" rel="noopener">appium-desktop</a></li>
+</ul>
+</li>
+</ul>
+<p>上述的两种方式都可以搭建<code>Appium-Server</code>环境，后面演示会基于Appium-Desktop。(PS：下载太慢了?分享个<a href="https://pan.baidu.com/s/1QQcYcDlOngdFjLhaJWAXCg" target="_blank" rel="noopener">百度网盘</a>)</p>
+<ul>
+<li>Andrioid SDK<ul>
+<li><a href="https://android-sdk.en.softonic.com/" target="_blank" rel="noopener">android sdk</a></li>
+<li><a href="https://developer.android.com/studio/" target="_blank" rel="noopener">android studio</a></li>
+</ul>
+</li>
+</ul>
+<p>上述方式可以直接和间接搭建安装<code>Android</code>环境，因为后面要用到<code>adb</code>这个工具，所以需要配置好<code>ANDROID_HOME</code>这个环境变量。(PS：下载太慢了?分享个<a href="https://pan.baidu.com/s/1Y7UC8S2Plsieo59MPmQgMw" target="_blank" rel="noopener">百度网盘</a>)</p>
+<ul>
+<li>Appium-Python-Client</li>
+</ul>
+<p>后面会用到Python来编写Appium客户端：<code>pip install Appium-Python-Client</code></p>
+<p>okay，准备好以上几个环境后，启动Appium测试一下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20181030111040-20200907103248988.png" alt="Appium Desktop Server"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20181030111212-20200907103257799.png" alt="Appium Desktop Server"></p>
+<h3 id="案例演示"><a href="#案例演示" class="headerlink" title="案例演示"></a>案例演示</h3><p>下面演示在安卓真机上的自动登录<code>Keep</code>(APP)。</p>
+<ol>
+<li>获取设备名称。操作流程：开启手机的开发和调试模式，连接电脑授权认证，<code>Window + R</code>输入并运行<code>cmd</code>，用<code>adb devices -l</code>查看：</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20181030134047-20200907103307894.png" alt="获取设备号"></p>
+<ol>
+<li>启动Appium Server进行调试：</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20181030134400-20200907103312054.png" alt="Inspector Session"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20181030134702-20200907103318824.png" alt="Desired Capabilities"></p>
+<p>从上图可以看到，启动App Session需要有以下几个参数(点击了解更详细的<a href="https://appium.io/docs/en/writing-running-appium/caps/" target="_blank" rel="noopener">Appium Desired Capabilities</a>）:</p>
+<ul>
+<li><code>platformName</code>，如<code>Android</code>、<code>iOS</code>等</li>
+<li><code>deviceName</code>，参考前面是如何获取的</li>
+<li><code>appPackage</code>和<code>appActivity</code>，获取<a href="https://blog.csdn.net/mtbaby/article/details/78676477" target="_blank" rel="noopener">参考这里</a></li>
+</ul>
+<p>综上所述，这里对应<code>Keep</code>的信息如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;platformName&quot;: &quot;Android&quot;,</span><br><span class="line">  &quot;deviceName&quot;: &quot;WAS_AL00&quot;,</span><br><span class="line">  &quot;appPackage&quot;: &quot;com.gotokeep.keep&quot;,</span><br><span class="line">  &quot;appActivity&quot;: &quot;com.gotokeep.keep.splash.SplashActivity&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>点击<code>Start Session</code>，之后可以看到手机端启动了<code>Keep</code>，并且在Appium Server端中同步展示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20181030150015-20200907103327336.png" alt="Start Session"></p>
+<p><img src="http://image.mariojd.cn/happyjared/20181030/20181030150055.png" alt="Keep"></p>
+<p>上述的操作通常只是用来方便获取控件id及定位的，下面基于Python编写完整的<code>Appium-Client</code>以实现自动登录操作：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">from appium import webdriver</span><br><span class="line">from selenium.webdriver.common.by import By</span><br><span class="line">from selenium.webdriver.support.ui import WebDriverWait</span><br><span class="line">from selenium.webdriver.support import expected_conditions as EC</span><br><span class="line"></span><br><span class="line">server = &apos;http://localhost:4723/wd/hub&apos;  # Appium Server, 端口默认为4723</span><br><span class="line">desired_capabilities = &#123;</span><br><span class="line">    &apos;platformName&apos;: &apos;Android&apos;,</span><br><span class="line">    &apos;deviceName&apos;: &apos;WAS_AL00&apos;,  # 需替换成你的deviceName</span><br><span class="line">    &apos;appPackage&apos;: &apos;com.gotokeep.keep&apos;,</span><br><span class="line">    &apos;appActivity&apos;: &apos;com.gotokeep.keep.splash.SplashActivity&apos;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">driver = webdriver.Remote(server, desired_capabilities)</span><br><span class="line">wait = WebDriverWait(driver, 10)  # 最大查找等待超时时间：10s</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def get_permission():</span><br><span class="line">    &quot;&quot;&quot;允许APP获取的某些权限&quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    try:</span><br><span class="line">        ask = wait.until(EC.presence_of_element_located((By.ID, &apos;com.android.packageinstaller:id/do_not_ask_checkbox&apos;)))</span><br><span class="line">        ask.click()</span><br><span class="line">        allow = wait.until(</span><br><span class="line">            EC.presence_of_element_located((By.ID, &apos;com.android.packageinstaller:id/permission_allow_button&apos;)))</span><br><span class="line">        allow.click()</span><br><span class="line">    except:</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 允许两项授权</span><br><span class="line">get_permission()</span><br><span class="line">get_permission()</span><br><span class="line"></span><br><span class="line"># 点击“立即使用”</span><br><span class="line">welcome = wait.until(EC.presence_of_element_located((By.ID, &apos;com.gotokeep.keep:id/btn_bottom_in_video_welcome&apos;)))</span><br><span class="line">welcome.click()</span><br><span class="line"></span><br><span class="line"># 切换“密码登录”(同样可以使用第三方进行授权登录)</span><br><span class="line">driver.tap([(900, 110)])</span><br><span class="line"></span><br><span class="line"># 输入“手机号”</span><br><span class="line">phone = driver.find_element_by_accessibility_id(&apos;Phone Number In Login&apos;)</span><br><span class="line">phone.send_keys(&apos;13988888888&apos;)  # 替换成实际的账号</span><br><span class="line"></span><br><span class="line"># 输入“密码”</span><br><span class="line">password = driver.find_element_by_accessibility_id(&apos;Password In Login&apos;)</span><br><span class="line">password.send_keys(&apos;123456&apos;)  # 替换成实际的密码</span><br><span class="line"></span><br><span class="line"># 点击“登录”</span><br><span class="line">login = driver.find_element_by_id(&apos;com.gotokeep.keep:id/btn_action&apos;)</span><br><span class="line">login.click()</span><br></pre></td></tr></table></figure>
+
+<p>最后，附上运行效果图：</p>
+<p><img src="http://image.mariojd.cn/happyjared/20181030/20181030160014.gif" alt="效果图"></p>
+<p><strong>本文转载自;<a href="https://blog.mariojd.cn/get-started-with-appium.html" target="_blank" rel="noopener">https://blog.mariojd.cn/get-started-with-appium.html</a></strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>python自动化</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git撤销&amp;回滚操作(git reset 和 get revert)</title>
+    <url>/Git%E6%92%A4%E9%94%80-%E5%9B%9E%E6%BB%9A%E6%93%8D%E4%BD%9C-git-reset-%E5%92%8C-get-revert.html</url>
+    <content><![CDATA[<p>git的工作流</p>
+<p>工作区：即自己当前分支所修改的代码，git add xx 之前的！不包括 git add xx 和 git commit xxx 之后的。</p>
+<p>暂存区：已经 git add xxx 进去，且未 git commit xxx 的。</p>
+<p>本地分支：已经git commit -m xxx 提交到本地分支的。<br>这里写图片描述</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200901152344.png" alt><br>代码回滚</p>
+<p>在上传代码到远程仓库的时候，不免会出现问题，任何过程都有可能要回滚代码：</p>
+<p>1、在工作区的代码</p>
+<p>git checkout – a.txt  # 丢弃某个文件，或者<br>git checkout – .    # 丢弃全部</p>
+<p>注意：git checkout – . 丢弃全部，也包括：新增的文件会被删除、删除的文件会恢复回来、修改的文件会回去。这几个前提都说的是，回到暂存区之前的样子。对之前保存在暂存区里的代码不会有任何影响。对commit提交到本地分支的代码就更没影响了。当然，如果你之前压根都没有暂存或commit，那就是回到你上次pull下来的样子了。</p>
+<p>2、代码git add到缓存区，并未commit提交</p>
+<p>git reset HEAD . 或者<br>git reset HEAD a.txt</p>
+<p>这个命令仅改变暂存区，并不改变工作区，这意味着在无任何其他操作的情况下，工作区中的实际文件同该命令运行之前无任何变化</p>
+<p>3、git commit到本地分支、但没有git push到远程</p>
+<p>git log # 得到你需要回退一次提交的commit id<br>git reset –hard <commit_id> # 回到其中你想要的某个版<br>或者<br>git reset –hard HEAD^ # 回到最新的一次提交<br>或者<br>git reset HEAD^ # 此时代码保留，回到 git add 之前</commit_id></p>
+<p>4、git push把修改提交到远程仓库<br>1）通过git reset是直接删除指定的commit</p>
+<p>git log # 得到你需要回退一次提交的commit id<br>git reset –hard <commit_id><br>git push origin HEAD –force # 强制提交一次，之前错误的提交就从远程仓库删除</commit_id></p>
+<p>2）通过git revert是用一次新的commit来回滚之前的commit</p>
+<p>git log # 得到你需要回退一次提交的commit id<br>git revert <commit_id> # 撤销指定的版本，撤销也会作为一次提交进行保存</commit_id></p>
+<p>3） git revert 和 git reset的区别<br>- git revert是用一次新的commit来回滚之前的commit，此次提交之前的commit都会被保留；<br>- git reset是回到某次提交，提交及之前的commit都会被保留，但是此commit id之后的修改都会被删除</p>
+<p><strong>开发过程中，你肯定会遇到这样的场景：</strong></p>
+<p><strong>场景一：</strong></p>
+<blockquote>
+<p>糟了，我刚把不想要的代码，commit到本地仓库中了，但是还没有做push操作！</p>
+</blockquote>
+<p><strong>场景二：</strong></p>
+<blockquote>
+<p>彻底完了，刚线上更新的代码出现问题了，需要还原这次提交的代码！</p>
+</blockquote>
+<p><strong>场景三：</strong></p>
+<blockquote>
+<p>刚才我发现之前的某次提交太愚蠢了，现在想要干掉它！</p>
+</blockquote>
+<h2 id="撤销"><a href="#撤销" class="headerlink" title="撤销"></a>撤销</h2><p>上述<strong>场景一</strong>，在未进行<code>git push</code>前的所有操作，都是在“本地仓库”中执行的。我们暂且将“本地仓库”的代码还原操作叫做“撤销”！</p>
+<p><strong>情况一：文件被修改了，但未执行<code>git add</code>操作(working tree内撤销)</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git checkout fileName</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git checkout .</span><br></pre></td></tr></table></figure>
+
+<p><strong>情况二：同时对多个文件执行了<code>git add</code>操作，但本次只想提交其中一部分文件</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git add *</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ git status</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 取消暂存</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ git reset HEAD &lt;filename&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>情况三：文件执行了<code>git add</code>操作，但想撤销对其的修改（index内回滚）</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 取消暂存</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git reset HEAD fileName</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 撤销修改</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git checkout fileName</span><br></pre></td></tr></table></figure>
+
+<p><strong>情况四：修改的文件已被<code>git commit</code>，但想再次修改不再产生新的Commit</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 修改最后一次提交 </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ git add sample.txt</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ git commit --amend -m&quot;说明&quot;</span><br></pre></td></tr></table></figure>
+
+<p><strong>情况五：已在本地进行了多次<code>git commit</code>操作，现在想撤销到其中某次Commit</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git reset [--hard|soft|mixed|merge|keep] [commit|HEAD]</span><br></pre></td></tr></table></figure>
+
+<p>具体参数和使用说明，请查看：<a href="http://blog.csdn.net/ligang2585116/article/details/51816372#t7" target="_blank" rel="noopener">Git Pro深入浅出（二）中的重置揭秘部分</a></p>
+<h2 id="回滚"><a href="#回滚" class="headerlink" title="回滚"></a>回滚</h2><p>上述<strong>场景二</strong>，已进行<code>git push</code>，即已推送到“远程仓库”中。我们将已被提交到“远程仓库”的代码还原操作叫做“回滚”！<strong>注意：对远程仓库做回滚操作是有风险的，需提前做好备份和通知其他团队成员！</strong></p>
+<p><em>如果你每次更新线上，都会打<a href="http://blog.csdn.net/ligang2585116/article/details/46468709" target="_blank" rel="noopener">tag</a>，那恭喜你，你可以很快的处理上述<strong>场景二</strong>的情况</em></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git checkout &lt;tag&gt;</span><br></pre></td></tr></table></figure>
+
+<p><em>如果你回到当前HEAD指向</em></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git checkout &lt;branch_name&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>情况一：撤销指定文件到指定版本</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 查看指定文件的历史版本</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git log &lt;filename&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 回滚到指定commitID</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git checkout &lt;commitID&gt; &lt;filename&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>情况二：删除最后一次远程提交</strong></p>
+<p><em>方式一：使用revert</em></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git revert HEAD</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+
+<p><em>方式二：使用reset</em></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git reset --hard HEAD^</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git push origin master -f</span><br></pre></td></tr></table></figure>
+
+<p><em>二者区别：</em></p>
+<ul>
+<li><strong>revert</strong>是放弃指定提交的修改，但是会生成一次新的提交，需要填写提交注释，以前的历史记录都在；</li>
+<li><strong>reset</strong>是指将HEAD指针指到指定提交，历史记录中不会出现放弃的提交记录。</li>
+</ul>
+<p><strong>情况三：回滚某次提交</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 找到要回滚的commitID</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git log</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git revert commitID</span><br></pre></td></tr></table></figure>
+
+<h2 id="删除某次提交"><a href="#删除某次提交" class="headerlink" title="删除某次提交"></a>删除某次提交</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git log --oneline -n5</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200901152520.png" alt></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git rebase -i &quot;commit id&quot;^</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：</strong>需要注意最后的<em>^</em>号，意思是commit id的前一次提交</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git rebase -i &quot;5b3ba7a&quot;^</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200901153150.png" alt></p>
+<p>在编辑框中删除相关commit，如<code>pick 5b3ba7a test2</code>，然后保存退出（如果遇到冲突需要先解决冲突）！</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git push origin master -f</span><br></pre></td></tr></table></figure>
+
+<p><strong>通过上述操作，如果你想对历史多个commit进行处理或者，可以选择<code>git rebase -i</code>，只需删除对应的记录就好。rebase还可对 commit 消息进行编辑，以及合并多个commit。</strong></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo Process Out of Memory解决文章过多 内存溢出问题</title>
+    <url>/Hexo-Process-Out-of-Memory%E8%A7%A3%E5%86%B3%E6%96%87%E7%AB%A0%E8%BF%87%E5%A4%9A-%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E9%97%AE%E9%A2%98.html</url>
+    <content><![CDATA[<h2 id="hexo内存溢出问题"><a href="#hexo内存溢出问题" class="headerlink" title="hexo内存溢出问题"></a>hexo内存溢出问题</h2><p>当hexo生成文章大概在1000以上的时候,便有可能出现该问题.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed - process out of memory</span><br></pre></td></tr></table></figure>
+
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法:"></a>解决方法:</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 找到hexo 命令的位置</span></span><br><span class="line"><span class="built_in">which</span> hexo</span><br></pre></td></tr></table></figure>
+
+<p>编辑hexo命令的bin文件的第一行为以下内容.</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/env node --max_old_space_size=8192</span></span><br></pre></td></tr></table></figure>
+
+<p>便暂时解决内存溢出的问题.</p>
+<h2 id="hexo的性能"><a href="#hexo的性能" class="headerlink" title="hexo的性能"></a>hexo的性能</h2><p>hexo的性能相对hugo确实差太多,同样1000+的页面,用hugo却只用了不到2s. 这让我开始开始犹豫是否要放弃使用hexo.</p>
+<p></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>hexo技巧</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hugo博客百度SEO优化 自动提交</title>
+    <url>/Hugo%E5%8D%9A%E5%AE%A2%E7%99%BE%E5%BA%A6SEO%E4%BC%98%E5%8C%96-%E8%87%AA%E5%8A%A8%E6%8F%90%E4%BA%A4.html</url>
+    <content><![CDATA[<p>在切换到Hugo平台之后,比较头疼的是之前hexo很多seo的插件不能使用了. 下面跟大家说一下我的seo优化方案.</p>
+<h1 id="Meta标签优化"><a href="#Meta标签优化" class="headerlink" title="Meta标签优化"></a>Meta标签优化</h1><h2 id="Description"><a href="#Description" class="headerlink" title="Description"></a>Description</h2><p>meta description，被认为是最有用的meta标签，是网站的简介信息。 content控制在100个字符以内比较好。</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">'description'</span> <span class="attr">itemprop</span>=<span class="string">"description"</span> <span class="attr">content</span>=<span class="string">"&#123;&#123; if .Description &#125;&#125;&#123;&#123; .Description &#125;&#125;&#123;&#123; else &#125;&#125;&#123;&#123;if .IsPage&#125;&#125;&#123;&#123;substr .Summary 0 100&#125;&#125;&#123;&#123; end &#125;&#125;&#123;&#123; end &#125;&#125;"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Keywords"><a href="#Keywords" class="headerlink" title="Keywords"></a>Keywords</h2><figure class="highlight html"><table><tr><td class="code"><pre><span class="line">&#123;&#123; if .Keywords &#125;&#125; </span><br><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"keywords"</span> <span class="attr">content</span>=<span class="string">"&#123;&#123; delimit .Keywords "</span>, " &#125;&#125;" &gt;</span></span><br><span class="line">&#123;&#123;else&#125;&#125;</span><br><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"keywords"</span> <span class="attr">content</span>=<span class="string">"&#123;&#123; delimit .Site.Params.Keywords "</span>, " &#125;&#125;" &gt;</span></span><br><span class="line">&#123;&#123; end &#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="百度熊掌号推送"><a href="#百度熊掌号推送" class="headerlink" title="百度熊掌号推送"></a>百度熊掌号推送</h1><p>说到seo熊掌号是必不可少的了,他可以做到24小时之内收录.所以这个必须不能放过.</p>
+<h2 id="gulp"><a href="#gulp" class="headerlink" title="gulp"></a>gulp</h2><p>在这里我要使用gulp来做我的自动化任务管理工具</p>
+<h3 id="安装gulp需要的模块"><a href="#安装gulp需要的模块" class="headerlink" title="安装gulp需要的模块"></a>安装gulp需要的模块</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm init</span><br><span class="line">npm install gulp --save</span><br><span class="line">npm install xml2js --save</span><br><span class="line">npm install xmlhttprequest --save</span><br></pre></td></tr></table></figure>
+
+<h3 id="在项目根目录创建一个gulpfile-js文件"><a href="#在项目根目录创建一个gulpfile-js文件" class="headerlink" title="在项目根目录创建一个gulpfile.js文件"></a>在项目根目录创建一个<code>gulpfile.js</code>文件</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 导入相关依赖</span></span><br><span class="line"><span class="keyword">const</span> gulp = <span class="built_in">require</span>(<span class="string">"gulp"</span>);</span><br><span class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">const</span> xml2js = <span class="built_in">require</span>(<span class="string">'xml2js'</span>)</span><br><span class="line"><span class="keyword">const</span> parser = <span class="keyword">new</span> xml2js.Parser();</span><br><span class="line"><span class="keyword">const</span> XMLHttpRequest = <span class="built_in">require</span>(<span class="string">"xmlhttprequest"</span>).XMLHttpRequest;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册百度站长与熊掌号,百度会提供下面的数据给你</span></span><br><span class="line"><span class="keyword">var</span> xz_appid = <span class="string">'1623792852327580'</span>;</span><br><span class="line"><span class="keyword">var</span> xz_token = <span class="string">'bbd1f589b763b7fb40e52628c176ae27'</span>;</span><br><span class="line"><span class="keyword">var</span> baidu_token= <span class="string">'79IKQsDuvZSdXwd9'</span> </span><br><span class="line"></span><br><span class="line"><span class="comment">//熊掌号每天需要提交的url数量</span></span><br><span class="line"><span class="comment">// 注意这个数字必须要跟百度允许提交的url数量一致,如果多了会提交失败.</span></span><br><span class="line"><span class="keyword">const</span> xzCount = <span class="number">2000</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建一个任务</span></span><br><span class="line">gulp.task(<span class="string">'baiduSeo'</span>, () =&gt; &#123;</span><br><span class="line">    <span class="comment">// 读取sitemap.xml文件并且转换成json</span></span><br><span class="line">    fs.readFile(__dirname + <span class="string">'/public/sitemap.xml'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err, data</span>) </span>&#123;</span><br><span class="line">        parser.parseString(data, <span class="function"><span class="keyword">function</span> (<span class="params">err, result</span>) </span>&#123;</span><br><span class="line">            <span class="comment">// 把读取的数据传入这个函数</span></span><br><span class="line">            urlSubmit(result.urlset.url)</span><br><span class="line">            <span class="built_in">console</span>.log(<span class="string">'Done'</span>);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 提交url的方法</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">urlSubmit</span>(<span class="params">urls</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 最新内容提交</span></span><br><span class="line">    <span class="keyword">var</span> new_target = <span class="string">"http://data.zz.baidu.com/urls?appid="</span>+xz_appid+<span class="string">"&amp;token="</span>+xz_token+<span class="string">"&amp;type=realtime"</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 历史提交</span></span><br><span class="line">    <span class="keyword">var</span> history_target = <span class="string">"http://data.zz.baidu.com/urls?appid="</span>+xz_appid+<span class="string">"&amp;token="</span>+xz_token+<span class="string">"&amp;type=batch"</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 百度站长</span></span><br><span class="line">    <span class="keyword">var</span> baidu_target = <span class="string">"http://data.zz.baidu.com/urls?site=https://zaina.newban.cn&amp;token="</span>+baidu_token</span><br><span class="line"></span><br><span class="line">    <span class="comment">// MIP</span></span><br><span class="line">    <span class="keyword">var</span> MIP_target = <span class="string">"http://data.zz.baidu.com/urls?site=https://zaina.newban.cn&amp;token="</span>+baidu_token+<span class="string">"&amp;type=mip"</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// AMP</span></span><br><span class="line">    <span class="keyword">var</span> AMP_target = <span class="string">"http://data.zz.baidu.com/urls?site=https://zaina.newban.cn&amp;token="</span>+baidu_token+<span class="string">"&amp;type=amp"</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 最新url,看熊掌号情况而定</span></span><br><span class="line">    urls = urls.map(<span class="function"><span class="params">item</span>=&gt;</span>item.loc[<span class="number">0</span>])</span><br><span class="line">    allUrls = urls.join(<span class="string">'\n'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> new_urls_Arr = urls.slice(<span class="number">0</span>,xzCount)</span><br><span class="line">    new_urls= new_urls_Arr.join(<span class="string">'\n'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">'百度站长开始提交'</span>,new_urls)</span><br><span class="line">    sendData(baidu_target,new_urls,<span class="string">'百度站长提交成功'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">'熊掌号开始提交'</span>)</span><br><span class="line">    <span class="comment">//sendData(new_target,new_urls,'熊掌号提交完成')</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 提交历史url 每天最多500w条</span></span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">"历史数据开始提交"</span>)</span><br><span class="line">    <span class="comment">//sendData(history_target,allUrls,"历史数据提交完成")</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">"MIP 开始提交"</span>)</span><br><span class="line">    <span class="comment">//sendData(MIP_target,allUrls,"MIP提交成功")</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">"AMP 开始提交"</span>)</span><br><span class="line">    <span class="comment">//sendData(AMP_target,allUrls,"AMP提交成功")</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 提交数据</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">sendData</span>(<span class="params">target,urls,message</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">var</span> xhr = <span class="keyword">new</span> XMLHttpRequest();</span><br><span class="line">        xhr.open(<span class="string">'POST'</span>, target, <span class="literal">false</span>);</span><br><span class="line">        xhr.setRequestHeader(<span class="string">'Content-type'</span>, <span class="string">'text/plain'</span>);</span><br><span class="line">        xhr.onload = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(<span class="keyword">this</span>.responseText);</span><br><span class="line">            <span class="keyword">if</span>(message)&#123;<span class="built_in">console</span>.info(message)&#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        xhr.send(urls);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">gulp.task(<span class="string">"default"</span>,gulp.series( <span class="string">'baiduSeo'</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;&#125;))</span><br></pre></td></tr></table></figure>
+
+<p>配置好以上都文件之后</p>
+<h2 id="推送"><a href="#推送" class="headerlink" title="推送"></a>推送</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 博客生成</span></span><br><span class="line">hugo</span><br><span class="line"><span class="comment"># url推送</span></span><br><span class="line">gulp</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>Hugo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python的.sort()方法和sorted（）比较总结</title>
+    <url>/Python%E7%9A%84-sort-%E6%96%B9%E6%B3%95%E5%92%8Csorted%EF%BC%88%EF%BC%89%E6%AF%94%E8%BE%83%E6%80%BB%E7%BB%93.html</url>
+    <content><![CDATA[<h4 id="1，-sort（）方法"><a href="#1，-sort（）方法" class="headerlink" title="1，.sort（）方法"></a>1，.sort（）方法</h4><p>　　使用方式是：列表.sort(),作用是将原来的列表正序排序，所以它是对原来的列表进行的操作，不会产生一个新列表，例如：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import  random</span><br><span class="line">numList=[]</span><br><span class="line">print(numList)</span><br><span class="line">for i in range(10):</span><br><span class="line">    numList.append(random.randrange(1,10))# 不包括10</span><br><span class="line">print(&quot;未排序的列表：&quot;,numList)</span><br><span class="line"># numList.sort()执行过程是将列表拍完序后又赋值给了原列表</span><br><span class="line">numList.sort()</span><br><span class="line">print(&quot;排序后列表：&quot;,numList)</span><br><span class="line"># 无法将numList.sort()赋值给一个新列表，以为它并不返回一个新列表</span><br><span class="line">numList=numList.sort()</span><br><span class="line">print(&quot;无法赋值给新列表的的结果：&quot;,numList)</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">未排序的列表： [7, 2, 2, 4, 5, 6, 7, 9, 4, 8]</span><br><span class="line">排序后列表： [2, 2, 4, 4, 5, 6, 7, 7, 8, 9]</span><br><span class="line">无法赋值给新列表的的结果： None</span><br></pre></td></tr></table></figure>
+
+<h4 id="2，sorted-列表-是Python内置函数，该函数对原列表不会产生影响，只是在原来列表的基础上，产生一个有序的新列表，可以复制一个列表名"><a href="#2，sorted-列表-是Python内置函数，该函数对原列表不会产生影响，只是在原来列表的基础上，产生一个有序的新列表，可以复制一个列表名" class="headerlink" title="2，sorted(列表),是Python内置函数，该函数对原列表不会产生影响，只是在原来列表的基础上，产生一个有序的新列表，可以复制一个列表名"></a>2，sorted(列表),是Python内置函数，该函数对原列表不会产生影响，只是在原来列表的基础上，产生一个有序的新列表，可以复制一个列表名</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import  random</span><br><span class="line">numList=[]</span><br><span class="line">print(numList)</span><br><span class="line">for i in range(10):</span><br><span class="line">    numList.append(random.randrange(1,10))# 不包括10</span><br><span class="line">print(&quot;未排序的列表：&quot;,numList)</span><br><span class="line"></span><br><span class="line">sorted(numList)</span><br><span class="line">print(&quot;sorted排序后的数组，不会对原列表有任何影响：&quot;,numList)</span><br><span class="line">getList=sorted(numList)</span><br><span class="line">print(&quot;sorted获得的新的列表：&quot;,getList)</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">未排序的列表： [1, 4, 3, 4, 3, 9, 5, 4, 4, 9]</span><br><span class="line">sorted排序后的数组，不会对原列表有任何影响： [1, 4, 3, 4, 3, 9, 5, 4, 4, 9]</span><br><span class="line">sorted获得的新的列表： [1, 3, 3, 4, 4, 4, 4, 5, 9, 9]</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>python基础</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python跨平台之将Python 程序打包成Windows和Linux可执行文件</title>
+    <url>/Python%E8%B7%A8%E5%B9%B3%E5%8F%B0%E4%B9%8B%E5%B0%86Python-%E7%A8%8B%E5%BA%8F%E6%89%93%E5%8C%85%E6%88%90Windows%E5%92%8CLinux%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.html</url>
+    <content><![CDATA[<p>通常执行 python 程序要有相应的 Python 环境，但某些特定场景下，我们可能并不愿意这么麻烦的去配置这些环境（比如将写好的脚本发给客户进行操作），如果可以提前将程序打包成 Windows平台的 <code>.exe</code> 文件或者是Linux下的 <code>.sh</code> 脚本，那么使用起来就会方便很多，py2exe 和 PyInstaller 这两款工具都是干这么个事的，下面以 hello.py 脚本（代码内容如下）为例进行介绍。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">age = input(<span class="string">"How old are you?\n"</span>)</span><br><span class="line">print(<span class="string">"A: "</span> + age)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>提示：PyInstaller 可以在 Windows 和 Linux 下使用，更推荐使用，而 py2exe 暂不支持 Linux 平台 而且只支持python低版本环境</p>
+</blockquote>
+<h3 id="PyInstaller"><a href="#PyInstaller" class="headerlink" title="PyInstaller"></a>PyInstaller</h3><ol>
+<li>安装</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install pyinstaller</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>使用</li>
+</ol>
+<p>常见的用法有：</p>
+<ul>
+<li>生成单个可执行文件：<code>pyinstaller -F hello.py</code></li>
+<li>生成指定icon的可执行文件：<code>pyinstaller -i xxx.ico hello.py</code></li>
+</ul>
+<blockquote>
+<p>在当前目录下的 dist 文件夹内可以找到生成后的可执行文件（脚本），更多用法请参考说明</p>
+</blockquote>
+<h3 id="py2exe"><a href="#py2exe" class="headerlink" title="py2exe"></a><a href="https://links.jianshu.com/go?to=https%3A%2F%2Fpypi.org%2Fproject%2Fpy2exe%2F" target="_blank" rel="noopener">py2exe</a></h3><ol>
+<li>安装</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install py2exe</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>使用</li>
+</ol>
+<p>如上图，打包失败了，留意到<a href="https://links.jianshu.com/go?to=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F41578808%2Fpython-indexerror-tuple-index-out-of-range-when-using-py2exe" target="_blank" rel="noopener">这里</a>说不支持 python3.6，果断放弃，有兴趣的可以自行降低到 python3.4 或 python3.5 进行尝试。</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo 设置新建文章时自动打开md编辑器</title>
+    <url>/hexo-%E8%AE%BE%E7%BD%AE%E6%96%B0%E5%BB%BA%E6%96%87%E7%AB%A0%E6%97%B6%E8%87%AA%E5%8A%A8%E6%89%93%E5%BC%80md%E7%BC%96%E8%BE%91%E5%99%A8.html</url>
+    <content><![CDATA[<p>在<code>Hexo</code>中新建一篇博文非常简单，只需要在命令行中键入以下命令然后回车即可：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo new &quot;The title of your blog&quot;</span><br></pre></td></tr></table></figure>
+
+<p>然后hexo就会在hexo的根目录下的<code>source</code>目录下的<code>_post</code>目录下自动创建相对应的md文件。然后我们只需要找到刚刚生成的文件进行编辑就可以了。</p>
+<p>但是一旦文章比较多的情况下，我们就需要在成堆的md文件中找刚刚创建的博文，这就比较麻烦。</p>
+<hr>
+<p>好在hexo的github上有类似的issue，然后hexo作者也可给出了解决方法：</p>
+<blockquote>
+<p>ou can try to listen to the new event. For example:</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var exec = require(&apos;child_process&apos;).exec;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">hexo.on(&apos;new&apos;, function(path)&#123;</span><br><span class="line">  exec(&apos;vi&apos;, [path]);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">// Hexo 3</span><br><span class="line">hexo.on(&apos;new&apos;, function(data)&#123;</span><br><span class="line">  exec(&apos;vi&apos;, [data.path]);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>根据作者给的示例给出了下列的解决方法：</p>
+<ul>
+<li><p>首先在<code>hexo</code>目录下的<code>script</code>目录下创建一个js脚本（没有的这个目录的话自己创建一个）。</p>
+</li>
+<li><p>js脚本的命名自定义，然后在脚本中写入以下代码。</p>
+</li>
+<li><p>windows端:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var spawn = require(&apos;child_process&apos;).exec;</span><br><span class="line"></span><br><span class="line">// Hexo 2.x 用户复制这段</span><br><span class="line">hexo.on(&apos;new&apos;, function(path)&#123;</span><br><span class="line">  spawn(&apos;start  &quot;markdown编辑器绝对路径.exe&quot; &apos; + path);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">// Hexo 3 用户复制这段</span><br><span class="line">hexo.on(&apos;new&apos;, function(data)&#123;</span><br><span class="line">  spawn(&apos;start  &quot;markdown编辑器绝对路径.exe&quot; &apos; + data.path);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>mac os端：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var exec = require(&apos;child_process&apos;).exec;</span><br><span class="line"></span><br><span class="line">// Hexo 2.x 用户复制这段</span><br><span class="line">hexo.on(&apos;new&apos;, function(path)&#123;</span><br><span class="line">    exec(&apos;open -a &quot;markdown编辑器绝对路径.app&quot; &apos; + path);</span><br><span class="line">&#125;);</span><br><span class="line">// Hexo 3 用户复制这段</span><br><span class="line">hexo.on(&apos;new&apos;, function(data)&#123;</span><br><span class="line">    exec(&apos;open -a &quot;markdown编辑器绝对路径.app&quot; &apos; + data.path);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>不过我在网上找了很久都没有发现有<code>linux</code>端的操作脚本，然后自己试着改了下，能在我的电脑(<code>debian/ubuntu</code>试过了没问题)上成功跑起来了，po下代码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var exec = require(&apos;child_process&apos;).exec;</span><br><span class="line"></span><br><span class="line">// Hexo 2.x 用户复制这段</span><br><span class="line">hexo.on(&apos;new&apos;, function(path)&#123;</span><br><span class="line">    exec(&apos;vim &apos; + path);</span><br><span class="line">&#125;);</span><br><span class="line">// Hexo 3 用户复制这段</span><br><span class="line">hexo.on(&apos;new&apos;, function(data)&#123;</span><br><span class="line">    exec(&apos;vim &apos; + data.path);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>hexo技巧</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>idea最新激活码</title>
+    <url>/idea%E6%9C%80%E6%96%B0%E6%BF%80%E6%B4%BB%E7%A0%81.html</url>
+    <content><![CDATA[<h4 id="第一个激活码"><a href="#第一个激活码" class="headerlink" title="第一个激活码"></a>第一个激活码</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">7PNLXJPODN-eyJsaWNlbnNlSWQiOiI3UE5MWEpQT0ROIiwibGljZW5zZWVOYW1lIjoi6aOe6LGhIOeggeWGnCIsImFzc2lnbmVlTmFtZSI6IiIsImFzc2lnbmVlRW1haWwiOiIiLCJsaWNlbnNlUmVzdHJpY3Rpb24iOiIiLCJjaGVja0NvbmN1cnJlbnRVc2UiOmZhbHNlLCJwcm9kdWN0cyI6W3siY29kZSI6IklJIiwiZmFsbGJhY2tEYXRlIjoiMjAyMC0wMS0xNSIsInBhaWRVcFRvIjoiMjAyMS0wMS0xNCJ9LHsiY29kZSI6IkFDIiwiZmFsbGJhY2tEYXRlIjoiMjAyMC0wMS0xNSIsInBhaWRVcFRvIjoiMjAyMS0wMS0xNCJ9LHsiY29kZSI6IkRQTiIsImZhbGxiYWNrRGF0ZSI6IjIwMjAtMDEtMTUiLCJwYWlkVXBUbyI6IjIwMjEtMDEtMTQifSx7ImNvZGUiOiJQUyIsImZhbGxiYWNrRGF0ZSI6IjIwMjAtMDEtMTUiLCJwYWlkVXBUbyI6IjIwMjEtMDEtMTQifSx7ImNvZGUiOiJHTyIsImZhbGxiYWNrRGF0ZSI6IjIwMjAtMDEtMTUiLCJwYWlkVXBUbyI6IjIwMjEtMDEtMTQifSx7ImNvZGUiOiJETSIsImZhbGxiYWNrRGF0ZSI6IjIwMjAtMDEtMTUiLCJwYWlkVXBUbyI6IjIwMjEtMDEtMTQifSx7ImNvZGUiOiJDTCIsImZhbGxiYWNrRGF0ZSI6IjIwMjAtMDEtMTUiLCJwYWlkVXBUbyI6IjIwMjEtMDEtMTQifSx7ImNvZGUiOiJSUzAiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTE1IiwicGFpZFVwVG8iOiIyMDIxLTAxLTE0In0seyJjb2RlIjoiUkMiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTE1IiwicGFpZFVwVG8iOiIyMDIxLTAxLTE0In0seyJjb2RlIjoiUkQiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTE1IiwicGFpZFVwVG8iOiIyMDIxLTAxLTE0In0seyJjb2RlIjoiUEMiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTE1IiwicGFpZFVwVG8iOiIyMDIxLTAxLTE0In0seyJjb2RlIjoiUk0iLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTE1IiwicGFpZFVwVG8iOiIyMDIxLTAxLTE0In0seyJjb2RlIjoiV1MiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTE1IiwicGFpZFVwVG8iOiIyMDIxLTAxLTE0In0seyJjb2RlIjoiREIiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTE1IiwicGFpZFVwVG8iOiIyMDIxLTAxLTE0In0seyJjb2RlIjoiREMiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTE1IiwicGFpZFVwVG8iOiIyMDIxLTAxLTE0In0seyJjb2RlIjoiUlNVIiwiZmFsbGJhY2tEYXRlIjoiMjAyMC0wMS0xNSIsInBhaWRVcFRvIjoiMjAyMS0wMS0xNCJ9XSwiaGFzaCI6IjE2MjYyNDE0LzAiLCJncmFjZVBlcmlvZERheXMiOjcsImF1dG9Qcm9sb25nYXRlZCI6ZmFsc2UsImlzQXV0b1Byb2xvbmdhdGVkIjpmYWxzZX0=-PPKBrTimCndddUn6boFzGrhkBW8JU7D4lQuuOxKq4rdA4U3IQix9gM+8UYYUaJCQMg8zPmE42QPSkSWneE5VAShaAwhfdu5/D2KbG9jv2uoy8deXu4YWYRHRmn6TdU1/fBhOsbI4EbqYoRDjQ6R+ibYQBanurdcdySH8wDx2kiEBOEbbHJ9ekkGG4YZysbxWVdnFDX3+s+3IanmZKqK/Lih/+XGK5rwp1QGr3+fFX6yAuI5gK78BOajkkEAq6RR9lzvaMDGt7t5wpYxSnEzN9UgkIhdf1zpg/OG1CB4hRsrQU9IG39r2W2IxqHXdipGkPDag+4MTEkwMuofgXFF9NQ==-MIIElTCCAn2gAwIBAgIBCTANBgkqhkiG9w0BAQsFADAYMRYwFAYDVQQDDA1KZXRQcm9maWxlIENBMB4XDTE4MTEwMTEyMjk0NloXDTIwMTEwMjEyMjk0NlowaDELMAkGA1UEBhMCQ1oxDjAMBgNVBAgMBU51c2xlMQ8wDQYDVQQHDAZQcmFndWUxGTAXBgNVBAoMEEpldEJyYWlucyBzLnIuby4xHTAbBgNVBAMMFHByb2QzeS1mcm9tLTIwMTgxMTAxMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxcQkq+zdxlR2mmRYBPzGbUNdMN6OaXiXzxIWtMEkrJMO/5oUfQJbLLuMSMK0QHFmaI37WShyxZcfRCidwXjot4zmNBKnlyHodDij/78TmVqFl8nOeD5+07B8VEaIu7c3E1N+e1doC6wht4I4+IEmtsPAdoaj5WCQVQbrI8KeT8M9VcBIWX7fD0fhexfg3ZRt0xqwMcXGNp3DdJHiO0rCdU+Itv7EmtnSVq9jBG1usMSFvMowR25mju2JcPFp1+I4ZI+FqgR8gyG8oiNDyNEoAbsR3lOpI7grUYSvkB/xVy/VoklPCK2h0f0GJxFjnye8NT1PAywoyl7RmiAVRE/EKwIDAQABo4GZMIGWMAkGA1UdEwQCMAAwHQYDVR0OBBYEFGEpG9oZGcfLMGNBkY7SgHiMGgTcMEgGA1UdIwRBMD+AFKOetkhnQhI2Qb1t4Lm0oFKLl/GzoRykGjAYMRYwFAYDVQQDDA1KZXRQcm9maWxlIENBggkA0myxg7KDeeEwEwYDVR0lBAwwCgYIKwYBBQUHAwEwCwYDVR0PBAQDAgWgMA0GCSqGSIb3DQEBCwUAA4ICAQAF8uc+YJOHHwOFcPzmbjcxNDuGoOUIP+2h1R75Lecswb7ru2LWWSUMtXVKQzChLNPn/72W0k+oI056tgiwuG7M49LXp4zQVlQnFmWU1wwGvVhq5R63Rpjx1zjGUhcXgayu7+9zMUW596Lbomsg8qVve6euqsrFicYkIIuUu4zYPndJwfe0YkS5nY72SHnNdbPhEnN8wcB2Kz+OIG0lih3yz5EqFhld03bGp222ZQCIghCTVL6QBNadGsiN/lWLl4JdR3lJkZzlpFdiHijoVRdWeSWqM4y0t23c92HXKrgppoSV18XMxrWVdoSM3nuMHwxGhFyde05OdDtLpCv+jlWf5REAHHA201pAU6bJSZINyHDUTB+Beo28rRXSwSh3OUIvYwKNVeoBY+KwOJ7WnuTCUq1meE6GkKc4D/cXmgpOyW/1SmBz3XjVIi/zprZ0zf3qH5mkphtg6ksjKgKjmx1cXfZAAX6wcDBNaCL+Ortep1Dh8xDUbqbBVNBL4jbiL3i3xsfNiyJgaZ5sX7i8tmStEpLbPwvHcByuf59qJhV/bZOl8KqJBETCDJcY6O2aqhTUy+9x93ThKs1GKrRPePrWPluud7ttlgtRveit/pcBrnQcXOl1rHq7ByB8CFAxNotRUYL9IF5n3wJOgkPojMy6jetQA5Ogc8Sm7RG6vg1yow==</span><br></pre></td></tr></table></figure>
+
+<h4 id="第二个激活码"><a href="#第二个激活码" class="headerlink" title="第二个激活码"></a>第二个激活码</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">QYYBAC9D3J-eyJsaWNlbnNlSWQiOiJRWVlCQUM5RDNKIiwibGljZW5zZWVOYW1lIjoi6LaF57qnIOeoi+W6j+WRmCIsImFzc2lnbmVlTmFtZSI6IiIsImFzc2lnbmVlRW1haWwiOiIiLCJsaWNlbnNlUmVzdHJpY3Rpb24iOiIiLCJjaGVja0NvbmN1cnJlbnRVc2UiOmZhbHNlLCJwcm9kdWN0cyI6W3siY29kZSI6IklJIiwiZmFsbGJhY2tEYXRlIjoiMjAyMC0wMS0wNCIsInBhaWRVcFRvIjoiMjAyMS0wMS0wMyJ9LHsiY29kZSI6IkFDIiwiZmFsbGJhY2tEYXRlIjoiMjAyMC0wMS0wNCIsInBhaWRVcFRvIjoiMjAyMS0wMS0wMyJ9LHsiY29kZSI6IkRQTiIsImZhbGxiYWNrRGF0ZSI6IjIwMjAtMDEtMDQiLCJwYWlkVXBUbyI6IjIwMjEtMDEtMDMifSx7ImNvZGUiOiJQUyIsImZhbGxiYWNrRGF0ZSI6IjIwMjAtMDEtMDQiLCJwYWlkVXBUbyI6IjIwMjEtMDEtMDMifSx7ImNvZGUiOiJHTyIsImZhbGxiYWNrRGF0ZSI6IjIwMjAtMDEtMDQiLCJwYWlkVXBUbyI6IjIwMjEtMDEtMDMifSx7ImNvZGUiOiJETSIsImZhbGxiYWNrRGF0ZSI6IjIwMjAtMDEtMDQiLCJwYWlkVXBUbyI6IjIwMjEtMDEtMDMifSx7ImNvZGUiOiJDTCIsImZhbGxiYWNrRGF0ZSI6IjIwMjAtMDEtMDQiLCJwYWlkVXBUbyI6IjIwMjEtMDEtMDMifSx7ImNvZGUiOiJSUzAiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTA0IiwicGFpZFVwVG8iOiIyMDIxLTAxLTAzIn0seyJjb2RlIjoiUkMiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTA0IiwicGFpZFVwVG8iOiIyMDIxLTAxLTAzIn0seyJjb2RlIjoiUkQiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTA0IiwicGFpZFVwVG8iOiIyMDIxLTAxLTAzIn0seyJjb2RlIjoiUEMiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTA0IiwicGFpZFVwVG8iOiIyMDIxLTAxLTAzIn0seyJjb2RlIjoiUk0iLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTA0IiwicGFpZFVwVG8iOiIyMDIxLTAxLTAzIn0seyJjb2RlIjoiV1MiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTA0IiwicGFpZFVwVG8iOiIyMDIxLTAxLTAzIn0seyJjb2RlIjoiREIiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTA0IiwicGFpZFVwVG8iOiIyMDIxLTAxLTAzIn0seyJjb2RlIjoiREMiLCJmYWxsYmFja0RhdGUiOiIyMDIwLTAxLTA0IiwicGFpZFVwVG8iOiIyMDIxLTAxLTAzIn0seyJjb2RlIjoiUlNVIiwiZmFsbGJhY2tEYXRlIjoiMjAyMC0wMS0wNCIsInBhaWRVcFRvIjoiMjAyMS0wMS0wMyJ9XSwiaGFzaCI6IjE2MDgwOTA5LzAiLCJncmFjZVBlcmlvZERheXMiOjcsImF1dG9Qcm9sb25nYXRlZCI6ZmFsc2UsImlzQXV0b1Byb2xvbmdhdGVkIjpmYWxzZX0=-I7c5mu4hUCMxcldrwZEJMaT+qkrzrF1bjJi0i5QHcrRxk2LO0jqzUe2fBOUR4L+x+7n6kCwAoBBODm9wXst8dWLXdq179EtjU3rfJENr1wXGgtef//FNow+Id5iRufJ4W+p+3s5959GSFibl35YtbELELuCUH2IbCRly0PUBjitgA0r2y+9jV5YD/dmrd/p4C87MccC74NxtQfRdeUEGx87vnhsqTFH/sP4C2VljSo/F/Ft9JqsSlGfwSKjzU8BreYt1QleosdMnMK7a+fkfxh7n5zg4DskdVlNbfe6jvYgMVE16DMXd6F1Zhwq+lrmewJA2jPToc+H5304rcJfa9w==-MIIElTCCAn2gAwIBAgIBCTANBgkqhkiG9w0BAQsFADAYMRYwFAYDVQQDDA1KZXRQcm9maWxlIENBMB4XDTE4MTEwMTEyMjk0NloXDTIwMTEwMjEyMjk0NlowaDELMAkGA1UEBhMCQ1oxDjAMBgNVBAgMBU51c2xlMQ8wDQYDVQQHDAZQcmFndWUxGTAXBgNVBAoMEEpldEJyYWlucyBzLnIuby4xHTAbBgNVBAMMFHByb2QzeS1mcm9tLTIwMTgxMTAxMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxcQkq+zdxlR2mmRYBPzGbUNdMN6OaXiXzxIWtMEkrJMO/5oUfQJbLLuMSMK0QHFmaI37WShyxZcfRCidwXjot4zmNBKnlyHodDij/78TmVqFl8nOeD5+07B8VEaIu7c3E1N+e1doC6wht4I4+IEmtsPAdoaj5WCQVQbrI8KeT8M9VcBIWX7fD0fhexfg3ZRt0xqwMcXGNp3DdJHiO0rCdU+Itv7EmtnSVq9jBG1usMSFvMowR25mju2JcPFp1+I4ZI+FqgR8gyG8oiNDyNEoAbsR3lOpI7grUYSvkB/xVy/VoklPCK2h0f0GJxFjnye8NT1PAywoyl7RmiAVRE/EKwIDAQABo4GZMIGWMAkGA1UdEwQCMAAwHQYDVR0OBBYEFGEpG9oZGcfLMGNBkY7SgHiMGgTcMEgGA1UdIwRBMD+AFKOetkhnQhI2Qb1t4Lm0oFKLl/GzoRykGjAYMRYwFAYDVQQDDA1KZXRQcm9maWxlIENBggkA0myxg7KDeeEwEwYDVR0lBAwwCgYIKwYBBQUHAwEwCwYDVR0PBAQDAgWgMA0GCSqGSIb3DQEBCwUAA4ICAQAF8uc+YJOHHwOFcPzmbjcxNDuGoOUIP+2h1R75Lecswb7ru2LWWSUMtXVKQzChLNPn/72W0k+oI056tgiwuG7M49LXp4zQVlQnFmWU1wwGvVhq5R63Rpjx1zjGUhcXgayu7+9zMUW596Lbomsg8qVve6euqsrFicYkIIuUu4zYPndJwfe0YkS5nY72SHnNdbPhEnN8wcB2Kz+OIG0lih3yz5EqFhld03bGp222ZQCIghCTVL6QBNadGsiN/lWLl4JdR3lJkZzlpFdiHijoVRdWeSWqM4y0t23c92HXKrgppoSV18XMxrWVdoSM3nuMHwxGhFyde05OdDtLpCv+jlWf5REAHHA201pAU6bJSZINyHDUTB+Beo28rRXSwSh3OUIvYwKNVeoBY+KwOJ7WnuTCUq1meE6GkKc4D/cXmgpOyW/1SmBz3XjVIi/zprZ0zf3qH5mkphtg6ksjKgKjmx1cXfZAAX6wcDBNaCL+Ortep1Dh8xDUbqbBVNBL4jbiL3i3xsfNiyJgaZ5sX7i8tmStEpLbPwvHcByuf59qJhV/bZOl8KqJBETCDJcY6O2aqhTUy+9x93ThKs1GKrRPePrWPluud7ttlgtRveit/pcBrnQcXOl1rHq7ByB8CFAxNotRUYL9IF5n3wJOgkPojMy6jetQA5Ogc8Sm7RG6vg1yow==</span><br></pre></td></tr></table></figure>
+
+<h4 id="第三个激活码"><a href="#第三个激活码" class="headerlink" title="第三个激活码"></a>第三个激活码</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">E70JHCOV2H-eyJsaWNlbnNlSWQiOiJFNzBKSENPVjJIIiwibGljZW5zZWVOYW1lIjoi5bGx5Lic55CG5bel5aSn5a2mIiwiYXNzaWduZWVOYW1lIjoiIiwiYXNzaWduZWVFbWFpbCI6IiIsImxpY2Vuc2VSZXN0cmljdGlvbiI6IkZvciBlZHVjYXRpb25hbCB1c2Ugb25seSIsImNoZWNrQ29uY3VycmVudFVzZSI6ZmFsc2UsInByb2R1Y3RzIjpbeyJjb2RlIjoiSUkiLCJwYWlkVXBUbyI6IjIwMjEtMDItMTgifSx7ImNvZGUiOiJBQyIsInBhaWRVcFRvIjoiMjAyMS0wMi0xOCJ9LHsiY29kZSI6IkRQTiIsInBhaWRVcFRvIjoiMjAyMS0wMi0xOCJ9LHsiY29kZSI6IlBTIiwicGFpZFVwVG8iOiIyMDIxLTAyLTE4In0seyJjb2RlIjoiR08iLCJwYWlkVXBUbyI6IjIwMjEtMDItMTgifSx7ImNvZGUiOiJETSIsInBhaWRVcFRvIjoiMjAyMS0wMi0xOCJ9LHsiY29kZSI6IkNMIiwicGFpZFVwVG8iOiIyMDIxLTAyLTE4In0seyJjb2RlIjoiUlMwIiwicGFpZFVwVG8iOiIyMDIxLTAyLTE4In0seyJjb2RlIjoiUkMiLCJwYWlkVXBUbyI6IjIwMjEtMDItMTgifSx7ImNvZGUiOiJSRCIsInBhaWRVcFRvIjoiMjAyMS0wMi0xOCJ9LHsiY29kZSI6IlBDIiwicGFpZFVwVG8iOiIyMDIxLTAyLTE4In0seyJjb2RlIjoiUk0iLCJwYWlkVXBUbyI6IjIwMjEtMDItMTgifSx7ImNvZGUiOiJXUyIsInBhaWRVcFRvIjoiMjAyMS0wMi0xOCJ9LHsiY29kZSI6IkRCIiwicGFpZFVwVG8iOiIyMDIxLTAyLTE4In0seyJjb2RlIjoiREMiLCJwYWlkVXBUbyI6IjIwMjEtMDItMTgifSx7ImNvZGUiOiJSU1UiLCJwYWlkVXBUbyI6IjIwMjEtMDItMTgifV0sImhhc2giOiIxNjc5MTgwMy8wIiwiZ3JhY2VQZXJpb2REYXlzIjo3LCJhdXRvUHJvbG9uZ2F0ZWQiOmZhbHNlLCJpc0F1dG9Qcm9sb25nYXRlZCI6ZmFsc2V9-qlgtO4xVGHX/r45fIKMaR6B9pWQtucrCYVsz0o00crcAiYN1k/kSMygggYl187B0u0jeXQCe4BmQIItKL79x6NwoPn43inreVhZ88f4+Cbl+V/KGeAYeybon+7YoTs8FY4+31ANW/LwBPxkPnlErxYdQ6oc/k6mnxIOm5Nf8WjKRfYYIl5Bhmdt1gHMGgFsocCcTLLiqDUGEcPj5tUIJXwwYaeKAR3YGXm/P73QpnYR/BcGaodBN3jprQRxsS5Ia5y06rrDAJcPSZuttAFpAit/4o/gq2XzhrjaBCtOMxNzk3XEAT82glTlWQOQx6KnRq6D7WUXzd81g44aP+Dca5Q==-MIIElTCCAn2gAwIBAgIBCTANBgkqhkiG9w0BAQsFADAYMRYwFAYDVQQDDA1KZXRQcm9maWxlIENBMB4XDTE4MTEwMTEyMjk0NloXDTIwMTEwMjEyMjk0NlowaDELMAkGA1UEBhMCQ1oxDjAMBgNVBAgMBU51c2xlMQ8wDQYDVQQHDAZQcmFndWUxGTAXBgNVBAoMEEpldEJyYWlucyBzLnIuby4xHTAbBgNVBAMMFHByb2QzeS1mcm9tLTIwMTgxMTAxMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxcQkq+zdxlR2mmRYBPzGbUNdMN6OaXiXzxIWtMEkrJMO/5oUfQJbLLuMSMK0QHFmaI37WShyxZcfRCidwXjot4zmNBKnlyHodDij/78TmVqFl8nOeD5+07B8VEaIu7c3E1N+e1doC6wht4I4+IEmtsPAdoaj5WCQVQbrI8KeT8M9VcBIWX7fD0fhexfg3ZRt0xqwMcXGNp3DdJHiO0rCdU+Itv7EmtnSVq9jBG1usMSFvMowR25mju2JcPFp1+I4ZI+FqgR8gyG8oiNDyNEoAbsR3lOpI7grUYSvkB/xVy/VoklPCK2h0f0GJxFjnye8NT1PAywoyl7RmiAVRE/EKwIDAQABo4GZMIGWMAkGA1UdEwQCMAAwHQYDVR0OBBYEFGEpG9oZGcfLMGNBkY7SgHiMGgTcMEgGA1UdIwRBMD+AFKOetkhnQhI2Qb1t4Lm0oFKLl/GzoRykGjAYMRYwFAYDVQQDDA1KZXRQcm9maWxlIENBggkA0myxg7KDeeEwEwYDVR0lBAwwCgYIKwYBBQUHAwEwCwYDVR0PBAQDAgWgMA0GCSqGSIb3DQEBCwUAA4ICAQAF8uc+YJOHHwOFcPzmbjcxNDuGoOUIP+2h1R75Lecswb7ru2LWWSUMtXVKQzChLNPn/72W0k+oI056tgiwuG7M49LXp4zQVlQnFmWU1wwGvVhq5R63Rpjx1zjGUhcXgayu7+9zMUW596Lbomsg8qVve6euqsrFicYkIIuUu4zYPndJwfe0YkS5nY72SHnNdbPhEnN8wcB2Kz+OIG0lih3yz5EqFhld03bGp222ZQCIghCTVL6QBNadGsiN/lWLl4JdR3lJkZzlpFdiHijoVRdWeSWqM4y0t23c92HXKrgppoSV18XMxrWVdoSM3nuMHwxGhFyde05OdDtLpCv+jlWf5REAHHA201pAU6bJSZINyHDUTB+Beo28rRXSwSh3OUIvYwKNVeoBY+KwOJ7WnuTCUq1meE6GkKc4D/cXmgpOyW/1SmBz3XjVIi/zprZ0zf3qH5mkphtg6ksjKgKjmx1cXfZAAX6wcDBNaCL+Ortep1Dh8xDUbqbBVNBL4jbiL3i3xsfNiyJgaZ5sX7i8tmStEpLbPwvHcByuf59qJhV/bZOl8KqJBETCDJcY6O2aqhTUy+9x93ThKs1GKrRPePrWPluud7ttlgtRveit/pcBrnQcXOl1rHq7ByB8CFAxNotRUYL9IF5n3wJOgkPojMy6jetQA5Ogc8Sm7RG6vg1yow==</span><br></pre></td></tr></table></figure>
+
+<p><strong>本帖附件</strong></p>
+<p><a href="https://545c.com/file/21042697-459766209" target="_blank" rel="noopener">点击下载</a></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>开发工具</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mac平台下使用Charls进行抓包</title>
+    <url>/mac%E5%B9%B3%E5%8F%B0%E4%B8%8B%E4%BD%BF%E7%94%A8Charls%E8%BF%9B%E8%A1%8C%E6%8A%93%E5%8C%85.html</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p> 某天，突然产生了对手机访问进行抓包的想法，google了一下，发现在mac下使用charles进行手机访问的抓包比较容易，就进行了一次手机抓包的尝试（安卓手机）。</p>
+<h1 id="mac安装charles"><a href="#mac安装charles" class="headerlink" title="mac安装charles"></a>mac安装charles</h1><p> 对于mac下安装charles，网上教程很多，这里不再进行说明，如果有条件的话，最好进行购买。</p>
+<h1 id="charles捕获http请求"><a href="#charles捕获http请求" class="headerlink" title="charles捕获http请求"></a>charles捕获http请求</h1><p> 1、<strong>Proxy – macOS</strong> Proxy 先打开代理，使得mac上所有请求都通过charles进行代理。</p>
+<p> <img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200908145123.png" alt></p>
+<p> 2、<strong>Proxy – Proxy Settings</strong> 设置监听端口号为8888。</p>
+<p><img src="https://i.loli.net/2020/09/08/hWPSUBakNF97n12.png" alt></p>
+<p> 3、此时，用电脑访问百度，就已经可以获取访问的包了，如果我们需要监听手机的访问，就还得在手机上进行设置。</p>
+<p> <img src="https://i.loli.net/2020/09/08/wQbUoSWAdhlP52J.png" alt></p>
+<p> 4、先获取电脑的ip地址，<strong>Help – Local Ip Address</strong></p>
+<p> <img src="https://i.loli.net/2020/09/08/BOIz4r5VSdRFAgW.png" alt></p>
+<p> 5、然后在手机连接wifi，此时手机和电脑连接的必须是同一个wifi，然后在手机设置代理。</p>
+<p> <img src="https://i.loli.net/2020/09/08/bdZgW19vieRu3LM.png" alt></p>
+<p>6、设置完成后，在手机打开一个网址，此时chartles就可以获取到手机访问的包了。</p>
+<h1 id="charles捕获https请求"><a href="#charles捕获https请求" class="headerlink" title="charles捕获https请求"></a>charles捕获https请求</h1><p> http的请求我们已经可以获取，但是有些网站是https的，如果我们需要解析https的包，就需要安装证书了。</p>
+<p> 1、<strong>Help – SSL Proxying – install Charles Root Certificate</strong>,首先在mac安装CA证书。</p>
+<p> <img src="https://i.loli.net/2020/09/08/FrVcvGhgWL7CB5T.png" alt></p>
+<p> 2、然后要始终信任该证书。</p>
+<p> <img src="https://i.loli.net/2020/09/08/ibw5QkjI4g8DLEA.png" alt></p>
+<p> 3、<strong>Help – SSL Proxying – Install Charles Root Certificate On …</strong>,然后生成手机上的证书。</p>
+<p><img src="https://i.loli.net/2020/09/08/5RkQIY1svdKUDbN.png" alt></p>
+<p> 4、<strong>Help – SSL Proxying – Save …</strong>,然后保存该证书，它会生成一个类似<strong>charles-ssl-proxying.pem</strong>的文件，把该文件的后缀改为<strong>.crt</strong>,然后发送到你的安卓手机，进行安装即可。</p>
+<p> <img src="https://i.loli.net/2020/09/08/lRA2w4Go5YjLqb8.png" alt></p>
+<p> 5、<strong>Proxy – SSL Proxying setting</strong>,设置你要监听的https请求的网址</p>
+<p> <img src="https://i.loli.net/2020/09/08/GY2pOr1ktqWla9i.png" alt></p>
+<p> 6、手机再访问该网址，即可以抓到https的包了。</p>
+<p><img src="https://i.loli.net/2020/09/08/elVRwzuWX4Jsc32.png" alt></p>
+<p><strong>本帖附件</strong></p>
+<p><a href="https://545c.com/file/21042697-460657154" target="_blank" rel="noopener">点击下载</a></p>
+<h4 id="1-如果出现打开时提示：xxx-app已损坏，无法打开-那么输入以下指令解决"><a href="#1-如果出现打开时提示：xxx-app已损坏，无法打开-那么输入以下指令解决" class="headerlink" title="1. 如果出现打开时提示：xxx.app已损坏，无法打开,那么输入以下指令解决:"></a>1. 如果出现打开时提示：xxx.app已损坏，无法打开,那么输入以下指令解决:</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo xattr -d com.apple.quarantine /Applications/xxx.app</span><br></pre></td></tr></table></figure>
+
+<p>其中xxx.app是出问题的APP名称，如名称中有空格，可用“\”加空格代替</p>
+<h4 id="2-如果报错"><a href="#2-如果报错" class="headerlink" title="2.如果报错"></a>2.如果报错</h4><blockquote>
+<p>Charles cannot configure your proxy settings while it is on a read-only volume. Perhaps you are running Charles from the disk image? If so, please copy Charles to the Applications folder and run it again. Otherwise please ensure that Charles is running on a volume that is read-write and try again.</p>
+</blockquote>
+<h4 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo chown -R root &quot;/Applications/Charles.app/Contents/Resources&quot;</span><br><span class="line"> sudo chmod -R u+s &quot;/Applications/Charles.app/Contents/Resources&quot;</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>抓包</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>wireshark怎么抓包、wireshark抓包详细图文教程</title>
+    <url>/wireshark%E6%80%8E%E4%B9%88%E6%8A%93%E5%8C%85%E3%80%81wireshark%E6%8A%93%E5%8C%85%E8%AF%A6%E7%BB%86%E5%9B%BE%E6%96%87%E6%95%99%E7%A8%8B.html</url>
+    <content><![CDATA[<p>wireshark是非常流行的网络封包分析软件，功能十分强大。可以截取各种网络封包，显示网络封包的详细信息。使用wireshark的人必须了解网络协议，否则就看不懂wireshark了。<br>为了安全考虑，wireshark只能查看封包，而不能修改封包的内容，或者发送封包。</p>
+<p>wireshark能获取HTTP，也能获取HTT<a href="http://www.cr173.com/k/photoshopcs5/" target="_blank" rel="noopener">PS</a>，但是不能解密HTTPS，所以wireshark看不懂HTTPS中的内容，总结，如果是处理HTTP,HTTPS 还是用Fiddler, <strong>其他协议比如TCP,UDP 就用wireshark.</strong></p>
+<p><strong>wireshark 开始抓包</strong></p>
+<p>开始界面</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1605493-20190314094522754-103175516-20200907102049320.png" alt="img"></p>
+<p><strong>wireshark是捕获机器上的某一块网卡的网络包</strong>，当你的机器上有多块网卡的时候，你需要选择一个网卡。</p>
+<p>点击Caputre-&gt;Interfaces.. 出现下面对话框，选择正确的网卡。然后点击”Start”按钮, 开始抓包</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1605493-20190314094604914-1384393003-20200907102059133.png" alt="img"></p>
+<p>Wireshark 窗口介绍</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1605493-20190314094626016-1952370119-20200907102110400.png" alt="img"></p>
+<p><strong>WireShark 主要分为这几个界面</strong></p>
+<p>\1. Display Filter(显示过滤器)， 用于过滤</p>
+<p>\2. Packet List Pane(封包列表)， 显示捕获到的封包， 有源地址和目标地址，端口号。 颜色不同，代表</p>
+<p>\3. Packet Details Pane(封包详细信息), 显示封包中的字段</p>
+<p>\4. Dissector Pane(16进制数据)</p>
+<p>\5. Miscellanous(地址栏，杂项)</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1605493-20190314094730951-683976121-20200907102121831.png" alt="img"></p>
+<p>使用过滤是非常重要的， 初学者使用wireshark时，将会得到大量的冗余信息，在几千甚至几万条记录中，以至于很难找到自己需要的部分。搞得晕头转向。</p>
+<p>过滤器会帮助我们在大量的数据中迅速找到我们需要的信息。</p>
+<p>过滤器有两种，</p>
+<p>一种是显示过滤器，就是主界面上那个，用来在捕获的记录中找到所需要的记录</p>
+<p>一种是捕获过滤器，用来过滤捕获的封包，以免捕获太多的记录。 在Capture -&gt; Capture Filters 中设置</p>
+<p>保存过滤</p>
+<p>在Filter栏上，填好Filter的表达式后，点击Save按钮， 取个名字。比如”Filter 102”,</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1605493-20190314094843076-11407886-20200907102136609.png" alt="img"></p>
+<p>Filter栏上就多了个”Filter 102” 的按钮。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1605493-20190314094913816-449630993-20200907102143988.png" alt="img"></p>
+<p><strong>过滤表达式的规则</strong></p>
+<p>表达式规则</p>
+<p> \1. 协议过滤</p>
+<p>比如TCP，只显示TCP协议。</p>
+<p>\2. IP 过滤</p>
+<p>比如 ip.src ==192.168.1.102 显示源地址为192.168.1.102，</p>
+<p>ip.dst==192.168.1.102, 目标地址为192.168.1.102</p>
+<p>\3. 端口过滤</p>
+<p>tcp.port ==80, 端口为80的</p>
+<p>tcp.srcport == 80, 只显示TCP协议的愿端口为80的。</p>
+<p>\4. Http模式过滤</p>
+<p>http.request.method==”GET”,  只显示HTTP GET方法的。</p>
+<p>\5. 逻辑运算符为 AND/ OR</p>
+<p>常用的过滤表达式</p>
+<table>
+<thead>
+<tr>
+<th>过滤表达式</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>http</td>
+<td>只查看HTTP协议的记录</td>
+</tr>
+<tr>
+<td>ip.src ==192.168.1.102 or ip.dst==192.168.1.102</td>
+<td>源地址或者目标地址是192.168.1.102</td>
+</tr>
+<tr>
+<td>snmp &amp;&amp; udp.dstport == 162</td>
+<td>抓取SNMP Trap包</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p> 封包列表(Packet List Pane)</p>
+<p> 封包列表的面板中显示，编号，时间戳，源地址，目标地址，协议，长度，以及封包信息。 你可以看到不同的协议用了不同的颜色显示。</p>
+<p>你也可以修改这些显示颜色的规则， View -&gt;Coloring Rules.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1605493-20190314095213546-1355213248-20200907102153795.png" alt="img"></p>
+<p>封包详细信息 (Packet Details Pane)</p>
+<p>这个面板是我们最重要的，用来查看协议中的每一个字段。</p>
+<p>各行信息分别为</p>
+<p>Frame:  物理层的数据帧概况</p>
+<p>Ethernet II: 数据链路层以太网帧头部信息</p>
+<p>Internet Protocol Version 4: 互联网层IP包头部信息</p>
+<p>Transmission Control Protocol: 传输层T的数据段头部信息，此处是TCP</p>
+<p>Hypertext Transfer Protocol: 应用层的信息，此处是HTTP协议</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1605493-20190314095310963-1075553187-20200907102202302.png" alt="img"></p>
+<p><strong>TCP包的具体内容</strong></p>
+<p> 从下图可以看到wireshark捕获到的TCP包中的每个字段。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1605493-20190314095338514-530749525-20200907102211935.png" alt="img"></p>
+<p>看到这， 基本上对wireshak有了初步了解， 现在我们看一个TCP三次握手的实例</p>
+<p> 三次握手过程为</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1605493-20190314095410815-1870221073-20200907102219789.png" alt="img"></p>
+<p>这图我都看过很多遍了， 这次我们用wireshark实际分析下三次握手的过程。</p>
+<p>打开wireshark, 打开浏览器输入 <a href="http://www.cr173.com" target="_blank" rel="noopener">http://www.cr173.com</a></p>
+<p>在wireshark中输入http过滤， 然后选中GET /tankxiao HTTP/1.1的那条记录，右键然后点击”Follow TCP Stream”,</p>
+<p>这样做的目的是为了得到与浏览器打开网站相关的数据包，将得到如下图</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1605493-20190314095516884-1091678120-20200907102228684.png" alt="img"></p>
+<p>图中可以看到wireshark截获到了三次握手的三个数据包。第四个包才是HTTP的， 这说明HTTP的确是使用TCP建立连接的。</p>
+<p><strong>第一次握手数据包</strong></p>
+<p>客户端发送一个TCP，标志位为SYN，序列号为0， 代表客户端请求建立连接。 如下图</p>
+<p><strong><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200907104442.png" alt>第二次握手的数据包</strong></p>
+<p>服务器发回确认包, 标志位为 SYN,ACK. 将确认序号(Acknowledgement Number)设置为客户的I S N加1以.即0+1=1, 如下图</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200907104507.png" alt></p>
+<p><strong>第三次握手的数据包</strong></p>
+<p>客户端再次发送确认包(ACK) SYN标志位为0,ACK标志位为1.并且把服务器发来ACK的序号字段+1,放在确定字段中发送给对方.并且在数据段放写ISN的+1, 如下图:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200907104521.png" alt></p>
+<p> 就这样通过了TCP三次握手，建立了连接</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>抓包</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用python利用第三方登录实现自动化简书发布文章</title>
+    <url>/%E4%BD%BF%E7%94%A8python%E5%88%A9%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E5%8C%96%E7%AE%80%E4%B9%A6%E5%8F%91%E5%B8%83%E6%96%87%E7%AB%A0.html</url>
+    <content><![CDATA[<h3 id="话不多说-首先附上代码"><a href="#话不多说-首先附上代码" class="headerlink" title="话不多说 首先附上代码"></a>话不多说 首先附上代码</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver</span><br><span class="line"><span class="keyword">from</span> selenium.webdriver.support.wait <span class="keyword">import</span> WebDriverWait</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> linecache</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Main</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="comment"># init</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, file)</span>:</span></span><br><span class="line">        self.title = <span class="string">''</span></span><br><span class="line">        self.content = <span class="string">''</span></span><br><span class="line">        self.category = <span class="string">''</span></span><br><span class="line">        self.tags = <span class="string">''</span></span><br><span class="line">        <span class="comment"># OsChina的系统分类, 设个默认值</span></span><br><span class="line">        self.osChina_sys_category = <span class="string">'编程语言'</span></span><br><span class="line">        <span class="comment"># CSDN的文章分类, 设个默认值</span></span><br><span class="line">        self.csdn_article_category = <span class="string">'原创'</span></span><br><span class="line">        <span class="comment"># CSDN的博客分类, 设个默认值</span></span><br><span class="line">        self.csdn_blog_category = <span class="string">'后端'</span></span><br><span class="line">        self.read_file(file)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 读取MD中的title, content, self_category, self_tags, osChina_sys_category, csdn_article_category, csdn_blog_category</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">read_file</span><span class="params">(self, markdown_file)</span>:</span></span><br><span class="line">        self.title = linecache.getline(markdown_file, <span class="number">2</span>).split(<span class="string">'title: '</span>)[<span class="number">1</span>].strip(<span class="string">'\n'</span>)</span><br><span class="line">        <span class="keyword">with</span> open(markdown_file, <span class="string">'r'</span>, encoding=<span class="string">'UTF-8'</span>) <span class="keyword">as</span> f:</span><br><span class="line">            self.content = f.read().split(<span class="string">'--&gt;\n'</span>)[<span class="number">1</span>]</span><br><span class="line">            <span class="comment"># 重置文件指针偏移量</span></span><br><span class="line">            f.seek(<span class="number">0</span>)</span><br><span class="line">            <span class="keyword">for</span> line <span class="keyword">in</span> f.readlines():</span><br><span class="line">                <span class="keyword">if</span> re.search(<span class="string">'self_category: '</span>, line) <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                    self.category = line.split(<span class="string">'self_category: '</span>)[<span class="number">1</span>].strip(<span class="string">'\n'</span>)</span><br><span class="line">                <span class="keyword">elif</span> re.search(<span class="string">'self_tags: '</span>, line) <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                    self.tags = line.split(<span class="string">'self_tags: '</span>)[<span class="number">1</span>].strip(<span class="string">'\n'</span>)</span><br><span class="line">                <span class="keyword">elif</span> re.search(<span class="string">'osChina_sys_category: '</span>, line) <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                    self.osChina_sys_category = line.split(<span class="string">'osChina_sys_category: '</span>)[<span class="number">1</span>].strip(<span class="string">'\n'</span>)</span><br><span class="line">                <span class="keyword">elif</span> re.search(<span class="string">'csdn_article_category: '</span>, line) <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                    self.csdn_article_category = line.split(<span class="string">'csdn_article_category: '</span>)[<span class="number">1</span>].strip(<span class="string">'\n'</span>)</span><br><span class="line">                <span class="keyword">elif</span> re.search(<span class="string">'csdn_blog_category: '</span>, line) <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                    self.csdn_blog_category = line.split(<span class="string">'csdn_blog_category: '</span>)[<span class="number">1</span>].strip(<span class="string">'\n'</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># QQ授权登录, 使用前提是QQ客户端在线</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">qq</span><span class="params">(driver, timeout)</span>:</span></span><br><span class="line">    <span class="comment"># 切换到最新打开的窗口</span></span><br><span class="line">    window_handles = driver.window_handles</span><br><span class="line">    driver.switch_to.window(window_handles[<span class="number">-1</span>])</span><br><span class="line"></span><br><span class="line">    print(<span class="string">'qq authorize title is '</span>, driver.title)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 切换iframe</span></span><br><span class="line">    iframe = WebDriverWait(driver, timeout).until(<span class="keyword">lambda</span> d: d.find_element_by_id(<span class="string">'ptlogin_iframe'</span>))</span><br><span class="line">    driver.switch_to.frame(iframe)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 点击头像进行授权登录</span></span><br><span class="line">    login = WebDriverWait(driver, timeout).until(<span class="keyword">lambda</span> d: d.find_element_by_xpath(<span class="string">'//*[@id="qlogin_list"]/a[1]'</span>))</span><br><span class="line">    login.click()</span><br><span class="line"><span class="comment"># 简书</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">JianShu</span><span class="params">(object)</span>:</span></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">post</span><span class="params">(main, timeout, self_timeout=<span class="number">3</span>)</span>:</span></span><br><span class="line">        <span class="comment"># 1.跳转登陆</span></span><br><span class="line">        login = <span class="string">'https://www.jianshu.com/sign_in'</span></span><br><span class="line">        driver = webdriver.Chrome()</span><br><span class="line">        driver.get(login)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 2.窗口最大化</span></span><br><span class="line">        driver.maximize_window()</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 3.使用QQ授权登录</span></span><br><span class="line">        driver.find_element_by_xpath(<span class="string">'/html/body/div[1]/div[2]/div/div/ul/li[3]/a/i'</span>).click()</span><br><span class="line">        driver.close()</span><br><span class="line">        qq(driver, timeout)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 4.点击"写文章"</span></span><br><span class="line">        write_blog = WebDriverWait(driver, timeout).until(<span class="keyword">lambda</span> d: d.find_element_by_xpath(<span class="string">'/html/body/nav/div/a[2]'</span>))</span><br><span class="line">        write_blog = WebDriverWait(driver, timeout).until(<span class="keyword">lambda</span> d: d.find_elements_by_class_name(<span class="string">'/html/body/nav/div/a[2]'</span>))</span><br><span class="line">        write_blog.click()</span><br><span class="line">        driver.close()</span><br><span class="line">        time.sleep(<span class="number">3</span>)</span><br><span class="line">       <span class="comment"># window_handles = driver.window_handles</span></span><br><span class="line">        <span class="comment">#driver.switch_to.window(window_handles[-1])</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 5.点击指定分类</span></span><br><span class="line">        classify = WebDriverWait(driver, timeout).until(<span class="keyword">lambda</span> d: d.find_elements_by_class_name(<span class="string">'_3DM7w'</span>))</span><br><span class="line">        <span class="keyword">for</span> c <span class="keyword">in</span> classify:</span><br><span class="line">            html = c.get_attribute(<span class="string">'innerHTML'</span>)</span><br><span class="line">            <span class="keyword">if</span> main.category <span class="keyword">in</span> html:</span><br><span class="line">                c.click()</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="comment"># TODO 如果分类不存在，还可以直接新建分类</span></span><br><span class="line">                <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 6.点击'新建文章'</span></span><br><span class="line">        time.sleep(self_timeout)</span><br><span class="line">        new_article = WebDriverWait(driver, timeout).until(</span><br><span class="line">            <span class="keyword">lambda</span> d: d.find_element_by_xpath(<span class="string">'//*[@id="root"]/div/div[2]/div[1]/div/div/div/div[1]/i'</span>))</span><br><span class="line">        new_article.click()</span><br><span class="line">        article = WebDriverWait(driver, timeout).until(</span><br><span class="line">            <span class="keyword">lambda</span> d: d.find_element_by_xpath(<span class="string">'//*[@id="root"]/div/div[2]/div[1]/div/div/div/ul/li[1]'</span>))</span><br><span class="line">        article.click()</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 7.填写标题, 内容</span></span><br><span class="line">        time.sleep(self_timeout)</span><br><span class="line">        title = driver.find_element_by_class_name(<span class="string">'_24i7u'</span>)</span><br><span class="line">        title.clear()</span><br><span class="line">        title.send_keys(main.title)</span><br><span class="line">        content = driver.find_element_by_id(<span class="string">'arthur-editor'</span>)</span><br><span class="line">        content.clear()</span><br><span class="line">        content.send_keys(main.content)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 8.保存草稿</span></span><br><span class="line">        driver.find_element_by_xpath(<span class="string">'//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/ul/li[8]/a'</span>).click()</span><br><span class="line">        <span class="comment"># 8.发布文章</span></span><br><span class="line">        <span class="comment"># driver.find_element_by_xpath('//*[@id="root"]/div/div[2]/div[2]/div/div/div/div/ul/li[1]/a').click()</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    md_file = <span class="string">'auto.md'</span></span><br><span class="line">    print(<span class="string">"Markdown File is "</span>, md_file)</span><br><span class="line"></span><br><span class="line">    timeout = <span class="number">30</span></span><br><span class="line">    main = Main(md_file)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 简书</span></span><br><span class="line">    jian_shu = JianShu()</span><br><span class="line">    jian_shu.post(main, timeout)</span><br></pre></td></tr></table></figure>
+
+<p>PS：Selenium操纵浏览器是依赖于浏览器驱动程序的，下面贴出的是谷歌和火狐浏览器驱动程序的下载地址。</p>
+<table>
+<thead>
+<tr>
+<th>Chrome ( chromedriver )</th>
+<th>Firefox ( geckodriver )</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="http://chromedriver.storage.googleapis.com/index.html" target="_blank" rel="noopener">官方下载</a></td>
+<td><a href="https://github.com/mozilla/geckodriver/releases" target="_blank" rel="noopener">官方下载</a></td>
+</tr>
+<tr>
+<td><a href="https://npm.taobao.org/mirrors/chromedriver/" target="_blank" rel="noopener">淘宝镜像</a></td>
+<td><a href="https://npm.taobao.org/mirrors/geckodriver/" target="_blank" rel="noopener">淘宝镜像</a></td>
+</tr>
+<tr>
+<td><a href="http://image.mariojd.cn/chromedriver.exe" target="_blank" rel="noopener">备用下载</a></td>
+<td><a href="http://image.mariojd.cn/geckodriver.exe" target="_blank" rel="noopener">备用下载</a></td>
+</tr>
+</tbody></table>
+<h3 id><a href="#" class="headerlink" title></a></h3><p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>python自动化</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>关于Andriod热更新</title>
+    <url>/%E5%85%B3%E4%BA%8EAndriod%E7%83%AD%E6%9B%B4%E6%96%B0.html</url>
+    <content><![CDATA[<p>项目场景：</p>
+<ul>
+<li>紧急发现了一个bug，影响用户体验，阻断项目流程。这个时候，只能紧急发布一个强制更新的新版本，让用户升级。</li>
+<li>最近百团大战开始。需要增加一个活动弹窗入口，越快越好。这个时候，只能紧急发布一个强制更新的新版本，让用户升级。</li>
+</ul>
+<p>存在需求：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">可不可以不让用户重新安装就可以解决上述场景？</span><br></pre></td></tr></table></figure>
+
+<h3 id="什么是热更新："><a href="#什么是热更新：" class="headerlink" title="什么是热更新："></a>什么是热更新：</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">让应用能够在无需重新安装的情况实现更新，帮助应用快速建立动态修复能力。</span><br></pre></td></tr></table></figure>
+
+<p>从上面的定义来看，热补丁节省Android大量应用市场发布的时间。同时用户也无需重新安装，只要上线就能无感知的更新。</p>
+<h3 id="热更新的原理："><a href="#热更新的原理：" class="headerlink" title="热更新的原理："></a>热更新的原理：</h3><p>现在市面上主流的几大热更新技术：</p>
+<ul>
+<li>淘宝 Dexposed</li>
+<li>支付宝 AndFix</li>
+<li>Qzone 超级热补丁</li>
+<li>微信 Tinker</li>
+</ul>
+<h4 id="Dexposed"><a href="#Dexposed" class="headerlink" title="Dexposed"></a>Dexposed</h4><p>基于 Xposed 实现的无侵入的运行时 AOP (Aspect-oriented Programming) 框架，可以实现在线修复 Bug，修复粒度方法级别，这也就意味着我们没有办法进行类的增减操作。而且由于对 ART 虚拟机不支持，导致其对 Android 5.0、6.0 均不支持，使用局限性太大。</p>
+<h3 id="AndFix"><a href="#AndFix" class="headerlink" title="AndFix"></a>AndFix</h3><p>native hook 方式，其核心部分在 JNI 层对方法进行替换，替换有问题的方法,修复粒度方法级别，无法在类中新增和删减字段，可以做到即时生效。也就是运行时生效。但是因为它的核心部分在JNI，所以会出现很多适配兼容的问题。因为国内的rom厂商多才多艺.</p>
+<h3 id="超级热补丁"><a href="#超级热补丁" class="headerlink" title="超级热补丁"></a>超级热补丁</h3><p>使用新的 ClassLoader 加载 patch.dex，hack 默认的 ClassLoader，替换有问题的类，修复粒度类级别，一般无法做到即时生效，需要在应用下一次启动时生效。但是在art虚拟机中，如果改变了类变量，和方法名，有可能导致内存错乱的问题，没有开源这个项目。但在github上的Nuwa采用了相同的方式，这个是开源。</p>
+<h3 id="Tinker"><a href="#Tinker" class="headerlink" title="Tinker"></a>Tinker</h3><p>dex 文件全量替换，基于 DexDiff 技术，对比修复前后的 dex 文件，生成 patch.dex，再根据 patch.dex 更新有问题的 dex 文件。简单来说，在编译时通过新旧两个Dex生成差异patch.dex。在运行时，将差异patch.dex重新跟原始安装包的旧Dex还原为新的Dex。这个过程可能比较耗费时间与内存，所以我们是单独放在一个后台进程:patch中。为了补丁包尽量的小，微信自研了DexDiff算法，它深度利用Dex的格式来减少差异的大小。</p>
+<h3 id="热更新方案的比较："><a href="#热更新方案的比较：" class="headerlink" title="热更新方案的比较："></a>热更新方案的比较：</h3><table>
+<thead>
+<tr>
+<th align="left">Tables</th>
+<th align="left">Tinker</th>
+<th align="left">Qzone</th>
+<th align="left">Andfix</th>
+<th align="left">Dexposed</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">类替换</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">no</td>
+</tr>
+<tr>
+<td align="left">lib替换</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">no</td>
+<td align="left">no</td>
+</tr>
+<tr>
+<td align="left">资源替换</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">no</td>
+</tr>
+<tr>
+<td align="left">全平台支持</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+</tr>
+<tr>
+<td align="left">即时生效</td>
+<td align="left">no</td>
+<td align="left">no</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+</tr>
+<tr>
+<td align="left">性能损耗</td>
+<td align="left">较小</td>
+<td align="left">较大</td>
+<td align="left">较小</td>
+<td align="left">较小</td>
+</tr>
+<tr>
+<td align="left">补丁包大小</td>
+<td align="left">较小</td>
+<td align="left">较大</td>
+<td align="left">一般</td>
+<td align="left">一般</td>
+</tr>
+<tr>
+<td align="left">开发透明</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">no</td>
+</tr>
+<tr>
+<td align="left">复杂度</td>
+<td align="left">较低</td>
+<td align="left">较低</td>
+<td align="left">复杂</td>
+<td align="left">复杂</td>
+</tr>
+<tr>
+<td align="left">gradle支持</td>
+<td align="left">yes</td>
+<td align="left">yes</td>
+<td align="left">no</td>
+<td align="left">no</td>
+</tr>
+<tr>
+<td align="left">接口文档</td>
+<td align="left">丰富</td>
+<td align="left">一般</td>
+<td align="left">一般</td>
+<td align="left">较少</td>
+</tr>
+<tr>
+<td align="left">占rom体积</td>
+<td align="left">较大</td>
+<td align="left">较小</td>
+<td align="left">较小</td>
+<td align="left">较小</td>
+</tr>
+<tr>
+<td align="left">成功率</td>
+<td align="left">较好</td>
+<td align="left">最高</td>
+<td align="left">一般</td>
+<td align="left">一般</td>
+</tr>
+</tbody></table>
+<h3 id="热更新的使用场景："><a href="#热更新的使用场景：" class="headerlink" title="热更新的使用场景："></a>热更新的使用场景：</h3><p>热补丁技术也可以理解为一个动态修改代码与资源的通道，它适合于修改量较少的情况。</p>
+<p>我们看一下微信的版本升级的情况：</p>
+<table>
+<thead>
+<tr>
+<th align="left">Tables</th>
+<th align="left">普通升级</th>
+<th align="left">布丁升级</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">数据大小</td>
+<td align="left">33M</td>
+<td align="left">145K</td>
+</tr>
+<tr>
+<td align="left">更新速度</td>
+<td align="left">10天</td>
+<td align="left">1天（70%）</td>
+</tr>
+<tr>
+<td align="left">自动升级</td>
+<td align="left">wifi</td>
+<td align="left">移动网络</td>
+</tr>
+</tbody></table>
+<p>以Android用户的升级习惯，即使是相对活跃的微信也需要10天以上的时间去覆盖50%的用户。使用补丁技术，我们能做到1天覆盖70%以上。这也是基于补丁体积较小，可以直接使用移动网络下载更新。</p>
+<h3 id="热更新使用限制"><a href="#热更新使用限制" class="headerlink" title="热更新使用限制"></a>热更新使用限制</h3><ul>
+<li>补丁只能针对单一客户端版本，随着版本差异变大补丁体积也会增大；</li>
+<li>补丁不能支持所有的修改，例如AndroidManifest；</li>
+<li>补丁无论对代码还是资源的更新成功率都无法达到100%。</li>
+</ul>
+<h3 id="如何在一个项目中增加热更新功能？"><a href="#如何在一个项目中增加热更新功能？" class="headerlink" title="如何在一个项目中增加热更新功能？"></a>如何在一个项目中增加热更新功能？</h3><ul>
+<li><p>在工程目录 build.gradle 文件中添加插件依赖。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">buildscript &#123;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        jcenter()</span><br><span class="line">    &#125;</span><br><span class="line">    dependencies &#123;</span><br><span class="line">        // tinkersupport插件，其中latest.release指代最新版本号，也可以指定明确的版本号，例如1.0.8</span><br><span class="line">        classpath &quot;com.tencent.bugly:tinker-support:latest.release&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在app module 下的build.gradle 文件中添加 配置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">      compile &quot;com.android.support:multidex:1.0.1&quot; </span><br><span class="line">      compile &apos;com.tencent.bugly:crashreport_upgrade:latest.release&apos;</span><br><span class="line">&#125;</span><br><span class="line">// 依赖插件脚本</span><br><span class="line">apply from: &apos;tinker-support.gradle&apos;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在同级目录下创建 tinker-support.gradle</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">apply plugin: &apos;com.tencent.bugly.tinker-support&apos;</span><br><span class="line"></span><br><span class="line">def bakPath = file(&quot;$&#123;buildDir&#125;/bakApk/&quot;)</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 此处填写每次构建生成的基准包目录</span><br><span class="line"> */</span><br><span class="line">def baseApkDir = &quot;app-0912-17-04-44&quot;</span><br><span class="line">/**</span><br><span class="line"> * 对于插件各参数的详细解析请参考</span><br><span class="line"> */</span><br><span class="line">tinkerSupport &#123;</span><br><span class="line"></span><br><span class="line">    // 开启tinker-support插件，默认值true</span><br><span class="line">    enable = true</span><br><span class="line"></span><br><span class="line">    //自动生成tinkerId，无须关注此。默认为false</span><br><span class="line">    //autoGenerateTinkerId = true</span><br><span class="line"></span><br><span class="line">    tinkerEnable = true</span><br><span class="line"></span><br><span class="line">    // 指定归档目录，默认值当前module的子目录tinker</span><br><span class="line">    autoBackupApkDir = &quot;$&#123;bakPath&#125;&quot;</span><br><span class="line"></span><br><span class="line">    // 是否启用覆盖tinkerPatch配置功能，默认值false</span><br><span class="line">    // 开启后tinkerPatch配置不生效，即无需添加tinkerPatch</span><br><span class="line">    overrideTinkerPatchConfiguration = true</span><br><span class="line"></span><br><span class="line">    // 编译补丁包时，必需指定基线版本的apk，默认值为空</span><br><span class="line">    // 如果为空，则表示不是进行补丁包的编译</span><br><span class="line">    // @&#123;link tinkerPatch.oldApk &#125;</span><br><span class="line">    baseApk = &quot;$&#123;bakPath&#125;/$&#123;baseApkDir&#125;/com.nongfenqi.sherlock-release-v2.3.2_32.apk&quot;</span><br><span class="line">    // 对应tinker插件applyMapping</span><br><span class="line">    baseApkProguardMapping = &quot;$&#123;bakPath&#125;/$&#123;baseApkDir&#125;/app-release-mapping.txt&quot;</span><br><span class="line"></span><br><span class="line">    // 对应tinker插件applyResourceMapping</span><br><span class="line">    baseApkResourceMapping = &quot;$&#123;bakPath&#125;/$&#123;baseApkDir&#125;/app-release-R.txt&quot;</span><br><span class="line"></span><br><span class="line">    // 构建基准包和补丁包都要指定不同的tinkerId，并且必须保证唯一性</span><br><span class="line">    tinkerId = &quot;2.3.2-0912-patch&quot;</span><br><span class="line"></span><br><span class="line">    // 构建多渠道补丁时使用</span><br><span class="line">    // buildAllFlavorsDir = &quot;$&#123;bakPath&#125;/$&#123;baseApkDir&#125;&quot;</span><br><span class="line"></span><br><span class="line">    // 是否启用加固模式，默认为false.(tinker-spport 1.0.7起支持）</span><br><span class="line">    // isProtectedApp = true</span><br><span class="line"></span><br><span class="line">    // 是否开启反射Application模式</span><br><span class="line">    enableProxyApplication = false</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 一般来说,我们无需对下面的参数做任何的修改</span><br><span class="line"> * 对于各参数的详细介绍请参考:</span><br><span class="line"> * https://github.com/Tencent/tinker/wiki/Tinker-%E6%8E%A5%E5%85%A5%E6%8C%87%E5%8D%97</span><br><span class="line"> */</span><br><span class="line">tinkerPatch &#123;</span><br><span class="line">    //oldApk =&quot;$&#123;bakPath&#125;/$&#123;appName&#125;/app-release.apk&quot;</span><br><span class="line">    tinkerEnable = true</span><br><span class="line">    ignoreWarning = false</span><br><span class="line">    useSign = true</span><br><span class="line">    dex &#123;</span><br><span class="line">        dexMode = &quot;jar&quot;</span><br><span class="line">        pattern = [&quot;classes*.dex&quot;]</span><br><span class="line">        loader = []</span><br><span class="line">    &#125;</span><br><span class="line">    lib &#123;</span><br><span class="line">        pattern = [&quot;lib/*/*.so&quot;]</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    res &#123;</span><br><span class="line">        pattern = [&quot;res/*&quot;, &quot;r/*&quot;, &quot;assets/*&quot;, &quot;resources.arsc&quot;, &quot;AndroidManifest.xml&quot;]</span><br><span class="line">        ignoreChange = []</span><br><span class="line">        largeModSize = 100</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    packageConfig &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    sevenZip &#123;</span><br><span class="line">        zipArtifact = &quot;com.tencent.mm:SevenZip:1.1.10&quot;</span><br><span class="line">//        path = &quot;/usr/local/bin/7za&quot;</span><br><span class="line">    &#125;</span><br><span class="line">    buildConfig &#123;</span><br><span class="line">        keepDexApply = false</span><br><span class="line">        //tinkerId = &quot;1.0.1-base&quot;</span><br><span class="line">        //applyMapping = &quot;$&#123;bakPath&#125;/$&#123;appName&#125;/app-release-mapping.txt&quot; //  可选，设置mapping文件，建议保持旧apk的proguard混淆方式</span><br><span class="line">        //applyResourceMapping = &quot;$&#123;bakPath&#125;/$&#123;appName&#125;/app-release-R.txt&quot; // 可选，设置R.txt文件，通过旧apk文件保持ResId的分配</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>权限配置以及activity配置。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;uses-permission android:name=&quot;android.permission.READ_PHONE_STATE&quot; /&gt;</span><br><span class="line">&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;</span><br><span class="line">&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;</span><br><span class="line">&lt;uses-permission android:name=&quot;android.permission.ACCESS_WIFI_STATE&quot; /&gt;</span><br><span class="line">&lt;uses-permission android:name=&quot;android.permission.READ_LOGS&quot; /&gt;</span><br><span class="line">&lt;uses-permission android:name=&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot; /&gt;</span><br><span class="line">&lt;uses-permission android:name=&quot;android.permission.READ_EXTERNAL_STORAGE&quot;/&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&lt;activity</span><br><span class="line">    android:name=&quot;com.tencent.bugly.beta.ui.BetaActivity&quot;</span><br><span class="line">    android:theme=&quot;@android:style/Theme.Translucent&quot; /&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>混淆配置</p>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">-dontwarn com.tencent.bugly.**</span><br><span class="line">-keep public <span class="class"><span class="keyword">class</span> <span class="title">com</span>.<span class="title">tencent</span>.<span class="title">bugly</span>.**</span>&#123;*;&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>本文转载自：<a href="https://www.dazhuanlan.com/2019/12/31/5e0b56c7943ed/" target="_blank" rel="noopener">https://www.dazhuanlan.com/2019/12/31/5e0b56c7943ed/</a></strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>android</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>关于Android Studio设置代理的问题</title>
+    <url>/%E5%85%B3%E4%BA%8EAndroid-Studio%E8%AE%BE%E7%BD%AE%E4%BB%A3%E7%90%86%E7%9A%84%E9%97%AE%E9%A2%98.html</url>
+    <content><![CDATA[<h3 id="AndoridStudio报错-“Failed-to-parse-host-xxx-xxx”"><a href="#AndoridStudio报错-“Failed-to-parse-host-xxx-xxx”" class="headerlink" title="AndoridStudio报错 “Failed to parse host xxx.xxx”"></a>AndoridStudio报错 “Failed to parse host xxx.xxx”</h3><p> 你会发现, 单纯在 HTTP Proxy 里边 取消代理设置是不行的，依然报错 </p>
+<p><strong>解决方法:</strong></p>
+<p>找到你C盘用户 文件夹下的.gradle 下 ， 看看有没有一个叫gradle.properties 文件，修改里边的网络代理配置信息，或者直接把该文件夹删除。 </p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200622115827.png" alt></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>问题集锦</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>关于linux指令sed的使用</title>
+    <url>/%E5%85%B3%E4%BA%8Elinux%E6%8C%87%E4%BB%A4sed%E7%9A%84%E4%BD%BF%E7%94%A8.html</url>
+    <content><![CDATA[<p><strong>sed -i</strong> 主要作用就是操作文本 如下:</p>
+<p><strong>去掉 “行首” 带“@”的首字母@</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sed -i &apos;s/^@//&apos; file</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>特定字符串的行前插入新行</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sed -i &apos;/特定字符串/i 新行字符串&apos; file</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>特定字符串的行后插入新行</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sed -i &apos;/特定字符串/a 新行字符串&apos; file</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>特定字符串的删除</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sed -i &apos;/字符串/d&apos; file</span><br></pre></td></tr></table></figure>
+
+<p><strong>提示: 以上斜杠可以换成~ 一样实现相同功能</strong></p>
+<h4 id="问题场景："><a href="#问题场景：" class="headerlink" title="问题场景："></a>问题场景：</h4><p>在mac上，使用sed命令把当前目录的test.sql文件内容中的a替换为b，使用命令：sed -i “s/a/b/g” test.sql</p>
+<p>遇到报错：sed: 1: “grep …”: extra characters at the end of g command</p>
+<p><strong>解决：</strong></p>
+<p>在mac中使用sed命令在-i参数后面需要带一对双引号””，正确格式如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sed -i &quot;&quot; &quot;s/a/b/g&quot; test.sql</span><br></pre></td></tr></table></figure>
+
+<p><strong>原因</strong></p>
+<p>sed -i 后面的双引号中可写任意字符串或者为空，含义是用于生成源文件的备份文件的文件名。比如上面的例子：sed -i “_tmp” “s/a/b/g” test.sql，在替换test.sql的同时，还会生成test.sql_tmp的备份文件</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>关于mv 移动文件时出现Argument list too long的解决方案</title>
+    <url>/%E5%85%B3%E4%BA%8Emv-%E7%A7%BB%E5%8A%A8%E6%96%87%E4%BB%B6%E6%97%B6%E5%87%BA%E7%8E%B0Argument-list-too-long%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html</url>
+    <content><![CDATA[<h4 id="移动所有文件到指定目录"><a href="#移动所有文件到指定目录" class="headerlink" title="移动所有文件到指定目录"></a>移动所有文件到指定目录</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mv 需要移动的目录/* 目标目录/</span><br></pre></td></tr></table></figure>
+
+<p>当出现文件过多时报错:<code>Argument list too long</code></p>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案:"></a>解决方案:</h4><p>移动文件：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">find sourcePath/ -name &quot;*.txt&quot;  -exec mv &#123;&#125; targetPath/  \;</span><br></pre></td></tr></table></figure>
+
+<p>or:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">find sourcePath/ -type f  -exec mv &#123;&#125; targetPath/  \;</span><br></pre></td></tr></table></figure>
+
+<p>查看所有行目录下所有txt文件的行：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">find sourcePath/ -name &quot;*.txt&quot; |xargs cat |wc -l</span><br></pre></td></tr></table></figure>
+
+<h3 id="只移动前5个文件"><a href="#只移动前5个文件" class="headerlink" title="只移动前5个文件"></a>只移动前5个文件</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mv `ls |sed -n 1,5p  /post</span><br></pre></td></tr></table></figure>
+
+<h3 id="只拷贝前5个文件"><a href="#只拷贝前5个文件" class="headerlink" title="只拷贝前5个文件"></a>只拷贝前5个文件</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cp -R `ls |sed -n 1,5p /post</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>linux指令</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>向谷歌搜索引擎主动推送网页的教程 Google Indexing API 接口实现</title>
+    <url>/%E5%90%91%E8%B0%B7%E6%AD%8C%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E4%B8%BB%E5%8A%A8%E6%8E%A8%E9%80%81%E7%BD%91%E9%A1%B5%E7%9A%84%E6%95%99%E7%A8%8B-Google-Indexing-API-%E6%8E%A5%E5%8F%A3%E5%AE%9E%E7%8E%B0.html</url>
+    <content><![CDATA[<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/jHXAmlIOfwsvtep-20200908110823361.jpg" alt></p>
+<p>谷歌搜索引擎作为全球第一的搜索引擎早就支持了站长主动推送的功能，只不过不是面向普通用户的可视化界面，而是通过编程API接口实现的，有很多站长并不是专业的开发者，但由于谷歌需要验证网站所有权，所以我不能直接做一个可视化界面让站长自己填写自己的秘钥，所以只能对谷歌的接口进行二次封装，以降低使用的难度。</p>
+<p>源码项目地址：<a href="https://github.com/NeilRen/GoogleIndexing" target="_blank" rel="noopener">https://github.com/NeilRen/GoogleIndexing</a></p>
+<h2 id="环境要求"><a href="#环境要求" class="headerlink" title="环境要求"></a>环境要求</h2><p>首先，我是以Java为平台进行的封装，JDK版本为1.8，其他程序可能需要中间层才能打通，还不如自己实现，其他编程语言的同学我也没有办法，这个世界上编程语言太多了。</p>
+<p>其次，谷歌的Google Indexing API接口在中国大陆无法访问，所以程序需要运行在可以访问谷歌的网络环境中。</p>
+<h2 id="前提条件"><a href="#前提条件" class="headerlink" title="前提条件"></a>前提条件</h2><p>首先，你需要一个谷歌账号。你的项目是Java的，并且JDK为1.8以上。</p>
+<h2 id="创建-Google-API-项目"><a href="#创建-Google-API-项目" class="headerlink" title="创建 Google API 项目"></a>创建 Google API 项目</h2><p>然后在向 Indexing API 发送请求之前，您需要告知 Google 您的客户端并激活对 Indexing API 的访问权限。谷歌为我们提供了一个<a href="https://console.developers.google.com/start/api?id=indexing.googleapis.com&credential=client_key" target="_blank" rel="noopener">设置向导</a>，设置向导会引导您在 Google API 控制台中创建项目、启用 Indexing API 以及创建凭据。</p>
+<p>首先先跟着向导创建一个项目</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/M2ptE4nOaW6Z3qg.png" alt="Google Indexing API 设置向导"></p>
+<p>然后转到凭据，添加凭据</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200310210556-20200908110850707.png" alt="Google Indexing API 添加凭证"></p>
+<p>添加的凭据选择Indexing API、网页服务器(例如 node.js、Tomecat)，选择应用数据，点击“我需要哪些凭据？”到下一页</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200310210605-20200908110904033.png" alt="Google Indexing API 为项目添加凭证"></p>
+<p>创建一个服务账号，名称可以自己起一个名字，秘钥类型选择JSON，点击继续</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200310210613-20200908110918941.png" alt="Google Indexing API 创建服务账号"></p>
+<p>选择创建无角色账号即可</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200310210621-20200908110933400.png" alt="Google Indexing API 创建无角色账号"></p>
+<p>这时就会自动下载一个json文件，这个就是我们的私钥，要保存好</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200310210628-20200908110944503.png" alt="Google Indexing API 秘钥"></p>
+<h2 id="在-Search-Console-中验证网站所有权"><a href="#在-Search-Console-中验证网站所有权" class="headerlink" title="在 Search Console 中验证网站所有权"></a>在 Search Console 中验证网站所有权</h2><p>我们还需要到 <a href="https://www.google.com/webmasters/tools/home" target="_blank" rel="noopener">Search Console</a> 添加我们的网站，验证所有权，验证成功以后，注意我们要去<a href="https://www.google.com/webmasters/verification/home?pli=1" target="_blank" rel="noopener">旧版的控制台</a>，不要去新版的控制台！然后添加所有者</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200310210643-20200908110957641.png" alt="Google 旧版控制台">]</p>
+<p>所有者的邮箱填写我们上一步获得的私钥JSON文件中的邮箱地址。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200310210636-20200908111008115.png" alt="Google Indexing API 秘钥JSON"><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200310210654-20200908111018700.png" alt="Google 添加网站所有者"></p>
+<h2 id="在自己的项目中安装依赖"><a href="#在自己的项目中安装依赖" class="headerlink" title="在自己的项目中安装依赖"></a>在自己的项目中安装依赖</h2><p>如果您使用Apache Maven来管理Java项目，只需在项目的<code>pom.xml</code>文件加入相应的依赖项即可。您只需在<code>pom.xml</code>中声明以下依赖：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;net.renfei&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;googleindexing&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;1.0.0&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<p>编写代码调用服务，在实例化GoogleIndexing的时候，需要传一个String参数，这个参数是私钥JSON文件所在的文件地址：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSON;</span><br><span class="line">import com.google.api.services.indexing.v3.model.UrlNotificationMetadata;</span><br><span class="line">import net.renfei.googleindexing.GoogleIndexing;</span><br><span class="line">import net.renfei.googleindexing.entity.UrlNotification;</span><br><span class="line">import net.renfei.googleindexing.entity.UrlNotificationType;</span><br><span class="line"></span><br><span class="line">public class Demo &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            GoogleIndexing googleIndexing = new GoogleIndexing(&quot;/Users/renfei/Google/Ren-Fei-5a8df7c2b912.json&quot;);</span><br><span class="line">            UrlNotification urlNotification = new UrlNotification();</span><br><span class="line">            urlNotification.setUrl(&quot;https://www.renfei.net&quot;);</span><br><span class="line">            urlNotification.setType(UrlNotificationType.URL_UPDATED);</span><br><span class="line">            UrlNotificationMetadata urlNotificationMetadata = googleIndexing.publish(urlNotification);</span><br><span class="line">            System.out.printf(JSON.toJSONString(urlNotificationMetadata));</span><br><span class="line">        &#125; catch (Exception ex) &#123;</span><br><span class="line">            ex.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>seo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何在浏览器中手动设置cookies值实现前端分离调试</title>
+    <url>/%E5%A6%82%E4%BD%95%E5%9C%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E4%B8%AD%E6%89%8B%E5%8A%A8%E8%AE%BE%E7%BD%AEcookies%E5%80%BC%E5%AE%9E%E7%8E%B0%E5%89%8D%E7%AB%AF%E5%88%86%E7%A6%BB%E8%B0%83%E8%AF%95.html</url>
+    <content><![CDATA[<blockquote>
+<p>在前端开发中经常会碰到需要cookies调试的情况, 下面介绍一下如何在浏览器中手动设置cookies值</p>
+</blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/70-20200907095742754-20200907100541181.png" alt="img"></p>
+<h3 id="1-查看cookies值"><a href="#1-查看cookies值" class="headerlink" title="1.查看cookies值"></a>1.查看cookies值</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">document.cookie</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-设置cookies值"><a href="#2-设置cookies值" class="headerlink" title="2.设置cookies值"></a>2.设置cookies值</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">document.cookie=&apos;name=Jack&apos;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-给cookies设置有效时间-默认浏览器关闭失效"><a href="#3-给cookies设置有效时间-默认浏览器关闭失效" class="headerlink" title="3.给cookies设置有效时间 默认浏览器关闭失效"></a>3.给cookies设置有效时间 默认浏览器关闭失效</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var oDate=new Date();</span><br><span class="line">oDate.setDate(oDate.getDate()+7);//设置为当前时间起算7天后过期</span><br><span class="line">document.cookie=&apos;name=Jack;expires=&apos;+oDate.toGMTString();</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-移除cookies"><a href="#4-移除cookies" class="headerlink" title="4.移除cookies"></a>4.移除cookies</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">setCookie(key,&quot;&quot;,-1);//把cookie设置为过期</span><br></pre></td></tr></table></figure>
+
+<h3 id="函数封装"><a href="#函数封装" class="headerlink" title="函数封装"></a>函数封装</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">setCookie</span>(<span class="params">key,value,t</span>)</span>&#123;</span><br><span class="line">  <span class="keyword">var</span> oDate=<span class="keyword">new</span> <span class="built_in">Date</span>();</span><br><span class="line">  oDate.setDate(oDate.getDate()+t);</span><br><span class="line">  <span class="built_in">document</span>.cookie=key+<span class="string">"="</span>+value+<span class="string">"; 	 expires="</span>+oDate.toDateString();</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getCookie</span>(<span class="params">key</span>)</span>&#123;</span><br><span class="line">  <span class="keyword">var</span> arr1=<span class="built_in">document</span>.cookie.split(<span class="string">"; "</span>);<span class="comment">//由于cookie是通过一个分号+空格的形式串联起来的，所以这里需要先按分号空格截断,变成[name=Jack,pwd=123456,age=22]数组类型；</span></span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">0</span>;i&lt;arr1.length;i++)&#123;</span><br><span class="line">      <span class="keyword">var</span> arr2=arr1[i].split(<span class="string">"="</span>);<span class="comment">//通过=截断，把name=Jack截断成[name,Jack]数组；</span></span><br><span class="line">      <span class="keyword">if</span>(arr2[<span class="number">0</span>]==key)&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">decodeURI</span>(arr2[<span class="number">1</span>]);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//封装一个移除cookie的函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">removeCookie</span>(<span class="params">key</span>)</span>&#123;</span><br><span class="line">  setCookie(key,<span class="string">""</span>,<span class="number">-1</span>);<span class="comment">//把cookie设置为过期</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>前端</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何设置通过Postman实现API网关的请求签名与调试</title>
+    <url>/%E5%A6%82%E4%BD%95%E8%AE%BE%E7%BD%AE%E9%80%9A%E8%BF%87Postman%E5%AE%9E%E7%8E%B0API%E7%BD%91%E5%85%B3%E7%9A%84%E8%AF%B7%E6%B1%82%E7%AD%BE%E5%90%8D%E4%B8%8E%E8%B0%83%E8%AF%95.html</url>
+    <content><![CDATA[<blockquote>
+<p>前言<br>Postman是一个非常强大的HTTP发包测试工具, 目前Postman已经提供了Windows/Mac/Linux系统的客户端的下载，使用很方便。不过API网关的调试，需要对HTTP请求进行签名才能调用，无法使用简单的curl等发包工具完成，但我们可以使用Postman工具提供的Pre-request Script脚本来实现API网关的签名功能，实现API的调试功能，本文主要介绍如何使用Postman调试API网关接口。</p>
+</blockquote>
+<h4 id="核心代码如下"><a href="#核心代码如下" class="headerlink" title="核心代码如下"></a>核心代码如下</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">var appKey = &quot;&lt;YOUR APP KEY&gt;&quot;;</span><br><span class="line">var appSecret = &quot;&lt;YOUR APP SECRET&gt;&quot;;</span><br><span class="line"></span><br><span class="line">var md5 = calcMd5();</span><br><span class="line">var date = new Date().toString();</span><br><span class="line">var nonce = createUuid();</span><br><span class="line"></span><br><span class="line">var textToSign = &quot;&quot;;</span><br><span class="line">textToSign += request.method + &quot;\n&quot;;</span><br><span class="line">textToSign += request.headers[&quot;accept&quot;] + &quot;\n&quot;;</span><br><span class="line">textToSign += md5 + &quot;\n&quot;;</span><br><span class="line">textToSign += request.headers[&quot;content-type&quot;] + &quot;\n&quot;;</span><br><span class="line">textToSign += date + &quot;\n&quot;;</span><br><span class="line"></span><br><span class="line">var headers = headersToSign();</span><br><span class="line">var signatureHeaders;</span><br><span class="line">var sortedKeys = Array.from(headers.keys()).sort()</span><br><span class="line">for (var headerName of sortedKeys) &#123;</span><br><span class="line">    textToSign += headerName + &quot;:&quot; + headers.get(headerName) + &quot;\n&quot;;</span><br><span class="line">    signatureHeaders = signatureHeaders ? signatureHeaders + &quot;,&quot; + headerName : headerName;</span><br><span class="line">&#125;</span><br><span class="line">textToSign += urlToSign();</span><br><span class="line">console.log(&quot;textToSign\n&quot; + textToSign.replace(/\n/g, &quot;#&quot;));</span><br><span class="line">var hash = CryptoJS.HmacSHA256(textToSign, appSecret)</span><br><span class="line">console.log(&quot;hash:&quot; + hash)</span><br><span class="line">var signature = hash.toString(CryptoJS.enc.Base64)</span><br><span class="line">console.log(&quot;signature:&quot; + signature)</span><br><span class="line"></span><br><span class="line">pm.globals.set(&apos;AppKey&apos;, appKey);</span><br><span class="line">pm.globals.set(&apos;Md5&apos;, md5);</span><br><span class="line">pm.globals.set(&quot;Date&quot;, date);</span><br><span class="line">pm.globals.set(&quot;Signature&quot;, signature);</span><br><span class="line">pm.globals.set(&quot;SignatureHeaders&quot;, signatureHeaders);</span><br><span class="line">pm.globals.set(&quot;Nonce&quot;, nonce);</span><br><span class="line"></span><br><span class="line">function headersToSign() &#123;</span><br><span class="line">    var headers = new Map();</span><br><span class="line">    for (var name in request.headers) &#123;</span><br><span class="line">        name = name.toLowerCase();</span><br><span class="line">        if (!name.startsWith(&apos;x-ca-&apos;)) &#123;</span><br><span class="line">            continue;</span><br><span class="line">        &#125; </span><br><span class="line">        if (name === &quot;x-ca-signature&quot; || name === &quot;x-ca-signature-headers&quot; || name == &quot;x-ca-key&quot; || name === &apos;x-ca-nonce&apos;) &#123;</span><br><span class="line">            continue;</span><br><span class="line">        &#125;</span><br><span class="line">        var value = request.headers[name];</span><br><span class="line">        headers.set(name, value);</span><br><span class="line">    &#125;</span><br><span class="line">    headers.set(&apos;x-ca-key&apos;, appKey);</span><br><span class="line">    headers.set(&apos;x-ca-nonce&apos;, nonce);</span><br><span class="line">    return headers;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function urlToSign() &#123;</span><br><span class="line">    var params = new Map();</span><br><span class="line">    var contentType = request.headers[&quot;content-type&quot;];</span><br><span class="line">    if (contentType &amp;&amp; contentType.startsWith(&apos;application/x-www-form-urlencoded&apos;)) &#123;</span><br><span class="line">        const formParams = request.data.split(&quot;&amp;&quot;);</span><br><span class="line">        formParams.forEach((p) =&gt; &#123;</span><br><span class="line">            const ss = p.split(&apos;=&apos;);</span><br><span class="line">            params.set(ss[0], ss[1]);</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    const ss = request.url.split(&apos;?&apos;);</span><br><span class="line">if (ss.length &gt; 1 &amp;&amp; ss[1]) &#123;</span><br><span class="line">    const queryParams = ss[1].split(&apos;&amp;&apos;);</span><br><span class="line">    queryParams.forEach((p) =&gt; &#123;</span><br><span class="line">        const ss = p.split(&apos;=&apos;);</span><br><span class="line">        params.set(ss[0], ss[1]);</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var sortedKeys = Array.from(params.keys())</span><br><span class="line">sortedKeys.sort();</span><br><span class="line"></span><br><span class="line">var l1 = ss[0].lastIndexOf(&apos;/&apos;);</span><br><span class="line">var url = ss[0].substring(l1);</span><br><span class="line">var first = true;</span><br><span class="line">var qs</span><br><span class="line">for (var k of sortedKeys) &#123;</span><br><span class="line">    var s = k + &quot;=&quot; + params.get(k);</span><br><span class="line">    qs = qs ? qs + &quot;&amp;&quot; + s : s;</span><br><span class="line">    console.log(&quot;key=&quot; + k + &quot; value=&quot; + params.get(k));</span><br><span class="line">&#125;</span><br><span class="line">return qs ? url + &quot;?&quot; + qs : url;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function calcMd5() &#123;</span><br><span class="line">    var contentType = request.headers[&quot;content-type&quot;];</span><br><span class="line">    if (request.data &amp;&amp; !contentType.startsWith(&apos;application/x-www-form-urlencoded&apos;)) &#123;</span><br><span class="line">        var data = request.data;</span><br><span class="line">        var md5 = CryptoJS.MD5(data);</span><br><span class="line">        var md5String = md5.toString(CryptoJS.enc.Base64);</span><br><span class="line">        console.log(&quot;data:&quot; + data + &quot;\nmd5:&quot; + md5String);</span><br><span class="line">        return md5String;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return &quot;&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function createUuid() &#123;</span><br><span class="line">    return &apos;xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx&apos;.replace(/[xy]/g, function(c) &#123;</span><br><span class="line">        var r = Math.random()*16|0, v = c == &apos;x&apos; ? r : (r&amp;0x3|0x8);</span><br><span class="line">        return v.toString(16);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>前端</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>解决homebrew长时间停在Updating Homebrew 这个步骤</title>
+    <url>/%E8%A7%A3%E5%86%B3homebrew%E9%95%BF%E6%97%B6%E9%97%B4%E5%81%9C%E5%9C%A8Updating-Homebrew-%E8%BF%99%E4%B8%AA%E6%AD%A5%E9%AA%A4.html</url>
+    <content><![CDATA[<p>在国内的网络环境下使用 Homebrew 安装软件的过程中可能会长时间卡在 Updating Homebrew 这个步骤。</p>
+<p>例：执行 brew install composer 命令</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">➜  ~ brew install composer</span><br><span class="line">Updating Homebrew... # 如果碰到长时间卡在这里，参考以下 2 种处理方法</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="方法-1：按住-control-c-取消本次更新操作"><a href="#方法-1：按住-control-c-取消本次更新操作" class="headerlink" title="方法 1：按住 control + c 取消本次更新操作"></a>方法 1：按住 control + c 取消本次更新操作</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">➜  ~ brew install composer</span><br><span class="line">Updating Homebrew...</span><br><span class="line">^C</span><br></pre></td></tr></table></figure>
+
+<p>按住 control + c 之后命令行会显示 ^C，就代表已经取消了 Updating Homebrew 操作</p>
+<p>大概不到 1 秒钟之后就会去执行我们真正需要的安装操作了</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">➜  ~ brew install composer</span><br><span class="line">Updating Homebrew...</span><br><span class="line">^C==&gt; Satisfying dependencies</span><br><span class="line">==&gt; Downloading https://getcomposer.org/download/1.7.2/composer.phar</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>这个方法是临时的、一次性的</p>
+<h2 id="方法-2：使用-Alibaba-的-Homebrew-镜像源进行加速"><a href="#方法-2：使用-Alibaba-的-Homebrew-镜像源进行加速" class="headerlink" title="方法 2：使用 Alibaba 的 Homebrew 镜像源进行加速"></a>方法 2：使用 Alibaba 的 Homebrew 镜像源进行加速</h2><p>平时我们执行 brew 命令安装软件的时候，跟以下 3 个仓库地址有关：</p>
+<ol>
+<li>brew.git</li>
+<li>homebrew-core.git</li>
+<li>homebrew-bottles</li>
+</ol>
+<p>通过以下操作将这 3 个仓库地址全部替换为 Alibaba 提供的地址</p>
+<h3 id="1-替换-还原-brew-git-仓库地址"><a href="#1-替换-还原-brew-git-仓库地址" class="headerlink" title="1. 替换 / 还原 brew.git 仓库地址"></a>1. 替换 / 还原 brew.git 仓库地址</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 替换成阿里巴巴的 brew.git 仓库地址:</span></span><br><span class="line">cd "$(brew --repo)"</span><br><span class="line">git remote set-url origin https://mirrors.aliyun.com/homebrew/brew.git</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">=======================================================</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 还原为官方提供的 brew.git 仓库地址</span></span><br><span class="line">cd "$(brew --repo)"</span><br><span class="line">git remote set-url origin https://github.com/Homebrew/brew.git</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-替换-还原-homebrew-core-git-仓库地址"><a href="#2-替换-还原-homebrew-core-git-仓库地址" class="headerlink" title="2. 替换 / 还原 homebrew-core.git 仓库地址"></a>2. 替换 / 还原 homebrew-core.git 仓库地址</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 替换成阿里巴巴的 homebrew-core.git 仓库地址:</span></span><br><span class="line">cd "$(brew --repo)/Library/Taps/homebrew/homebrew-core"</span><br><span class="line">git remote set-url origin https://mirrors.aliyun.com/homebrew/homebrew-core.git</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">=======================================================</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 还原为官方提供的 homebrew-core.git 仓库地址</span></span><br><span class="line">cd "$(brew --repo)/Library/Taps/homebrew/homebrew-core"</span><br><span class="line">git remote set-url origin https://github.com/Homebrew/homebrew-core.git</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-替换-还原-homebrew-bottles-访问地址"><a href="#3-替换-还原-homebrew-bottles-访问地址" class="headerlink" title="3. 替换 / 还原 homebrew-bottles 访问地址"></a>3. 替换 / 还原 homebrew-bottles 访问地址</h3><p>这个步骤跟你的 macOS 系统使用的 shell 版本有关系</p>
+<p>所以，先来查看当前使用的 shell 版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">echo $SHELL</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 如果你的输出结果是 /bin/zsh，参考?的 zsh 终端操作方式</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 如果你的输出结果是 /bin/bash，参考?的 bash 终端操作方式</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="3-1-zsh-终端操作方式"><a href="#3-1-zsh-终端操作方式" class="headerlink" title="3.1 zsh 终端操作方式"></a>3.1 zsh 终端操作方式</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 替换成阿里巴巴的 homebrew-bottles 访问地址:</span></span><br><span class="line">echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles' &gt;&gt; ~/.zshrc</span><br><span class="line">source ~/.zshrc</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">=======================================================</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 还原为官方提供的 homebrew-bottles 访问地址</span></span><br><span class="line">vi ~/.zshrc</span><br><span class="line"><span class="meta">#</span><span class="bash"> 然后，删除 HOMEBREW_BOTTLE_DOMAIN 这一行配置</span></span><br><span class="line">source ~/.zshrc</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="3-2-bash-终端操作方式"><a href="#3-2-bash-终端操作方式" class="headerlink" title="3.2 bash 终端操作方式"></a>3.2 bash 终端操作方式</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 替换 homebrew-bottles 访问 URL:</span></span><br><span class="line">echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles' &gt;&gt; ~/.bash_profile</span><br><span class="line">source ~/.bash_profile</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">=======================================================</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 还原为官方提供的 homebrew-bottles 访问地址</span></span><br><span class="line">vi ~/.bash_profile</span><br><span class="line"><span class="meta">#</span><span class="bash"> 然后，删除 HOMEBREW_BOTTLE_DOMAIN 这一行配置</span></span><br><span class="line">source ~/.bash_profile</span><br></pre></td></tr></table></figure>
+
+<h3 id="HomeBrew快速安装"><a href="#HomeBrew快速安装" class="headerlink" title="HomeBrew快速安装"></a>HomeBrew快速安装</h3><p>自动脚本(全部国内地址)（在Mac os终端中复制粘贴回车下面这句话)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/bin/zsh -c &quot;$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)&quot;</span><br></pre></td></tr></table></figure>
+
+<p>这行命令就是这位大佬发布的：<a href="https://zhuanlan.zhihu.com/p/111014448" target="_blank" rel="noopener">金牛肖马</a></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>实用技巧</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>解决pip下载速度慢的问题</title>
+    <url>/%E8%A7%A3%E5%86%B3pip%E4%B8%8B%E8%BD%BD%E9%80%9F%E5%BA%A6%E6%85%A2%E7%9A%84%E9%97%AE%E9%A2%98.html</url>
+    <content><![CDATA[<p>在我们经常使用pip安装插件模块的时候，有没有发现下载速度很慢，但有些有强迫症的人面对几k几十k每秒的速度绝对忍不了，是不是，那么，方法来了。</p>
+<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p>一句话就是使用pip下载过慢，想要快起来，起来，来。</p>
+<h3 id="解决过程"><a href="#解决过程" class="headerlink" title="解决过程"></a>解决过程</h3><p><strong>问题分析</strong></p>
+<p>pip下载速度过慢的原因就是pip默认使用的是国外的镜像源，那么，我使用国内的镜像源，问题不就解决了。</p>
+<p>有两种方法，方法一临时有效，方法二永久生效。</p>
+<h3 id="方法一：下载时加入参数-i-镜像源地址"><a href="#方法一：下载时加入参数-i-镜像源地址" class="headerlink" title="方法一：下载时加入参数-i [镜像源地址]"></a>方法一：下载时加入参数<code>-i [镜像源地址]</code></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install -i https://pypi.tuna.tsinghua.edu.cn/simple jieba</span><br><span class="line">或者</span><br><span class="line">pip install jieba -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure>
+
+<h3 id="方法二：设置源"><a href="#方法二：设置源" class="headerlink" title="方法二：设置源"></a>方法二：设置源</h3><p>使用方法一，需要每次在下载时都要带参数，不想麻烦的试试方法二吧。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line">pip config set install.trusted-host mirrors.aliyun.com</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://img-blog.csdnimg.cn/20200312204633456.png" target="_blank" rel="noopener"><img src="https://img-blog.csdnimg.cn/20200312204633456.png" alt="img"></a></p>
+<h3 id="附-国内镜像源地址"><a href="#附-国内镜像源地址" class="headerlink" title="附: 国内镜像源地址"></a>附: 国内镜像源地址</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># pip国内镜像源。</span><br><span class="line">#</span><br><span class="line"># 阿里云	http://mirrors.aliyun.com/pypi/simple/</span><br><span class="line"># 中国科技大学 	https://pypi.mirrors.ustc.edu.cn/simple/</span><br><span class="line"># 豆瓣	 http://pypi.douban.com/simple</span><br><span class="line"># Python官方	 https://pypi.python.org/simple/</span><br><span class="line"># v2ex	 http://pypi.v2ex.com/simple/</span><br><span class="line"># 中国科学院 	http://pypi.mirrors.opencas.cn/simple/</span><br><span class="line"># 清华大学	 https://pypi.tuna.tsinghua.edu.cn/simple/</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>实用技巧</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>解决国内访问github过慢的问题</title>
+    <url>/%E8%A7%A3%E5%86%B3%E5%9B%BD%E5%86%85%E8%AE%BF%E9%97%AEgithub%E8%BF%87%E6%85%A2%E7%9A%84%E9%97%AE%E9%A2%98.html</url>
+    <content><![CDATA[<p>通过查看下载链接，能够发现最终被指向到Amazon的服务器（<a href="http://github-cloud.s3.amazonaws.com）了。由于国内访问亚马逊网站非常慢，我们需要修改Hosts文件来实现流畅访问。" target="_blank" rel="noopener">http://github-cloud.s3.amazonaws.com）了。由于国内访问亚马逊网站非常慢，我们需要修改Hosts文件来实现流畅访问。</a></p>
+<h3 id="第一步，打开本机上的Hosts文件"><a href="#第一步，打开本机上的Hosts文件" class="headerlink" title="第一步，打开本机上的Hosts文件"></a>第一步，打开本机上的Hosts文件</h3><p>首先，什么是Hosts文件？</p>
+<blockquote>
+<p>在互联网协议中，host表示能够同其他机器互相访问的本地计算机。一台本地机有唯一标志代码，同网络掩码一起组成IP地址，如果通过点到点协议通过ISP访问互联网，那么在连接期间将会拥有唯一的IP地址，这段时间内，你的主机就是一个host。</p>
+<p>在这种情况下，host表示一个网络节点。host是根据TCP/IP for Windows 的标准来工作的，它的作用是包含IP地址和Host name(主机名)的映射关系，是一个映射IP地址和Host name(主机名)的规定，规定要求每段只能包括一个映射关系，IP地址要放在每段的最前面，空格后再写上映射的Host name主机名　。对于这段的映射说明用“#”分割后用文字说明。</p>
+</blockquote>
+<h4 id="Windows"><a href="#Windows" class="headerlink" title="~Windows"></a>~Windows</h4><p>Hosts文件的路径是：</p>
+<blockquote>
+<p><em>C:\Windows\System32\drivers\etc</em></p>
+</blockquote>
+<p>由于文件没有后缀名，可以利用鼠标右键点击，选择用记事本打开</p>
+<h4 id="Mac"><a href="#Mac" class="headerlink" title="~Mac"></a>~Mac</h4><p>终端内输入：</p>
+<blockquote>
+<p>sudo vim /etc/hosts</p>
+</blockquote>
+<p>打开之后，我们就要向里面追加信息了。</p>
+<h3 id="第二步，追加域名的IP地址"><a href="#第二步，追加域名的IP地址" class="headerlink" title="第二步，追加域名的IP地址"></a>第二步，追加域名的IP地址</h3><p>我们可以利用<a href="https://www.ipaddress.com/" target="_blank" rel="noopener">https://www.ipaddress.com/</a> 来获得以下两个GitHub域名的IP地址：</p>
+<p>(1) github.com</p>
+<p>(2) github.global.ssl.fastly.net</p>
+<p>打开网页后，利用输入框内分别查询两个域名：<a href="http://github.global.ssl.fastly.net.ipaddress.com/#ipinfo" target="_blank" rel="noopener">
+</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200619140841.png" alt></p>
+<p>先试一下github.com（也可直接访问）：<a href="http://github.com.ipaddress.com/#ipinfo" target="_blank" rel="noopener">http://github.com.ipaddress.com/#ipinfo</a> </p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200619140934.png" alt></p>
+<p> 在标注的IP地址中，任选一个记录下来。</p>
+<p>再来是github.global.ssl.fastly.net（也可直接访问）：<a href="http://github.global.ssl.fastly.net.ipaddress.com/#ipinfo" target="_blank" rel="noopener">http://github.global.ssl.fastly.net.ipaddress.com/#ipinfo</a> </p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200619140954.png" alt></p>
+<p>将以上两段IP写入Hosts文件中：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">151.101.185.194 github.global.ssl.fastly.net</span><br><span class="line">192.30.253.112 github.com</span><br></pre></td></tr></table></figure>
+
+<p> 保存。</p>
+<h3 id="第三步，刷新-DNS-缓存"><a href="#第三步，刷新-DNS-缓存" class="headerlink" title="第三步，刷新 DNS 缓存"></a>第三步，刷新 DNS 缓存</h3><p>在终端或CMD中，执行以下命令：</p>
+<blockquote>
+<p>ipconfig /flushdns</p>
+</blockquote>
+<p>收工。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+]]></content>
+      <tags>
+        <tag>实用技巧</tag>
+      </tags>
+  </entry>
 </search>
