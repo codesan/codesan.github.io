@@ -273,6 +273,172 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../解决homebrew长时间停在Updating-Homebrew-这个步骤.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../解决homebrew长时间停在Updating-Homebrew-这个步骤.html" itemprop="url">解决homebrew长时间停在Updating Homebrew 这个步骤</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-01T11:16:46+08:00">
+                2020-09-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在国内的网络环境下使用 Homebrew 安装软件的过程中可能会长时间卡在 Updating Homebrew 这个步骤。</p>
+<p>例：执行 brew install composer 命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ brew install composer</span><br><span class="line">Updating Homebrew... # 如果碰到长时间卡在这里，参考以下 2 种处理方法</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="方法-1：按住-control-c-取消本次更新操作"><a href="#方法-1：按住-control-c-取消本次更新操作" class="headerlink" title="方法 1：按住 control + c 取消本次更新操作"></a>方法 1：按住 control + c 取消本次更新操作</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ brew install composer</span><br><span class="line">Updating Homebrew...</span><br><span class="line">^C</span><br></pre></td></tr></table></figure>
+
+<p>按住 control + c 之后命令行会显示 ^C，就代表已经取消了 Updating Homebrew 操作</p>
+<p>大概不到 1 秒钟之后就会去执行我们真正需要的安装操作了</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ brew install composer</span><br><span class="line">Updating Homebrew...</span><br><span class="line">^C==&gt; Satisfying dependencies</span><br><span class="line">==&gt; Downloading https://getcomposer.org/download/1.7.2/composer.phar</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>这个方法是临时的、一次性的</p>
+<h2 id="方法-2：使用-Alibaba-的-Homebrew-镜像源进行加速"><a href="#方法-2：使用-Alibaba-的-Homebrew-镜像源进行加速" class="headerlink" title="方法 2：使用 Alibaba 的 Homebrew 镜像源进行加速"></a>方法 2：使用 Alibaba 的 Homebrew 镜像源进行加速</h2><p>平时我们执行 brew 命令安装软件的时候，跟以下 3 个仓库地址有关：</p>
+<ol>
+<li>brew.git</li>
+<li>homebrew-core.git</li>
+<li>homebrew-bottles</li>
+</ol>
+<p>通过以下操作将这 3 个仓库地址全部替换为 Alibaba 提供的地址</p>
+<h3 id="1-替换-还原-brew-git-仓库地址"><a href="#1-替换-还原-brew-git-仓库地址" class="headerlink" title="1. 替换 / 还原 brew.git 仓库地址"></a>1. 替换 / 还原 brew.git 仓库地址</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 替换成阿里巴巴的 brew.git 仓库地址:</span></span><br><span class="line">cd "$(brew --repo)"</span><br><span class="line">git remote set-url origin https://mirrors.aliyun.com/homebrew/brew.git</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">=======================================================</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 还原为官方提供的 brew.git 仓库地址</span></span><br><span class="line">cd "$(brew --repo)"</span><br><span class="line">git remote set-url origin https://github.com/Homebrew/brew.git</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-替换-还原-homebrew-core-git-仓库地址"><a href="#2-替换-还原-homebrew-core-git-仓库地址" class="headerlink" title="2. 替换 / 还原 homebrew-core.git 仓库地址"></a>2. 替换 / 还原 homebrew-core.git 仓库地址</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 替换成阿里巴巴的 homebrew-core.git 仓库地址:</span></span><br><span class="line">cd "$(brew --repo)/Library/Taps/homebrew/homebrew-core"</span><br><span class="line">git remote set-url origin https://mirrors.aliyun.com/homebrew/homebrew-core.git</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">=======================================================</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 还原为官方提供的 homebrew-core.git 仓库地址</span></span><br><span class="line">cd "$(brew --repo)/Library/Taps/homebrew/homebrew-core"</span><br><span class="line">git remote set-url origin https://github.com/Homebrew/homebrew-core.git</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-替换-还原-homebrew-bottles-访问地址"><a href="#3-替换-还原-homebrew-bottles-访问地址" class="headerlink" title="3. 替换 / 还原 homebrew-bottles 访问地址"></a>3. 替换 / 还原 homebrew-bottles 访问地址</h3><p>这个步骤跟你的 macOS 系统使用的 shell 版本有关系</p>
+<p>所以，先来查看当前使用的 shell 版本</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">echo $SHELL</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 如果你的输出结果是 /bin/zsh，参考?的 zsh 终端操作方式</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 如果你的输出结果是 /bin/bash，参考?的 bash 终端操作方式</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="3-1-zsh-终端操作方式"><a href="#3-1-zsh-终端操作方式" class="headerlink" title="3.1 zsh 终端操作方式"></a>3.1 zsh 终端操作方式</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 替换成阿里巴巴的 homebrew-bottles 访问地址:</span></span><br><span class="line">echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles' &gt;&gt; ~/.zshrc</span><br><span class="line">source ~/.zshrc</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">=======================================================</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 还原为官方提供的 homebrew-bottles 访问地址</span></span><br><span class="line">vi ~/.zshrc</span><br><span class="line"><span class="meta">#</span><span class="bash"> 然后，删除 HOMEBREW_BOTTLE_DOMAIN 这一行配置</span></span><br><span class="line">source ~/.zshrc</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="3-2-bash-终端操作方式"><a href="#3-2-bash-终端操作方式" class="headerlink" title="3.2 bash 终端操作方式"></a>3.2 bash 终端操作方式</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 替换 homebrew-bottles 访问 URL:</span></span><br><span class="line">echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles' &gt;&gt; ~/.bash_profile</span><br><span class="line">source ~/.bash_profile</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">=======================================================</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 还原为官方提供的 homebrew-bottles 访问地址</span></span><br><span class="line">vi ~/.bash_profile</span><br><span class="line"><span class="meta">#</span><span class="bash"> 然后，删除 HOMEBREW_BOTTLE_DOMAIN 这一行配置</span></span><br><span class="line">source ~/.bash_profile</span><br></pre></td></tr></table></figure>
+
+<h3 id="HomeBrew快速安装"><a href="#HomeBrew快速安装" class="headerlink" title="HomeBrew快速安装"></a>HomeBrew快速安装</h3><p>自动脚本(全部国内地址)（在Mac os终端中复制粘贴回车下面这句话)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/bin/zsh -c &quot;$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)&quot;</span><br></pre></td></tr></table></figure>
+
+<p>这行命令就是这位大佬发布的：<a href="https://zhuanlan.zhihu.com/p/111014448" target="_blank" rel="noopener">金牛肖马</a></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../hexo-设置新建文章时自动打开md编辑器.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1695,133 +1861,6 @@ public boolean shouldOverrideUrlLoading(WebView view, String httpurl) {
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../在Gradle中声明一个Java可使用的变量.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../在Gradle中声明一个Java可使用的变量.html" itemprop="url">在Gradle中声明一个Java可使用的变量</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-18T14:22:12+08:00">
-                2020-05-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/a1ek1i9490023624619.jpg" alt></p>
-<h2 id="生成Java常量"><a href="#生成Java常量" class="headerlink" title="生成Java常量"></a>生成Java常量</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    buildTypes &#123;</span><br><span class="line">        debug &#123;</span><br><span class="line">            buildConfigField <span class="string">"int"</span>, <span class="string">"FOO"</span>, <span class="string">"42"</span></span><br><span class="line">            buildConfigField <span class="string">"String"</span>, <span class="string">"FOO_STRING"</span>, <span class="string">"\"foo\""</span></span><br><span class="line">            buildConfigField <span class="string">"boolean"</span>, <span class="string">"LOG"</span>, <span class="string">"true"</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        release &#123;</span><br><span class="line">            buildConfigField <span class="string">"int"</span>, <span class="string">"FOO"</span>, <span class="string">"52"</span></span><br><span class="line">            buildConfigField <span class="string">"String"</span>, <span class="string">"FOO_STRING"</span>, <span class="string">"\"bar\""</span></span><br><span class="line">            buildConfigField <span class="string">"boolean"</span>, <span class="string">"LOG"</span>, <span class="string">"false"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>你可以访问他们 <code>BuildConfig.FOO</code></p>
-<h2 id="生成Android资源"><a href="#生成Android资源" class="headerlink" title="生成Android资源"></a>生成Android资源</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    buildTypes &#123;</span><br><span class="line">        debug&#123;</span><br><span class="line">            resValue <span class="string">"string"</span>, <span class="string">"app_name"</span>, <span class="string">"My App Name Debug"</span></span><br><span class="line">        &#125;</span><br><span class="line">        release &#123;</span><br><span class="line">            resValue <span class="string">"string"</span>, <span class="string">"app_name"</span>, <span class="string">"My App Name"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>您可以按照通常的方式访问它们。<code>@string/app_name</code>或<code>R.string.app_name</code></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1872,7 +1911,7 @@ public boolean shouldOverrideUrlLoading(WebView view, String httpurl) {
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">108</span>
+                  <span class="site-state-item-count">109</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1885,7 +1924,7 @@ public boolean shouldOverrideUrlLoading(WebView view, String httpurl) {
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">47</span>
+                  <span class="site-state-item-count">48</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
