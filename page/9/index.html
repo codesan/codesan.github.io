@@ -273,6 +273,175 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Android系统的启动流程详解.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../Android系统的启动流程详解.html" itemprop="url">Android系统的启动流程详解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-05T15:22:32+08:00">
+                2019-12-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Android系统启动流程"><a href="#Android系统启动流程" class="headerlink" title="Android系统启动流程."></a>Android系统启动流程.</h1><blockquote>
+<h4 id="当系统引导程序启动Linux内核时-内核会加载各种数据结构和驱动程序-有了驱动之后-开始启动Android系统并加载用户级别的第一个进程init-system-core-init-Init-c"><a href="#当系统引导程序启动Linux内核时-内核会加载各种数据结构和驱动程序-有了驱动之后-开始启动Android系统并加载用户级别的第一个进程init-system-core-init-Init-c" class="headerlink" title="当系统引导程序启动Linux内核时, 内核会加载各种数据结构和驱动程序. 有了驱动之后, 开始启动Android系统并加载用户级别的第一个进程init(system/core/init/Init.c)."></a>当系统引导程序启动Linux内核时, 内核会加载各种数据结构和驱动程序. 有了驱动之后, 开始启动Android系统并加载用户级别的第一个进程init(system/core/init/Init.c).</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">int main(int argc, char **argv)</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 创建各种文件夹和挂载目录.</span><br><span class="line">    mkdir(&quot;/dev&quot;, 0755);</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 初始化日志.</span><br><span class="line">    log_init();</span><br><span class="line"></span><br><span class="line">    // 解析配置文件.</span><br><span class="line">    init_parse_config_file(&quot;/init.rc&quot;);</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="加载Init-rc文件-主要启动了一个Zygote-孵化器-进程-此进程是Android系统启动关键服务的一个母进程"><a href="#加载Init-rc文件-主要启动了一个Zygote-孵化器-进程-此进程是Android系统启动关键服务的一个母进程" class="headerlink" title="加载Init.rc文件. 主要启动了一个Zygote(孵化器)进程, 此进程是Android系统启动关键服务的一个母进程."></a>加载Init.rc文件. 主要启动了一个Zygote(孵化器)进程, 此进程是Android系统启动关键服务的一个母进程.</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">service zygote /system/bin/app_process -Xzygote /system/bin --zygote --start-system-server</span><br><span class="line">    socket zygote stream 666</span><br><span class="line">    onrestart write /sys/android_power/request_state wake</span><br><span class="line">    onrestart write /sys/power/state on</span><br><span class="line">    onrestart restart media</span><br><span class="line">    onrestart restart netd</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="Zygote进程的初始化在App-main-cpp文件中开启-代码片段如下"><a href="#Zygote进程的初始化在App-main-cpp文件中开启-代码片段如下" class="headerlink" title="Zygote进程的初始化在App_main.cpp文件中开启, 代码片段如下:"></a>Zygote进程的初始化在App_main.cpp文件中开启, 代码片段如下:</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">int main(int argc, const char* const argv[])</span><br><span class="line">&#123;</span><br><span class="line">    // 定义Android运行时环境.</span><br><span class="line">    AppRuntime runtime;</span><br><span class="line">    int i = runtime.addVmArguments(argc, argv);</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    bool startSystemServer = (i &lt; argc) ? </span><br><span class="line">            strcmp(argv[i], &quot;--start-system-server&quot;) == 0 : false;</span><br><span class="line">    setArgv0(argv0, &quot;zygote&quot;);</span><br><span class="line">    set_process_name(&quot;zygote&quot;);</span><br><span class="line"></span><br><span class="line">    // 使用运行时环境启动Zygote的初始化类.</span><br><span class="line">    runtime.start(&quot;com.android.internal.os.ZygoteInit&quot;,</span><br><span class="line">        startSystemServer);</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="现在从c或c-代码进入到java代码中-ZygoteInit-java初始化类-代码如下"><a href="#现在从c或c-代码进入到java代码中-ZygoteInit-java初始化类-代码如下" class="headerlink" title="现在从c或c++代码进入到java代码中, ZygoteInit.java初始化类, 代码如下:"></a>现在从c或c++代码进入到java代码中, ZygoteInit.java初始化类, 代码如下:</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String argv[]) &#123;</span><br><span class="line">    // 加载系统运行依赖的class类.</span><br><span class="line">    preloadClasses();</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    if (argv[1].equals(&quot;true&quot;)) &#123;</span><br><span class="line">        // Zygote孵化器进程开始孵化系统核心服务.</span><br><span class="line">        startSystemServer();</span><br><span class="line">    &#125; else if (!argv[1].equals(&quot;false&quot;)) &#123;</span><br><span class="line">        throw new RuntimeException(argv[0] + USAGE_STRING);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private static boolean startSystemServer()</span><br><span class="line">    throws MethodAndArgsCaller, RuntimeException &#123;</span><br><span class="line">    String args[] = &#123;</span><br><span class="line">        &quot;--setuid=1000&quot;,</span><br><span class="line">        &quot;--setgid=1000&quot;,</span><br><span class="line">        &quot;--setgroups=1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,3001,3002,3003&quot;,</span><br><span class="line">        &quot;--capabilities=130104352,130104352&quot;,</span><br><span class="line">        &quot;--runtime-init&quot;,</span><br><span class="line">        &quot;--nice-name=system_server&quot;,</span><br><span class="line">        &quot;com.android.server.SystemServer&quot;,</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 孵化器分叉开启SystemServer类, 并且把上面定义的参数.</span><br><span class="line">    // 传递给此类. 用于启动系统关键服务.</span><br><span class="line">    pid = Zygote.forkSystemServer(</span><br><span class="line">            parsedArgs.uid, parsedArgs.gid,</span><br><span class="line">            parsedArgs.gids, debugFlags, null,</span><br><span class="line">            parsedArgs.permittedCapabilities,</span><br><span class="line">            parsedArgs.effectiveCapabilities);</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="Zygote进程分叉出SystemServer类-main函数如下"><a href="#Zygote进程分叉出SystemServer类-main函数如下" class="headerlink" title="Zygote进程分叉出SystemServer类, main函数如下:"></a>Zygote进程分叉出SystemServer类, main函数如下:</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 加载本地的动态链接库.</span><br><span class="line">    System.loadLibrary(&quot;android_servers&quot;);</span><br><span class="line"></span><br><span class="line">    // 调用动态链接库中的c函数.</span><br><span class="line">    init1(args);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 这里init1的函数定义在frameworks\base\services\jni\com_android_server_SystemServer.cpp下的方法.</span><br><span class="line">native public static void init1(String[] args);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="comandroidserver-SystemServer-cpp的代码片段如下"><a href="#comandroidserver-SystemServer-cpp的代码片段如下" class="headerlink" title="comandroidserver_SystemServer.cpp的代码片段如下:"></a>com<em>android</em>server_SystemServer.cpp的代码片段如下:</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">static JNINativeMethod gMethods[] = &#123;</span><br><span class="line">    /* name, signature, funcPtr */</span><br><span class="line">    // 把native方法init1, 映射到android_server_SystemServer_init1. (这里是定义的函数指针)</span><br><span class="line">    &#123; &quot;init1&quot;, &quot;([Ljava/lang/String;)V&quot;, (void*) android_server_SystemServer_init1 &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">static void android_server_SystemServer_init1(JNIEnv* env, jobject clazz)</span><br><span class="line">&#123;</span><br><span class="line">    // 转调</span><br><span class="line">    system_init();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 此方法没有方法体.</span><br><span class="line">extern &quot;C&quot; int system_init();</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="system-init方法的方法体-在System-init-cpp类中-代码如下"><a href="#system-init方法的方法体-在System-init-cpp类中-代码如下" class="headerlink" title="system_init方法的方法体, 在System_init.cpp类中. 代码如下:"></a>system_init方法的方法体, 在System_init.cpp类中. 代码如下:</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">extern &quot;C&quot; status_t system_init()</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 开启一些硬件相关的服务.</span><br><span class="line">    SensorService::instantiate();</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 获取Android运行时环境</span><br><span class="line">    AndroidRuntime* runtime = AndroidRuntime::getRuntime();</span><br><span class="line"></span><br><span class="line">    LOGI(&quot;System server: starting Android services.\n&quot;);</span><br><span class="line">    // 调用SystemServer类中静态方法init2. 从native层转到java层.</span><br><span class="line">    runtime-&gt;callStatic(&quot;com/android/server/SystemServer&quot;, &quot;init2&quot;);</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="SystemServer下init2方法如下"><a href="#SystemServer下init2方法如下" class="headerlink" title="SystemServer下init2方法如下:"></a>SystemServer下init2方法如下:</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public static final void init2() &#123;</span><br><span class="line">    Slog.i(TAG, &quot;Entered the Android system server!&quot;);</span><br><span class="line"></span><br><span class="line">    // 进入Android系统服务的初始化.</span><br><span class="line">    Thread thr = new ServerThread();</span><br><span class="line">    thr.setName(&quot;android.server.ServerThread&quot;);</span><br><span class="line">    thr.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="ServerThread中的run方法如下"><a href="#ServerThread中的run方法如下" class="headerlink" title="ServerThread中的run方法如下:"></a>ServerThread中的run方法如下:</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void run() &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 初始化系统的服务, 并且把服务添加ServiceManager中, 便于以后系统进行统一管理.</span><br><span class="line">    ServiceManager.addService(&quot;entropy&quot;, new EntropyService());</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 调用了ActivityManagerService的systemReady的方法.</span><br><span class="line">    ((ActivityManagerService)ActivityManagerNative.getDefault())</span><br><span class="line">            .systemReady(new Runnable() &#123;</span><br><span class="line">        public void run() &#123;</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="ActivityManagerService下的systemReady方法如下"><a href="#ActivityManagerService下的systemReady方法如下" class="headerlink" title="ActivityManagerService下的systemReady方法如下:"></a>ActivityManagerService下的systemReady方法如下:</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public void systemReady(final Runnable goingCallback) &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 调用了ActivityStack中的resumeTopActivityLocked去启动Activity</span><br><span class="line">    mMainStack.resumeTopActivityLocked(null);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="ActivityStack中的resumeTopActivityLocked方法如下"><a href="#ActivityStack中的resumeTopActivityLocked方法如下" class="headerlink" title="ActivityStack中的resumeTopActivityLocked方法如下:"></a>ActivityStack中的resumeTopActivityLocked方法如下:</h4></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">final boolean resumeTopActivityLocked(ActivityRecord prev) &#123;</span><br><span class="line">        // 找到第一个当前没有关闭的Activity, 系统刚刚系统没有任何Activity执行, 所以next为null</span><br><span class="line">        ActivityRecord next = topRunningActivityLocked(null);</span><br><span class="line"></span><br><span class="line">        // Remember how we&apos;ll process this pause/resume situation, and ensure</span><br><span class="line">        // that the state is reset however we wind up proceeding.</span><br><span class="line">        final boolean userLeaving = mUserLeaving;</span><br><span class="line">        mUserLeaving = false;</span><br><span class="line"></span><br><span class="line">        if (next == null) &#123;</span><br><span class="line">            // There are no more activities!  Let&apos;s just start up the</span><br><span class="line">            // Launcher...</span><br><span class="line">            if (mMainStack) &#123;</span><br><span class="line">                // 开启Launcher应用的第一个Activity界面.</span><br><span class="line">                return mService.startHomeActivityLocked();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h4 id="home界面显示-这时Android系统启动完毕-进入到待机画面"><a href="#home界面显示-这时Android系统启动完毕-进入到待机画面" class="headerlink" title="home界面显示, 这时Android系统启动完毕. 进入到待机画面."></a>home界面显示, 这时Android系统启动完毕. 进入到待机画面.</h4></blockquote>
+<p><strong>本帖附件</strong></p>
+<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Source-Insignt4-0的基本使用.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1588,131 +1757,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Android面试题之事件分发机制-一次性记忆.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../Android面试题之事件分发机制-一次性记忆.html" itemprop="url">Android面试题之事件分发机制  一次性记忆</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-26T22:20:27+08:00">
-                2019-11-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191126221917.png" alt></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/timg" alt></p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1763,7 +1807,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">106</span>
+                  <span class="site-state-item-count">107</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
