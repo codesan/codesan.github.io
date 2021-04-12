@@ -81,13 +81,17 @@
 
 
 
+<meta name="description" content="android程序员一枚,擅长java,kotlin,python,金融投资,欢迎交流~">
+<meta name="keywords" content="android,java,kotlin,golang,go,python,自动化,量化,金融,php,docker,linux">
 <meta property="og:type" content="website">
 <meta property="og:title" content="乱码三千 – 分享实用IT技术">
 <meta property="og:url" content="https://code.newban.cn/page/10/index.html">
 <meta property="og:site_name" content="乱码三千 – 分享实用IT技术">
+<meta property="og:description" content="android程序员一枚,擅长java,kotlin,python,金融投资,欢迎交流~">
 <meta property="og:locale" content="zh-Hans">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="乱码三千 – 分享实用IT技术">
+<meta name="twitter:description" content="android程序员一枚,擅长java,kotlin,python,金融投资,欢迎交流~">
 
 
 
@@ -273,7 +277,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Android面试题之Service-一次性记忆.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../136.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -292,7 +296,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../Android面试题之Service-一次性记忆.html" itemprop="url">Android面试题之Service  一次性记忆</a></h1>
+                <a class="post-title-link" href="../../136.html" itemprop="url">Xposed 如何Hook静态变量or构造方法or复杂参数的方法or替换函数执行内容or内部类中的函数or匿名类的函数</a></h1>
         
 
         <div class="post-meta">
@@ -304,8 +308,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-27T16:30:23+08:00">
-                2019-11-27
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-14T19:55:32+08:00">
+                2020-10-14
               </time>
             
 
@@ -344,981 +348,123 @@
       
         
           
-            <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">服务不能自己运行，需要通过调用Context.startService()或Context.bindService()方法启动服务。这两个方法都 可以启动Service，但是它们的使用场合有所不同。使用startService()方法启用服务，调用者与服务之间没有关连，即使调用者退出了，服 务仍然运行。使用bindService()方法启用服务，调用者与服务绑定在了一起，调用者一旦退出，服务也就终止，大有“不求同时生，必须同时死”的 特点。</span><br></pre></td></tr></table></figure>
+            <h2 id="Xposed框架Hook相关api的使用"><a href="#Xposed框架Hook相关api的使用" class="headerlink" title="Xposed框架Hook相关api的使用"></a>Xposed框架Hook相关api的使用</h2><p><strong>首先创建测试类继承IXposedHookLoadPackage, 以下所有的hook方法都在handleLoadPackage方法内部进行调用</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HookTest</span> <span class="keyword">implements</span> <span class="title">IXposedHookLoadPackage</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleLoadPackage</span><span class="params">(XC_LoadPackage.LoadPackageParam lpparam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        XposedBridge.log(<span class="string">"HOOK初体验："</span> + lpparam.processName + <span class="string">":"</span> + lpparam.packageName);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p> <img src="https://upload-images.jianshu.io/upload_images/3070482-77c035714f96b36d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/389/format/webp" alt="img"> </p>
-<p> <img src="https://upload-images.jianshu.io/upload_images/3070482-333a85b2ee3d1ba3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/872/format/webp" alt="img"> </p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+<h4 id="准备需要被hook的代码用于测试"><a href="#准备需要被hook的代码用于测试" class="headerlink" title="准备需要被hook的代码用于测试"></a>准备需要被hook的代码用于测试</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HookDemo</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String Tag = <span class="string">"HookDemo"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span>  <span class="keyword">int</span> staticInt = <span class="number">100</span>;</span><br><span class="line">    <span class="keyword">public</span>  <span class="keyword">int</span> publicInt = <span class="number">200</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> privateInt = <span class="number">300</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HookDemo</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(<span class="string">"NOHook"</span>);</span><br><span class="line">        Log.d(Tag, <span class="string">"HookDemo() was called|||"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">HookDemo</span><span class="params">(String str)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"HookDemo(String str) was called|||"</span> + str);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hookDemoTest</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"staticInt = "</span> + staticInt);</span><br><span class="line">        Log.d(Tag, <span class="string">"PublicInt = "</span> + publicInt);</span><br><span class="line">        Log.d(Tag, <span class="string">"privateInt = "</span> + privateInt);</span><br><span class="line">        publicFunc(<span class="string">"NOHook"</span>);</span><br><span class="line">        Log.d(Tag, <span class="string">"PublicInt = "</span> + publicInt);</span><br><span class="line">        Log.d(Tag, <span class="string">"privateInt = "</span> + privateInt);</span><br><span class="line">        privateFunc(<span class="string">"NOHook"</span>);</span><br><span class="line">        staticPrivateFunc(<span class="string">"NOHook"</span>);</span><br><span class="line"></span><br><span class="line">        String[][] str = <span class="keyword">new</span> String[<span class="number">1</span>][<span class="number">2</span>];</span><br><span class="line">        Map map = <span class="keyword">new</span> HashMap&lt;String, String&gt;();</span><br><span class="line">        map.put(<span class="string">"key"</span>, <span class="string">"value"</span>);</span><br><span class="line">        ArrayList arrayList = <span class="keyword">new</span> ArrayList();</span><br><span class="line">        arrayList.add(<span class="string">"listValue"</span>);</span><br><span class="line">        complexParameterFunc(<span class="string">"NOHook"</span>, str, map, arrayList);</span><br><span class="line"></span><br><span class="line">        repleaceFunc();</span><br><span class="line">        anonymousInner(<span class="keyword">new</span> Animal() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eatFunc</span><span class="params">(String value)</span> </span>&#123;</span><br><span class="line">                Log.d(Tag, <span class="string">"eatFunc(String value)  was called|||"</span> + value);</span><br><span class="line">                Log.d(Tag, <span class="string">"anonymoutInt =  "</span> + anonymoutInt);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, <span class="string">"NOHook"</span>);</span><br><span class="line"></span><br><span class="line">        InnerClass innerClass = <span class="keyword">new</span> InnerClass();</span><br><span class="line">        innerClass.InnerFunc(<span class="string">"NOHook"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">publicFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"publicFunc(String value) was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">privateFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"privateFunc(String value) was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">private</span> <span class="keyword">void</span> <span class="title">staticPrivateFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">        Log.d(<span class="string">"HookDemo"</span>, <span class="string">"staticPrivateFunc(Strin value) was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">complexParameterFunc</span><span class="params">(String value, String[][] str, Map&lt;String,String&gt; map, ArrayList arrayList)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        Log.d(<span class="string">"HookDemo"</span>, <span class="string">"complexParameter(Strin value) was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">repleaceFunc</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"repleaceFunc will be replace|||"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">anonymousInner</span><span class="params">(Animal dog, String value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"anonymousInner was called|||"</span> + value);</span><br><span class="line">        dog.eatFunc(<span class="string">"NOHook"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">hideFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"hideFunc was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">argFunc</span><span class="params">(Objcet... value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"argFunc was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">InnerClass</span></span>&#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">int</span> innerPublicInt = <span class="number">10</span>;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> innerPrivateInt = <span class="number">20</span>;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">InnerClass</span><span class="params">()</span></span>&#123;</span><br><span class="line">            Log.d(Tag, <span class="string">"InnerClass constructed func was called"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">InnerFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">            Log.d(Tag, <span class="string">"InnerFunc(String value) was called|||"</span> + value);</span><br><span class="line">            Log.d(Tag, <span class="string">"innerPublicInt = "</span> + innerPublicInt);</span><br><span class="line">            Log.d(Tag, <span class="string">"innerPrivateInt = "</span> + innerPrivateInt);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../java五大排序算法之冒泡排序.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../java五大排序算法之冒泡排序.html" itemprop="url">java五大排序算法之冒泡排序</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-27T11:16:01+08:00">
-                2019-11-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="一-冒泡排序介绍"><a href="#一-冒泡排序介绍" class="headerlink" title="一.冒泡排序介绍"></a>一.冒泡排序介绍</h1><p>冒泡排序是我们得最多的排序方式之一，原因是简单易实现，且原理易懂。顾名思义，冒泡排序，它的排序过程就像水中的气泡一样，一个一个上浮到水面。<br><img src="https://img2018.cnblogs.com/blog/1084627/201901/1084627-20190108142731138-369925737.gif" alt="img"></p>
-<h1 id="二-冒泡排序原理分析"><a href="#二-冒泡排序原理分析" class="headerlink" title="二.冒泡排序原理分析"></a>二.冒泡排序原理分析</h1><p><img src="https://img2018.cnblogs.com/blog/1084627/201901/1084627-20190108101356028-1670962340.png" alt="img"></p>
-<h1 id="三-冒泡排序代码实现"><a href="#三-冒泡排序代码实现" class="headerlink" title="三.冒泡排序代码实现"></a>三.冒泡排序代码实现</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * @Author &#123;LearnAndGet&#125;</span><br><span class="line"> * @Time 2019年1月8日</span><br><span class="line"> * @Discription:</span><br><span class="line"> */</span><br><span class="line">package com.sort;</span><br><span class="line"></span><br><span class="line">import java.util.Arrays;</span><br><span class="line"></span><br><span class="line">public class MaopaoSort &#123;</span><br><span class="line">    </span><br><span class="line">    static int[] array = &#123;3,2,4,1,5,0&#125;;</span><br><span class="line">    </span><br><span class="line">    public static void maopaoSort(int[] a) </span><br><span class="line">    &#123;</span><br><span class="line">        //外层循环，是需要进行比较的轮数，一共进行5次即可</span><br><span class="line">        for(int i=0;i&lt;a.length-1;i++) </span><br><span class="line">        &#123;</span><br><span class="line">            //内存循环，是每一轮中进行的两两比较</span><br><span class="line">            for(int j=0;j&lt;a.length-1;j++) </span><br><span class="line">            &#123;</span><br><span class="line">                if(a[j] &gt; a[j+1]) </span><br><span class="line">                &#123;</span><br><span class="line">                    int temp = a[j];</span><br><span class="line">                    a[j] = a[j+1];</span><br><span class="line">                    a[j+1] = temp; </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(&quot;第&quot;+(i+1)+&quot;轮排序后的数组为: &quot;+Arrays.toString(a));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        maopaoSort(array);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>输出结果</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">第1轮排序后的数组为: [2, 3, 1, 4, 0, 5]</span><br><span class="line">第2轮排序后的数组为: [2, 1, 3, 0, 4, 5]</span><br><span class="line">第3轮排序后的数组为: [1, 2, 0, 3, 4, 5]</span><br><span class="line">第4轮排序后的数组为: [1, 0, 2, 3, 4, 5]</span><br><span class="line">第5轮排序后的数组为: [0, 1, 2, 3, 4, 5]</span><br></pre></td></tr></table></figure>
-
-<h1 id="四-冒泡排序的优化"><a href="#四-冒泡排序的优化" class="headerlink" title="四.冒泡排序的优化"></a>四.冒泡排序的优化</h1><p>1 .观察上述代码和运行结果，我们可以发现，当第一轮结束后，最后一个数字一定是数组中最大的元素，那么我们在进行第二趟的两两比较时，实际上是没有必要再对第5个和第6个进行比较的。那么我们可以修改代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public static void maopaoSort(int[] a) </span><br><span class="line">&#123;</span><br><span class="line">    //外层循环，是需要进行比较的轮数，一共进行5次即可</span><br><span class="line">    for(int i=0;i&lt;a.length-1;i++) </span><br><span class="line">    &#123;</span><br><span class="line">        //内存循环，是每一轮中进行的两两比较</span><br><span class="line">        //并且每一轮结束后，下一次的两两比较中可以少比较一次</span><br><span class="line">        for(int j=0;j&lt;a.length-i-1;j++) </span><br><span class="line">        &#123;</span><br><span class="line">            if(a[j] &gt; a[j+1]) </span><br><span class="line">            &#123;</span><br><span class="line">                int temp = a[j];</span><br><span class="line">                a[j] = a[j+1];</span><br><span class="line">                a[j+1] = temp; </span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(&quot;第&quot;+(i+1)+&quot;轮排序后的数组为: &quot;+Arrays.toString(a));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>继续运行后，可以发现运行结果是一样的。</p>
-<p>2 .当我们用数组：{1,2,0,3,5,4}来测试上述冒泡排序时，运行结果如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">第1轮排序后的数组为: [1, 0, 2, 3, 4, 5]</span><br><span class="line">第2轮排序后的数组为: [0, 1, 2, 3, 4, 5]</span><br><span class="line">第3轮排序后的数组为: [0, 1, 2, 3, 4, 5]</span><br><span class="line">第4轮排序后的数组为: [0, 1, 2, 3, 4, 5]</span><br><span class="line">第5轮排序后的数组为: [0, 1, 2, 3, 4, 5]</span><br></pre></td></tr></table></figure>
-
-<p>可以看到，在第2轮排序完成后，其实我们就已经的到了排好序的数组，但是我们的程序并不知道，仍然进行了后续的无用工作。那么，我们如何来让程序知道已经完成好排序了呢？</p>
-<p>这里可以想到，当某一轮的两两比较中，如果都没有发生数组元素的互换，那么其实排序工作已经完成了，所以我们可以考虑在程序中加入一个flag，默认为false，含义是该轮比较中是否发生了元素互换，当程序中执行到元素互换时，将该flag置为true，当该轮比较结束时，若flag为flase，则说明该轮比较未发生元素互换，那么排序完成，若flag为true，说明本轮比较仍然有元素互换，需要继续进行下轮排序。代码实现如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * @Author &#123;LearnAndGet&#125;</span><br><span class="line"> * @Time 2019年1月8日</span><br><span class="line"> * @Discription:</span><br><span class="line"> */</span><br><span class="line">package com.sort;</span><br><span class="line"></span><br><span class="line">import java.util.Arrays;</span><br><span class="line"></span><br><span class="line">public class MaopaoSort &#123;</span><br><span class="line">    </span><br><span class="line">    static int[] array = &#123;1,2,0,3,5,4&#125;;</span><br><span class="line">    </span><br><span class="line">    public static void maopaoSort(int[] a) </span><br><span class="line">    &#123;</span><br><span class="line">        //外层循环，是需要进行比较的轮数，一共进行5次即可</span><br><span class="line">        for(int i=0;i&lt;a.length-1;i++) </span><br><span class="line">        &#123;</span><br><span class="line">            boolean flag = false;</span><br><span class="line">            //内存循环，是每一轮中进行的两两比较</span><br><span class="line">            for(int j=0;j&lt;a.length-i-1;j++) </span><br><span class="line">            &#123;</span><br><span class="line">                if(a[j] &gt; a[j+1]) </span><br><span class="line">                &#123;</span><br><span class="line">                    int temp = a[j];</span><br><span class="line">                    a[j] = a[j+1];</span><br><span class="line">                    a[j+1] = temp;</span><br><span class="line">                    flag = true;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(&quot;第&quot;+(i+1)+&quot;轮排序后的数组为: &quot;+Arrays.toString(a));</span><br><span class="line">            if(flag == false)</span><br><span class="line">            &#123;</span><br><span class="line">                System.out.println(&quot;本轮中的两两比较未发生元素互换，排序已经完成啦&quot;);</span><br><span class="line">                return;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        maopaoSort(array);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>运行结果：</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">第1轮排序后的数组为: [1, 0, 2, 3, 4, 5]</span><br><span class="line">第2轮排序后的数组为: [0, 1, 2, 3, 4, 5]</span><br><span class="line">第3轮排序后的数组为: [0, 1, 2, 3, 4, 5]</span><br><span class="line">本轮中的两两比较未发生元素互换，排序已经完成啦</span><br></pre></td></tr></table></figure>
-
-<h1 id="五-冒泡排序的时间复杂度"><a href="#五-冒泡排序的时间复杂度" class="headerlink" title="五.冒泡排序的时间复杂度"></a>五.冒泡排序的时间复杂度</h1><p>冒泡排序是一种用时间换空间的排序方法，最坏情况是把顺序的排列变成逆序，或者把逆序的数列变成顺序。在这种情况下，每一次比较都需要进行交换运算。举个例子来说，一个数列 5 4 3 2 1 进行冒泡升序排列</p>
-<p>第一轮的两两比较，需要比较4次；得到 4 3 2 1 5<br>第二轮的两两比较，需要比较3次；得到 3 2 1 4 5<br>第三轮的两两比较，需要比较2次；得到 2 1 3 4 5<br>第四轮的两两比较，需要比较1次；得到 1 2 3 4 5</p>
-<p>所以总的比较次数为 4 + 3 + 2 + 1 = 10次<br>对于n位的数列则有比较次数为 (n-1) + (n-2) + … + 1 = n * (n - 1) / 2，这就得到了最大的比较次数。<br>而O(N^2)表示的是复杂度的数量级。举个例子来说，如果n = 10000，那么 n(n-1)/2 = (n^2 - n) / 2 = (100000000 - 10000) / 2，相对10^8来说，10000小的可以忽略不计了，所以总计算次数约为0.5 * N^2。用O(N^2)就表示了其数量级（忽略前面系数0.5）。</p>
-<p><strong>综上所述，冒泡排序的时间复杂度为：O(n²)</strong></p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Android面试题之事件分发机制-一次性记忆.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../Android面试题之事件分发机制-一次性记忆.html" itemprop="url">Android面试题之事件分发机制  一次性记忆</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-26T22:20:27+08:00">
-                2019-11-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191126221917.png" alt></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/timg" alt></p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Android面试题之Activity的四种启动模式-一次性记忆.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../Android面试题之Activity的四种启动模式-一次性记忆.html" itemprop="url">Android面试题之Activity的四种启动模式 一次性记忆</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-26T18:12:33+08:00">
-                2019-11-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>每当我们换工作面试之前,总是会不由自主的刷起面试题,大部分题我们反反复复不知道刷了多少遍,但是今天记住了,等下一次面试的时候又刷着相同的面试题,我就想问在座的各位,Activity的生命周期,你们到底刷过多少遍 [哭笑]  作为一名程序员  把时间浪费在重复性劳动上是极其不能忍受的  因此 为了让自己省去不必要的脑力开销 我给自己总结了一份面试相关的记忆技巧,在这里分享给大家   记忆不是目的  把知识变成自己的才最关键</p>
-</blockquote>
-<h2 id="哪四种启动模式"><a href="#哪四种启动模式" class="headerlink" title="哪四种启动模式"></a>哪四种启动模式</h2><ul>
-<li><strong>standard</strong>:默认启动模式,每开启一个activity就在任务栈中创建一个新的实例</li>
-<li><strong>singleTop</strong>:任务栈顶部有就复用,没有就重新创建,</li>
-<li><strong>singleTask</strong>:任务栈中有就将实例上方所有的实例全部销毁使其显示在最顶端,没有就重新创建一个新的实例 在搜索界面比较常用 按下主页其余网页全部被关闭</li>
-<li><strong>singleInstance</strong>:重新为新创建activity(实例)开启一个单独的任务栈,且该任务栈中有且仅有一个实例 该模式特点如下图:</li>
-</ul>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/clipboard.png" alt></p>
-<h2 id="如果快速记忆"><a href="#如果快速记忆" class="headerlink" title="如果快速记忆"></a>如果快速记忆</h2><p>其实只要将它们的英文名称单词反过来就好理解了</p>
-<ul>
-<li><strong>singleTop</strong>—&gt;Top single 顶部只有一个 不允许存在两个相同的Activity</li>
-<li><strong>singleTask</strong>—&gt;Task single 任务栈中只有它这一个Activity  那么一旦调用它 任务栈除它以外的所有Activity都会被销毁</li>
-<li><strong>singleInstance</strong>—&gt;Instance single 实例被孤立了 进了小黑屋被单独的一个任务栈给关着</li>
-<li><strong>standard</strong>—&gt;正常模式 这个应该好记忆</li>
-</ul>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Android面试题之四大组件-一次性记忆.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../Android面试题之四大组件-一次性记忆.html" itemprop="url">Android面试题之四大组件 一次性记忆</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-26T13:32:16+08:00">
-                2019-11-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>每当我们换工作面试之前,总是会不由自主的刷起面试题,大部分题我们反反复复不知道刷了多少遍,但是今天记住了,等下一次面试的时候又刷着相同的面试题,我就想问在座的各位,Activity的生命周期,你们到底刷过多少遍 [哭笑]  作为一名程序员  把时间浪费在重复性劳动上是极其不能忍受的  因此 为了让自己省去不必要的脑力开销 我给自己总结了一份面试相关的记忆技巧,在这里分享给大家   记忆不是目的  把知识变成自己的才最关键</p>
-</blockquote>
-<h2 id="四大组件是什么？"><a href="#四大组件是什么？" class="headerlink" title="四大组件是什么？"></a>四大组件是什么？</h2><p><strong>Activity【活动】</strong>：用于页面展示和交互。<br><strong>Service【服务】</strong>：后台运行服务，不提供界面呈现。<br><strong>BroadcastReceiver【广播接收器】</strong>：用来接收广播。<br><strong>Content Provider【内容提供商】</strong>：支持在多个应用中存储和读取数据，相当于数据库。</p>
-<h3 id="如何一次性记忆四大组件"><a href="#如何一次性记忆四大组件" class="headerlink" title="如何一次性记忆四大组件"></a>如何一次性记忆四大组件</h3><p>如果让你去设计一款操作系统,你会怎么设计?</p>
-<p>针对具有交互性的操作系统而言,需要具备以下几种基础功能 : </p>
-<ul>
-<li>首先 程序的界面的展示是必不可少的 这是其一　（Activity）</li>
-<li>其二 程序中也许不止一个界面 多个界面之间需要进行通信和数据传递    (BroadcastReceiver)</li>
-<li>第三  多个程序之间需要进行通信和数据传递  (Content Provider)</li>
-<li>第四　程序界面未显示的时也能随时响应用户操作　可后台运行 (Service)</li>
-</ul>
-<p>*<em>当你理解了设计者的用意后 确实能很好的理解四大组件的含义, 但是并不意味着你能很好的记忆住他们   在面试过程中你必须要有较快的反应速度    *</em></p>
-<p><strong>在这里我抛出几种右脑记忆思路:</strong></p>
-<ul>
-<li>取四大组件英文首字母得到 <strong>ABCS</strong>   当对方问你四大组件都有哪些时 你能立马联想到英文字母ABC</li>
-<li>这四大组件能让你联想到什么画面?</li>
-</ul>
-<p>到这里 有些人可能会说了  四大组件这么好记 还用得着这么费劲记忆?   </p>
-<p>我想说的是  如果你在工作中经常使用这些知识  那么它们对你来讲是非常熟悉的  但是针对初学者或者很长时间没有使用的开发者而言 一套合理的记忆技巧是非常有帮助的  我想若干年后 你也许忘了四大组件都有哪些了  但是你依然记得文本所说的<strong>ABC</strong>  这个时候 回忆起来 也只是一念之间的事儿</p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../大脑开发之右脑开发.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../大脑开发之右脑开发.html" itemprop="url">大脑开发之右脑开发</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-26T12:41:26+08:00">
-                2019-11-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>工欲善其事必先利其器,大脑是我们每个人最为珍贵的宝藏,它的潜能是无穷无尽的,强大到令人可怕,</p>
-<p>但是普通人对于大脑的了解和使用是即为匮乏的  作为一名现代人 如果你想跑得比别人快 站得比别人高  那么就必须学会如何开发我们的大脑, 让大脑更好的为我们服务</p>
-<h2 id="左脑和右脑分工"><a href="#左脑和右脑分工" class="headerlink" title="左脑和右脑分工"></a>左脑和右脑分工</h2><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/e7cd7b899e510fb354b3c30fd333c895d0430cfb.jpg" alt></p>
-<h2 id="左右脑检测"><a href="#左右脑检测" class="headerlink" title="左右脑检测"></a>左右脑检测</h2><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/c9fcc3cec3fdfc03ddcca15ad23f8794a5c2269f.jpg" alt></p>
-<p><strong>如果你看见这个跳舞女孩是顺时针转，说明你用的是右脑；</strong></p>
-<p><strong>如果是逆时针转，说明你用的左脑。</strong></p>
-<p>耶鲁大学耗时5年的研究成果。据说，14%的美国人可以两个方向都能看见。顺时针转的话，属於是用右脑较多的类型。逆时针转属於使用左脑较多的类型。大部分人的眼里里是逆时针方向转动，但也有人看来是顺时针方向转动的。</p>
-<h2 id="为什么要开发右脑"><a href="#为什么要开发右脑" class="headerlink" title="为什么要开发右脑"></a>为什么要开发右脑</h2><ul>
-<li><strong>左脑刺激机会相对比右脑多 大部分人左脑发达</strong></li>
-</ul>
-<p>人类左脑主管语言、逻辑、书写及右侧肢体运动，而右脑主管色彩、空间感、节奏和左侧肢体运动。在频繁使用语言的过程中，特别是国内的应试教育，侧重偏向于逻辑、记忆为主，人的左脑得到更多刺激，使左脑相对发达于右脑 </p>
-<ul>
-<li><strong>右脑的存储量是左脑的100万倍 反应时间要快于左脑</strong></li>
-<li><strong>右脑记忆更容易转化为长期记忆 极大缩短知识的记忆时间</strong></li>
-</ul>
-<h2 id="右脑记忆的主要方式"><a href="#右脑记忆的主要方式" class="headerlink" title="右脑记忆的主要方式"></a>右脑记忆的主要方式</h2><ul>
-<li><strong>图像记忆</strong></li>
-<li><strong>声音记忆</strong></li>
-<li><strong>感觉记忆</strong></li>
-</ul>
-<h2 id="如何训练和开发"><a href="#如何训练和开发" class="headerlink" title="如何训练和开发"></a>如何训练和开发</h2><ul>
-<li><strong>养成将知识转成图像 声音或者感觉的形式进行记忆的习惯</strong></li>
-<li><strong>养成听音频的习惯</strong></li>
-<li><strong>养成画图的习惯</strong></li>
-<li><strong>养成闭目空间想象回忆的习惯</strong></li>
-</ul>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../右脑记忆法之图像记忆.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../右脑记忆法之图像记忆.html" itemprop="url">右脑记忆法之图像记忆</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-26T12:29:25+08:00">
-                2019-11-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../右脑记忆法之联想记忆.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../右脑记忆法之联想记忆.html" itemprop="url">右脑记忆法之联想记忆</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-26T11:48:31+08:00">
-                2019-11-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>严格来说 联想记忆不属于单独的右脑记忆法,由于在联想的过程中,涉及到图像 声音甚至是感觉,</p>
-<p>因此 联想记忆更像是一种记忆检测和整理的手段 通过画思维图并且利用联想的手段联想出脑袋中所有的知识 这些知识的载体多种多样 有可能是一幅幅图像 也有可能是一段声音,或者是一阵刺骨的疼痛</p>
-<p><strong>联想有检测右脑知识的功能  当然他也有记忆的功能</strong>, 通过联想手段记忆知识的<strong>特点</strong>是:</p>
-<p><strong>用已知的知识去联想新的知识,或者说将新知识关联到熟悉的知识上</strong></p>
-<p>这也是为什么懂得越多,学得越快</p>
-<h2 id="联想记忆重要分为两大种"><a href="#联想记忆重要分为两大种" class="headerlink" title="联想记忆重要分为两大种"></a>联想记忆重要分为两大种</h2><ol>
-<li>相似联想</li>
-<li>对比联想</li>
+<ol>
+<li><strong>修改类中的私有静态变量</strong></li>
 </ol>
-<h4 id="相似联想"><a href="#相似联想" class="headerlink" title="相似联想"></a>相似联想</h4><p>新事物和脑海中已知事物(图像 声音等等)相似或者接近,类似举一反三</p>
-<h4 id="对比联想"><a href="#对比联想" class="headerlink" title="对比联想"></a>对比联想</h4><p>新事物和脑海中已知事物刚好是两个极端,例如水和火</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>联想记忆有</p>
-<ul>
-<li><p>总结复习和检测右脑知识的功能</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; clazz = XposedHelpers.findClass(<span class="string">"com.example.xposedhooktarget.HookDemo"</span>, lpparam.classLoader);</span><br><span class="line">XposedHelpers.setStaticIntField(clazz, <span class="string">"staticInt"</span>, <span class="number">99</span>);</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><strong>Hook无参构造函数</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; clazz = XposedHelpers.findClass(<span class="string">"com.example.xposedhooktarget.HookDemo"</span>, loadPackageParam.classLoader);</span><br><span class="line">XposedHelpers.findAndHookConstructor(clazz, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                XposedBridge.log(<span class="string">"Haha, HookDemo constructed was hooked"</span>);</span><br><span class="line">                <span class="comment">//大坑，此时对象还没有建立，即不能获取对象，也不能修改非静态变量的值</span></span><br><span class="line">                <span class="comment">//XposedHelpers.setIntField(param.thisObject, "publicInt", 199);</span></span><br><span class="line">                <span class="comment">//XposedHelpers.setIntField(param.thisObject, "privateInt", 299);</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><strong>Hook有参构造函数，并修改参数</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookConstructor(clazz, String.class,  <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                param.args[<span class="number">0</span>] = <span class="string">"Haha, HookDemo(str) are hooked"</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><strong>Hook公有方法publicFunc，并修改参数以及修改下publicInt和privateInt的值,再顺便调用一下隐藏函数hideFunc</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"publicFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    param.args[<span class="number">0</span>] = <span class="string">"Haha, publicFunc are hooked"</span>;</span><br><span class="line">                    <span class="comment">//修改成员变量的值</span></span><br><span class="line">                    XposedHelpers.setIntField(param.thisObject, <span class="string">"publicInt"</span>, <span class="number">199</span>);</span><br><span class="line">                    XposedHelpers.setIntField(param.thisObject, <span class="string">"privateInt"</span>, <span class="number">299</span>);</span><br><span class="line">                  	<span class="comment">//调用函数</span></span><br><span class="line">                    XposedHelpers.callMethod(param.thisObject, <span class="string">"hideFunc"</span>, <span class="string">"Haha, hideFunc was hooked"</span>);</span><br><span class="line"></span><br><span class="line">                   </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li><strong>Hook私有方法privateFunc，并修改参数</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"privateFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">               <span class="meta">@Override</span></span><br><span class="line">               <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                   param.args[<span class="number">0</span>] = <span class="string">"Haha, privateFunc are hooked"</span>;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li><strong>Hook私有静态方法staticPrivateFunc, 并修改参数</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"staticPrivateFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">              <span class="meta">@Override</span></span><br><span class="line">              <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                  param.args[<span class="number">0</span>] = <span class="string">"Haha, staticPrivateFunc are hooked"</span>;</span><br><span class="line">              &#125;</span><br><span class="line">          &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li><strong>Hook复杂参数函数complexParameterFunc</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Class fclass1 = XposedHelpers.findClass(<span class="string">"java.util.Map"</span>, loadPackageParam.classLoader);</span><br><span class="line">           Class fclass2 = XposedHelpers.findClass(<span class="string">"java.util.ArrayList"</span>, loadPackageParam.classLoader);</span><br><span class="line">           XposedHelpers.findAndHookMethod(clazz, <span class="string">"complexParameterFunc"</span>, String.class,</span><br><span class="line">                   <span class="string">"[[Ljava.lang.String;"</span>, fclass1, fclass2, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                       <span class="meta">@Override</span></span><br><span class="line">                       <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                           param.args[<span class="number">0</span>] = <span class="string">"Haha, complexParameterFunc are hooked"</span>;</span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="8">
+<li><strong>Hook私有方法repleaceFunc, 并替换打印内容</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"repleaceFunc"</span>, <span class="keyword">new</span> XC_MethodReplacement() &#123;</span><br><span class="line">             <span class="meta">@Override</span></span><br><span class="line">             <span class="function"><span class="keyword">protected</span> Object <span class="title">replaceHookedMethod</span><span class="params">(MethodHookParam methodHookParam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                 Log.d(<span class="string">"HookDemo"</span>, <span class="string">"Haha, repleaceFunc are replaced"</span>);</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="9">
+<li><strong>Hook方法, anonymousInner， 参数是抽象类，先加载所需要的类即可</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Class animalClazz  = loadPackageParam.classLoader.loadClass(<span class="string">"com.example.xposedhooktarget.Animal"</span>);</span><br><span class="line">           XposedHelpers.findAndHookMethod(clazz, <span class="string">"anonymousInner"</span>, animalClazz, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">               <span class="meta">@Override</span></span><br><span class="line">               <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                   XposedBridge.log(<span class="string">"HookDemo This is test"</span>);</span><br><span class="line">                   param.args[<span class="number">1</span>] = <span class="string">"Haha, anonymousInner are hooked"</span>;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="10">
+<li><strong>Hook匿名类的eatFunc方法，修改参数，顺便修改类中的anonymoutInt变量</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(<span class="string">"com.example.xposedhooktarget.HookDemo$1"</span>, clazz.getClassLoader(),</span><br><span class="line">                    <span class="string">"eatFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                        <span class="meta">@Override</span></span><br><span class="line">                        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                            param.args[<span class="number">0</span>] = <span class="string">"Haha, eatFunc are hooked"</span>;</span><br><span class="line">                            XposedHelpers.setIntField(param.thisObject, <span class="string">"anonymoutInt"</span>, <span class="number">499</span>);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="11">
+<li><strong>Hook内部类InnerClass的InnerFunc方法，修改参数，顺便修改类中的innerPublicInt和innerPrivateInt变量</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> Class&lt;?&gt; clazz1 = XposedHelpers.findClass(<span class="string">"com.example.xposedhooktarget.HookDemo$InnerClass"</span>, loadPackageParam.classLoader);</span><br><span class="line">            XposedHelpers.findAndHookMethod(clazz1, <span class="string">"InnerFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                        <span class="meta">@Override</span></span><br><span class="line">                        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                            param.args[<span class="number">0</span>] = <span class="string">"Haha, InnerFunc was hooked"</span>;</span><br><span class="line">                            XposedHelpers.setIntField(param.thisObject, <span class="string">"innerPublicInt"</span>, <span class="number">9</span>);</span><br><span class="line">                            XposedHelpers.setIntField(param.thisObject, <span class="string">"innerPrivateInt"</span>, <span class="number">19</span>);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="12">
+<li><strong>对于一些延迟动态加载的代码,hook方式</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(<span class="string">"dalvik.system.DexFile"</span>, lpparam.classLoader, <span class="string">"loadClass"</span>,</span><br><span class="line">                String.class, <span class="string">"java.lang.ClassLoader"</span>, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                        String className = (String) param.args[<span class="number">0</span>];</span><br><span class="line">                        Object result = param.getResult();</span><br><span class="line">                        <span class="keyword">if</span> (result != <span class="keyword">null</span> &amp;&amp; result <span class="keyword">instanceof</span> Class) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (<span class="string">"com.alipay.mobile.nebulauc.impl.UCWebViewClient"</span>.equals(className)) &#123;</span><br><span class="line">                                <span class="comment">// hookLoadWebViewClient(((Class) result).getClassLoader());</span></span><br><span class="line">                            &#125; </span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="13">
+<li><strong>Hook有可变参数的方法</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"argFunc"</span>, Object[].class,<span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">             <span class="meta">@Override</span></span><br><span class="line">             <span class="function"><span class="keyword">protected</span> Object <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam methodHookParam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                </span><br><span class="line">             &#125;</span><br><span class="line">         &#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li><p>无论hook公有私有方法还是静态方法 ,抑或可变参方法,甚至是带返回值的方法,统一使用<code>findAndHookMethod</code>这个Api</p>
 </li>
-<li><p>快速记忆新知识的功能 (将信息联想于已知事物,可能是相似也可能是对比)</p>
+<li><p>xposed无法hook接口和抽象类方法</p>
+</li>
+<li><p>Hook逻辑类可实现的接口有 : </p>
+<ul>
+<li><p>安卓系统启动的时候（使用 IXposedHookZygoteInit 接口）、</p>
+</li>
+<li><p>一个新的app被加载的时候（使用 IXposedHookLoadPackage 接口）、</p>
+</li>
+<li><p>一个资源被初始化的时候（ 使用 IXposedHookInitPackageResources 接口 )</p>
 </li>
 </ul>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+</li>
+<li><p>实现IXposedHookLoadPackage 并使用 XposedBridge.log 打印的日志,当启动第三方应用后,Android Studio控制台无法查看到日志信息,需要在xposed应用内进行查看</p>
+</li>
+<li><p>参数为基本数据类型时需要传对应包装类的type属性,比如int传Integer.TYPE, 否则提示找不到方法,如果参数为引用数据类型,那直接传xxx.class即可</p>
+</li>
+<li><ul>
+<li><p>beforeHookedMethod 会在调用原方法前执行，如果使用setResult则跳过原方法，并返回setResult参数中的值。</p>
+</li>
+<li><p>afterHookedMethod 会在调用原方法后执行，setResult可改变返回值</p>
+</li>
+<li><p>replaceHookedMethod 会完全替换原方法，即原方法不执行，且返回值可以直接return，setResult不生效。</p>
+</li>
+</ul>
+</li>
+</ol>
+<p><strong>注:每次修改完毕后需要重启才生效</strong></p>
+<h2 id="附"><a href="#附" class="headerlink" title="附"></a>附</h2><h5 id="Hook-修改方法返回值"><a href="#Hook-修改方法返回值" class="headerlink" title="Hook 修改方法返回值"></a>Hook 修改方法返回值</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, method, <span class="keyword">new</span> Object[]&#123;<span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">     <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                   param.setResult(result);  <span class="comment">// 设置返回值</span></span><br><span class="line">               &#125;</span><br><span class="line">           &#125;&#125;);</span><br></pre></td></tr></table></figure>
+
+<h5 id="Hook-获取方法返回值"><a href="#Hook-获取方法返回值" class="headerlink" title="Hook 获取方法返回值"></a>Hook 获取方法返回值</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, method, <span class="keyword">new</span> Object[]&#123;<span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">      <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    Object result = param.getResult(); <span class="comment">//获取返回值</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;&#125;);</span><br></pre></td></tr></table></figure>
+
+<h5 id="Hook-获取方法传入的参数值"><a href="#Hook-获取方法传入的参数值" class="headerlink" title="Hook 获取方法传入的参数值"></a>Hook 获取方法传入的参数值</h5><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(claName, cl, <span class="string">"i"</span>, String.<span class="keyword">class</span>, String.<span class="keyword">class</span>, Object[].<span class="keyword">class</span>, new XC_MethodHook() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> void afterHookedMethod(MethodHookParam param) throws Throwable &#123;</span><br><span class="line">         <span class="comment">// 数组param.args存储的参数列表里的值</span></span><br><span class="line">         XposedBridge.log(TAG + param.args[<span class="number">0</span>]);</span><br><span class="line">         XposedBridge.log(TAG + param.args[<span class="number">1</span>]);</span><br><span class="line">         XposedBridge.log(TAG + param.args[<span class="number">2</span>]);</span><br><span class="line">          &#125;</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+
+<h5 id="Hook-给方法传值"><a href="#Hook-给方法传值" class="headerlink" title="Hook 给方法传值"></a>Hook 给方法传值</h5><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Class cla = XposedHelpers.findClass(className, loadPackageParam.classLoader);</span><br><span class="line"><span class="built_in">Object</span> com = XposedHelpers.callStaticMethod(cla, <span class="string">"getInstance"</span>);</span><br><span class="line">XposedHelpers.callMethod(com, <span class="string">"setDebug"</span>, <span class="keyword">true</span>); <span class="comment">// 传入指定值</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="Hook-获取Intent的值"><a href="#Hook-获取Intent的值" class="headerlink" title="Hook 获取Intent的值"></a>Hook 获取Intent的值</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">hookGetIntent</span><span class="params">(XC_LoadPackage.LoadPackageParam loadPackageParam)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        XposedHelpers.findAndHookMethod(<span class="string">"android.app.Activity"</span>, loadPackageParam.classLoader, <span class="string">"getIntent"</span>, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                Intent sou = (Intent) param.getResult();</span><br><span class="line">                KLog.d(<span class="string">"hookGetIntent:"</span> + sou.toURI().toString());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="Hook-广播发送的Intent信息"><a href="#Hook-广播发送的Intent信息" class="headerlink" title="Hook 广播发送的Intent信息"></a>Hook 广播发送的Intent信息</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">hookSendBroadcast</span><span class="params">(XC_LoadPackage.LoadPackageParam loadPackageParam)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        XposedHelpers.findAndHookMethod(<span class="string">"android.content.ContextWrapper"</span>, loadPackageParam.classLoader, <span class="string">"sendBroadcast"</span>, Intent.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                Intent sou = (Intent) param.args[<span class="number">0</span>];</span><br><span class="line">                KLog.d(<span class="string">"sendBroadcast:"</span> + sou.toURI().toString());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Xposed一般Hook的是默认的dex文件，但是现在很多的APP都有多个Dex文件，所以使用Xposed时，经常遇到类名路径正确却出现ClassNotFoundError找不到类的错误。要解决这个问题，需要获取对应Dex文件的上下文环境。</p>
+<p>Android在加载dex文件后会创建一个Application类，然后会调用attach方法，attach方法的参数就是上下文context，而且attach方法是final方法，不会因为被覆盖而hook不到，拿到这个context就可以获取对应的classload，然后就可以顺利hook到multidex的类了。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(Application.<span class="keyword">class</span>, <span class="string">"attach"</span>, Context.<span class="keyword">class</span>, new XC_MethodHook() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> void afterHookedMethod(MethodHookParam param) throws Throwable &#123;</span><br><span class="line">        ClassLoader cl = ((Context) param.args[<span class="number">0</span>]).getClassLoader(); <span class="comment">// 获取ClassLoader</span></span><br><span class="line">        Class&lt;?&gt; hookClass = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            hookClass = cl.loadClass(claName); <span class="comment">// 获取Class</span></span><br><span class="line">            <span class="comment">// 使用cl 和 hookClass 完成hook</span></span><br><span class="line">            XposedHelpers.setStaticIntField(hookClass, fieldName, <span class="keyword">val</span>);</span><br><span class="line">            XposedHelpers.findAndHookMethod(claName, cl, <span class="string">"i"</span>, String.<span class="keyword">class</span>, String.<span class="keyword">class</span>, Object[].<span class="keyword">class</span>, new XC_MethodHook() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="keyword">protected</span> void afterHookedMethod(MethodHookParam param) throws Throwable &#123;</span><br><span class="line">                    XposedBridge.log(TAG + param.args[<span class="number">0</span>]);</span><br><span class="line">                    XposedBridge.log(TAG + param.args[<span class="number">1</span>]);</span><br><span class="line">                    XposedBridge.log(TAG + param.args[<span class="number">2</span>]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
 <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
@@ -1369,7 +515,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../Android面试题之Activity和Fragment生命周期-一次性记忆.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../133.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -1388,7 +534,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../Android面试题之Activity和Fragment生命周期-一次性记忆.html" itemprop="url">Android面试题之Activity和Fragment生命周期 一次性记忆</a></h1>
+                <a class="post-title-link" href="../../133.html" itemprop="url">Linux系统查看时区以及时区修改</a></h1>
         
 
         <div class="post-meta">
@@ -1400,8 +546,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-26T10:20:01+08:00">
-                2019-11-26
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-12T16:14:19+08:00">
+                2020-10-12
               </time>
             
 
@@ -1440,43 +586,24 @@
       
         
           
-            <blockquote>
-<p>每当我们换工作面试之前,总是会不由自主的刷起面试题,大部分题我们反反复复不知道刷了多少遍,但是今天记住了,等下一次面试的时候又刷着相同的面试题,我就想问在座的各位,Activity的生命周期,你们到底刷过多少遍 [哭笑]  作为一名程序员  把时间浪费在重复性劳动上是极其不能忍受的  因此 为了让自己省去不必要的脑力开销 我给自己总结了一份面试相关的记忆技巧,在这里分享给大家   记忆不是目的  把知识变成自己的才最关键</p>
-</blockquote>
-<h2 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h2><p>需要熟悉Activity的生命周期 通过Activity的周期去对比理解和记忆Fragment生命周期</p>
-<h2 id="Activity的生命周期"><a href="#Activity的生命周期" class="headerlink" title="Activity的生命周期"></a>Activity的生命周期</h2><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20180405184622584" alt></p>
-<p><strong>假设你已经非常熟悉Activity的生命周期了,那么接下来咱们看Fragment的生命周期图</strong></p>
-<h2 id="Fragment的生命周期"><a href="#Fragment的生命周期" class="headerlink" title="Fragment的生命周期"></a>Fragment的生命周期</h2><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20180405184635884" alt></p>
-<p><strong>找出他和Activity的相同之处</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191126135718.png" alt></p>
-<p><strong>这部分完全和Activity一模一样 可以不用记忆它,咱们来看不同的地方</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20180405184635884.png" alt></p>
-<p>其实这部分才是人们最容易搞混和记不住的地方 那咱们来分析一下:</p>
-<p>Fragment比Activity多了几个生命周期的回调方法</p>
-<ul>
-<li><strong>onAttach(Activity)</strong> 当Fragment与Activity发生关联的时候调用</li>
-<li><strong>onCreateView(LayoutInflater, ViewGroup, Bundle)</strong> 创建该F</li>
-<li><strong>onActivityCreated(Bundle)</strong>当Activity的onCreated方法返回时调用</li>
-<li><strong>onDestroyView()</strong> 与onCreateView方法相对应，当该Fragment的视图被移除时调用</li>
-<li><strong>onDetach()</strong> 与onAttach方法相对应，当Fragment与Activity取消关联时调用<br><strong>PS：注意：除了onCreateView，其他的所有方法如果你重写了，必须调用父类对于该方法的实现</strong></li>
-</ul>
-<p>这些方法理解起来并不费劲 但是要完美记在脑子里  还是需要花上一番功夫的</p>
-<p>那咱们一个一个来 先从创建开始:</p>
-<p>1.<strong>首先 onAttach方法: 和Activity进行关联的时候调用  这个放在第一个 应该好理解</strong></p>
-<p>2.<strong>我们知道 Activity在onCreate方法中需要调用setContentVIew()进行布局的加载,那么在Fragment中onCreateView就相当于Activity中的setContentVIew</strong> </p>
-<p>3.<strong>onActivityCreate是一个额外的方法 为了告诉Fragment当前Activity的创建执行情况 方便Fragment的后续操作</strong></p>
-<h2 id="先后顺序"><a href="#先后顺序" class="headerlink" title="先后顺序"></a>先后顺序</h2><p>已知Fragment是依赖Activity而存在的 它们都有着相同的生命周期方法 那么先调用Activity的还是Fragment的呢?  这里分两种情况</p>
-<ul>
-<li><strong>如果是创建 那么先创建Activity 后创建Fragment</strong></li>
-<li><strong>如果是销毁 那么先销毁Fragment 后销毁Activity</strong></li>
-</ul>
-<p>网上有很多文章说Activity的onCreate方法在Fragment的onCreateView之后执行,这是不正确的  Fragment一般都是在Activity的onCreate()中创建 要么通过布局加载的方式 要么通过new创建Fragment对象的方式  如果没有Activity的onCreate 哪来的Fragment</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/1354170682_3824.png" alt></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>上面的理解好后,咱们再整理记忆一下</p>
-<p>一句话 <strong>Activity是老子 Fragment是小子  进门先让老子进 滚蛋先让小子滚   加载布局createView   老子完事吱一声(ActivityCreated)</strong></p>
-<p>希望有帮到你</p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+            <p>wp-config.php里加入下面代码:</p>
+<h4 id="这里以Ubuntu系统为例"><a href="#这里以Ubuntu系统为例" class="headerlink" title="这里以Ubuntu系统为例"></a>这里以Ubuntu系统为例</h4><p><strong>查看时区:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date -R</span><br></pre></td></tr></table></figure>
+
+<p><strong>修改时区为东八区</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">timedatectl set-timezone Asia/Shanghai</span><br></pre></td></tr></table></figure>
+
+<h5 id="老版本系统以上修改时区指令可能不生效-需要采用以下办法"><a href="#老版本系统以上修改时区指令可能不生效-需要采用以下办法" class="headerlink" title="老版本系统以上修改时区指令可能不生效, 需要采用以下办法"></a>老版本系统以上修改时区指令可能不生效, 需要采用以下办法</h5><p><strong>1.运行tzselect</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:/# tzselect</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201012105429.png" alt></p>
+<p><strong>在这里我们选择亚洲 Asia，确认之后选择中国（China)，最后选择北京(Beijing)</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201012105446.png" alt>**</p>
+<p><strong>2.复制文件到/etc目录下</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:/# cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime</span><br></pre></td></tr></table></figure>
+
+<p><strong>3.再次查看时间date -R，已经修改为北京时间</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201012105502.png" alt></p>
 <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
@@ -1527,7 +654,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../原生app如何跨进程调起微信小程序.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../134.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -1546,7 +673,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../原生app如何跨进程调起微信小程序.html" itemprop="url">原生app如何跨进程调起微信小程序</a></h1>
+                <a class="post-title-link" href="../../134.html" itemprop="url">docker设置启动docker后 开启或关闭自启容器</a></h1>
         
 
         <div class="post-meta">
@@ -1558,8 +685,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-21T13:43:33+08:00">
-                2019-11-21
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-12T16:14:19+08:00">
+                2020-10-12
               </time>
             
 
@@ -1598,8 +725,1062 @@
       
         
           
-            <p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+            <h3 id="在docker启动容器可以增加参数来达到-当docker-服务重启之后-自动启动容器"><a href="#在docker启动容器可以增加参数来达到-当docker-服务重启之后-自动启动容器" class="headerlink" title="在docker启动容器可以增加参数来达到,当docker 服务重启之后 自动启动容器."></a>在docker启动容器可以增加参数来达到,当docker 服务重启之后 自动启动容器.</h3><p>命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run –restart=always</span><br></pre></td></tr></table></figure>
+
+<p>当然如果你的容器已经启动,可以通过update命令进行修改.<br>命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker update –restart=always &lt;CONTAINER ID&gt;</span><br></pre></td></tr></table></figure>
+
+<p>如果你想取消掉<br>命令如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker update --restart=no &lt;CONTAINER ID&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="取消全部"><a href="#取消全部" class="headerlink" title="取消全部"></a>取消全部</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker update --restart=no $(docker ps -q)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../135.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../135.html" itemprop="url">使用docker在服务器部署vscode实现云端web开发</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-12T16:14:19+08:00">
+                2020-10-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>采用codercom/code-server</strong></p>
+<h3 id="拉取codercom-code-server镜像"><a href="#拉取codercom-code-server镜像" class="headerlink" title="拉取codercom/code-server镜像"></a>拉取codercom/code-server镜像</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull codercom/code-server</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行code-server-容器"><a href="#运行code-server-容器" class="headerlink" title="运行code-server 容器"></a>运行code-server 容器</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --name=code_server  -p 8443:8080 -p 4001:4000 -v /root/songjian:/home/coder/songjian -h code_server -e PASSWORD=123  codercom/code-server</span><br></pre></td></tr></table></figure>
+
+<h3 id="浏览器中输入ip：8843-开始云端开发之旅"><a href="#浏览器中输入ip：8843-开始云端开发之旅" class="headerlink" title="浏览器中输入ip：8843 开始云端开发之旅"></a>浏览器中输入ip：8843 开始云端开发之旅</h3><h3 id="编辑代码时出现权限问题"><a href="#编辑代码时出现权限问题" class="headerlink" title="编辑代码时出现权限问题"></a>编辑代码时出现权限问题</h3><p>解决方案：<br>在宿主机中开放读写权限</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod a+rwx -R /root/songjian/</span><br></pre></td></tr></table></figure>
+
+<p>或者在容器运行的时候指定用户组为root <strong>(推荐)</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it -u root --name=code_server  -p 8443:8080 -p 4001:4000 -v /root/songjian:/home/coder/songjian -h code_server -e PASSWORD=123  codercom/code-server</span><br></pre></td></tr></table></figure>
+
+<p>问题解决</p>
+<h3 id><a href="#" class="headerlink" title></a></h3><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../128.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../128.html" itemprop="url">MySQL8.0登录提示caching_sha2_password问题解决方法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-30T16:14:19+08:00">
+                2020-09-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>用docker构建mysql容器后连接遇到以下问题</p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Authentication plugin &apos;caching_sha2_password&apos; cannot be loaded: dlopen(/usr/local/mysql/lib/plugin/caching_sha2_password.so, 2): image not found</span><br><span class="line">1</span><br><span class="line">mysqli_real_connect(): The server requested authentication method unknown to the client [caching_sha2_password]</span><br><span class="line">1</span><br><span class="line">mysqli_real_connect(): (HY000/2054): The server requested authentication method unknown to the client</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://mysqlserverteam.com/mysql-8-0-4-new-default-authentication-plugin-caching_sha2_password/" target="_blank" rel="noopener">MySQL官方说明</a></p>
+<h2 id="解决方法1-docker"><a href="#解决方法1-docker" class="headerlink" title="解决方法1(docker)"></a>解决方法1(docker)</h2><h4 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h4><ol>
+<li>第一次构建容器/安装</li>
+<li>已安装完成后新增用户</li>
+</ol>
+<h4 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h4><p>配置 <strong>mysql.cnf</strong> 配置默认身份验证插件</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[mysqld]</span></span><br><span class="line"><span class="attr">default_authentication_plugin</span> = mysql_native_password</span><br><span class="line">12</span><br></pre></td></tr></table></figure>
+
+<h4 id="验证是否生效"><a href="#验证是否生效" class="headerlink" title="验证是否生效"></a>验证是否生效</h4><p>使用CLI进入MySQL</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql -u root -p</span></span><br><span class="line">1</span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> use mysql;</span></span><br><span class="line">Reading table information for completion of table and column names</span><br><span class="line">You can turn off this feature to get a quicker startup with -A</span><br><span class="line"></span><br><span class="line">Database changed</span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> SELECT Host, User, plugin from user;</span></span><br><span class="line">+-----------+------------------+-----------------------+</span><br><span class="line">| Host      | User             | plugin                |</span><br><span class="line">+-----------+------------------+-----------------------+</span><br><span class="line">| %         | root             | mysql_native_password |</span><br><span class="line">| localhost | mysql.infoschema | caching_sha2_password |</span><br><span class="line">| localhost | mysql.session    | caching_sha2_password |</span><br><span class="line">| localhost | mysql.sys        | caching_sha2_password |</span><br><span class="line">| localhost | root             | mysql_native_password |</span><br><span class="line">+-----------+------------------+-----------------------+</span><br><span class="line">5 rows in set (0.00 sec)</span><br><span class="line">12345678910111213141516</span><br></pre></td></tr></table></figure>
+
+<p>root用户的身份验证器插件已经变为：<strong>mysql_native_password</strong></p>
+<h2 id="解决方法2"><a href="#解决方法2" class="headerlink" title="解决方法2"></a>解决方法2</h2><h4 id="适用场景-1"><a href="#适用场景-1" class="headerlink" title="适用场景"></a>适用场景</h4><ol>
+<li><strong>MySQL</strong> 已成功安装完成后</li>
+</ol>
+<h4 id="查看身份验证类型"><a href="#查看身份验证类型" class="headerlink" title="查看身份验证类型"></a>查看身份验证类型</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; use mysql;</span><br><span class="line">Database changed</span><br><span class="line"></span><br><span class="line">mysql&gt; SELECT Host, User, plugin from user;</span><br><span class="line">+-----------+------------------+-----------------------+</span><br><span class="line">| Host      | User             | plugin                |</span><br><span class="line">+-----------+------------------+-----------------------+</span><br><span class="line">| %         | root             | caching_sha2_password |</span><br><span class="line">| localhost | mysql.infoschema | caching_sha2_password |</span><br><span class="line">| localhost | mysql.session    | caching_sha2_password |</span><br><span class="line">| localhost | mysql.sys        | caching_sha2_password |</span><br><span class="line">| localhost | root             | caching_sha2_password |</span><br><span class="line">+-----------+------------------+-----------------------+</span><br><span class="line">5 rows in set (0.00 sec)</span><br><span class="line">1234567891011121314</span><br></pre></td></tr></table></figure>
+
+<p><code>root</code> 用户的验证器插件为 <strong>caching_sha2_password</strong></p>
+<h4 id="修改身份验证类型-修改密码"><a href="#修改身份验证类型-修改密码" class="headerlink" title="修改身份验证类型(修改密码)"></a>修改身份验证类型(修改密码)</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; ALTER USER &apos;root&apos;@&apos;%&apos; IDENTIFIED WITH mysql_native_password BY &apos;123456&apos;;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER USER &apos;root&apos;@&apos;localhost&apos; IDENTIFIED WITH mysql_native_password BY &apos;123456&apos;;</span><br><span class="line">Query OK, 0 rows affected (0.01 sec)</span><br><span class="line">12345</span><br></pre></td></tr></table></figure>
+
+<h4 id="使生效"><a href="#使生效" class="headerlink" title="使生效"></a>使生效</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; FLUSH PRIVILEGES;</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+
+<h4 id="验证是否生效-1"><a href="#验证是否生效-1" class="headerlink" title="验证是否生效"></a>验证是否生效</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SELECT Host, User, plugin from user;</span><br><span class="line">+-----------+------------------+-----------------------+</span><br><span class="line">| Host      | User             | plugin                |</span><br><span class="line">+-----------+------------------+-----------------------+</span><br><span class="line">| %         | root             | mysql_native_password |</span><br><span class="line">| localhost | mysql.infoschema | caching_sha2_password |</span><br><span class="line">| localhost | mysql.session    | caching_sha2_password |</span><br><span class="line">| localhost | mysql.sys        | caching_sha2_password |</span><br><span class="line">| localhost | root             | mysql_native_password |</span><br><span class="line">+-----------+------------------+-----------------------+</span><br><span class="line">5 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../129.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../129.html" itemprop="url">关于WordPress 安装主题或插件时提示需要登陆FTP解决方法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-30T16:14:19+08:00">
+                2020-09-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>wp-config.php里加入下面代码:</p>
+<p><strong>在wp-config.php里加入下面代码:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">define( &apos;FS_METHOD&apos;,  &apos;direct&apos;);</span><br><span class="line">define( &apos;FS_CHMOD_DIR&apos;, 0777);</span><br><span class="line">define( &apos;FS_CHMOD_FILE&apos;, 0777);</span><br></pre></td></tr></table></figure>
+
+<p><strong>加入完毕后不再提示FTP登录, 但是有可能安装插件时提示 安装失败，无法创建目录</strong></p>
+<p>解决方案:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">chmod -R 777 wp-content/ </span><br><span class="line">chmod -R 777 theme/ </span><br><span class="line">chmod -R 777 plugin/ </span><br><span class="line">chmod -R 777 language/</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../130.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../130.html" itemprop="url">怎样修改Wordpress地址和站点地址怎样改回IP地址</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-30T16:14:19+08:00">
+                2020-09-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="wordpress搭建后地址栏页面显示IP地址的问题"><a href="#wordpress搭建后地址栏页面显示IP地址的问题" class="headerlink" title="wordpress搭建后地址栏页面显示IP地址的问题"></a>wordpress搭建后地址栏页面显示IP地址的问题</h2><h3 id="如果可以登录wordpress后台管理面板"><a href="#如果可以登录wordpress后台管理面板" class="headerlink" title="如果可以登录wordpress后台管理面板"></a>如果可以登录wordpress后台管理面板</h3><p>1.先点击wordpress右边的小房子图标</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200930112809.png" alt> </p>
+<p>2.点击仪表盘图片进入仪表盘菜单</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200930112830.png" alt></p>
+<p>3.点击设置，进入设置界面，找到WordPress地址（URL）和站点地址（URL）所对应的ip地址，如下图</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200930112846.png" alt></p>
+<p>4.将ip地址更改为你网站的域名，之后保存，如下图</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200930112859.png" alt></p>
+<p>5.清空浏览器的缓存，之后用域名访问网站，就不会在地址栏出现ip地址了。</p>
+<h3 id="如果无法登陆wordpress"><a href="#如果无法登陆wordpress" class="headerlink" title="如果无法登陆wordpress"></a>如果无法登陆wordpress</h3><p>那么需要修改数据库 如图</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/%E6%8D%95%E8%8E%B72.PNG" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/%E6%8D%95%E8%8E%B7.PNG" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/%E6%8D%95%E8%8E%B72.PNG" alt><br><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/%E6%8D%95%E8%8E%B7.PNG" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../131.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../131.html" itemprop="url">mysql使用命令导入和导出sql文件</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-30T16:14:19+08:00">
+                2020-09-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="window下"><a href="#window下" class="headerlink" title="window下"></a>window下</h3><p><strong>1.导出整个数据库，首先打开要导出的目录</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -u 用户名 -p 数据库名 &gt; 导出的文件名</span><br><span class="line"></span><br><span class="line">mysqldump -u dbuser -p dbname &gt; dbname.sql 下一行需要输入密码</span><br><span class="line"></span><br><span class="line">mysqldump -uroot -proot [dbname]&gt; english.sql 在本行直接输入密码</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.导出一个表</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -u 用户名 -p 数据库名 表名&gt; 导出的文件名</span><br><span class="line"></span><br><span class="line">mysqldump -u dbuser -p dbname users&gt; dbname_users.sql</span><br></pre></td></tr></table></figure>
+
+<p><strong>3.导出一个数据库结构</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -u dbuser -p -d --add-drop-table dbname &gt;d:/dbname_db.sql</span><br><span class="line"></span><br><span class="line">-d 没有数据 --add-drop-table 在每个create语句之前增加一个drop table</span><br></pre></td></tr></table></figure>
+
+<p><strong>4.导入数据库</strong></p>
+<p>常用source 命令</p>
+<p>进入mysql数据库控制台，如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p</span><br><span class="line"></span><br><span class="line">mysql&gt;use 数据库</span><br></pre></td></tr></table></figure>
+
+<p>然后使用source命令，后面参数为脚本文件(如这里用到的.sql)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;source d:/dbname.sql</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="linux下"><a href="#linux下" class="headerlink" title="linux下"></a>linux下</h3><p><strong>一、导出数据库用mysqldump命令（注意mysql的安装路径，即此命令的路径）：</strong></p>
+<p>1、导出数据和表结构：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -u用户名 -p密码 数据库名 &gt; 数据库名.sql</span><br><span class="line"></span><br><span class="line">\#/usr/local/mysql/bin/  mysqldump -uroot -p abc &gt; abc.sql</span><br></pre></td></tr></table></figure>
+
+<p>敲回车后会提示输入密码</p>
+<p>2、只导出表结构</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -u用户名 -p密码 -d 数据库名 &gt; 数据库名.sql</span><br><span class="line"></span><br><span class="line">\#/usr/local/mysql/bin/  mysqldump -uroot -p -d abc &gt; abc.sql</span><br><span class="line"></span><br><span class="line">注：/usr/local/mysql/bin/ ---&gt; mysql的data目录</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>二、导入数据库</strong></p>
+<p>1、首先建空数据库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;create database abc;</span><br></pre></td></tr></table></figure>
+
+<p>2、导入数据库</p>
+<p>方法一：</p>
+<p>（1）选择数据库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;use abc;</span><br></pre></td></tr></table></figure>
+
+<p>（2）设置数据库编码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;set names utf8;</span><br></pre></td></tr></table></figure>
+
+<p>（3）导入数据（注意sql文件的路径）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;source /home/abc/abc.sql;</span><br></pre></td></tr></table></figure>
+
+<p>方法二：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql -u用户名 -p密码 数据库名 &lt; 数据库名.sql</span><br><span class="line"></span><br><span class="line">\#mysql -uabc_f -p abc &lt; abc.sql</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../132.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../132.html" itemprop="url">Linux文件误删后如何恢复</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-30T16:14:19+08:00">
+                2020-09-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>以下方法适用于文件或目录被删,如果被覆盖则无法恢复</strong></p>
+<h3 id="方法一-使用系统自带的还原工具debugfs"><a href="#方法一-使用系统自带的还原工具debugfs" class="headerlink" title="方法一 使用系统自带的还原工具debugfs"></a>方法一 使用系统自带的还原工具<code>debugfs</code></h3><ol>
+<li>第一步 查看文件或目录锁挂载的磁盘名</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df  /root/你被删的目录</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>输入<code>debugfs</code>指令进入命令区</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@xxx:# /debugfs</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>进入挂载磁盘 查找被删目录和文件</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">open dev/vda1 #这个是我服务磁盘名 你的也许不一样</span><br><span class="line">ls -d /root/你被删的目录 #查找被删文件</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200930130559.png" alt></p>
+<p><strong>带尖括号开头的文件表示已经被删除的 无尖括号表示当前已经存在的文件</strong></p>
+<p>接下来 咱们需要借助尖括号中的地址进行文件还原</p>
+<ol start="4">
+<li>根据node地址查找文件信息, 在debugfs命令区中输入</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">logdump -i &lt;19662057&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200930131041.png" alt></p>
+<ol start="5">
+<li><p>文件还原</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dd  if=/dev/vda1 of=/root/被删除文件  bs=3456 count=1 skip=524974</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>*　bs对应offset 表示文件大小<br>*　count 表示需要还原几份<br>*　skip对应block值 表示跳过blocks个块后再开始复制</p>
+<p>至此　恢复完毕</p>
+<p>###　方法二 使用第三方的还原工具<code>extundelete</code></p>
+<ol>
+<li>第一步 安装 </li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install extundelete -y</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>第二步 获取被删文件或目录的node</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -lia 目标目录</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>根据node查看文件信息</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extundelete /dev/sda5 --inode 24904454</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#以下为控制台输出信息</span></span><br><span class="line">File name                                       <span class="params">| Inode number |</span> Deleted status</span><br><span class="line">.                                                 <span class="number">2</span></span><br><span class="line">..                                                <span class="number">2</span></span><br><span class="line">deletetest                                        <span class="number">12</span>             Deleted</span><br><span class="line">tmppasswd                                         <span class="number">14</span>             Deleted</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>恢复全部数据</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extundelete /dev/sda5 --restore-all</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>恢复单个数据</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extundelete /dev/sdb5 --restore-file xxx</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li>恢复指定目录</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extundelete /dev/sdb5 --restore-directory  xxx</span><br></pre></td></tr></table></figure>
+
+<p>至此 ，恢复完毕</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../123.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../123.html" itemprop="url">使用nginx部署django项目需要注意的问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-23T17:42:15+08:00">
+                2020-09-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="首先配置nginx-conf文件"><a href="#首先配置nginx-conf文件" class="headerlink" title="首先配置nginx.conf文件"></a>首先配置nginx.conf文件</h3><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">worker_processes</span>  <span class="number">1</span><span class="string">;</span></span><br><span class="line"><span class="string">events</span> <span class="string">&#123;</span></span><br><span class="line">        <span class="string">worker_connections</span>  <span class="number">1024</span><span class="string">;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">http&#123;</span></span><br><span class="line">	<span class="string">server&#123;</span></span><br><span class="line">        <span class="string">listen</span> <span class="number">80</span><span class="string">;</span></span><br><span class="line">        <span class="string">server_name</span> <span class="string">py.newban.cn;</span>   <span class="comment">#</span></span><br><span class="line">        <span class="string">root</span> <span class="string">/usr/share/nginx/html/blog;</span></span><br><span class="line">        <span class="string">index</span> <span class="string">index.html;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">server&#123;</span></span><br><span class="line">    <span class="string">listen</span> <span class="number">80</span><span class="string">;</span></span><br><span class="line">    <span class="string">server_name</span> <span class="string">blog.newban.cn;</span>   <span class="comment">#</span></span><br><span class="line">    <span class="string">root</span> <span class="string">/usr/share/nginx/html/blog2;</span></span><br><span class="line">    <span class="string">index</span> <span class="string">index.html;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> <span class="comment">#反向代理部分</span></span><br><span class="line"><span class="string">upstream</span> <span class="string">my.blog&#123;</span> <span class="comment">#部署django 名称不能使用下滑线分割比如my_blog 否则报错</span></span><br><span class="line">	<span class="string">server</span> <span class="number">118.10</span><span class="number">.25</span><span class="number">.17</span><span class="string">:8000</span> <span class="string">weight=1;</span></span><br><span class="line">	<span class="comment">#负载均衡 随机访问 权重1：1 各占50%</span></span><br><span class="line">	<span class="string">server</span> <span class="number">118.10</span><span class="number">.25</span><span class="number">.17</span><span class="string">:8001</span>  <span class="string">weight=1;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">server&#123;</span></span><br><span class="line">    <span class="string">listen</span> <span class="number">80</span><span class="string">;</span></span><br><span class="line">    <span class="string">server_name</span> <span class="string">py.insoan.com;</span>   <span class="comment">#</span></span><br><span class="line">	<span class="string">location</span> <span class="string">/</span> <span class="string">&#123;</span></span><br><span class="line">         <span class="string">proxy_pass</span> <span class="attr">http://my.blog;</span></span><br><span class="line">        <span class="string">index</span> <span class="string">index.html;</span></span><br><span class="line">		<span class="string">&#125;</span></span><br><span class="line">	<span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="问题1-DisallowedHost-at"><a href="#问题1-DisallowedHost-at" class="headerlink" title="问题1 DisallowedHost at /"></a>问题1 DisallowedHost at /</h3><p>使用 nginx 部署django时，会出现下面的错误</p>
+<ol>
+<li>首先使用的域名不符合 RFC 1034/1035.规范时，会出现下面的错误（如包含下划线）</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DisallowedHost at /Invalid HTTP_HOST header: <span class="string">'learning_log.cent.com'</span>. The domain name provided <span class="keyword">is</span> <span class="keyword">not</span> valid according to RFC <span class="number">1034</span>/<span class="number">1035.</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>解决方式：</li>
+</ol>
+<p>修改域名，去除下划线，即将 learning_log.cent.com 修改成 llog.cent.com</p>
+<ol start="3">
+<li>再重新访问出现另外一个错误</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">invalid http_host header</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>解决方式</li>
+</ol>
+<p>将 setting.py 的 ALLOWED_HOSTS = [] 修改成 ALLOWED_HOSTS = [‘*’]</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
 <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
@@ -1641,7 +1822,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="../9/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../9/">9</a><span class="page-number current">10</span><a class="page-number" href="../11/">11</a><a class="extend next" rel="next" href="../11/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="../9/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../9/">9</a><span class="page-number current">10</span><a class="page-number" href="../11/">11</a><span class="space">&hellip;</span><a class="page-number" href="../23/">23</a><a class="extend next" rel="next" href="../11/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1677,7 +1858,7 @@
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
               <p class="site-author-name" itemprop="name">乱码三千</p>
-              <p class="site-description motion-element" itemprop="description"></p>
+              <p class="site-description motion-element" itemprop="description">android程序员一枚,擅长java,kotlin,python,金融投资,欢迎交流~</p>
           </div>
 
           <nav class="site-state motion-element">
@@ -1687,7 +1868,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">109</span>
+                  <span class="site-state-item-count">229</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1700,7 +1881,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">48</span>
+                  <span class="site-state-item-count">75</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
@@ -1744,7 +1925,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
