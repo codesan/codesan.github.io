@@ -128,6 +128,16 @@
 </script>
 <!--谷歌广告验证代码-->
 
+<!--短链广告-->
+<script type="text/javascript">
+    var adfly_id = 25792435;
+    var adfly_advert = 'banner';
+    var popunder = true;
+    var exclude_domains = ['code.newban.cn',  'localhost:4000'];
+</script>
+<script src="https://cdn.adf.ly/js/link-converter.js"></script>
+<!--短链广告-->
+
 
 
   <link rel="canonical" href="https://code.newban.cn/page/4/">
@@ -263,6 +273,405 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../221.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../221.html" itemprop="url">原生ARM环境中使用的编译工具集介绍</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-01T15:14:19+08:00">
+                2021-02-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>这里说原生ARM环境指的是由ARM公司官方提供的的ARM编译工具集，主要包括以下几个工具：</p>
+<ul>
+<li><p><strong>armclang</strong>:  用于编译 c ,c++, GNU assembly language的源代码,不能编译ARM汇编代码</p>
+</li>
+<li><p><strong>armasm</strong>：汇编器, 只能编译 arm汇编代码</p>
+</li>
+<li><p><strong>armlink</strong>:  链接器，用来将目标代码，链接成可执行程序</p>
+</li>
+<li><p><strong>armar</strong>:  打包，将目标代码打包成一个库</p>
+</li>
+<li><p><strong>fromelf</strong>： 将可执行程序，转换为其他的镜像文件。</p>
+<p>以下是编译流程</p>
+</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210201153724.png" alt></p>
+<p>  这个编译器，<strong>和ARM-GCC编译器最大的区别</strong>在于，这个工具是要<strong>收费</strong>的，而ARM-GCC是不用收费的。</p>
+<h2 id="ArmClang编译器的参数介绍"><a href="#ArmClang编译器的参数介绍" class="headerlink" title="ArmClang编译器的参数介绍"></a>ArmClang编译器的参数介绍</h2><p> <strong>1、<code>–target</code>选项</strong></p>
+<p>必选项,指定使用哪一种ARM指令集进行编译。只有两个选项：</p>
+<ul>
+<li><p><strong>–target=aarch64-arm-none-eabi</strong>  : 指定使用aarch64</p>
+</li>
+<li><p><strong>–target=arm-arm-none-eabi</strong>    : 指定使用aarch32</p>
+</li>
+</ul>
+<p><strong>2、<code>–mcpu</code>选项</strong></p>
+<p>通过指定特定的处理器型号进行编译。当指定了target，可以不指定这个。</p>
+<p>如：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">–mcpu=cortex-a53   <span class="comment">#表示 指定处理器是cortex-a53，</span></span><br></pre></td></tr></table></figure>
+
+<p>如果要查看指定target下支持的处理器型号,可使用<code>–mcpu=list</code>指令选项,如下:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">armclang –target=aarch64-arm-none-eabi  –mcpu=list <span class="comment">#查看 aarch64下支持的处理器</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210201153644.png" alt></p>
+<p> <strong>3、–march选项</strong></p>
+<p>指定编译时针对哪一个架构进行编译。</p>
+<p>可以使用<code>armclang –target= aarch64-arm-none-eabi -march=list</code> 查看aarch64下支持的架构，可以看出对于aarch64，总共支持3种架构。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210201153606.png" alt></p>
+<p>而aarch32下支持的架构就多了，从armv6-armv8。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210201153554.png" alt></p>
+<p> <strong>4、<code>-g</code>选项</strong></p>
+<p>表示编译器编译的时候，加上调试信息</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">armclang –target=aarch64-arm-none-eabi -g test.c</span><br></pre></td></tr></table></figure>
+
+<p> <strong>5、<code>-Olevel</code>选项</strong></p>
+<p>  优化等级，level越高，优化等级越高。</p>
+<ul>
+<li><p>-O0表示没有优化。</p>
+</li>
+<li><p>-Os表示减小代码密度，平衡代码大小和代码速度。</p>
+</li>
+<li><p>-Omax表示针对该target，使用最大的优化。</p>
+</li>
+</ul>
+<p><strong>6、<code>-marm -mthumb</code>选项</strong></p>
+<p> <code>-marm</code>表示A32指令集  ， <code>-mthumb</code>表示T32指令集</p>
+<p><strong>7、<code>-Wpedantic</code>选项</strong></p>
+<p>显示警告信息</p>
+<p><strong>8、<code>-S</code>选项</strong></p>
+<p>将c代码，或者.S代码，预处理，生成.s代码。</p>
+<p><strong>9、<code>-c</code>选项</strong></p>
+<p>只编译不链接，生成中间目标代码（.o）</p>
+<p>例子：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210201153541.png" alt></p>
+<h2 id="ArmAsm汇编器的参数介绍"><a href="#ArmAsm汇编器的参数介绍" class="headerlink" title="ArmAsm汇编器的参数介绍"></a>ArmAsm汇编器的参数介绍</h2><p><strong>1、<code>-I</code>选项</strong></p>
+<p>指定搜索目录</p>
+<p><strong>2、<code>–cpu</code>选项</strong></p>
+<p>指定的指令集</p>
+<p>如  <code>–cpu=8-A.64</code>  ,  指定armv8架构的64bit的指令集</p>
+<p><strong>3、<code>-g</code>选项</strong></p>
+<p>汇编，加上调试信息</p>
+<p><strong>4、<code>–predefine</code>选项</strong></p>
+<p>定义一个宏，传递给汇编代码中使用。</p>
+<p>例子：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210201153527.png" alt></p>
+<h2 id="Armlink连接器参数介绍"><a href="#Armlink连接器参数介绍" class="headerlink" title="Armlink连接器参数介绍"></a>Armlink连接器参数介绍</h2><p>链接器，用来链接各个.o文件，得到最终的elf。</p>
+<p><strong>1、<code>–ro_base</code>选项</strong></p>
+<p>指定RO段的起始地址</p>
+<p><strong>2、<code>–rw_base</code>选项</strong></p>
+<p>指定RW段的起始地址</p>
+<p><strong>3、<code>–zi_base</code>选项</strong></p>
+<p>指定bss段的起始地址</p>
+<p><strong>4、<code>–map  –symbols</code>选项</strong></p>
+<p>显示生成镜像的memory map，以及symbols信息</p>
+<p><strong>5、<code>–scatter</code>选项</strong></p>
+<p>指定链接脚本</p>
+<p><strong>6、<code>–output</code>选项</strong></p>
+<p>指定生成的文件</p>
+<p><strong>7、诊断信息</strong></p>
+<p>诊断信息的选项：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210201153513.png" alt></p>
+<p><strong>8、不使用链接脚本</strong></p>
+<p>使用<code>armlink</code>链接<code>init.o</code> 和 <code>main.o</code>，生成可执行文件。</p>
+<p>其中：</p>
+<ul>
+<li><p>代码段起始地址是0，</p>
+</li>
+<li><p>数据段起始地址是0x400000，</p>
+</li>
+<li><p>bss段的起始地址是0x405000。</p>
+</li>
+</ul>
+<p><code>init.o</code>的init段，作为生成可执行文件的最开始段。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210201153501.png" alt></p>
+<p><strong>9、使用链接脚本</strong></p>
+<p>以下是使用链接脚本来进行链接。</p>
+<p>下图中，链接脚本的格式。</p>
+<p>外面指定LR1，是一个大段，从地址0x0000-0x2000。在这个RL1段，包括3个小段</p>
+<ul>
+<li><strong>ER_RO</strong>： 只读段，从0地址开始。其中<code>init.o</code>的INIT段作为这个段的开始，其他段放置在这个段的后面</li>
+<li><strong>ER_RW</strong>:  可读可写段，从0x400000开始</li>
+<li><strong>ER_ZI</strong>:  bss段，从0x405000开始</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210201153448.png" alt></p>
+<p><strong>10、#pragma pack（n）</strong></p>
+<p>#pragma用来指定打包数据时，各个数据的空间占据。</p>
+<p>!<img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210201153437.png" alt></p>
+<p>对于char型，占用1个字节， 对于short型，占用2个字节， 对于int型，占用4个字节。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210201153417.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210201153400.png" alt></p>
+<h2 id="fromelf工具介绍"><a href="#fromelf工具介绍" class="headerlink" title="fromelf工具介绍"></a>fromelf工具介绍</h2><p>反汇编工具。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fromelf  –text  –c  –a  elf文件  -o  文本文件</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../219.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../219.html" itemprop="url">使用NDK下的GCC工具编译c代码至android设备中运行</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-31T17:14:19+08:00">
+                2021-01-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>之前我们学过使用GCC子集之一<code>arm-none-linux-gnueabi</code>进行C代码编译,这次我们学习GCC另外一个子集<code>arm-linux-androideabi</code>,这是专门为android平台打造的一个GCC编译环境,该工具被包含在Android NDK库当中</p>
+</blockquote>
+<h2 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h2><ul>
+<li>windows宿主机</li>
+<li>安卓模拟器(ARM架构+linux系统 已Root)</li>
+<li><code>android-ndk-r9b</code></li>
+</ul>
+<h2 id="实验开始"><a href="#实验开始" class="headerlink" title="实验开始"></a>实验开始</h2><p><strong>第一步 编写测试代码 文件名为<code>test.c</code></strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"hello pangshu"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>第二步 将测试代码编译成可执行文件</strong></p>
+<p>如果直接编译:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arm-none-linux-androideabi-gcc.exe test.c -o main</span><br></pre></td></tr></table></figure>
+
+<p>则报错,提示:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">clude-fixed\stdio.h:50:23: fatal error: sys/cdefs.h: No such file or directory</span><br></pre></td></tr></table></figure>
+
+<p>这是因为缺少相应的依赖库导致的,在我们使用<code>arm-none-linux-gnueabi</code>时直接在命令行后面添加<code>-static</code>即可,但是使用<code>arm-linux-androideabi</code>则不行</p>
+<p>这里需要通过<code>--sysroot</code>指定依赖的库,指令改成如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arm-none-linux-androideabi-gcc.exe --sysroot=E:\android-ndk-r9b\platforms\android-19\arch-arm test.c -o main</span><br></pre></td></tr></table></figure>
+
+<p>此时编译通过,但是将生成的执行文件push到安卓设备上之后,却无法运行,提示:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">error: only position independent executables (PIE) are supported.</span><br></pre></td></tr></table></figure>
+
+<p>因此我们需要借助<code>-pie -fPIE</code>将编译选项设置为PIE,指令最后改成如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arm-none-linux-androideabi-gcc.exe  -pie -fPIE --sysroot=E:\android-ndk-r9b\platforms\android-19\arch-arm test.c -o main</span><br></pre></td></tr></table></figure>
+
+<p>此时程序可正常执行</p>
+<blockquote>
+<p>使用<code>arm-linux-androideabi</code>生成的可执行文件大小为6kB</p>
+<p>使用<code>arm-none-linux-gnueabi</code>生成的可执行文件约为620KB</p>
+</blockquote>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -1689,392 +2098,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../210.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../210.html" itemprop="url">关于error establishing a database connection</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-22T16:14:19+08:00">
-                2021-01-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>最近在进行网站检查的时候突然发现我的一个子网站挂了,提示<code>error establishing a database connection</code>, 如果是网站刚建立那好解决,80%的概率是数据连接参数不正确,或者是数据库端口没有开放</p>
-<p>但是我这个网站运行很长一段时间了,之前一直好好的,突然之间就挂了, 而且这个数据库我使用的是<code>docker</code>进行维护,同时,在同一个<code>mysql</code>容器中我放置了好几个网站的数据,其他网站运行却是正常的</p>
-<p>而且我通过第三方连接数据库的工具可以正常连接到被挂网站的数据库</p>
-<p>通过以上情况可以排除以下原因:</p>
-<ul>
-<li><code>mysql</code>容器没有问题</li>
-<li>数据库端口和连接参数也没问题(已经检查过配置文件,没有被外部篡改过)</li>
-<li>网站程序正常运行</li>
-</ul>
-<p>这种情况下该如何处理呢? 当然是找日志了</p>
-<p>第一步:查看主程序日志,没问题</p>
-<p>第二步:查看<code>mysql</code>容器日志,发现问题</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker logs --tail=50 mysql</span><br></pre></td></tr></table></figure>
-
-<p><code>Table &#39;./wordpress_wai/wp_options&#39; is marked as crashed and should be repaired when using LOCK TABLES</code></p>
-<p><strong>数据库没有问题,但是表有问题</strong></p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p><strong>对表进行修复即可：</strong></p>
-<p>首先登录mysql选择指定的数据库,然后执行以下命令:</p>
-<ol>
-<li><p>执行修复指令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">repair table wp_option</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>检查表的状态</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">check table wp_option</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<p>修复前最好先备份数据库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -uroot -p密码 数据库名 &gt;xxxxx.sql</span><br></pre></td></tr></table></figure>
-
-<p>如果表损坏比较严重,可能无法备份数据库</p>
-<p>如果你不知道如何查看<code>mysql</code>日志,那么直接运行备份数据库指令,也能帮你检查数据库是否存在问题</p>
-<p>修复完成后无需重启mysql容器, 直接刷新网址即可正常访问</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../217.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../217.html" itemprop="url">GCC调试工具GDB的常用指令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-20T16:14:19+08:00">
-                2021-01-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="常用指令"><a href="#常用指令" class="headerlink" title="常用指令"></a>常用指令</h2><ol>
-<li><p>进入调试模式</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb 可执行文件</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>如果忘了指定调试文件可以使用<code>file</code>指令指定</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) file 文件名</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>quit</code>指令退出调试模式 可简写为q</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) q</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>start</code>指令开始调试  停在第一行代码处 </p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) start</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>step</code>指令进行单步执行 可简写为<code>s</code></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) s   <span class="comment">#会进入函数内部</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>next</code>执行进行单步执行 可简写为<code>n</code> </p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) n  <span class="comment">#不会进入函数内部</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>汇编级别单步执行(上面<code>n</code>和<code>s</code>为c语言级别单步指令)</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) ni <span class="comment">#不进入函数内部</span></span><br><span class="line">(gdb) si <span class="comment">#会进入函数内部</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>list</code>指令列出所有源代码 可简写为<code>l</code></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) l</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>break</code>指令设置断点位置 可简写为<code>b</code></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(gdb) b main <span class="comment">#在main函数处打断点</span></span><br><span class="line">(gdb) b 10 <span class="comment">#在第十行位置打断点</span></span><br><span class="line">(gdb) b <span class="built_in">test</span>:10 <span class="comment">#在test文件的第十行位置打断点 </span></span><br><span class="line">(gdb) b 0x3400a <span class="comment">#在0x3400a内存位置打断点</span></span><br><span class="line">(gdb) b 10 <span class="keyword">if</span> i==3 <span class="comment">#设置条件断点 i等于3时在第十行位置打断点 适用于循环</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>delete+断点编号</code>指令删除断点 可简写为<code>d</code></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) delete 3 <span class="comment">#删除编号为3的断点  清除时GDB不会给出任何提示</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>clear+断点行号</code>指令清除断点</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) clear 3 <span class="comment">#清除第三行的断点  清除时GDB会给出提示</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>disable/enable + 断点编号</code> 指令冻结或启动断点</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">disable</span> 3,4 <span class="comment">#冻结编号为3和4的断点 多个断点使用逗号分隔</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>info break</code>指令查看断点的情况</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) info <span class="built_in">break</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>tbreak</code> 指令设置临时断点</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) tbreak 行号/函数名 <span class="comment">#设置临时断点，到达后被自动删除</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>awatch/watch + 变量</code> 设置变量读写观察点</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) awatch/watch a <span class="comment">#当变量a被读出或写入时程序被暂停 </span></span><br><span class="line">(gdb) rwatch a <span class="comment">#当变量a被读出时程序被暂停</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>continue</code>指令运行到断点处 可简写为<code>c</code></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) c</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>print</code>指令打印变量的值 可简写为p</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) p a <span class="comment">#打印变量a的值</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用x指令打印指定内存地址数据</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) x /6cb 0x804835c <span class="comment">#打印地址0x804835c起始的内存内容，连续6个字节，以字符格式输出。</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>run</code>指令运行整个程序 可简写为<code>r</code></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) r  <span class="comment">#如果此前没有下过断点，则执行完整个程序；如果有断点，则程序暂停在第一个可用断点处</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 call 指令直接运行某个函数</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) call fun <span class="comment">#在当前位置执行函数fun</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>display</code> 指令设置需要跟踪的变量</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) display a <span class="comment">#跟踪变量a 每次断点到该处就显示该变量的值</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>info display</code> 显示当前所有跟踪的情况</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) info display</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>undisplay+编号</code> 指令取消对变量的跟踪</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) undisplay 3 <span class="comment">#取消对编号为3的跟踪事件</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>set+ 变量</code> 指令改变变量的值</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) <span class="built_in">set</span> i=3 <span class="comment">#临时设置变量i的值为3</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>set</code>  指令设置运行时参数</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) <span class="built_in">set</span> i=3 <span class="comment">#临时这只变量i的值为3</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>show</code>  指令查看运行时参数</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) show i</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>finish</code> 指令函数结束</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) finish</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>help</code>指令查看指令使用说明</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) <span class="built_in">help</span> <span class="built_in">print</span> <span class="comment">#查看print指令的解释说明</span></span><br><span class="line">(gdb) <span class="built_in">help</span> <span class="comment">#查看所有指令</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>info reg</code>指令查看寄存器状态</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb)  info reg</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>info stack</code>指令查看堆栈状态</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) info stack</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>运行shell指令</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) shell ls   <span class="comment">#运行shell指令ls。</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>其他指令</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">(gdb)  path <span class="comment">#可设定程序的运行路径。 </span></span><br><span class="line">(gdb)  show paths <span class="comment">#查看程序的运行路径。</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">(gdb) 　<span class="built_in">cd</span>　　  <span class="comment">#相当于shell的cd命令。 </span></span><br><span class="line"></span><br><span class="line">(gdb) 　<span class="built_in">pwd</span>　　<span class="comment">#显示当前的所在目录</span></span><br></pre></td></tr></table></figure>
-
-
-
-</li>
-</ol>
-<ol start="32">
-<li>使用<code>回车</code>重复上一条指令</li>
-</ol>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="../3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../3/">3</a><span class="page-number current">4</span><a class="page-number" href="../5/">5</a><span class="space">&hellip;</span><a class="page-number" href="../25/">25</a><a class="extend next" rel="next" href="../5/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="../3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../3/">3</a><span class="page-number current">4</span><a class="page-number" href="../5/">5</a><span class="space">&hellip;</span><a class="page-number" href="../26/">26</a><a class="extend next" rel="next" href="../5/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2120,7 +2148,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">250</span>
+                  <span class="site-state-item-count">252</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2133,7 +2161,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">84</span>
+                  <span class="site-state-item-count">85</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

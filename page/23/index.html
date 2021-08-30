@@ -128,6 +128,16 @@
 </script>
 <!--谷歌广告验证代码-->
 
+<!--短链广告-->
+<script type="text/javascript">
+    var adfly_id = 25792435;
+    var adfly_advert = 'banner';
+    var popunder = true;
+    var exclude_domains = ['code.newban.cn',  'localhost:4000'];
+</script>
+<script src="https://cdn.adf.ly/js/link-converter.js"></script>
+<!--短链广告-->
+
 
 
   <link rel="canonical" href="https://code.newban.cn/page/23/">
@@ -263,6 +273,319 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../95.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../95.html" itemprop="url">linux下的线程与进程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-06T18:24:00+08:00">
+                2019-12-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="两种线程设计模型"><a href="#两种线程设计模型" class="headerlink" title="两种线程设计模型"></a>两种线程设计模型</h2><ul>
+<li><p><strong>核心级线程设计模型</strong>:</p>
+<p>由操作系统内核实现, 特点是: 速度快  <em>windows系统采用的是这种设计模型</em></p>
+<p>可以比喻为用自己的大脑控制自己十根手指头</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/%E5%9B%BE%E7%89%871.png" alt></p>
+</li>
+<li><p><strong>用户级线程设计模型</strong>:</p>
+<p>操作系统核外实现的线程模式, 特点是: 线程调度在核外 速度不如核内 <em>Linux系统采用的是这种</em></p>
+</li>
+</ul>
+<p>​        可以比喻为自己的十根手指头需要借助外力才能动</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/%E5%9B%BE%E7%89%872.png" alt></p>
+<h2 id="Linux系统下有真正意义的多线程么"><a href="#Linux系统下有真正意义的多线程么" class="headerlink" title="Linux系统下有真正意义的多线程么?"></a>Linux系统下有真正意义的多线程么?</h2><p>由上面Linux采用的线程设计模型可知,Linux系统并没有真正意义上的多线程</p>
+<p>因此, Linux系统里处理多线程不如Windows强悍</p>
+<h2 id="Linux系统的两个线程库"><a href="#Linux系统的两个线程库" class="headerlink" title="Linux系统的两个线程库"></a>Linux系统的两个线程库</h2><ul>
+<li>LinuxThreads线程库</li>
+<li>RedHat的NPTL</li>
+</ul>
+<p>这两个线程库实际上并没有完全按照线程模式进行实现</p>
+<h2 id="进程的生命周期"><a href="#进程的生命周期" class="headerlink" title="进程的生命周期"></a>进程的生命周期</h2><h4 id="进程的创建及回收"><a href="#进程的创建及回收" class="headerlink" title="进程的创建及回收"></a>进程的创建及回收</h4><p>在Android中, ActivityThead的创建预示着进程的创建</p>
+<h4 id="进程的级别-由高到低"><a href="#进程的级别-由高到低" class="headerlink" title="进程的级别(由高到低)"></a>进程的级别(由高到低)</h4><ul>
+<li><strong>前台进程</strong>: 优先级最高, 正处于Activity Resume()状态, 杀死前台进程需要用户响应</li>
+<li><strong>可见进程</strong></li>
+<li><strong>服务进程</strong></li>
+<li><strong>后台进程</strong></li>
+<li><strong>空进程:</strong> 无组件启动,做进程缓存使用, 恢复速度快</li>
+</ul>
+<p>当一个应用启动的时候, 它的进程级别不是保持固定的, Android内部通过Handler进行轮询检测当前进程的状态,ActivityThread掌控的Activity 的生命周期, 如果栈中无Activity存在, 但是有Service存在的情况下, 此时的进程级别就会从前台进程降为服务进程</p>
+<p>如果想要查询当前进程的级别, 可以通过ActivityManager .RuningAppProcessInfo进行查询,内部有对应的变量和方法</p>
+<h4 id="进程级别的记忆方法"><a href="#进程级别的记忆方法" class="headerlink" title="进程级别的记忆方法"></a>进程级别的记忆方法</h4><p>前见服后空</p>
+<p>谐音: 权健服后空 (懂?)</p>
+<p><strong>本帖附件</strong></p>
+<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../104.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../104.html" itemprop="url">从源码角度分析Activity与Window及View之间的关系</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-06T16:21:46+08:00">
+                2019-12-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>我们都知道布局文件的加载是在Activity的onCreate()方法中,使用setContentView进行加载</p>
+<p>这个方法是个重载方法</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206162608.png" alt></p>
+<p><strong>它们无一例外都是使用的getWindow()进行加载</strong></p>
+<p><strong>那么window是在什么时候创建的呢?</strong> </p>
+<p><strong>我们知道Acitivity的生命周期是从onCreate开始的, 其实在它之前还有一个方法已经被执行了, 那就是attach方法</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206162844.png" alt></p>
+<p><strong>PolicyManager创建了一个新的Window对象</strong></p>
+<p><strong>接下来</strong></p>
+<p><strong>我们进入到PolicyManager类中</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206163344.png" alt></p>
+<p><strong>IPolicy是个接口</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206163509.png" alt></p>
+<p><strong>我们需要找到它的实现类,通过寻找发现Pollicy.java实现了IPolicy接口</strong><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206163925.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206164013.png" alt></p>
+<p><strong>实现代码如下:</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206164105.png" alt></p>
+<p><strong>直接创建了一个PhoneWindow对象,</strong></p>
+<p><strong>那么意味着 每创建一个Activity都会创建一个PhoneWindow对象</strong></p>
+<p><strong>那么PhoneWindow与Window到底是什么关系呢?</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206164400.png" alt></p>
+<p><strong>PhoneWindow是Window的子类</strong></p>
+<p><strong>那么到此为止, 我们知道了其实Activity中的setContentView实际上是PhoneWindow在处理</strong></p>
+<p><strong>我们找到PhoneWindow.java能发现其对应的方法</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206164818.png" alt></p>
+<p><strong>这里面的是三个重载方法咱们一个一个来分析</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206165008.png" alt></p>
+<p><strong>首先第一个</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206165609.png" alt></p>
+<p><strong>咱们平常开发时在xml中写的布局并不是根结点, 而是contentParent的子view</strong></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><h4 id="它们之间的关系可以大致理解为"><a href="#它们之间的关系可以大致理解为" class="headerlink" title="它们之间的关系可以大致理解为:"></a>它们之间的关系可以大致理解为:</h4><p><strong>Activity</strong>: 相当于一栋房子</p>
+<p><strong>Window</strong>: 相当于房子里的一扇窗户</p>
+<p><strong>View</strong>: 相当于窗户上的一朵窗花</p>
+<h4 id="它们三个的创建顺序为"><a href="#它们三个的创建顺序为" class="headerlink" title="它们三个的创建顺序为:"></a>它们三个的创建顺序为:</h4><p><strong>Activity—&gt;Window—&gt;View</strong></p>
+<p>具体时序图如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/Android%E7%9A%84Activity%E5%90%AF%E5%8A%A8%E6%97%B6%E5%BA%8F%E5%9B%BE.png" alt></p>
+<p><strong>本帖附件</strong></p>
+<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -1479,271 +1802,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../86.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../86.html" itemprop="url">Java面试题之面向对象的设计原则  一次性记忆</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-28T19:11:32+08:00">
-                2019-11-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="六大原则"><a href="#六大原则" class="headerlink" title="六大原则"></a>六大原则</h2><ul>
-<li>单一职责原则——SRP</li>
-<li>开闭原则——OCP</li>
-<li>里式替换原则——LSP</li>
-<li>依赖倒置原则——DIP</li>
-<li>接口隔离原则——ISP</li>
-<li>迪米特原则——LOD</li>
-</ul>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../64.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../64.html" itemprop="url">Android面试题之Handler内存泄漏处理  一次性记忆</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-28T19:00:59+08:00">
-                2019-11-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="为什么会内存泄漏"><a href="#为什么会内存泄漏" class="headerlink" title="为什么会内存泄漏"></a>为什么会内存泄漏</h2><p>内部类持有外部类对象引用,导致外部类无法被回收  </p>
-<h2 id="如何解决内存泄露"><a href="#如何解决内存泄露" class="headerlink" title="如何解决内存泄露"></a>如何解决内存泄露</h2><ul>
-<li>使用静态内部类</li>
-<li>Activity销毁时handler.removeCallback()</li>
-<li>使用弱引用</li>
-</ul>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="../22/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../22/">22</a><span class="page-number current">23</span><a class="page-number" href="../24/">24</a><a class="page-number" href="../25/">25</a><a class="extend next" rel="next" href="../24/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="../22/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../22/">22</a><span class="page-number current">23</span><a class="page-number" href="../24/">24</a><span class="space">&hellip;</span><a class="page-number" href="../26/">26</a><a class="extend next" rel="next" href="../24/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1789,7 +1852,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">250</span>
+                  <span class="site-state-item-count">252</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1802,7 +1865,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">84</span>
+                  <span class="site-state-item-count">85</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
