@@ -287,6 +287,545 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../250.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../250.html" itemprop="url">js数组的增删改查总结</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-23T16:02:19+08:00">
+                2021-08-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>但估计很多小伙伴初学正则时已经被其奇形怪状的字符给劝退了, 今天我们来将其解剖一下</p>
+<h3 id="增"><a href="#增" class="headerlink" title="增"></a>增</h3><p><strong>第一种 基于<code>splice</code>封装的扩展函数:</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//首部插入单个元素</span></span><br><span class="line"><span class="built_in">Array</span>.prototype.addFirst = <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.splice(<span class="number">0</span>, <span class="number">0</span>, e);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//尾部插入单个元素</span></span><br><span class="line"><span class="built_in">Array</span>.prototype.addLast = <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.splice(<span class="keyword">this</span>.length, <span class="number">0</span>, e);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//指定角标位置插入单个元素</span></span><br><span class="line"><span class="built_in">Array</span>.prototype.addByIndex = <span class="function"><span class="keyword">function</span> (<span class="params">i,e</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.splice(i,<span class="number">0</span>,e);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>第二种 使用JS自带的函数 :</strong></p>
+<p>分别有<code>push</code> <code>unshift</code> <code>concat</code>和<code>splice</code>四个函数</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//在尾部插入</span></span><br><span class="line"><span class="keyword">var</span> arr = [];</span><br><span class="line"><span class="keyword">var</span> len = arr.push(<span class="number">1</span>); <span class="comment">//插入一个元素</span></span><br><span class="line"><span class="keyword">var</span> len = arr.push(<span class="number">2</span>,<span class="number">3</span>);<span class="comment">//连续插入多个元素</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//在头部插入</span></span><br><span class="line"><span class="keyword">var</span> len = arr.unshift(<span class="number">0</span>);</span><br><span class="line"><span class="keyword">var</span> len = arr.unshift(<span class="number">-2</span>,<span class="number">-1</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//在尾部插入</span></span><br><span class="line"><span class="keyword">var</span> newArr = arr.concat(<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>);<span class="comment">//返回一个新的数组对象</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//在头部插入多个元素</span></span><br><span class="line">arr.splice(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0.2</span>,<span class="number">0.4</span>,<span class="number">0.6</span>,<span class="number">0.8</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="删"><a href="#删" class="headerlink" title="删"></a>删</h3><p><strong>第一种 基于<code>splice</code>封装的扩展函数:</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.remove = <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.splice(<span class="keyword">this</span>.indexOf(e), <span class="number">1</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>第二种 使用JS自带函数</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//使用 pop</span></span><br><span class="line"><span class="keyword">var</span> item = arr.pop(); <span class="comment">//删除最后一个元素并返回该项</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//使用 shift</span></span><br><span class="line"><span class="keyword">var</span> item = arr.shift(); <span class="comment">//删除第一个元素并返回该项</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//使用slice裁剪函数</span></span><br><span class="line"><span class="keyword">var</span> arr2 = arr.slice(<span class="number">2</span>,<span class="number">6</span>);<span class="comment">//取出角标2至6的元素 组成一个新元素</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//使用delete 该方法删除掉数组中的元素后，会把该下标出的值置为undefined,数组的长度不会变</span></span><br><span class="line"><span class="keyword">var</span> arr = [<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="string">'c'</span>,<span class="string">'d'</span>]; </span><br><span class="line"><span class="keyword">delete</span> arr[<span class="number">1</span>]; </span><br><span class="line"><span class="comment">//结果为:["a", undefined × 1, "c", "d"]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="改"><a href="#改" class="headerlink" title="改"></a>改</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.replace = <span class="function"><span class="keyword">function</span> (<span class="params">origin, target</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.splice(<span class="keyword">this</span>.indexOf(origin), <span class="number">1</span>,target);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 或者使用循环</span></span><br><span class="line"><span class="built_in">Array</span>.prototype.replace = <span class="function"><span class="keyword">function</span> (<span class="params">origin, target</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.map(<span class="function">(<span class="params">value</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (value == origin) &#123;</span><br><span class="line">      <span class="keyword">return</span> target;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      value;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="查"><a href="#查" class="headerlink" title="查"></a>查</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> index = arr.indexOf(<span class="string">"A"</span>);<span class="comment">//查找元素A在数组中的位置 返回-1表示不存在该元素</span></span><br></pre></td></tr></table></figure>
+
+<p>关于查找部分, 更多方法详见:《<a href="https://code.newban.cn/247.html">原生JS中判断数组中是否包含某个元素的若干种方法</a>》</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../251.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../251.html" itemprop="url">跨服务器数据迁移</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-23T16:02:19+08:00">
+                2021-08-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>最近有台云服务器到期, 续费太贵, 打算换一台便宜的, 之前服务器上使用docker部署了几个网站, 涉及到数据和程序迁移的问题, 在此做个记录</p>
+<h3 id="持久化数据迁移"><a href="#持久化数据迁移" class="headerlink" title="持久化数据迁移"></a>持久化数据迁移</h3><p>首先使用<code>scp</code>指令进行数据卷的迁移, 也就是跨服务器数据拷贝</p>
+<p>假设两台机器IP分别为：</p>
+<ul>
+<li><p>服务器A: 114.238.161.75，</p>
+</li>
+<li><p>服务器B: 143.224.34.73。</p>
+</li>
+</ul>
+<p>比如我在A服务器上操作，需要将B服务器上<code>/home/lk/</code>目录下所有的文件全部复制到本地的<code>/root</code>目录下，命令为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r  root@143.224.34.73:/home/lk /root</span><br></pre></td></tr></table></figure>
+
+<p>具体过程为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@XX ~]# scp -r root@43.224.34.73:/home/lk /root</span><br><span class="line">root@43.224.34.73&apos;s password: </span><br><span class="line">k2.sql                                                     100%    0     0.0KB/s   00:00    </span><br><span class="line">k.zip                                                      100%  176     0.2KB/s   00:00    </span><br><span class="line">.bash_history                                              100%   32     0.0KB/s   00:00    </span><br><span class="line">.bash_logout                                               100%   18     0.0KB/s   00:00    </span><br><span class="line">.bashrc                                                    100%  231     0.2KB/s   00:00    </span><br><span class="line">k3.sql                                                     100%    0     0.0KB/s   00:00    </span><br><span class="line">.bash_profile                                              100%  193     0.2KB/s   00:00    </span><br><span class="line">[root@XX ~]# ls</span><br></pre></td></tr></table></figure>
+
+<p>或者在A服务器上将<code>/root/lk</code>目录下所有的文件传输到B的<code>/home/lk/cpfile</code>目录下，命令为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r /root/lk root@143.224.34.73:/home/lk/cpfile</span><br></pre></td></tr></table></figure>
+
+<p>具体过称为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@XX lk]# scp -r /root/lk root@43.224.34.73:/home/lk/cpfile</span><br><span class="line">root@43.224.34.73&apos;s password: </span><br><span class="line">k2.sql                                                     100%    0     0.0KB/s   00:00    </span><br><span class="line">k3.sql                                                     100%    0     0.0KB/s   00:00    </span><br><span class="line">.bash_profile                                              100%  193     0.2KB/s   00:00    </span><br><span class="line">.bash_logout                                               100%   18     0.0KB/s   00:00    </span><br><span class="line">.bash_history                                              100%   32     0.0KB/s   00:00    </span><br><span class="line">k.zip                                                      100%  176     0.2KB/s   00:00    </span><br><span class="line">.bashrc                                                    100%  231     0.2KB/s   00:00    </span><br><span class="line">[root@XX lk]#</span><br></pre></td></tr></table></figure>
+
+<p>此外 加上<code>-p</code>参数还可以保留原文件的修改时间，访问权限:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r  -p root@143.224.34.73:/home/lk /root</span><br></pre></td></tr></table></figure>
+
+<h3 id="Docker容器迁移"><a href="#Docker容器迁移" class="headerlink" title="Docker容器迁移"></a>Docker容器迁移</h3><ol>
+<li><p>首先 需要将容器保存为镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker commit 容器名称 镜像名称</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后 将保存的镜像进行压缩</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker save -o xxx.tar 镜像名称</span><br><span class="line"></span><br><span class="line">//如果多个镜像同时打包</span><br><span class="line">docker save [images] [images] &gt; [name.tar]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>scp</code>指令将压缩包传至新服务器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r xxx.tar root@143.224.34.73:/home/lk/cpfile</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在新服务器中进行镜像恢复(新服务器需要先安装Docker)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker load &lt; xxx.tar</span><br><span class="line">或</span><br><span class="line">docker load -i xxx.tar</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后创建并运行容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name 容器名 -p 12309:80 -d 镜像名</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="数据库迁移"><a href="#数据库迁移" class="headerlink" title="数据库迁移"></a>数据库迁移</h3><p>详情查看《<a href="https://code.newban.cn/131.html">mysql使用命令导入和导出sql文件</a>》</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../249.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../249.html" itemprop="url">快速掌握正则表达式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-18T16:02:19+08:00">
+                2021-08-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>正则是一把利器, 用好了编程事半功倍</p>
+<p>但估计很多小伙伴初学正则时已经被其奇形怪状的字符给劝退了, 今天我们来将其解剖一下</p>
+<h3 id="三个部分"><a href="#三个部分" class="headerlink" title="三个部分"></a>三个部分</h3><p>正则主要包含三个部分:</p>
+<ul>
+<li><strong>小括号() :</strong> 表示分组</li>
+<li><strong>中括号[] :</strong> 表示需要匹配的单个字符 以及表示区间范围或者随机样本</li>
+<li><strong>大括号{}:</strong> 表示重复出现的次数</li>
+</ul>
+<p><strong>比如:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a&#123;3&#125;b&#123;2&#125;</span><br><span class="line"></span><br><span class="line">或者</span><br><span class="line">[a]&#123;3&#125;[b]&#123;2&#125;</span><br></pre></td></tr></table></figure>
+
+<p>表示字符<code>a</code>重复出现3次 字符<code>b</code>重复出现2次</p>
+<p>可匹配以下字符串:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aaabb</span><br></pre></td></tr></table></figure>
+
+<p>如果我想将字符<code>a</code>和字符<code>b</code>分离, 可以使用小括号分组功能, 比如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(a&#123;3&#125;)(b&#123;2&#125;)</span><br><span class="line"></span><br><span class="line">或者</span><br><span class="line">([a]&#123;3&#125;)([b]&#123;2&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>那么<code>$1</code>表示取出第一组内容<code>aaa</code>, <code>$2</code>取出第二组内容<code>bb</code></p>
+<p>在匹配单个字符的时候, 中括号写与不写都一样, 中括号主要的作用在于区间匹配和样本匹配:</p>
+<p><strong>区间匹配:</strong></p>
+<p>使用字符<code>-</code>表示区间</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[a-z] //表示匹配小写a到z的26个英文字母 但凡出现26个字母中的任何一个 都匹配成功</span><br><span class="line"></span><br><span class="line">[a-zA-Z0-9] //表示匹配大小写26个字母加上0到9十个数字中的任何一个</span><br></pre></td></tr></table></figure>
+
+<p><strong>样本匹配:</strong></p>
+<p>提供一个有限个数的字符的样本, 然后在样本中随机匹配</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[abcd] //表示匹配abcd这四个英文字母中任意一个</span><br></pre></td></tr></table></figure>
+
+<p><strong>举例:</strong></p>
+<p>假如我写了一个正则表达式如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[ab][cd]</span><br></pre></td></tr></table></figure>
+
+<p>那么它将匹配到四个:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ac</span><br><span class="line">ad</span><br><span class="line">bc</span><br><span class="line">bd</span><br></pre></td></tr></table></figure>
+
+<p>是不是感觉像排列组合, 没错</p>
+<p>在样本匹配模式下, <strong>中括号中的内容相当于取或</strong>, 在正则中取或有一个专门的符号, 用<code>|</code>表示</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[ab] 匹配a或b </span><br><span class="line">a|b  匹配a或b</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">那么:</span><br><span class="line">[ab][cd]  也可以写成 (a|b)(c|d)</span><br></pre></td></tr></table></figure>
+
+<p>至此, 正则最核心的功能我们就学完了</p>
+<h3 id="扩展部分"><a href="#扩展部分" class="headerlink" title="扩展部分"></a>扩展部分</h3><p><strong>关于出现次数:</strong></p>
+<ul>
+<li><p>字符<code>?</code>: 表示重复出现零次或一次</p>
+</li>
+<li><p>字符<code>*</code>: 表示出现零次或多次</p>
+</li>
+<li><p>字符<code>+</code>: 表示出现一次或多次</p>
+</li>
+</ul>
+<p>示例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a?b   //可以匹配b 和ab</span><br><span class="line">a*b   //可以匹配b 或者a....b </span><br><span class="line">a+b   //可以匹配ab 或者a....b</span><br></pre></td></tr></table></figure>
+
+<p>如果放中括号中:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[a?]   //可以匹配a或者?</span><br><span class="line">[a*]   //可以匹配a或者*</span><br><span class="line">[a+]   //可以匹配a或者+</span><br></pre></td></tr></table></figure>
+
+<p>也就是说一旦放到中括号中, 这三个字符将失去表示次数的含义, 成为一个普通的匹配字符</p>
+<p><strong>关于匹配内容:</strong></p>
+<ul>
+<li>字符<code>.</code>: 表示匹配除了回车和换行外的任意字符</li>
+<li>字符<code>^</code>: 表示限定开头内容</li>
+<li>字符<code>$</code>: 表示限定结束内容</li>
+</ul>
+<p>我们挨个举例说明:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#123;3&#125;b  //表示任意字符出现三次然后再出现b</span><br></pre></td></tr></table></figure>
+
+<p>可以匹配到以下内容:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">aaab</span><br><span class="line">xxxb</span><br><span class="line">yyyb</span><br><span class="line">kjfb</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>如果我加个<code>^</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">^1.&#123;3&#125;b //表示需要匹配的内容必须以1开头</span><br></pre></td></tr></table></figure>
+
+<p>假如我有两个字符串变量:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String data1=&quot;1aaab&quot;; //匹配成功</span><br><span class="line">String data2=&quot;gg1aaab&quot;; //匹配失败</span><br></pre></td></tr></table></figure>
+
+<p>如果我去掉这个<code>^</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1.&#123;3&#125;b</span><br></pre></td></tr></table></figure>
+
+<p>那么:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String data1=&quot;1aaab&quot;; //匹配成功</span><br><span class="line">String data2=&quot;gg1aaab&quot;; //匹配成功</span><br></pre></td></tr></table></figure>
+
+<p>也就是说<code>^</code>这个限定符, 是针对整个字符串进行匹配, 需要整体满足条件, 而不加限定符, 则可以进行局部匹配</p>
+<p><code>$</code>和<code>^</code>同理:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#123;3&#125;b$  //表示需要匹配的内容必须以b结尾</span><br></pre></td></tr></table></figure>
+
+<p>如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String data1=&quot;aaab&quot;; //匹配成功</span><br><span class="line">String data2=&quot;aaabg&quot;; //匹配失败</span><br></pre></td></tr></table></figure>
+
+<p>注意: 如果字符<code>^</code>放到中括号中则表示取反</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[^a] //表示除了字符a外任意字符都行</span><br></pre></td></tr></table></figure>
+
+<p>学到这, 基本上可以实现大部分的正则匹配了</p>
+<h3 id="升级"><a href="#升级" class="headerlink" title="升级"></a>升级</h3><p>为了方便开发, 正则提供了常用字符的简易写法, 也可以称之为<strong>别名</strong></p>
+<p>比如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[0-9] 可以使用 \d 代替</span><br><span class="line"></span><br><span class="line">[a-zA-Z_0-9] 可以使用 \w 代替</span><br><span class="line"></span><br><span class="line">[\t\n\x0B\f\r] 可以使用 \s 代替</span><br></pre></td></tr></table></figure>
+
+<p>如果要取反, 那么直接将小写变成大写:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">\D 表示 [^0-9]</span><br><span class="line"></span><br><span class="line">\W 表示 [^a-zA-Z_0-9] </span><br><span class="line"></span><br><span class="line">\S 表示 [^\t\n\x0B\f\r]</span><br></pre></td></tr></table></figure>
+
+<p>现在 我们再来看几个常用的正则表达式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//手机号正则匹配</span><br><span class="line">^1[34578][0-9]&#123;9&#125;$</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//年月日正则匹配</span><br><span class="line">^\d&#123;4&#125;-\d&#123;2&#125;-\d&#123;2&#125;$</span><br></pre></td></tr></table></figure>
+
+<p>是不是感觉和蔼可亲多了呢</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../247.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1505,693 +2044,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../241.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../241.html" itemprop="url">SQL修改字段属性</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-11T15:14:19+08:00">
-                2021-08-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>1.增加字段</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE tableName ADD COLUMN columnName VARCHAR(20) DEFAULT NULL --增加一个字段，默认为空</span><br><span class="line">ALTER TABLE tableName ADD COLUMN columnName VARCHAR(20) NOT NULL     --增加一个字段，默认不能为空</span><br></pre></td></tr></table></figure>
-
-<p><strong>2.删除字段</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE tableName DROP COLUMN columnName --删除一个字段</span><br></pre></td></tr></table></figure>
-
-<p><strong>3.修改字段类型</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE tableName MODIFY COLUMN columnName VARCHAR(10) --修改一个字段的类型</span><br></pre></td></tr></table></figure>
-
-<p><strong>4.删除主键</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Declare @Pk varChar(100);</span><br><span class="line">Select @Pk=Name from sysobjects where Parent_Obj=OBJECT_ID(&apos;tableName&apos;) and xtype=&apos;PK&apos;;</span><br><span class="line">if @Pk is not null</span><br><span class="line">exec(&apos;Alter table tableName Drop &apos;+ @Pk)</span><br></pre></td></tr></table></figure>
-
-<p><strong>5.给已经建好的表字段添加唯一性约束</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter table 表名 add unique(字段名);</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../240.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../240.html" itemprop="url">Android开发者快速上手Web前端开发</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-06T10:14:19+08:00">
-                2021-08-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>我们都知道Web前端主要由<strong>HTML</strong> <strong>CSS</strong> 和<strong>JS</strong>三部分语言组成, 其中<strong>HTML</strong>和<strong>CSS</strong>负责界面, <strong>JS</strong>负责事件逻辑</p>
-<p>任何一个应用, 无非就是界面和事件两大块组成, 本文主要介绍如何快速上手界面的编写</p>
-<h4 id="控件对比"><a href="#控件对比" class="headerlink" title="控件对比"></a>控件对比</h4><p>Android应用界面的编写主要通过控件的排列组合, 常用的控件有TextView, EditText, ImageView, 那么在Web前端中也有类似于Android中的控件,只不过在前端中不叫控件, 而叫标签, 部分对比如下:</p>
-<table>
-<thead>
-<tr>
-<th align="center">Html标签</th>
-<th align="center">Android控件</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">img标签</td>
-<td align="center">ImageView</td>
-</tr>
-<tr>
-<td align="center">input标签和textarea标签</td>
-<td align="center">EditText</td>
-</tr>
-<tr>
-<td align="center">button标签</td>
-<td align="center">Button</td>
-</tr>
-<tr>
-<td align="center">h系列标签,p标签,span标签</td>
-<td align="center">类似于TextView</td>
-</tr>
-<tr>
-<td align="center">div标签</td>
-<td align="center">类似于水平方向的LinearLayout</td>
-</tr>
-</tbody></table>
-<p><strong>容器标签和文本标签以及叶子标签的区别</strong>:</p>
-<ul>
-<li><strong>容器标签</strong>: 里面可以嵌套其他标签, 比如<code>div</code>标签</li>
-<li><strong>文本标签</strong>: 里面可以填充文本显示, 比如<code>p</code>标签</li>
-<li><strong>叶子标签</strong>:里面及不可以嵌套标签也不可以嵌套文本, 比如img标签</li>
-</ul>
-<p>当然, 有些标签<strong>既是容器标签又是文本标签</strong>:</p>
-<table>
-<thead>
-<tr>
-<th align="center">标签</th>
-<th align="center">容器标签</th>
-<th align="center">文本标签</th>
-<th align="center">叶子标签</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">div</td>
-<td align="center">√</td>
-<td align="center">√</td>
-<td align="center">×</td>
-</tr>
-<tr>
-<td align="center">p</td>
-<td align="center">×</td>
-<td align="center">√</td>
-<td align="center">×</td>
-</tr>
-<tr>
-<td align="center">span</td>
-<td align="center">√</td>
-<td align="center">√</td>
-<td align="center">×</td>
-</tr>
-<tr>
-<td align="center">h系列</td>
-<td align="center">√</td>
-<td align="center">√</td>
-<td align="center">×</td>
-</tr>
-<tr>
-<td align="center">button</td>
-<td align="center">√</td>
-<td align="center">√</td>
-<td align="center">x</td>
-</tr>
-<tr>
-<td align="center">img</td>
-<td align="center">×</td>
-<td align="center">×</td>
-<td align="center">√</td>
-</tr>
-<tr>
-<td align="center">audio</td>
-<td align="center">×</td>
-<td align="center">×</td>
-<td align="center">√</td>
-</tr>
-<tr>
-<td align="center">video</td>
-<td align="center">×</td>
-<td align="center">×</td>
-<td align="center">√</td>
-</tr>
-</tbody></table>
-<p>除此之外, 有的<strong>标签本身自带换行符</strong>:</p>
-<table>
-<thead>
-<tr>
-<th align="center">标签</th>
-<th align="center">开头自带换行符</th>
-<th align="center">结尾自带换行符</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">div</td>
-<td align="center">√</td>
-<td align="center">√</td>
-</tr>
-<tr>
-<td align="center">h系列</td>
-<td align="center">√</td>
-<td align="center">√</td>
-</tr>
-<tr>
-<td align="center">button</td>
-<td align="center">x</td>
-<td align="center">x</td>
-</tr>
-<tr>
-<td align="center">p</td>
-<td align="center">√</td>
-<td align="center">×</td>
-</tr>
-<tr>
-<td align="center">ul</td>
-<td align="center">√</td>
-<td align="center">√</td>
-</tr>
-<tr>
-<td align="center">span</td>
-<td align="center">×</td>
-<td align="center">×</td>
-</tr>
-<tr>
-<td align="center">img</td>
-<td align="center">×</td>
-<td align="center">×</td>
-</tr>
-<tr>
-<td align="center">audio</td>
-<td align="center">×</td>
-<td align="center">×</td>
-</tr>
-<tr>
-<td align="center">video</td>
-<td align="center">×</td>
-<td align="center">×</td>
-</tr>
-</tbody></table>
-<p><strong>关于控件的宽高显示</strong>:</p>
-<table>
-<thead>
-<tr>
-<th align="center">样式属性</th>
-<th align="center">Android宽高属性</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">display:block</td>
-<td align="center">android:layout_width=”match_parent”</td>
-</tr>
-<tr>
-<td align="center">display:inline</td>
-<td align="center">android:layout_width=”wrap_content”<br>android:layout_height=”wrap_content”</td>
-</tr>
-<tr>
-<td align="center">display:inline-block</td>
-<td align="center">android:layout_width=”自定义” <br>android:layout_height=”自定义”</td>
-</tr>
-</tbody></table>
-<p><strong>关于元素的位置定位:</strong></p>
-<table>
-<thead>
-<tr>
-<th>标签</th>
-<th>Android控件</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>position:absolute<br>元素的位置以浏览器窗口为参照摆放</td>
-<td>相当于设置成为Framelayout的子控件</td>
-</tr>
-<tr>
-<td>position:relative<br>元素位置以邻近元素为参照摆放</td>
-<td>相当于设置成为LinearLayout的子控件</td>
-</tr>
-<tr>
-<td>position:fixed<br>元素的位置以浏览器窗口为参照摆放, 但是不随滚动条移动</td>
-<td>相当于在ScrollView上层增加一个固定控件</td>
-</tr>
-<tr>
-<td>position: sticky<br>粘性定位, 元素滚动超出页面时切换为fixed模式</td>
-<td>和Android中粘性控件一样</td>
-</tr>
-<tr>
-<td>position: static<br>默认状态,此时top left right bottom等属性均无效</td>
-<td></td>
-</tr>
-</tbody></table>
-<p>也就是说, <code>top left right bottom</code>这几个属性需要和<code>position</code>配合使用</p>
-<p><strong>关于自定义控件(标签)</strong></p>
-<p>在Android中除了官方提供的原生控件外, 我们还可以自定义控件, 那么Web前端可以吗?</p>
-<p>如果放在以前肯定不行, 只能使用官方提供的html标签, 现在<strong>nodejs环境下可以实现自定义标签</strong>, 比如vue中:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210806111608395.png" alt="image-20210806111608395"></p>
-<p>在Android中我们可以对控件设置相应的属性, 并且把共同的属性抽取到style文件中</p>
-<p>那么Web前端也一样, 只不过属性和样式分开处理,抽取出来样式放置在<code>style</code>标签下, 如果单独放到一个文件中, 那么这个文件的后缀必须为<code>.css</code>, 所以我们又称之为CSS样式表 或者CSS语言</p>
-<p>事实上, 我们会发现, <strong>Android的界面编写方式很多都是参考的Web前端</strong></p>
-<p><strong>小练习:</strong></p>
-<ol>
-<li><p>写一个左侧带图标的文本:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210806122728724.png" alt="image-20210806122728724"></p>
-<p>只要一个<code>img</code>标签和一个<code>span</code>标签够了:</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">style</span>=<span class="string">"max-width: 26px; max-height: 26px"</span> <span class="attr">src</span>=<span class="string">"./assets/logo.png"</span>&gt;</span> <span class="tag">&lt;<span class="name">span</span>&gt;</span>成墨文档<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>效果如下:</p>
-<p><img style="max-width: 26px; max-height: 26px" src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/logo.82b9c7a5.png"> <span>成墨文档</span></p>
-<p>接下来需要给内容增加一个超链接, 所以在最外层包裹一个<code>a</code>标签</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span>&gt;</span><span class="tag">&lt;<span class="name">img</span> <span class="attr">style</span>=<span class="string">"max-width: 26px; max-height: 26px"</span> <span class="attr">src</span>=<span class="string">"./assets/logo.png"</span>&gt;</span> <span class="tag">&lt;<span class="name">span</span>&gt;</span>成墨文档<span class="tag">&lt;/<span class="name">span</span>&gt;</span><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>效果如下:</p>
-<p><a><img style="max-width: 26px; max-height: 26px" src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/logo.82b9c7a5.png"> <span>成墨文档</span></a></p>
-<p>考虑到这个内容属于网站的网站标题, 为了利于<code>seo</code> 因此最外层再包裹一个<code>h1</code>标签, 此时文本也变大</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">"navbar-brand"</span> <span class="attr">href</span>=<span class="string">"/web/homepage/index"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">img</span> <span class="attr">style</span>=<span class="string">"max-width: 26px; max-height: 26px"</span> <span class="attr">src</span>=<span class="string">"./assets/logo.png"</span>&gt;</span> <span class="tag">&lt;<span class="name">span</span>&gt;</span>成墨文档<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>效果如下:</p>
-<h1>
-  <a class="navbar-brand" href="/web/homepage/index">
-  <img style="max-width: 26px; max-height: 26px" src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/logo.82b9c7a5.png"> <span>成墨文档</span>
-  </a>
-  </h1>
-</li>
-<li><p>写一个网站导航条:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210806154307953.png" alt="image-20210806154307953"></p>
-<p>html代码如下:</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span>  <span class="attr">id</span>=<span class="string">"navbar"</span>&gt;</span></span><br><span class="line">   </span><br><span class="line">   <span class="tag">&lt;<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">"navbar-brand"</span> <span class="attr">href</span>=<span class="string">"/web/homepage/index"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">style</span>=<span class="string">"max-width: 26px; max-height: 26px"</span> <span class="attr">src</span>=<span class="string">"./assets/logo.png"</span>&gt;</span> <span class="tag">&lt;<span class="name">span</span>&gt;</span>成墨文档<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">      </span><br><span class="line">        <span class="tag">&lt;<span class="name">ul</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"/web/homepage/index"</span>&gt;</span>首页<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">target</span>=<span class="string">"_blank"</span> <span class="attr">href</span>=<span class="string">"https://www.xxx.com/pricing"</span>&gt;</span>价格<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"http://blog.xxx.com/"</span>&gt;</span>博客<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"https://docs.xxx.com/#/"</span>&gt;</span>帮助文档<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"/web/homepage/apidoc"</span>&gt;</span>API<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">li</span> <span class="attr">class</span>=<span class="string">"long-li nav-item"</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"/web/signup/sign_up"</span> <span class="attr">id</span>=<span class="string">"btn-register"</span>&gt;</span>免费注册<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">li</span> <span class="attr">class</span>=<span class="string">"short-li nav-item"</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"/web/login"</span>&gt;</span>登录<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>效果如下:</p>
-</li>
-</ol>
-   <h1>
-     <a class="navbar-brand" href="/web/homepage/index">
-     <img style="max-width: 26px; max-height: 26px" src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/logo.82b9c7a5.png"> <span>成墨文档</span>
-     </a>
-     </h1>
-
-
-<pre><code>&lt;ul &gt;
-   &lt;li&gt;&lt;a href=&quot;/web/homepage/index&quot;&gt;首页&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.xxx.com/pricing&quot;&gt;价格&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;http://blog.xxx.com/&quot;&gt;博客&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://docs.xxx.com/#/&quot;&gt;帮助文档&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;/web/homepage/apidoc&quot;&gt;API&lt;/a&gt;&lt;/li&gt;
-&lt;li class=&quot;long-li nav-item&quot;&gt;&lt;a href=&quot;/web/signup/sign_up&quot; id=&quot;btn-register&quot;&gt;免费注册&lt;/a&gt;&lt;/li&gt;
-&lt;li class=&quot;short-li nav-item&quot;&gt;&lt;a href=&quot;/web/login&quot;&gt;登录&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</code></pre><p>   我们需要给其添加相应的样式:</p>
-   <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="selector-tag">style</span> &gt;</span><br><span class="line">   <span class="selector-id">#navbar</span>&#123;</span><br><span class="line"> <span class="comment">/*固定在顶部*/</span></span><br><span class="line">   <span class="attribute">position</span>: fixed;</span><br><span class="line">   <span class="attribute">top</span>:<span class="number">0px</span>;</span><br><span class="line">   <span class="attribute">left</span>:<span class="number">0px</span>;</span><br><span class="line">   <span class="attribute">width</span>:<span class="number">100%</span>;</span><br><span class="line">   <span class="attribute">height</span>:<span class="number">64px</span>;</span><br><span class="line">   <span class="attribute">background-color</span>:<span class="number">#AAAAAA</span>;</span><br><span class="line">   <span class="attribute">padding-left</span>:<span class="number">50px</span>;</span><br><span class="line">   <span class="attribute">padding-right</span>:<span class="number">20px</span>;</span><br><span class="line">   <span class="attribute">display</span>:flex;</span><br><span class="line">       <span class="attribute">align-items</span>:center;<span class="comment">/*指定垂直居中*/</span></span><br><span class="line">   &#125;</span><br><span class="line"><span class="selector-tag">ul</span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="attribute">display</span>: inline-block;</span><br><span class="line">     <span class="comment">/*列表向右浮动*/</span></span><br><span class="line">			<span class="attribute">float</span>: right;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">h1</span>&#123;</span><br><span class="line">  <span class="attribute">display</span>:inline;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">li</span>&#123;</span><br><span class="line">  <span class="comment">/*去除列表中的原点样式*/</span></span><br><span class="line">  <span class="attribute">list-style</span>: none; </span><br><span class="line">  </span><br><span class="line"> </span><br><span class="line">   <span class="comment">/*列表从左向右浮动*/</span></span><br><span class="line">			<span class="attribute">float</span>: left;</span><br><span class="line">    <span class="attribute">margin-left</span>: <span class="number">40px</span>;</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"><span class="selector-tag">a</span>&#123;</span><br><span class="line">  <span class="comment">/*取消超链接下划线*/</span>	</span><br><span class="line">  <span class="attribute">text-decoration</span>: none;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
-
-<p>以上是比较基础的练习, 熟悉的差不多了后, 我们开始进入到使用vue的开发阶段</p>
-<h4 id="Vue快速上手"><a href="#Vue快速上手" class="headerlink" title="Vue快速上手"></a>Vue快速上手</h4><p><strong>环境配置</strong>:</p>
-<ul>
-<li><a href="http://nodejs.cn/download/" target="_blank" rel="noopener">nodejs</a></li>
-<li><a href="https://cli.vuejs.org/zh/guide/" target="_blank" rel="noopener">@vue/cli</a></li>
-</ul>
-<p><strong>vue项目创建</strong>:</p>
-<p>第一步 安装vue:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g @vue/cli-service-global</span><br></pre></td></tr></table></figure>
-
-<p>第二步 创建脚手架(模板工程)</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vue create hello-world</span><br><span class="line"></span><br><span class="line"><span class="comment">#或者直接使用图形化界面创建</span></span><br><span class="line">vue ui</span><br></pre></td></tr></table></figure>
-
-<p>这里直接使用图形化创建:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210806115245063.png" alt="image-20210806115245063"></p>
-<p>创建后自动生成相应的文件和目录, 目录结构如下:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210806115856398.png" alt="image-20210806115856398"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210806162357285.png" alt="image-20210806162357285"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210806170246960.png" alt="image-20210806170246960"></p>
-<p>大部分和原生相比差别不大, 但是开发上更加高效,具体参考:</p>
-<p><a href="http://code.newban.cn/239.html">Vue入门基础语法</a></p>
-<h4 id="为什么选择vue"><a href="#为什么选择vue" class="headerlink" title="为什么选择vue"></a>为什么选择vue</h4><p><strong>vue只是一个开发框架 或者理解为一个中间人</strong>, 它借助于nodejs环境, 使得我们可以采用MVVM的模型, 同时集成第三方各种插件, 方便而又快速地组件化开发, 相比原生而言整体的架构也更加清晰, 后期维护也得心应手</p>
-<p>当然, 你也可以使用其他框架, 未来也可能出现新的框架, 但有一点是不会变的, 不管是什么框架, 它编译出来最终文件还是<code>html</code> <code>css</code>和<code>js</code>, 因为 目前浏览器只识别这三种文件</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../238.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../238.html" itemprop="url">Vue的组件为什么要export default</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-05T14:14:19+08:00">
-                2021-08-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="Vue-的模块机制"><a href="#Vue-的模块机制" class="headerlink" title="Vue 的模块机制"></a>Vue 的模块机制</h4><p>　　Vue 是通过 webpack 实现的模块化，因此可以使用 import 来引入模块，例如：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1170308-20180313210235200-1714149358.png" alt="img"> </p>
-<p>　　此外，你还可以在 <code>bulid/webpack.base.conf.js</code>文件中修改相关配置：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1170308-20180313210924147-1028432506.png" alt="img"></p>
-<p>　　意思是，你的模块可以省略 <code>&quot;.js&quot;，&quot;.vue&quot;，“.json”</code>后缀，<code>webpack</code> 会在之后自动添加上；可以用 <code>&quot;@&quot;</code>符号代替 <code>&quot;src&quot;</code>字符串等。</p>
-<p>　　export 用来导出模块，Vue 的单文件组件通常需要导出一个对象，这个对象是 Vue 实例的选项对象，以便于在其它地方可以使用 import 引入。而 new Vue() 相当于一个构造函数，在入口文件 main.js 构造根组件的同时，如果根组件还包含其它子组件，那么 Vue 会通过引入的选项对象构造其对应的 Vue 实例，最终形成一棵组件树。</p>
-<p>　　<code>export</code>和<code>export default</code>的区别在于：<code>export</code>可以导出多个命名模块，例如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//demo1.js</span><br><span class="line">export const str = &apos;hello world&apos;</span><br><span class="line"></span><br><span class="line">export function f(a)&#123;</span><br><span class="line">    return a+1</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>　　对应的引入方式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//demo2.js</span><br><span class="line">import &#123; str, f &#125; from &apos;demo1&apos;</span><br></pre></td></tr></table></figure>
-
-<p>　　<code>export default</code>只能导出一个默认模块，这个模块可以匿名，例如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//demo1.js</span><br><span class="line">export default &#123;</span><br><span class="line">    a: &apos;hello&apos;,</span><br><span class="line">    b: &apos;world&apos;      </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>　　对应的引入方式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//demo2.js</span><br><span class="line">import obj from &apos;demo1&apos;</span><br></pre></td></tr></table></figure>
-
-<p>　　引入的时候可以给这个模块取<strong>任意名字</strong>，例如 <code>&quot;obj&quot;</code>，且不需要用大括号括起来。</p>
-<p>本文转载自:<a href="https://www.cnblogs.com/blog-cxj2017522/p/8562536.html" target="_blank" rel="noopener">https://www.cnblogs.com/blog-cxj2017522/p/8562536.html</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="../2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><a class="page-number" href="../2/">2</a><span class="page-number current">3</span><a class="page-number" href="../4/">4</a><span class="space">&hellip;</span><a class="page-number" href="../27/">27</a><a class="extend next" rel="next" href="../4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="../2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><a class="page-number" href="../2/">2</a><span class="page-number current">3</span><a class="page-number" href="../4/">4</a><span class="space">&hellip;</span><a class="page-number" href="../28/">28</a><a class="extend next" rel="next" href="../4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2237,7 +2094,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">269</span>
+                  <span class="site-state-item-count">272</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2250,7 +2107,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">86</span>
+                  <span class="site-state-item-count">87</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

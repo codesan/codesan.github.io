@@ -287,6 +287,467 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../32.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../32.html" itemprop="url">Hugo博客百度SEO优化 自动提交</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-08T10:43:23+08:00">
+                2020-09-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在切换到Hugo平台之后,比较头疼的是之前hexo很多seo的插件不能使用了. 下面跟大家说一下我的seo优化方案.</p>
+<h1 id="Meta标签优化"><a href="#Meta标签优化" class="headerlink" title="Meta标签优化"></a>Meta标签优化</h1><h2 id="Description"><a href="#Description" class="headerlink" title="Description"></a>Description</h2><p>meta description，被认为是最有用的meta标签，是网站的简介信息。 content控制在100个字符以内比较好。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">'description'</span> <span class="attr">itemprop</span>=<span class="string">"description"</span> <span class="attr">content</span>=<span class="string">"&#123;&#123; if .Description &#125;&#125;&#123;&#123; .Description &#125;&#125;&#123;&#123; else &#125;&#125;&#123;&#123;if .IsPage&#125;&#125;&#123;&#123;substr .Summary 0 100&#125;&#125;&#123;&#123; end &#125;&#125;&#123;&#123; end &#125;&#125;"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Keywords"><a href="#Keywords" class="headerlink" title="Keywords"></a>Keywords</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123; if .Keywords &#125;&#125; </span><br><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"keywords"</span> <span class="attr">content</span>=<span class="string">"&#123;&#123; delimit .Keywords "</span>, " &#125;&#125;" &gt;</span></span><br><span class="line">&#123;&#123;else&#125;&#125;</span><br><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"keywords"</span> <span class="attr">content</span>=<span class="string">"&#123;&#123; delimit .Site.Params.Keywords "</span>, " &#125;&#125;" &gt;</span></span><br><span class="line">&#123;&#123; end &#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="百度熊掌号推送"><a href="#百度熊掌号推送" class="headerlink" title="百度熊掌号推送"></a>百度熊掌号推送</h1><p>说到seo熊掌号是必不可少的了,他可以做到24小时之内收录.所以这个必须不能放过.</p>
+<h2 id="gulp"><a href="#gulp" class="headerlink" title="gulp"></a>gulp</h2><p>在这里我要使用gulp来做我的自动化任务管理工具</p>
+<h3 id="安装gulp需要的模块"><a href="#安装gulp需要的模块" class="headerlink" title="安装gulp需要的模块"></a>安装gulp需要的模块</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">npm init</span><br><span class="line">npm install gulp --save</span><br><span class="line">npm install xml2js --save</span><br><span class="line">npm install xmlhttprequest --save</span><br></pre></td></tr></table></figure>
+
+<h3 id="在项目根目录创建一个gulpfile-js文件"><a href="#在项目根目录创建一个gulpfile-js文件" class="headerlink" title="在项目根目录创建一个gulpfile.js文件"></a>在项目根目录创建一个<code>gulpfile.js</code>文件</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 导入相关依赖</span></span><br><span class="line"><span class="keyword">const</span> gulp = <span class="built_in">require</span>(<span class="string">"gulp"</span>);</span><br><span class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">const</span> xml2js = <span class="built_in">require</span>(<span class="string">'xml2js'</span>)</span><br><span class="line"><span class="keyword">const</span> parser = <span class="keyword">new</span> xml2js.Parser();</span><br><span class="line"><span class="keyword">const</span> XMLHttpRequest = <span class="built_in">require</span>(<span class="string">"xmlhttprequest"</span>).XMLHttpRequest;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册百度站长与熊掌号,百度会提供下面的数据给你</span></span><br><span class="line"><span class="keyword">var</span> xz_appid = <span class="string">'1623792852327580'</span>;</span><br><span class="line"><span class="keyword">var</span> xz_token = <span class="string">'bbd1f589b763b7fb40e52628c176ae27'</span>;</span><br><span class="line"><span class="keyword">var</span> baidu_token= <span class="string">'79IKQsDuvZSdXwd9'</span> </span><br><span class="line"></span><br><span class="line"><span class="comment">//熊掌号每天需要提交的url数量</span></span><br><span class="line"><span class="comment">// 注意这个数字必须要跟百度允许提交的url数量一致,如果多了会提交失败.</span></span><br><span class="line"><span class="keyword">const</span> xzCount = <span class="number">2000</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建一个任务</span></span><br><span class="line">gulp.task(<span class="string">'baiduSeo'</span>, () =&gt; &#123;</span><br><span class="line">    <span class="comment">// 读取sitemap.xml文件并且转换成json</span></span><br><span class="line">    fs.readFile(__dirname + <span class="string">'/public/sitemap.xml'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err, data</span>) </span>&#123;</span><br><span class="line">        parser.parseString(data, <span class="function"><span class="keyword">function</span> (<span class="params">err, result</span>) </span>&#123;</span><br><span class="line">            <span class="comment">// 把读取的数据传入这个函数</span></span><br><span class="line">            urlSubmit(result.urlset.url)</span><br><span class="line">            <span class="built_in">console</span>.log(<span class="string">'Done'</span>);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 提交url的方法</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">urlSubmit</span>(<span class="params">urls</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 最新内容提交</span></span><br><span class="line">    <span class="keyword">var</span> new_target = <span class="string">"http://data.zz.baidu.com/urls?appid="</span>+xz_appid+<span class="string">"&amp;token="</span>+xz_token+<span class="string">"&amp;type=realtime"</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 历史提交</span></span><br><span class="line">    <span class="keyword">var</span> history_target = <span class="string">"http://data.zz.baidu.com/urls?appid="</span>+xz_appid+<span class="string">"&amp;token="</span>+xz_token+<span class="string">"&amp;type=batch"</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 百度站长</span></span><br><span class="line">    <span class="keyword">var</span> baidu_target = <span class="string">"http://data.zz.baidu.com/urls?site=https://zaina.newban.cn&amp;token="</span>+baidu_token</span><br><span class="line"></span><br><span class="line">    <span class="comment">// MIP</span></span><br><span class="line">    <span class="keyword">var</span> MIP_target = <span class="string">"http://data.zz.baidu.com/urls?site=https://zaina.newban.cn&amp;token="</span>+baidu_token+<span class="string">"&amp;type=mip"</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// AMP</span></span><br><span class="line">    <span class="keyword">var</span> AMP_target = <span class="string">"http://data.zz.baidu.com/urls?site=https://zaina.newban.cn&amp;token="</span>+baidu_token+<span class="string">"&amp;type=amp"</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 最新url,看熊掌号情况而定</span></span><br><span class="line">    urls = urls.map(<span class="function"><span class="params">item</span>=&gt;</span>item.loc[<span class="number">0</span>])</span><br><span class="line">    allUrls = urls.join(<span class="string">'\n'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> new_urls_Arr = urls.slice(<span class="number">0</span>,xzCount)</span><br><span class="line">    new_urls= new_urls_Arr.join(<span class="string">'\n'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">'百度站长开始提交'</span>,new_urls)</span><br><span class="line">    sendData(baidu_target,new_urls,<span class="string">'百度站长提交成功'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">'熊掌号开始提交'</span>)</span><br><span class="line">    <span class="comment">//sendData(new_target,new_urls,'熊掌号提交完成')</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 提交历史url 每天最多500w条</span></span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">"历史数据开始提交"</span>)</span><br><span class="line">    <span class="comment">//sendData(history_target,allUrls,"历史数据提交完成")</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">"MIP 开始提交"</span>)</span><br><span class="line">    <span class="comment">//sendData(MIP_target,allUrls,"MIP提交成功")</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">"AMP 开始提交"</span>)</span><br><span class="line">    <span class="comment">//sendData(AMP_target,allUrls,"AMP提交成功")</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 提交数据</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">sendData</span>(<span class="params">target,urls,message</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">var</span> xhr = <span class="keyword">new</span> XMLHttpRequest();</span><br><span class="line">        xhr.open(<span class="string">'POST'</span>, target, <span class="literal">false</span>);</span><br><span class="line">        xhr.setRequestHeader(<span class="string">'Content-type'</span>, <span class="string">'text/plain'</span>);</span><br><span class="line">        xhr.onload = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(<span class="keyword">this</span>.responseText);</span><br><span class="line">            <span class="keyword">if</span>(message)&#123;<span class="built_in">console</span>.info(message)&#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        xhr.send(urls);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">gulp.task(<span class="string">"default"</span>,gulp.series( <span class="string">'baiduSeo'</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;&#125;))</span><br></pre></td></tr></table></figure>
+
+<p>配置好以上都文件之后</p>
+<h2 id="推送"><a href="#推送" class="headerlink" title="推送"></a>推送</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 博客生成</span></span><br><span class="line">hugo</span><br><span class="line"><span class="comment"># url推送</span></span><br><span class="line">gulp</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../35.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../35.html" itemprop="url">Python的.sort()方法和sorted（）比较总结</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-07T10:38:05+08:00">
+                2020-09-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="1，-sort（）方法"><a href="#1，-sort（）方法" class="headerlink" title="1，.sort（）方法"></a>1，.sort（）方法</h4><p>　　使用方式是：列表.sort(),作用是将原来的列表正序排序，所以它是对原来的列表进行的操作，不会产生一个新列表，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">import  random</span><br><span class="line">numList=[]</span><br><span class="line">print(numList)</span><br><span class="line">for i in range(10):</span><br><span class="line">    numList.append(random.randrange(1,10))# 不包括10</span><br><span class="line">print(&quot;未排序的列表：&quot;,numList)</span><br><span class="line"># numList.sort()执行过程是将列表拍完序后又赋值给了原列表</span><br><span class="line">numList.sort()</span><br><span class="line">print(&quot;排序后列表：&quot;,numList)</span><br><span class="line"># 无法将numList.sort()赋值给一个新列表，以为它并不返回一个新列表</span><br><span class="line">numList=numList.sort()</span><br><span class="line">print(&quot;无法赋值给新列表的的结果：&quot;,numList)</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">未排序的列表： [7, 2, 2, 4, 5, 6, 7, 9, 4, 8]</span><br><span class="line">排序后列表： [2, 2, 4, 4, 5, 6, 7, 7, 8, 9]</span><br><span class="line">无法赋值给新列表的的结果： None</span><br></pre></td></tr></table></figure>
+
+<h4 id="2，sorted-列表-是Python内置函数，该函数对原列表不会产生影响，只是在原来列表的基础上，产生一个有序的新列表，可以复制一个列表名"><a href="#2，sorted-列表-是Python内置函数，该函数对原列表不会产生影响，只是在原来列表的基础上，产生一个有序的新列表，可以复制一个列表名" class="headerlink" title="2，sorted(列表),是Python内置函数，该函数对原列表不会产生影响，只是在原来列表的基础上，产生一个有序的新列表，可以复制一个列表名"></a>2，sorted(列表),是Python内置函数，该函数对原列表不会产生影响，只是在原来列表的基础上，产生一个有序的新列表，可以复制一个列表名</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import  random</span><br><span class="line">numList=[]</span><br><span class="line">print(numList)</span><br><span class="line">for i in range(10):</span><br><span class="line">    numList.append(random.randrange(1,10))# 不包括10</span><br><span class="line">print(&quot;未排序的列表：&quot;,numList)</span><br><span class="line"></span><br><span class="line">sorted(numList)</span><br><span class="line">print(&quot;sorted排序后的数组，不会对原列表有任何影响：&quot;,numList)</span><br><span class="line">getList=sorted(numList)</span><br><span class="line">print(&quot;sorted获得的新的列表：&quot;,getList)</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">未排序的列表： [1, 4, 3, 4, 3, 9, 5, 4, 4, 9]</span><br><span class="line">sorted排序后的数组，不会对原列表有任何影响： [1, 4, 3, 4, 3, 9, 5, 4, 4, 9]</span><br><span class="line">sorted获得的新的列表： [1, 3, 3, 4, 4, 4, 4, 5, 9, 9]</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../23.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../23.html" itemprop="url">App自动化之Appium入门</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-07T10:28:21+08:00">
+                2020-09-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>像<code>Selenium</code>可以操控Web浏览器，手机APP平台也有类似的自动化测试工具：<code>Appium</code>；<br>全文分基础介绍、环境搭建和案例演示三部分介绍<code>Appium</code>，以帮助Learner快速的上手。</p>
+</blockquote>
+<h3 id="基础介绍"><a href="#基础介绍" class="headerlink" title="基础介绍"></a>基础介绍</h3><p>Appium是一个开源的自动化测试框架，用于原生，混合和移动Web应用程序。 它使用WebDriver协议驱动iOS，Android和Windows应用程序。关于它的运作流程，用图来介绍会更加生动形象一些：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/Nd9GcRnhRoLusz8RMt6P3dBn_po4ozGjHWB-20200907103239987.png" alt="Appium运行流程、原理"></p>
+<p>在上图中，左边这部分是<code>Appium-Client</code>，通俗点来说，是用于间接驱动最右边的设备执行预定的自动化测试流程，支持使用多种主流的编程语言进行编写，这也是测试开发人员需要关注的核心部分；中间的<code>Appium-Server</code>是衔接左边客户端以及右边APP设备端的重要桥梁，一般仅需要配置好环境及启动运行；右边这块，当然就是实际执行自动化测试的终端，如IOS真机、Android真机，或者是模拟器。</p>
+<h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><ul>
+<li>NodeJS</li>
+</ul>
+<p>Appium是使用nodejs实现的，因此Node是解释器，首先要确认安装好</p>
+<ul>
+<li>Appium-Server<ul>
+<li>nodejs</li>
+<li><a href="https://github.com/appium/appium-desktop/releases" target="_blank" rel="noopener">appium-desktop</a></li>
+</ul>
+</li>
+</ul>
+<p>上述的两种方式都可以搭建<code>Appium-Server</code>环境，后面演示会基于Appium-Desktop。(PS：下载太慢了?分享个<a href="https://pan.baidu.com/s/1QQcYcDlOngdFjLhaJWAXCg" target="_blank" rel="noopener">百度网盘</a>)</p>
+<ul>
+<li>Andrioid SDK<ul>
+<li><a href="https://android-sdk.en.softonic.com/" target="_blank" rel="noopener">android sdk</a></li>
+<li><a href="https://developer.android.com/studio/" target="_blank" rel="noopener">android studio</a></li>
+</ul>
+</li>
+</ul>
+<p>上述方式可以直接和间接搭建安装<code>Android</code>环境，因为后面要用到<code>adb</code>这个工具，所以需要配置好<code>ANDROID_HOME</code>这个环境变量。(PS：下载太慢了?分享个<a href="https://pan.baidu.com/s/1Y7UC8S2Plsieo59MPmQgMw" target="_blank" rel="noopener">百度网盘</a>)</p>
+<ul>
+<li>Appium-Python-Client</li>
+</ul>
+<p>后面会用到Python来编写Appium客户端：<code>pip install Appium-Python-Client</code></p>
+<p>okay，准备好以上几个环境后，启动Appium测试一下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20181030111040-20200907103248988.png" alt="Appium Desktop Server"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20181030111212-20200907103257799.png" alt="Appium Desktop Server"></p>
+<h3 id="案例演示"><a href="#案例演示" class="headerlink" title="案例演示"></a>案例演示</h3><p>下面演示在安卓真机上的自动登录<code>Keep</code>(APP)。</p>
+<ol>
+<li>获取设备名称。操作流程：开启手机的开发和调试模式，连接电脑授权认证，<code>Window + R</code>输入并运行<code>cmd</code>，用<code>adb devices -l</code>查看：</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20181030134047-20200907103307894.png" alt="获取设备号"></p>
+<ol>
+<li>启动Appium Server进行调试：</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20181030134400-20200907103312054.png" alt="Inspector Session"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20181030134702-20200907103318824.png" alt="Desired Capabilities"></p>
+<p>从上图可以看到，启动App Session需要有以下几个参数(点击了解更详细的<a href="https://appium.io/docs/en/writing-running-appium/caps/" target="_blank" rel="noopener">Appium Desired Capabilities</a>）:</p>
+<ul>
+<li><code>platformName</code>，如<code>Android</code>、<code>iOS</code>等</li>
+<li><code>deviceName</code>，参考前面是如何获取的</li>
+<li><code>appPackage</code>和<code>appActivity</code>，获取<a href="https://blog.csdn.net/mtbaby/article/details/78676477" target="_blank" rel="noopener">参考这里</a></li>
+</ul>
+<p>综上所述，这里对应<code>Keep</code>的信息如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;platformName&quot;: &quot;Android&quot;,</span><br><span class="line">  &quot;deviceName&quot;: &quot;WAS_AL00&quot;,</span><br><span class="line">  &quot;appPackage&quot;: &quot;com.gotokeep.keep&quot;,</span><br><span class="line">  &quot;appActivity&quot;: &quot;com.gotokeep.keep.splash.SplashActivity&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>点击<code>Start Session</code>，之后可以看到手机端启动了<code>Keep</code>，并且在Appium Server端中同步展示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20181030150015-20200907103327336.png" alt="Start Session"></p>
+<p><img src="http://image.mariojd.cn/happyjared/20181030/20181030150055.png" alt="Keep"></p>
+<p>上述的操作通常只是用来方便获取控件id及定位的，下面基于Python编写完整的<code>Appium-Client</code>以实现自动登录操作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">from appium import webdriver</span><br><span class="line">from selenium.webdriver.common.by import By</span><br><span class="line">from selenium.webdriver.support.ui import WebDriverWait</span><br><span class="line">from selenium.webdriver.support import expected_conditions as EC</span><br><span class="line"></span><br><span class="line">server = &apos;http://localhost:4723/wd/hub&apos;  # Appium Server, 端口默认为4723</span><br><span class="line">desired_capabilities = &#123;</span><br><span class="line">    &apos;platformName&apos;: &apos;Android&apos;,</span><br><span class="line">    &apos;deviceName&apos;: &apos;WAS_AL00&apos;,  # 需替换成你的deviceName</span><br><span class="line">    &apos;appPackage&apos;: &apos;com.gotokeep.keep&apos;,</span><br><span class="line">    &apos;appActivity&apos;: &apos;com.gotokeep.keep.splash.SplashActivity&apos;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">driver = webdriver.Remote(server, desired_capabilities)</span><br><span class="line">wait = WebDriverWait(driver, 10)  # 最大查找等待超时时间：10s</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def get_permission():</span><br><span class="line">    &quot;&quot;&quot;允许APP获取的某些权限&quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    try:</span><br><span class="line">        ask = wait.until(EC.presence_of_element_located((By.ID, &apos;com.android.packageinstaller:id/do_not_ask_checkbox&apos;)))</span><br><span class="line">        ask.click()</span><br><span class="line">        allow = wait.until(</span><br><span class="line">            EC.presence_of_element_located((By.ID, &apos;com.android.packageinstaller:id/permission_allow_button&apos;)))</span><br><span class="line">        allow.click()</span><br><span class="line">    except:</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 允许两项授权</span><br><span class="line">get_permission()</span><br><span class="line">get_permission()</span><br><span class="line"></span><br><span class="line"># 点击“立即使用”</span><br><span class="line">welcome = wait.until(EC.presence_of_element_located((By.ID, &apos;com.gotokeep.keep:id/btn_bottom_in_video_welcome&apos;)))</span><br><span class="line">welcome.click()</span><br><span class="line"></span><br><span class="line"># 切换“密码登录”(同样可以使用第三方进行授权登录)</span><br><span class="line">driver.tap([(900, 110)])</span><br><span class="line"></span><br><span class="line"># 输入“手机号”</span><br><span class="line">phone = driver.find_element_by_accessibility_id(&apos;Phone Number In Login&apos;)</span><br><span class="line">phone.send_keys(&apos;13988888888&apos;)  # 替换成实际的账号</span><br><span class="line"></span><br><span class="line"># 输入“密码”</span><br><span class="line">password = driver.find_element_by_accessibility_id(&apos;Password In Login&apos;)</span><br><span class="line">password.send_keys(&apos;123456&apos;)  # 替换成实际的密码</span><br><span class="line"></span><br><span class="line"># 点击“登录”</span><br><span class="line">login = driver.find_element_by_id(&apos;com.gotokeep.keep:id/btn_action&apos;)</span><br><span class="line">login.click()</span><br></pre></td></tr></table></figure>
+
+<p>最后，附上运行效果图：</p>
+<p><img src="http://image.mariojd.cn/happyjared/20181030/20181030160014.gif" alt="效果图"></p>
+<p><strong>本文转载自;<a href="https://blog.mariojd.cn/get-started-with-appium.html" target="_blank" rel="noopener">https://blog.mariojd.cn/get-started-with-appium.html</a></strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../36.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1343,521 +1804,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../26.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../26.html" itemprop="url">Git撤销&回滚操作(git reset 和 get revert)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-01T14:48:49+08:00">
-                2020-09-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>git的工作流</p>
-<p>工作区：即自己当前分支所修改的代码，git add xx 之前的！不包括 git add xx 和 git commit xxx 之后的。</p>
-<p>暂存区：已经 git add xxx 进去，且未 git commit xxx 的。</p>
-<p>本地分支：已经git commit -m xxx 提交到本地分支的。<br>这里写图片描述</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200901152344.png" alt><br>代码回滚</p>
-<p>在上传代码到远程仓库的时候，不免会出现问题，任何过程都有可能要回滚代码：</p>
-<p>1、在工作区的代码</p>
-<p>git checkout – a.txt  # 丢弃某个文件，或者<br>git checkout – .    # 丢弃全部</p>
-<p>注意：git checkout – . 丢弃全部，也包括：新增的文件会被删除、删除的文件会恢复回来、修改的文件会回去。这几个前提都说的是，回到暂存区之前的样子。对之前保存在暂存区里的代码不会有任何影响。对commit提交到本地分支的代码就更没影响了。当然，如果你之前压根都没有暂存或commit，那就是回到你上次pull下来的样子了。</p>
-<p>2、代码git add到缓存区，并未commit提交</p>
-<p>git reset HEAD . 或者<br>git reset HEAD a.txt</p>
-<p>这个命令仅改变暂存区，并不改变工作区，这意味着在无任何其他操作的情况下，工作区中的实际文件同该命令运行之前无任何变化</p>
-<p>3、git commit到本地分支、但没有git push到远程</p>
-<p>git log # 得到你需要回退一次提交的commit id<br>git reset –hard <commit_id> # 回到其中你想要的某个版<br>或者<br>git reset –hard HEAD^ # 回到最新的一次提交<br>或者<br>git reset HEAD^ # 此时代码保留，回到 git add 之前</commit_id></p>
-<p>4、git push把修改提交到远程仓库<br>1）通过git reset是直接删除指定的commit</p>
-<p>git log # 得到你需要回退一次提交的commit id<br>git reset –hard <commit_id><br>git push origin HEAD –force # 强制提交一次，之前错误的提交就从远程仓库删除</commit_id></p>
-<p>2）通过git revert是用一次新的commit来回滚之前的commit</p>
-<p>git log # 得到你需要回退一次提交的commit id<br>git revert <commit_id> # 撤销指定的版本，撤销也会作为一次提交进行保存</commit_id></p>
-<p>3） git revert 和 git reset的区别<br>- git revert是用一次新的commit来回滚之前的commit，此次提交之前的commit都会被保留；<br>- git reset是回到某次提交，提交及之前的commit都会被保留，但是此commit id之后的修改都会被删除</p>
-<p><strong>开发过程中，你肯定会遇到这样的场景：</strong></p>
-<p><strong>场景一：</strong></p>
-<blockquote>
-<p>糟了，我刚把不想要的代码，commit到本地仓库中了，但是还没有做push操作！</p>
-</blockquote>
-<p><strong>场景二：</strong></p>
-<blockquote>
-<p>彻底完了，刚线上更新的代码出现问题了，需要还原这次提交的代码！</p>
-</blockquote>
-<p><strong>场景三：</strong></p>
-<blockquote>
-<p>刚才我发现之前的某次提交太愚蠢了，现在想要干掉它！</p>
-</blockquote>
-<h2 id="撤销"><a href="#撤销" class="headerlink" title="撤销"></a>撤销</h2><p>上述<strong>场景一</strong>，在未进行<code>git push</code>前的所有操作，都是在“本地仓库”中执行的。我们暂且将“本地仓库”的代码还原操作叫做“撤销”！</p>
-<p><strong>情况一：文件被修改了，但未执行<code>git add</code>操作(working tree内撤销)</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git checkout fileName</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git checkout .</span><br></pre></td></tr></table></figure>
-
-<p><strong>情况二：同时对多个文件执行了<code>git add</code>操作，但本次只想提交其中一部分文件</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ git add *</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ git status</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 取消暂存</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ git reset HEAD &lt;filename&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>情况三：文件执行了<code>git add</code>操作，但想撤销对其的修改（index内回滚）</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># 取消暂存</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git reset HEAD fileName</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 撤销修改</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git checkout fileName</span><br></pre></td></tr></table></figure>
-
-<p><strong>情况四：修改的文件已被<code>git commit</code>，但想再次修改不再产生新的Commit</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 修改最后一次提交 </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ git add sample.txt</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ git commit --amend -m&quot;说明&quot;</span><br></pre></td></tr></table></figure>
-
-<p><strong>情况五：已在本地进行了多次<code>git commit</code>操作，现在想撤销到其中某次Commit</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset [--hard|soft|mixed|merge|keep] [commit|HEAD]</span><br></pre></td></tr></table></figure>
-
-<p>具体参数和使用说明，请查看：<a href="http://blog.csdn.net/ligang2585116/article/details/51816372#t7" target="_blank" rel="noopener">Git Pro深入浅出（二）中的重置揭秘部分</a></p>
-<h2 id="回滚"><a href="#回滚" class="headerlink" title="回滚"></a>回滚</h2><p>上述<strong>场景二</strong>，已进行<code>git push</code>，即已推送到“远程仓库”中。我们将已被提交到“远程仓库”的代码还原操作叫做“回滚”！<strong>注意：对远程仓库做回滚操作是有风险的，需提前做好备份和通知其他团队成员！</strong></p>
-<p><em>如果你每次更新线上，都会打<a href="http://blog.csdn.net/ligang2585116/article/details/46468709" target="_blank" rel="noopener">tag</a>，那恭喜你，你可以很快的处理上述<strong>场景二</strong>的情况</em></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout &lt;tag&gt;</span><br></pre></td></tr></table></figure>
-
-<p><em>如果你回到当前HEAD指向</em></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout &lt;branch_name&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>情况一：撤销指定文件到指定版本</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># 查看指定文件的历史版本</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git log &lt;filename&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 回滚到指定commitID</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git checkout &lt;commitID&gt; &lt;filename&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>情况二：删除最后一次远程提交</strong></p>
-<p><em>方式一：使用revert</em></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git revert HEAD</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
-
-<p><em>方式二：使用reset</em></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard HEAD^</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git push origin master -f</span><br></pre></td></tr></table></figure>
-
-<p><em>二者区别：</em></p>
-<ul>
-<li><strong>revert</strong>是放弃指定提交的修改，但是会生成一次新的提交，需要填写提交注释，以前的历史记录都在；</li>
-<li><strong>reset</strong>是指将HEAD指针指到指定提交，历史记录中不会出现放弃的提交记录。</li>
-</ul>
-<p><strong>情况三：回滚某次提交</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 找到要回滚的commitID</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git log</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git revert commitID</span><br></pre></td></tr></table></figure>
-
-<h2 id="删除某次提交"><a href="#删除某次提交" class="headerlink" title="删除某次提交"></a>删除某次提交</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log --oneline -n5</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200901152520.png" alt></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rebase -i &quot;commit id&quot;^</span><br></pre></td></tr></table></figure>
-
-<p><strong>注意：</strong>需要注意最后的<em>^</em>号，意思是commit id的前一次提交</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rebase -i &quot;5b3ba7a&quot;^</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200901153150.png" alt></p>
-<p>在编辑框中删除相关commit，如<code>pick 5b3ba7a test2</code>，然后保存退出（如果遇到冲突需要先解决冲突）！</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin master -f</span><br></pre></td></tr></table></figure>
-
-<p><strong>通过上述操作，如果你想对历史多个commit进行处理或者，可以选择<code>git rebase -i</code>，只需删除对应的记录就好。rebase还可对 commit 消息进行编辑，以及合并多个commit。</strong></p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../41.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../41.html" itemprop="url">解决pip下载速度慢的问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-01T11:26:37+08:00">
-                2020-09-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在我们经常使用pip安装插件模块的时候，有没有发现下载速度很慢，但有些有强迫症的人面对几k几十k每秒的速度绝对忍不了，是不是，那么，方法来了。</p>
-<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p>一句话就是使用pip下载过慢，想要快起来，起来，来。</p>
-<h3 id="解决过程"><a href="#解决过程" class="headerlink" title="解决过程"></a>解决过程</h3><p><strong>问题分析</strong></p>
-<p>pip下载速度过慢的原因就是pip默认使用的是国外的镜像源，那么，我使用国内的镜像源，问题不就解决了。</p>
-<p>有两种方法，方法一临时有效，方法二永久生效。</p>
-<h3 id="方法一：下载时加入参数-i-镜像源地址"><a href="#方法一：下载时加入参数-i-镜像源地址" class="headerlink" title="方法一：下载时加入参数-i [镜像源地址]"></a>方法一：下载时加入参数<code>-i [镜像源地址]</code></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pip install -i https://pypi.tuna.tsinghua.edu.cn/simple jieba</span><br><span class="line">或者</span><br><span class="line">pip install jieba -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure>
-
-<h3 id="方法二：设置源"><a href="#方法二：设置源" class="headerlink" title="方法二：设置源"></a>方法二：设置源</h3><p>使用方法一，需要每次在下载时都要带参数，不想麻烦的试试方法二吧。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line">pip config set install.trusted-host mirrors.aliyun.com</span><br></pre></td></tr></table></figure>
-
-<p><a href="https://img-blog.csdnimg.cn/20200312204633456.png" target="_blank" rel="noopener"><img src="https://img-blog.csdnimg.cn/20200312204633456.png" alt="img"></a></p>
-<h3 id="附-国内镜像源地址"><a href="#附-国内镜像源地址" class="headerlink" title="附: 国内镜像源地址"></a>附: 国内镜像源地址</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># pip国内镜像源。</span><br><span class="line">#</span><br><span class="line"># 阿里云	http://mirrors.aliyun.com/pypi/simple/</span><br><span class="line"># 中国科技大学 	https://pypi.mirrors.ustc.edu.cn/simple/</span><br><span class="line"># 豆瓣	 http://pypi.douban.com/simple</span><br><span class="line"># Python官方	 https://pypi.python.org/simple/</span><br><span class="line"># v2ex	 http://pypi.v2ex.com/simple/</span><br><span class="line"># 中国科学院 	http://pypi.mirrors.opencas.cn/simple/</span><br><span class="line"># 清华大学	 https://pypi.tuna.tsinghua.edu.cn/simple/</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../40.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../40.html" itemprop="url">解决homebrew长时间停在Updating Homebrew 这个步骤</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-01T11:16:46+08:00">
-                2020-09-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在国内的网络环境下使用 Homebrew 安装软件的过程中可能会长时间卡在 Updating Homebrew 这个步骤。</p>
-<p>例：执行 brew install composer 命令</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ brew install composer</span><br><span class="line">Updating Homebrew... # 如果碰到长时间卡在这里，参考以下 2 种处理方法</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="方法-1：按住-control-c-取消本次更新操作"><a href="#方法-1：按住-control-c-取消本次更新操作" class="headerlink" title="方法 1：按住 control + c 取消本次更新操作"></a>方法 1：按住 control + c 取消本次更新操作</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ brew install composer</span><br><span class="line">Updating Homebrew...</span><br><span class="line">^C</span><br></pre></td></tr></table></figure>
-
-<p>按住 control + c 之后命令行会显示 ^C，就代表已经取消了 Updating Homebrew 操作</p>
-<p>大概不到 1 秒钟之后就会去执行我们真正需要的安装操作了</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ brew install composer</span><br><span class="line">Updating Homebrew...</span><br><span class="line">^C==&gt; Satisfying dependencies</span><br><span class="line">==&gt; Downloading https://getcomposer.org/download/1.7.2/composer.phar</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<p>这个方法是临时的、一次性的</p>
-<h2 id="方法-2：使用-Alibaba-的-Homebrew-镜像源进行加速"><a href="#方法-2：使用-Alibaba-的-Homebrew-镜像源进行加速" class="headerlink" title="方法 2：使用 Alibaba 的 Homebrew 镜像源进行加速"></a>方法 2：使用 Alibaba 的 Homebrew 镜像源进行加速</h2><p>平时我们执行 brew 命令安装软件的时候，跟以下 3 个仓库地址有关：</p>
-<ol>
-<li>brew.git</li>
-<li>homebrew-core.git</li>
-<li>homebrew-bottles</li>
-</ol>
-<p>通过以下操作将这 3 个仓库地址全部替换为 Alibaba 提供的地址</p>
-<h3 id="1-替换-还原-brew-git-仓库地址"><a href="#1-替换-还原-brew-git-仓库地址" class="headerlink" title="1. 替换 / 还原 brew.git 仓库地址"></a>1. 替换 / 还原 brew.git 仓库地址</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 替换成阿里巴巴的 brew.git 仓库地址:</span></span><br><span class="line">cd "$(brew --repo)"</span><br><span class="line">git remote set-url origin https://mirrors.aliyun.com/homebrew/brew.git</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">=======================================================</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 还原为官方提供的 brew.git 仓库地址</span></span><br><span class="line">cd "$(brew --repo)"</span><br><span class="line">git remote set-url origin https://github.com/Homebrew/brew.git</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="2-替换-还原-homebrew-core-git-仓库地址"><a href="#2-替换-还原-homebrew-core-git-仓库地址" class="headerlink" title="2. 替换 / 还原 homebrew-core.git 仓库地址"></a>2. 替换 / 还原 homebrew-core.git 仓库地址</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 替换成阿里巴巴的 homebrew-core.git 仓库地址:</span></span><br><span class="line">cd "$(brew --repo)/Library/Taps/homebrew/homebrew-core"</span><br><span class="line">git remote set-url origin https://mirrors.aliyun.com/homebrew/homebrew-core.git</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">=======================================================</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 还原为官方提供的 homebrew-core.git 仓库地址</span></span><br><span class="line">cd "$(brew --repo)/Library/Taps/homebrew/homebrew-core"</span><br><span class="line">git remote set-url origin https://github.com/Homebrew/homebrew-core.git</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="3-替换-还原-homebrew-bottles-访问地址"><a href="#3-替换-还原-homebrew-bottles-访问地址" class="headerlink" title="3. 替换 / 还原 homebrew-bottles 访问地址"></a>3. 替换 / 还原 homebrew-bottles 访问地址</h3><p>这个步骤跟你的 macOS 系统使用的 shell 版本有关系</p>
-<p>所以，先来查看当前使用的 shell 版本</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">echo $SHELL</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 如果你的输出结果是 /bin/zsh，参考?的 zsh 终端操作方式</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 如果你的输出结果是 /bin/bash，参考?的 bash 终端操作方式</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="3-1-zsh-终端操作方式"><a href="#3-1-zsh-终端操作方式" class="headerlink" title="3.1 zsh 终端操作方式"></a>3.1 zsh 终端操作方式</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 替换成阿里巴巴的 homebrew-bottles 访问地址:</span></span><br><span class="line">echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles' &gt;&gt; ~/.zshrc</span><br><span class="line">source ~/.zshrc</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">=======================================================</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 还原为官方提供的 homebrew-bottles 访问地址</span></span><br><span class="line">vi ~/.zshrc</span><br><span class="line"><span class="meta">#</span><span class="bash"> 然后，删除 HOMEBREW_BOTTLE_DOMAIN 这一行配置</span></span><br><span class="line">source ~/.zshrc</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="3-2-bash-终端操作方式"><a href="#3-2-bash-终端操作方式" class="headerlink" title="3.2 bash 终端操作方式"></a>3.2 bash 终端操作方式</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 替换 homebrew-bottles 访问 URL:</span></span><br><span class="line">echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles' &gt;&gt; ~/.bash_profile</span><br><span class="line">source ~/.bash_profile</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">=======================================================</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 还原为官方提供的 homebrew-bottles 访问地址</span></span><br><span class="line">vi ~/.bash_profile</span><br><span class="line"><span class="meta">#</span><span class="bash"> 然后，删除 HOMEBREW_BOTTLE_DOMAIN 这一行配置</span></span><br><span class="line">source ~/.bash_profile</span><br></pre></td></tr></table></figure>
-
-<h3 id="HomeBrew快速安装"><a href="#HomeBrew快速安装" class="headerlink" title="HomeBrew快速安装"></a>HomeBrew快速安装</h3><p>自动脚本(全部国内地址)（在Mac os终端中复制粘贴回车下面这句话)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/bin/zsh -c &quot;$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)&quot;</span><br></pre></td></tr></table></figure>
-
-<p>这行命令就是这位大佬发布的：<a href="https://zhuanlan.zhihu.com/p/111014448" target="_blank" rel="noopener">金牛肖马</a></p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="../17/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../17/">17</a><span class="page-number current">18</span><a class="page-number" href="../19/">19</a><span class="space">&hellip;</span><a class="page-number" href="../27/">27</a><a class="extend next" rel="next" href="../19/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="../17/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../17/">17</a><span class="page-number current">18</span><a class="page-number" href="../19/">19</a><span class="space">&hellip;</span><a class="page-number" href="../28/">28</a><a class="extend next" rel="next" href="../19/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1903,7 +1854,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">269</span>
+                  <span class="site-state-item-count">272</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1916,7 +1867,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">86</span>
+                  <span class="site-state-item-count">87</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
