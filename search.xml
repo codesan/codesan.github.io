@@ -2036,11 +2036,11 @@ gradlew clean build bintrayUpload -PbintrayUser=songjianziana -PbintrayKey=5e7f0
   <entry>
     <title>docker设置启动docker后 开启或关闭自启容器</title>
     <url>/134.html</url>
-    <content><![CDATA[<h3 id="在docker启动容器可以增加参数来达到-当docker-服务重启之后-自动启动容器"><a href="#在docker启动容器可以增加参数来达到-当docker-服务重启之后-自动启动容器" class="headerlink" title="在docker启动容器可以增加参数来达到,当docker 服务重启之后 自动启动容器."></a>在docker启动容器可以增加参数来达到,当docker 服务重启之后 自动启动容器.</h3><p>命令如下：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker run –restart=always</span><br></pre></td></tr></table></figure>
+    <content><![CDATA[<h3 id="在docker启动容器时可以增加参数来实现docker-服务重启之后-自动启动容器"><a href="#在docker启动容器时可以增加参数来实现docker-服务重启之后-自动启动容器" class="headerlink" title="在docker启动容器时可以增加参数来实现docker 服务重启之后 自动启动容器"></a>在docker启动容器时可以增加参数来实现docker 服务重启之后 自动启动容器</h3><p>命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker run xxx –-restart=always</span><br></pre></td></tr></table></figure>
 
-<p>当然如果你的容器已经启动,可以通过update命令进行修改.<br>命令如下：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker update –restart=always &lt;CONTAINER ID&gt;</span><br></pre></td></tr></table></figure>
+<p>当然如果你的容器已经启动,可以通过<code>update</code>命令进行修改.<br>命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker update –-restart=always &lt;CONTAINER ID&gt;</span><br></pre></td></tr></table></figure>
 
 <p>如果你想取消掉<br>命令如下:</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker update --restart=no &lt;CONTAINER ID&gt;</span><br></pre></td></tr></table></figure>
@@ -17078,6 +17078,9 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
 </li>
 </ol>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>整体操作来看, 感觉和<code>docker</code>很像, 如果你只需要一个<code>ubuntu</code>系统, 那么选择<code>Multipass</code>还是很方便的, 节省大量的时间</p>
+<p><code>multipass</code>和<code>docker</code>区别:</p>
+<p><code>docker</code>比<code>multipass</code>更加轻量一些, <code>multipass</code>更倾向于独立虚拟机, 分配独立的<code>cpu</code>和内存, 而<code>docker</code>容器是共享宿主<code>cpu</code>和内存</p>
+<p>如果你要跑比较消耗资源的程序, 建议使用<code>docker</code>, 可以充分使用宿主的性能, <code>multipass</code>需要预算分配程序需要的硬件资源, 分多了不仅浪费而且还影响宿主性能, 分少了也没法动态调整只能新开示例</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
 <p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
 <p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
@@ -17363,7 +17366,7 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu无法运行程序提示unable to open X display</title>
+    <title>Ubuntu无法运行程序提示No X server at $DISPLAY 或unable to open X display</title>
     <url>/264.html</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>这种情况一般出现在采用<code>vnc</code>远程桌面服务时</p>
 <p>桌面中双击应用没有任何反应, 而通过命令窗口启动程序则提示:</p>
@@ -17371,13 +17374,27 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
 <p>这个时候我们尝试启动<code>xserver</code> 却发现提示<code>no screens found(EE)</code> 如图:</p>
 <p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210902173238923.png" alt="image-20210902173238923"></p>
 <p>至此 我们推断是没有指定<code>vncserver</code></p>
-<p>我们需要通过<code>export DISPLAY</code>来指定连接哪个<code>vncserver</code></p>
+<h3 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h3><p>我们需要通过<code>export DISPLAY</code>来指定连接哪个<code>vncserver</code></p>
 <p>我们在启动<code>vn</code>c服务时可以看到该服务的名称为<code>hitleap:3</code>, 如图:</p>
 <p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210902174243526.png" alt="image-20210902174243526"></p>
 <p>因此 我们执行以下命令:</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export DISPLAY=hitleap:3</span><br></pre></td></tr></table></figure>
 
 <p>此时, 我们再重新执行程序, 程序正常启动</p>
+<h3 id="关于DISPLAY"><a href="#关于DISPLAY" class="headerlink" title="关于DISPLAY"></a>关于DISPLAY</h3><p>在<code>Linux/Unix</code>类操作系统上, <code>DISPLAY</code>用来设置将图形显示到何处, 上面<code>export DISPLAY=hitleap:3</code>表示将图形显示到<code>vncserver</code></p>
+<p>一般默认情况下<code>vncserver</code>名称为<code>:0</code>,比如:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export DISPLAY=:0</span><br></pre></td></tr></table></figure>
+
+<p>也有可能是<code>1</code> 、<code>2</code> 、<code>3</code>甚至<code>137</code></p>
+<p>连接成功后可以通过以下指令查看当前显示的详细信息:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">xdpyinfo</span><br></pre></td></tr></table></figure>
+
+<p>查看当前设置的DISPLAY值:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">echo $DISPLA</span><br></pre></td></tr></table></figure>
+
+<p>查看当前设备所有的变量 里面可以查看<code>vnc</code>密码以及当前设置的DISPLAY值:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">printenv</span><br></pre></td></tr></table></figure>
+
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
 <p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
 <p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
@@ -17501,6 +17518,8 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
 </li>
 <li><p>安装<code>VNCServer</code> 用于远程桌面连接</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get install tightvncserver</span><br></pre></td></tr></table></figure>
+
+<p>更多关于<code>tightvncserver</code>可参考<a href="https://wiki.archlinux.org/title/TigerVNC_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)" target="_blank" rel="noopener">中文文档</a></p>
 </li>
 <li><p>启动vnc服务</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vncserver</span><br></pre></td></tr></table></figure>
@@ -17545,6 +17564,13 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
 <p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210902104141960.png" alt="image-20210902104141960"></p>
 <h5 id="第二种-浏览器访问模式"><a href="#第二种-浏览器访问模式" class="headerlink" title="第二种 浏览器访问模式"></a>第二种 浏览器访问模式</h5><p>具体参考:</p>
 <p>《<a href="http://code.newban.cn/260.html">如何使用Web浏览器访问Ubuntu环境下的vnc桌面</a>》</p>
+<h3 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h3><ol>
+<li><p>如果重复执行<code>vncserver</code>指令会开启多个vnc服务它们并行运行 互不干扰</p>
+</li>
+<li><p>除了使用<code>tightvncserver</code>搭建vnc服务器之外 还可以使用<code>x11vnc</code>, 详情查看文档:</p>
+<p><a href="https://wiki.archlinux.org/title/X11vnc_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)" target="_blank" rel="noopener">点击进入</a></p>
+</li>
+</ol>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
 <p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
 <p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
@@ -17595,6 +17621,206 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
 ]]></content>
       <tags>
         <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mac平台安装Docker</title>
+    <url>/265.html</url>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p><code>Mac</code>平台安装<code>Docker</code>非常的简单, 直接使用<code>Homebrew</code>工具安装即可, 如果你Mac上没有装<code>Homebrew</code>, 可以在命令窗口执行以下命令安装:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/bin/zsh -c &quot;$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)&quot;</span><br></pre></td></tr></table></figure>
+
+<p>有了homebrew工具后, 只需一行指令搞定<code>docker</code>下载安装</p>
+<h3 id="具体操作"><a href="#具体操作" class="headerlink" title="具体操作"></a>具体操作</h3><ol>
+<li><p>安装<code>docker</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">brew install docker</span><br></pre></td></tr></table></figure>
+
+<p>这里安装的不带图形的命令行版本, 如果想安装图形版<code>docker</code>, 那么加上<code>cask</code>参数:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">brew install --cask --appdir=/Applications docker</span><br></pre></td></tr></table></figure>
+
+<p>图形版长这样:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210903122347320.png" alt="image-20210903122347320"></p>
+</li>
+<li><p>启动docker服务</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">launchctl start docker</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果你想卸载<code>docker</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">brew uninstall docker</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>接下来可以开始使用<code>docker</code>了, 具体<code>docker</code>操作技巧可参考:</p>
+<p>《<a href="http://code.newban.cn/7.html">Linux环境下docker常用指令集合</a>》</p>
+<p>如果你的<code>mac</code>系统版本是10以上, 建议还是安装图形版<code>docker</code>, 纯命令版在启动服务的时候会出现启动失败的问题</p>
+<h3 id="安装包下载"><a href="#安装包下载" class="headerlink" title="安装包下载"></a>安装包下载</h3><p>如果你不通过<code>brew</code>, 想通过下载<code>dmg</code>文件手动安装, 这里提供下载链接:</p>
+<p><a href="https://desktop.docker.com/mac/stable/amd64/61853/Docker.dmg" target="_blank" rel="noopener">点击下载</a></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+]]></content>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git使用之如何合并多个commit</title>
+    <url>/266.html</url>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>我们在开发的时候, 有时候可能会提交多个业务零散的<code>commit</code>, 这些个<code>commit</code>内容合在一块才算是一个完整的任务</p>
+<p>为了使得提交记录美观简洁, 同时缓解强迫症症状, 那么我们需要将这些个<code>commit</code>合并成一个<code>commit</code></p>
+<p>如果你要合并的是最近几次<code>commit</code>, 那么可以使用<code>git reset --soft</code>进行<code>commit</code>撤销处理, 如下:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git reset --soft HEAD^3</span><br></pre></td></tr></table></figure>
+
+<p>如果你要合并的是历史中间几次<code>commit</code>, 那么得用到<code>git rebase -i</code>指令了</p>
+<h3 id="具体操作"><a href="#具体操作" class="headerlink" title="具体操作"></a>具体操作</h3><p>假设我们需要将以下最近两个记录进行合并:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">commit def5adef853da4cc05752bdb36577c127be71ba5</span><br><span class="line">Author: xxx</span><br><span class="line">Date:   Thu Dec 28 16:01:36 2017 +0800</span><br><span class="line"></span><br><span class="line">优化代码</span><br><span class="line"></span><br><span class="line">commit f36801544670e00b2f59a28e19017d2786c4085e</span><br><span class="line">Author: xxx</span><br><span class="line">Date:   Thu Dec 28 15:59:46 2017 +0800</span><br><span class="line"></span><br><span class="line">修复</span><br><span class="line"></span><br><span class="line">commit 00b2f59a28e19017d2786c4085e9a28e19017d278</span><br><span class="line">Author: xxx</span><br><span class="line">Date:   Thu Dec 28 16:59:46 2017 +0800</span><br><span class="line"></span><br><span class="line">修复bug</span><br><span class="line">(END)</span><br></pre></td></tr></table></figure>
+
+<p>那么我们执行以下命令:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git rebase -i 00b2f59</span><br><span class="line"></span><br><span class="line">或者 </span><br><span class="line">git rebase -i HEAD~3</span><br></pre></td></tr></table></figure>
+
+<p>这里的<code>commit id</code>是需要进行合并commit的前一个, 命令执行后, 会自动打开<code>vim</code>文本编辑器:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pick f368015 修复</span><br><span class="line">pick def5ade 优化代码</span><br><span class="line"></span><br><span class="line"># Commands:</span><br><span class="line"># p, pick = use commit</span><br><span class="line"># r, reword = use commit, but edit the commit message</span><br><span class="line"># e, edit = use commit, but stop for amending</span><br><span class="line"># s, squash = use commit, but meld into previous commit</span><br><span class="line"># f, fixup = like &quot;squash&quot;, but discard this commit&apos;s log message</span><br><span class="line"># x, exec = run command (the rest of the line) using shell</span><br><span class="line"># d, drop = remove commit</span><br><span class="line">#</span><br><span class="line"># These lines can be re-ordered; they are executed from top to bottom.</span><br><span class="line">#</span><br><span class="line"># If you remove a line here THAT COMMIT WILL BE LOST.</span><br><span class="line">#</span><br><span class="line"># However, if you remove everything, the rebase will be aborted.</span><br><span class="line">#</span><br><span class="line"># Note that empty commits are commented out~</span><br></pre></td></tr></table></figure>
+
+<p>接下来, 我们需要对该内容进行修改, 首先我们需要来了解几个指令含义:</p>
+<ul>
+<li><strong>pick</strong>: 表示保留该<code>commit</code></li>
+<li><strong>reword</strong>: 表示修改该<code>commit</code>的注释</li>
+<li><strong>edit</strong>: 表示保留该commit  同时对代码内容进行修改</li>
+<li><strong>squash</strong>: 表示将该<code>commit</code>合并到上一个<code>commit</code> </li>
+<li><strong>fixup</strong>: 表示将该<code>commit</code>合并到上一个<code>commit</code> 同时丢弃该<code>commit</code>注释</li>
+<li><strong>exec</strong>: 执行<code>shell</code></li>
+<li><strong>drop</strong>: 删除该<code>commit</code></li>
+</ul>
+<p>这里我们使用<code>squash</code>指令进行合并, 内容修改如下:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pick f368015 修复</span><br><span class="line">squash def5ade 优化代码</span><br><span class="line"></span><br><span class="line"># Commands:</span><br><span class="line"># p, pick = use commit</span><br><span class="line"># r, reword = use commit, but edit the commit message</span><br><span class="line"># e, edit = use commit, but stop for amending</span><br><span class="line"># s, squash = use commit, but meld into previous commit</span><br><span class="line"># f, fixup = like &quot;squash&quot;, but discard this commit&apos;s log message</span><br><span class="line"># x, exec = run command (the rest of the line) using shell</span><br><span class="line"># d, drop = remove commit</span><br><span class="line">#</span><br><span class="line"># These lines can be re-ordered; they are executed from top to bottom.</span><br><span class="line">#</span><br><span class="line"># If you remove a line here THAT COMMIT WILL BE LOST.</span><br><span class="line">#</span><br><span class="line"># However, if you remove everything, the rebase will be aborted.</span><br><span class="line">#</span><br><span class="line"># Note that empty commits are commented out~</span><br></pre></td></tr></table></figure>
+
+<p>表示将<code>def5ade</code>合并到<code>f368015</code></p>
+<p><code>wq</code>内容保存后, 将进入到注释修改编辑页:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># This is a combination of 2 commits. </span><br><span class="line"># first commit</span><br><span class="line">优化代码</span><br><span class="line"></span><br><span class="line"># second commit</span><br><span class="line">修复</span><br><span class="line"># Please enter the commit message for your changes. Lines starting </span><br><span class="line"></span><br><span class="line"># with &apos;#&apos; will be ignored, and an empty message aborts the commit.</span><br></pre></td></tr></table></figure>
+
+<p>我们可以对注释进行选择, 不需要的就用<code>#</code>号注释掉, 或者修改成别内容, 保存后, 直接开始自动合并</p>
+<p>合并完毕后, 如果你想撤销合并 返回到合并前的状态, 可以使用以下指令:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git rebase --abort</span><br></pre></td></tr></table></figure>
+
+<p>通过<code>rebase</code>方式的合并, 会合并生成一个新的<code>commit id</code>, 被合并的<code>commit</code>可以在<code>reflog</code>中找回</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+]]></content>
+      <tags>
+        <tag>Git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git使用之如何修改commit注释</title>
+    <url>/267.html</url>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>我们在开发的时候, 有时候可能会需要对历史<code>commit</code>进行注释的修改, 那么可以采用以下几种方法</p>
+<h3 id="详解"><a href="#详解" class="headerlink" title="详解"></a>详解</h3><p>分为以下三种情况:</p>
+<h5 id="1-修改最近一次commit"><a href="#1-修改最近一次commit" class="headerlink" title="1. 修改最近一次commit"></a>1. 修改最近一次<code>commit</code></h5><p>如果你只想修改最近一次<code>commit</code>的注释, 那么可以执行以下命令:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git commit --amend</span><br></pre></td></tr></table></figure>
+
+<p>执行后会出现<code>vim</code>编辑窗口, 在里面修改注释然后保存退出即可</p>
+<h5 id="2-合并修改最近几次commit"><a href="#2-合并修改最近几次commit" class="headerlink" title="2. 合并修改最近几次commit"></a>2. 合并修改最近几次commit</h5><p>如果我们想对最近几次<code>commit</code>进行合并然后重新注释, 我们可以使用<code>reset --soft</code> 进行提交撤销操作, 比如撤销最近三次提交:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git reset --soft HEAD^3</span><br></pre></td></tr></table></figure>
+
+<p>命令执行后, 前三次提交的内容将全部恢复到未提交状态, 此时我们可以添加注释重新提交</p>
+<h5 id="3-修改历史commit"><a href="#3-修改历史commit" class="headerlink" title="3. 修改历史commit"></a>3. 修改历史<code>commit</code></h5><p>如果需要修改的不是最近几次<code>commit</code>, 那么需要用到<code>rebase</code>指令,</p>
+<p>假设我们需要将以下第二个记录的注释进行修改:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">commit def5adef853da4cc05752bdb36577c127be71ba5</span><br><span class="line">Author: xxx</span><br><span class="line">Date:   Thu Dec 28 16:01:36 2017 +0800</span><br><span class="line"></span><br><span class="line">优化代码</span><br><span class="line"></span><br><span class="line">commit f36801544670e00b2f59a28e19017d2786c4085e</span><br><span class="line">Author: xxx</span><br><span class="line">Date:   Thu Dec 28 15:59:46 2017 +0800</span><br><span class="line"></span><br><span class="line">修复</span><br><span class="line"></span><br><span class="line">commit 00b2f59a28e19017d2786c4085e9a28e19017d278</span><br><span class="line">Author: xxx</span><br><span class="line">Date:   Thu Dec 28 16:59:46 2017 +0800</span><br><span class="line"></span><br><span class="line">修复bug</span><br><span class="line">(END)</span><br></pre></td></tr></table></figure>
+
+<p>那么我们执行以下命令:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git rebase -i 00b2f59</span><br><span class="line"></span><br><span class="line">或者 </span><br><span class="line">git rebase -i HEAD~3</span><br></pre></td></tr></table></figure>
+
+<p>这里的<code>commit id</code>是需要进行修改<code>commit</code>的前一个, 命令执行后, 会自动打开<code>vim</code>文本编辑器:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pick 00b2f59 修复bug</span><br><span class="line">pick f368015 修复</span><br><span class="line">pick def5ade 优化代码</span><br><span class="line"></span><br><span class="line"># Commands:</span><br><span class="line"># p, pick = use commit</span><br><span class="line"># r, reword = use commit, but edit the commit message</span><br><span class="line"># e, edit = use commit, but stop for amending</span><br><span class="line"># s, squash = use commit, but meld into previous commit</span><br><span class="line"># f, fixup = like &quot;squash&quot;, but discard this commit&apos;s log message</span><br><span class="line"># x, exec = run command (the rest of the line) using shell</span><br><span class="line"># d, drop = remove commit</span><br><span class="line">#</span><br><span class="line"># These lines can be re-ordered; they are executed from top to bottom.</span><br><span class="line">#</span><br><span class="line"># If you remove a line here THAT COMMIT WILL BE LOST.</span><br><span class="line">#</span><br><span class="line"># However, if you remove everything, the rebase will be aborted.</span><br><span class="line">#</span><br><span class="line"># Note that empty commits are commented out~</span><br></pre></td></tr></table></figure>
+
+<p>接下来, 我们需要对该内容进行修改, 首先我们需要来了解几个指令含义:</p>
+<ul>
+<li><strong>pick</strong>: 表示保留该<code>commit</code></li>
+<li><strong>reword</strong>: 表示修改该<code>commit</code>的注释</li>
+<li><strong>edit</strong>: 表示保留该commit  同时对代码内容进行修改</li>
+<li><strong>squash</strong>: 表示将该<code>commit</code>合并到上一个<code>commit</code> </li>
+<li><strong>fixup</strong>: 表示将该<code>commit</code>合并到上一个<code>commit</code> 同时丢弃该<code>commit</code>注释</li>
+<li><strong>exec</strong>: 执行<code>shell</code></li>
+<li><strong>drop</strong>: 删除该<code>commit</code></li>
+</ul>
+<p>这里我们使用<code>reword</code>指令进行合并, 内容修改如下:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pick 00b2f59 修复bug</span><br><span class="line">reword f368015 修复</span><br><span class="line">pick def5ade 优化代码</span><br><span class="line"></span><br><span class="line"># Commands:</span><br><span class="line"># p, pick = use commit</span><br><span class="line"># r, reword = use commit, but edit the commit message</span><br><span class="line"># e, edit = use commit, but stop for amending</span><br><span class="line"># s, squash = use commit, but meld into previous commit</span><br><span class="line"># f, fixup = like &quot;squash&quot;, but discard this commit&apos;s log message</span><br><span class="line"># x, exec = run command (the rest of the line) using shell</span><br><span class="line"># d, drop = remove commit</span><br><span class="line">#</span><br><span class="line"># These lines can be re-ordered; they are executed from top to bottom.</span><br><span class="line">#</span><br><span class="line"># If you remove a line here THAT COMMIT WILL BE LOST.</span><br><span class="line">#</span><br><span class="line"># However, if you remove everything, the rebase will be aborted.</span><br><span class="line">#</span><br><span class="line"># Note that empty commits are commented out~</span><br></pre></td></tr></table></figure>
+
+<p>表示对<code>f368015</code>这个<code>commit</code>进行注释修改</p>
+<p><code>wq</code>内容保存后, 将进入到注释修改编辑页:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># This is a combination of 2 commits. </span><br><span class="line"></span><br><span class="line">修复</span><br><span class="line"># Please enter the commit message for your changes. Lines starting </span><br><span class="line"></span><br><span class="line"># with &apos;#&apos; will be ignored, and an empty message aborts the commit.</span><br></pre></td></tr></table></figure>
+
+<p>我们可以对注释进行修改,然后保存退出即可</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+]]></content>
+      <tags>
+        <tag>Git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>一个强大的轻量级全文即时搜索工具meilisearch</title>
+    <url>/268.html</url>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p><a href="https://github.com/meilisearch/MeiliSearch" target="_blank" rel="noopener">MeiliSearch</a> 是近两年开源的一个全文搜索引擎，采用Rust语言开发, 主要目标是在小数据规模下实现比 <a href="https://www.elastic.co/cn/elasticsearch/" target="_blank" rel="noopener">ElasticSearch</a> 更加快速和易用的搜索体验。设计目标针对数据在 500GB 左右的搜索需求，极快，单文件，超轻量</p>
+<p>目前已支持中文分词</p>
+<p><a href="https://github.com/meilisearch/MeiliSearch" target="_blank" rel="noopener">MeiliSearch</a> 支持的功能如下:</p>
+<ol>
+<li>开源</li>
+<li>用户量(开源搜索引擎第二名)</li>
+<li>中文分词</li>
+<li>同义词</li>
+<li>纠错</li>
+<li>高亮</li>
+<li>全文返回</li>
+<li>高级搜索</li>
+<li>停用词、停用字段</li>
+<li>加权、降权</li>
+<li>逻辑搜索</li>
+<li>唯一字段聚合</li>
+<li>分页</li>
+<li>重新索引</li>
+</ol>
+<p><a href="https://docs.meilisearch.com/" target="_blank" rel="noopener">中文文档</a></p>
+<h3 id="快速上手"><a href="#快速上手" class="headerlink" title="快速上手"></a>快速上手</h3><ol>
+<li><p>下载安装并运行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -L https://install.meilisearch.com | sh</span><br><span class="line">./meilisearch</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210910103712092.png" alt="image-20210910103712092"></p>
+<p>此时访问浏览器<code>http://localhost:7700/</code>长这样:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210910103853046.png" alt="image-20210910103853046"></p>
+<p>里面还没有数据, 接下来下载测试数据</p>
+</li>
+<li><p>下载测试数据</p>
+<p><a href="https://docs.meilisearch.com/movies.json" target="_blank" rel="noopener">movie.json</a></p>
+</li>
+<li><p>将测试数据导入至<code>meilisearch</code>数据库</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl \</span><br><span class="line">  -X POST &apos;http://127.0.0.1:7700/indexes/movies/documents&apos; \</span><br><span class="line">  --data @movies.json</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>访问主页</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1:7700</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210910104053837.png" alt="image-20210910104053837"></p>
+</li>
+</ol>
+<p>搜索速度相当的快</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+]]></content>
+      <tags>
+        <tag>实用工具</tag>
       </tags>
   </entry>
 </search>

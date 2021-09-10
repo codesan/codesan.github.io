@@ -287,6 +287,691 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../111.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../111.html" itemprop="url">可能是把Docker的概念讲的最清楚的一篇文章</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-20T16:48:40+08:00">
+                2020-01-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>【编者的话】本文只是对Docker的概念做了较为详细的介绍，并不涉及一些像Docker环境的安装以及Docker的一些常见操作和命令。</p>
+<p>Docker是世界领先的软件容器平台，所以想要搞懂Docker的概念我们必须先从容器开始说起。<strong>如果你想和更多Docker技术专家交流，可以加我微信liyingjiese，备注『加群』。群里每周都有全球各大公司的最佳实践以及行业最新动态</strong>。</p>
+<h3 id="先从认识容器开始"><a href="#先从认识容器开始" class="headerlink" title="先从认识容器开始"></a>先从认识容器开始</h3><h4 id="什么是容器？"><a href="#什么是容器？" class="headerlink" title="什么是容器？"></a>什么是容器？</h4><p>先来看看容器较为官方的解释：</p>
+<p>一句话概括容器：容器就是将软件打包成标准化单元，以用于开发、交付和部署。</p>
+<ul>
+<li>容器镜像是轻量的、可执行的独立软件包 ，包含软件运行所需的所有内容：代码、运行时环境、系统工具、系统库和设置。</li>
+<li>容器化软件适用于基于Linux和Windows的应用，在任何环境中都能够始终如一地运行。</li>
+<li>容器赋予了软件独立性，使其免受外在环境差异（例如，开发和预演环境的差异）的影响，从而有助于减少团队间在相同基础设施上运行不同软件时的冲突。</li>
+</ul>
+<p>再来看看容器较为通俗的解释：</p>
+<p>如果需要通俗的描述容器的话，我觉得容器就是一个存放东西的地方，就像书包可以装各种文具、衣柜可以放各种衣服、鞋架可以放各种鞋子一样。我们现在所说的容器存放的东西可能更偏向于应用比如网站、程序甚至是系统环境。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/0eb95638b712ca6ad211c76f73a366af.png" alt></p>
+<h4 id="图解物理机、虚拟机与容器"><a href="#图解物理机、虚拟机与容器" class="headerlink" title="图解物理机、虚拟机与容器"></a>图解物理机、虚拟机与容器</h4><p>关于虚拟机与容器的对比在后面会详细介绍到，这里只是通过网上的图片加深大家对于物理机、虚拟机与容器这三者的理解。</p>
+<p>物理机：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/e9444d264eeaea2b178a71c9ed823c9c.jpeg" alt></p>
+<p>虚拟机：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/bb23f04f2b23b2312b04ba87dc8ad31d.jpeg" alt></p>
+<p>容器：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/e34f0f2a4b8718f09c8b366a14d5e9a9.jpeg" alt></p>
+<p>通过上面这三张抽象图，我们大概可以通过类比概括出： 容器虚拟化的是操作系统而不是硬件，容器之间是共享同一套操作系统资源的。虚拟机技术是虚拟出一套硬件后，在其上运行一个完整操作系统。因此容器的隔离级别会稍低一些。</p>
+<p>相信通过上面的解释大家对于容器这个既陌生又熟悉的概念有了一个初步的认识，下面我们就来谈谈Docker的一些概念。</p>
+<h3 id="再来谈谈Docker的一些概念"><a href="#再来谈谈Docker的一些概念" class="headerlink" title="再来谈谈Docker的一些概念"></a>再来谈谈Docker的一些概念</h3><p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/57be762d7a61f06eedbec4142f3e2291.png" alt></p>
+<h4 id="什么是Docker"><a href="#什么是Docker" class="headerlink" title="什么是Docker"></a>什么是Docker</h4><p>说实话关于Docker是什么并太好说，下面我通过四点向你说明Docker到底是个什么东西。</p>
+<ul>
+<li>Docker是世界领先的软件容器平台。</li>
+<li>Docker使用Google公司推出的Go语言进行开发实现，基于Linux内核的cgroup，namespace，以及AUFS类的UnionFS等技术，对进程进行封装隔离，属于操作系统层面的虚拟化技术。 由于隔离的进程独立于宿主和其它的隔离的进程，因此也称其为容器。Docke最初实现是基于LXC。</li>
+<li>Docker能够自动执行重复性任务，例如搭建和配置开发环境，从而解放了开发人员以便他们专注在真正重要的事情上：构建杰出的软件。</li>
+<li>用户可以方便地创建和使用容器，把自己的应用放入容器。容器还可以进行版本管理、复制、分享、修改，就像管理普通的代码一样。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/125334d2b6dc3e34e6943ad5acc5e868.jpeg" alt></p>
+<h4 id="Docker思想"><a href="#Docker思想" class="headerlink" title="Docker思想"></a>Docker思想</h4><ul>
+<li>集装箱</li>
+<li>标准化： ①运输方式、②存储方式、 ③API接口</li>
+<li>隔离</li>
+</ul>
+<h4 id="Docker容器的特点"><a href="#Docker容器的特点" class="headerlink" title="Docker容器的特点"></a>Docker容器的特点</h4><ul>
+<li>轻量，在一台机器上运行的多个Docker容器可以共享这台机器的操作系统内核；它们能够迅速启动，只需占用很少的计算和内存资源。镜像是通过文件系统层进行构造的，并共享一些公共文件。这样就能尽量降低磁盘用量，并能更快地下载镜像。</li>
+<li>标准，Docker容器基于开放式标准，能够在所有主流Linux版本、Microsoft Windows以及包括VM、裸机服务器和云在内的任何基础设施上运行。</li>
+<li>安全，Docker赋予应用的隔离性不仅限于彼此隔离，还独立于底层的基础设施。Docker默认提供最强的隔离，因此应用出现问题，也只是单个容器的问题，而不会波及到整台机器。</li>
+</ul>
+<h4 id="为什么要用Docker"><a href="#为什么要用Docker" class="headerlink" title="为什么要用Docker"></a>为什么要用Docker</h4><ul>
+<li>Docker的镜像提供了除内核外完整的运行时环境，确保了应用运行环境一致性，从而不会再出现“这段代码在我机器上没问题啊”这类问题；——一致的运行环境</li>
+<li>可以做到秒级、甚至毫秒级的启动时间。大大的节约了开发、测试、部署的时间。——更快速的启动时间</li>
+<li>避免公用的服务器，资源会容易受到其他用户的影响。——隔离性</li>
+<li>善于处理集中爆发的服务器使用压力；——弹性伸缩，快速扩展</li>
+<li>可以很轻易的将在一个平台上运行的应用，迁移到另一个平台上，而不用担心运行环境的变化导致应用无法正常运行的情况。——迁移方便</li>
+<li>使用Docker可以通过定制应用镜像来实现持续集成、持续交付、部署。——持续交付和部署</li>
+</ul>
+<p>每当说起容器，我们不得不将其与虚拟机做一个比较。</p>
+<h3 id="容器-VS-虚拟机"><a href="#容器-VS-虚拟机" class="headerlink" title="容器 VS 虚拟机"></a>容器 VS 虚拟机</h3><p>简单来说： 容器和虚拟机具有相似的资源隔离和分配优势，但功能有所不同，因为容器虚拟化的是操作系统，而不是硬件，因此容器更容易移植，效率也更高。</p>
+<h4 id="两者对比图"><a href="#两者对比图" class="headerlink" title="两者对比图"></a>两者对比图</h4><p>传统虚拟机技术是虚拟出一套硬件后，在其上运行一个完整操作系统，在该系统上再运行所需应用进程；而容器内的应用进程直接运行于宿主的内核，容器内没有自己的内核，而且也没有进行硬件虚拟。因此容器要比传统虚拟机更为轻便。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/2e2b95eebf60b6d03f6c1476f4d7c697.png" alt></p>
+<h4 id="容器与虚拟机-VM-总结"><a href="#容器与虚拟机-VM-总结" class="headerlink" title="容器与虚拟机 (VM) 总结"></a>容器与虚拟机 (VM) 总结</h4><p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/4ef8691d67eb1eb53217099d0a691eb5.png" alt></p>
+<ul>
+<li>容器是一个应用层抽象，用于将代码和依赖资源打包在一起。 多个容器可以在同一台机器上运行，共享操作系统内核，但各自作为独立的进程在用户空间中运行 。与虚拟机相比， 容器占用的空间较少（容器镜像大小通常只有几十兆），瞬间就能完成启动 。</li>
+<li>虚拟机（VM）是一个物理硬件层抽象，用于将一台服务器变成多台服务器。 管理程序允许多个VM在一台机器上运行。每个VM都包含一整套操作系统、一个或多个应用、必要的二进制文件和库资源，因此占用大量空间。而且VM启动也十分缓慢 。</li>
+</ul>
+<p>通过Docker官网，我们知道了这么多Docker的优势，但是大家也没有必要完全否定虚拟机技术，因为两者有不同的使用场景。虚拟机更擅长于彻底隔离整个运行环境。例如，云服务提供商通常采用虚拟机技术隔离不同的用户。而Docker通常用于隔离不同的应用 ，例如前端，后端以及数据库。</p>
+<h4 id="容器与虚拟机（VM）两者是可以共存的"><a href="#容器与虚拟机（VM）两者是可以共存的" class="headerlink" title="容器与虚拟机（VM）两者是可以共存的"></a>容器与虚拟机（VM）两者是可以共存的</h4><p>就我而言，对于两者无所谓谁会取代谁，而是两者可以和谐共存。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/056c87751b9dd7b56f4264240fe96d00.png" alt></p>
+<p>Docker中非常重要的三个基本概念，理解了这三个概念，就理解了 Docker 的整个生命周期。</p>
+<h3 id="Docker基本概念"><a href="#Docker基本概念" class="headerlink" title="Docker基本概念"></a>Docker基本概念</h3><p>Docker包括三个基本概念：</p>
+<ul>
+<li>镜像（Image）</li>
+<li>容器（Container）</li>
+<li>仓库（Repository）</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/e7c002d3b8de0b7c89f5ff81e6cd9e43.jpeg" alt></p>
+<h4 id="镜像（Image）——一个特殊的文件系统"><a href="#镜像（Image）——一个特殊的文件系统" class="headerlink" title="镜像（Image）——一个特殊的文件系统"></a>镜像（Image）——一个特殊的文件系统</h4><p>操作系统分为内核和用户空间。对于Linux而言，内核启动后，会挂载root文件系统为其提供用户空间支持。而Docker镜像（Image），就相当于是一个root文件系统。</p>
+<p>Docker镜像是一个特殊的文件系统，除了提供容器运行时所需的程序、库、资源、配置等文件外，还包含了一些为运行时准备的一些配置参数（如匿名卷、环境变量、用户等）。 镜像不包含任何动态数据，其内容在构建之后也不会被改变。</p>
+<p>Docker设计时，就充分利用Union FS的技术，将其设计为分层存储的架构。 镜像实际是由多层文件系统联合组成。</p>
+<p>镜像构建时，会一层层构建，前一层是后一层的基础。每一层构建完就不会再发生改变，后一层上的任何改变只发生在自己这一层。比如，删除前一层文件的操作，实际不是真的删除前一层的文件，而是仅在当前层标记为该文件已删除。在最终容器运行的时候，虽然不会看到这个文件，但是实际上该文件会一直跟随镜像。因此，在构建镜像的时候，需要额外小心，每一层尽量只包含该层需要添加的东西，任何额外的东西应该在该层构建结束前清理掉。</p>
+<p>分层存储的特征还使得镜像的复用、定制变的更为容易。甚至可以用之前构建好的镜像作为基础层，然后进一步添加新的层，以定制自己所需的内容，构建新的镜像。</p>
+<h4 id="容器（Container）——镜像运行时的实体"><a href="#容器（Container）——镜像运行时的实体" class="headerlink" title="容器（Container）——镜像运行时的实体"></a>容器（Container）——镜像运行时的实体</h4><p>镜像（Image）和容器（Container）的关系，就像是面向对象程序设计中的类和实例一样，镜像是静态的定义，容器是镜像运行时的实体。容器可以被创建、启动、停止、删除、暂停等 。</p>
+<p>容器的实质是进程，但与直接在宿主执行的进程不同，容器进程运行于属于自己的独立的命名空间。前面讲过镜像使用的是分层存储，容器也是如此。</p>
+<p>容器存储层的生存周期和容器一样，容器消亡时，容器存储层也随之消亡。因此，任何保存于容器存储层的信息都会随容器删除而丢失。</p>
+<p>按照Docker最佳实践的要求，容器不应该向其存储层内写入任何数据 ，容器存储层要保持无状态化。所有的文件写入操作，都应该使用数据卷（Volume）、或者绑定宿主目录，在这些位置的读写会跳过容器存储层，直接对宿主（或网络存储）发生读写，其性能和稳定性更高。数据卷的生存周期独立于容器，容器消亡，数据卷不会消亡。因此， 使用数据卷后，容器可以随意删除、重新run，数据却不会丢失。</p>
+<h4 id="仓库（Repository）——集中存放镜像文件的地方"><a href="#仓库（Repository）——集中存放镜像文件的地方" class="headerlink" title="仓库（Repository）——集中存放镜像文件的地方"></a>仓库（Repository）——集中存放镜像文件的地方</h4><p>镜像构建完成后，可以很容易的在当前宿主上运行，但是， 如果需要在其它服务器上使用这个镜像，我们就需要一个集中的存储、分发镜像的服务，Docker Registry就是这样的服务。</p>
+<p>一个Docker Registry中可以包含多个仓库（Repository）；每个仓库可以包含多个标签（Tag）；每个标签对应一个镜像。所以说：镜像仓库是Docker用来集中存放镜像文件的地方类似于我们之前常用的代码仓库。</p>
+<p>通常，一个仓库会包含同一个软件不同版本的镜像，而标签就常用于对应该软件的各个版本 。我们可以通过&lt;仓库名&gt;:&lt;标签&gt;的格式来指定具体是这个软件哪个版本的镜像。如果不给出标签，将以latest作为默认标签。</p>
+<p>这里补充一下Docker Registry公开服务和私有Docker Registry的概念：</p>
+<p>Docker Registry公开服务是开放给用户使用、允许用户管理镜像的Registry服务。一般这类公开服务允许用户免费上传、下载公开的镜像，并可能提供收费服务供用户管理私有镜像。</p>
+<p>最常使用的Registry公开服务是官方的Docker Hub ，这也是默认的Registry，并拥有大量的高质量的官方镜像，网址为：hub.docker.com/ 。在国内访问Docker Hub可能会比较慢国内也有一些云服务商提供类似于Docker Hub的公开服务。</p>
+<p>除了使用公开服务外，用户还可以在本地搭建私有Docker Registry 。Docker官方提供了Docker Registry镜像，可以直接使用做为私有Registry服务。开源的Docker Registry镜像只提供了Docker Registry API的服务端实现，足以支持Docker命令，不影响使用。但不包含图形界面，以及镜像维护、用户管理、访问控制等高级功能。</p>
+<h3 id="最后谈谈：Build，Ship，and-Run"><a href="#最后谈谈：Build，Ship，and-Run" class="headerlink" title="最后谈谈：Build，Ship，and Run"></a>最后谈谈：Build，Ship，and Run</h3><p>如果你搜索Docker官网，会发现如下的字样：“Docker - Build, Ship, and Run Any App, Anywhere”。那么Build，Ship，and Run到底是在干什么呢？</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/653dbc01d29a85f51cd32b045507d27c.png" alt></p>
+<ul>
+<li>Build（构建镜像）：镜像就像是集装箱包括文件以及运行环境等等资源。</li>
+<li>Ship（运输镜像）：主机和仓库间运输，这里的仓库就像是超级码头一样。</li>
+<li>Run （运行镜像）：运行的镜像就是一个容器，容器就是运行程序的地方。</li>
+</ul>
+<p>Docker运行过程也就是去仓库把镜像拉到本地，然后用一条命令把镜像运行起来变成容器。所以，我们也常常将Docker称为码头工人或码头装卸工，这和Docker的中文翻译搬运工人如出一辙。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本文主要把Docker中的一些常见概念做了详细的阐述，但是并不涉及Docker的安装、镜像的使用、容器的操作等内容。这部分东西，希望读者自己可以通过阅读书籍与官方文档的形式掌握。</p>
+<p>本文转载自：<a href="https://mp.weixin.qq.com/s/xSbYTJmLuqsyYEDEIsndZw" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/xSbYTJmLuqsyYEDEIsndZw</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../115.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../115.html" itemprop="url">轻量级组件化插件 告别传统组件化累赘和编译过慢</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-20T14:39:30+08:00">
+                2020-01-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="framework-plugin-组件化架构插件"><a href="#framework-plugin-组件化架构插件" class="headerlink" title="framework-plugin 组件化架构插件"></a>framework-plugin 组件化架构插件</h3><p><a href="https://github.com/songjianzaina/framework-plugin" target="_blank" rel="noopener">Github</a></p>
+<h2 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h2><ul>
+<li>轻量级组件框架</li>
+<li>即插即用</li>
+<li>使用json文件动态配置, 减少同步时间</li>
+</ul>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><ol>
+<li>在项目的 <code>build.gradle</code> 中添加：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">buildscript &#123;</span><br><span class="line">  repositories &#123;</span><br><span class="line">   ...</span><br><span class="line">	maven &#123; url &apos;https://jitpack.io&apos; &#125;</span><br><span class="line">   &#125;</span><br><span class="line">  dependencies &#123;</span><br><span class="line">     classpath &apos;com.github.songjianzaina:framework-plugin:1.0.6-alpha&apos;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>在宿主module中使用插件</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: &apos;framework-plugin&apos;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>同步工程,等待文件夹自动生成</li>
+</ol>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>你可以在build.gradle中配置插件的几个属性，如果不设置，所有的属性都使用默认值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">frame&#123;</span><br><span class="line">    subDirName &quot;androidModule&quot;//子模块目录 App默认androidModule Lib默认androidLib</span><br><span class="line">    jsonName &quot;androidModule&quot;//子模块json文件名 默认同上</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>工程效果图:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/a1616a6a09a84fa4874d4d0201c5ec6a~tplv-k3u1fbpfcp-zoom-1.image" alt></p>
+<p>以上标红目录在应用插件后皆自动生成 无需手动创建</p>
+<h2 id="更新历史"><a href="#更新历史" class="headerlink" title="更新历史"></a>更新历史</h2><table>
+<thead>
+<tr>
+<th>版本号</th>
+<th>功能点</th>
+<th>链接</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1.0.0</td>
+<td>初步实现架构文件自动生成</td>
+<td><a href="https://bintray.com/songjianzaina/insoan/framework-plugin/1.0.0/link" target="_blank" rel="noopener"> [外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-v7qfftdb-1627370867510)(https://api.bintray.com/packages/songjianzaina/insoan/framework-plugin/images/download.svg?version=1.0.0)] </a></td>
+</tr>
+<tr>
+<td>1.0.1</td>
+<td>增加全局文件夹以及全局libs</td>
+<td><a href="https://bintray.com/songjianzaina/insoan/framework-plugin/1.0.1/link" target="_blank" rel="noopener"> [外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-lXeFHBcf-1627370867512)(https://api.bintray.com/packages/songjianzaina/insoan/framework-plugin/images/download.svg?version=1.0.1)] </a></td>
+</tr>
+<tr>
+<td>1.0.2</td>
+<td>增加子模块目录名和配置文件名自定义配置</td>
+<td><a href="https://bintray.com/songjianzaina/insoan/framework-plugin/1.0.2/link" target="_blank" rel="noopener"> [外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-Ur648Ij1-1627370867513)(https://api.bintray.com/packages/songjianzaina/insoan/framework-plugin/images/download.svg?version=1.0.2)] </a></td>
+</tr>
+<tr>
+<td>1.0.3</td>
+<td>优化清单文件合并</td>
+<td><a href="https://bintray.com/songjianzaina/insoan/framework-plugin/1.0.3/link" target="_blank" rel="noopener"> [外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-p285dTfB-1627370867514)(https://api.bintray.com/packages/songjianzaina/insoan/framework-plugin/images/download.svg?version=1.0.3)] </a></td>
+</tr>
+<tr>
+<td>1.0.4</td>
+<td>增加Activity自动注册清单文件 (还未完善)</td>
+<td><a href="https://bintray.com/songjianzaina/insoan/framework-plugin/1.0.4/link" target="_blank" rel="noopener"> [外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-IKpgb7YM-1627370867514)(https://api.bintray.com/packages/songjianzaina/insoan/framework-plugin/images/download.svg?version=1.0.4)] </a></td>
+</tr>
+<tr>
+<td>1.0.5</td>
+<td>1.升级gradle依赖至4.0.0  <br> 2.新增values目录下attr和styles文件的自动生成 <br> 3.解决子模块libs目录so库无法引用的问题 <br> 4.优化插件加载方式 提升构建速度 <br> 5.移除多余log</td>
+<td><a href="https://bintray.com/songjianzaina/insoan/framework-plugin/1.0.5/link" target="_blank" rel="noopener"> [外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-66UCHd9Z-1627370867515)(https://api.bintray.com/packages/songjianzaina/insoan/framework-plugin/images/download.svg?version=1.0.5)] </a></td>
+</tr>
+</tbody></table>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../83.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../83.html" itemprop="url">如何利用百度文库上传付费文档，实现持续收益</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-12T21:10:36+08:00">
+                2020-01-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>最近有一个很火的概念，称之为“<strong>个人商业模式</strong>”！所谓个人商业模式，就是个人出售时间的方式，我们每个为生活奔走忙碌的人都有自己的商业模式。本质上都是在出售自己的时间在赚钱！</p>
+<p>“个人商业模式”一般情况有以下三种。</p>
+<h4 id="1、一份时间出售一次。"><a href="#1、一份时间出售一次。" class="headerlink" title="1、一份时间出售一次。"></a>1、一份时间出售一次。</h4><p>比如每天工作8小时，为老板打工，即出售自己的时间为老板打工，这八小时只能为我们带来一次收入！这是第一种商业模式，即一次时间出售一次。</p>
+<h4 id="2、一份时间出售多次。"><a href="#2、一份时间出售多次。" class="headerlink" title="2、一份时间出售多次。"></a>2、一份时间出售多次。</h4><p>持续收益，躺着赚钱。比如作家出了一本书，然后进行出版吗，畅销5年。那么作家在睡觉的时候都会有人为我的书籍付费。这就是第二种商业模式。即一份时间出售多次。</p>
+<h4 id="3、购买别人的时间，再卖出去。"><a href="#3、购买别人的时间，再卖出去。" class="headerlink" title="3、购买别人的时间，再卖出去。"></a>3、购买别人的时间，再卖出去。</h4><p>比如作为一个老板，招聘了5个员工，员工为老板打工。其实就是老板在买下员工的时间，然后再卖出去！</p>
+<p>我们大多数人都是第一种商业模式，赚的钱都是辛苦钱。如果我们想赚更多的钱，就要学会第二种商业模式，即躺着也能有收入。</p>
+<p>那么今天就有一个躺着也能有收入的点子，小编想要分享给大家，希望能帮助到你们！</p>
+<p>这个点子被大多数人给疏忽了，其实就是利用百度文库上传付费文档项目，“搬砖”赚钱，尤其是在这个知识付费的年代显得更有优势！</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/u=3270836336,97604862&fm=173&app=25&f=JPEG" alt></p>
+<p>接下来为大家分析一下项目的具体操作！</p>
+<h3 id="一、项目简介。"><a href="#一、项目简介。" class="headerlink" title="一、项目简介。"></a>一、项目简介。</h3><p>百度相信很多朋友都知道，他是百度发布的供网友在线分享文档的平台。</p>
+<p>有很多为了学习，查资料的伙伴都会时不时的上百度文库搜寻查找相关资料。搜着搜着，搜到很多，有免费的，有付费的，但一般写的好的，都需要下载券，也不贵，两块钱就可以了，如果找到我们适合的，说不定我们就直接买了。</p>
+<p>可是钱都到哪里去了？百度文库的文档由百度用户上传，需要经过百度的审核才能发布。</p>
+<p>没错，钱都到上传者手中去了！一篇文章一块两块，中国用户这么多，如果是多个文档呢？想必就会越多，并且文档长久都有效！</p>
+<p>我们看下面这个账号</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/u=3650677491,324198756&fm=173&app=25&f=JPEG" alt></p>
+<p>付费文档有10元，15元，5元，大多数都是5元，已经有接近6万次的下载，即使是除去一半的免费文档，也有3万次的下载量，一篇5元，也有15万元左右的收益。并且是重复多次收益。用户躺着睡觉也有收益！</p>
+<p>通过研究多个百度文库用户的账号，我发现了他们的赚钱套路，一般都是先给免费的看，然后看到后面就需要付费。</p>
+<p>这个项目就是，在百度文库（道客巴巴、豆丁网也是一样的）成为认证用户，上传你的资料，并设置合理的价格，来钱就是这么简单，借助平台自身流量，不需你做太多的推广。</p>
+<h3 id="第二步、项目具体操作"><a href="#第二步、项目具体操作" class="headerlink" title="第二步、项目具体操作"></a>第二步、项目具体操作</h3><p><strong>1、注册账号。</strong></p>
+<p>这个按照规则去做就可以了。</p>
+<p><strong>2、上传文档。</strong></p>
+<p>建议伙伴们先了解百度文库上传的规则，否则上传不通过的话，就白做了哦<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">!![](https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/u=2179562780,1282340770&amp;fm=173&amp;app=25&amp;f=JPEG)</span><br><span class="line"></span><br><span class="line">另外再上传文档的时候给大家分享几个技巧。</span><br><span class="line"></span><br><span class="line">1. 页眉可以设置信息。设置的信息可以用来打造个人ip！</span><br><span class="line"></span><br><span class="line">2. 标题和描述都可以布局出现需要优化的长尾关键词，有助于文档的排名，让更多的人看到！</span><br><span class="line"></span><br><span class="line">3. 文档的开头、中间、结尾都可以适当的出现需要优化的关键词！</span><br><span class="line"></span><br><span class="line">4. 排版干净利落，层次分明！</span><br><span class="line"></span><br><span class="line">三、那么上传的内容从哪里获得呢？</span><br><span class="line"></span><br><span class="line">文档上传内容是有讲究的，只有你的文档有价值了，才会有人付费下载你的上传的文档的，所以上传一些干货才是能赚钱的法宝。</span><br><span class="line"></span><br><span class="line">#### 干货去哪里找？有两种方法。</span><br><span class="line"></span><br><span class="line">1、伙伴们可以去资源整合网上找。</span><br><span class="line"></span><br><span class="line">2、如果不想出钱的话就自个去整理，自己去生产原创干货内容。但注意一定得是干货，否则上传上去不会翻出什么花来哦~</span><br></pre></td></tr></table></figure></p>
+<p>其实整个项目都很简单，只是被大多数人给忽略掉了，看的上的伙伴可以去尝试一下，这样长期下来也算是一笔财富！</p>
+<p>一次付出，躺着也有收入，虽然一次不多，但是积少成多嘛<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">不仅仅是上传到百度文库，豆丁网，道客巴巴我们都可以操作哦</span><br></pre></td></tr></table></figure></p>
+<p>关于“个人商业模式”，说白了就是赚钱的事。我觉得我们都应该去思考自己的商业模式以及如何打造更好的商业模式！</p>
+<p>因为持续收益才是我们实现财务自由的唯一方式！</p>
+<p><strong>本帖附件</strong></p>
+<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../77.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../77.html" itemprop="url">dom4j解析XML常用方法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-08T09:49:58+08:00">
+                2020-01-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//读取xml</span></span><br><span class="line">SAXReader reader = <span class="keyword">new</span> SAXReader();  </span><br><span class="line">Document   <span class="built_in">document</span> = reader.read(<span class="keyword">new</span> File(<span class="string">"input.xml"</span>));  </span><br><span class="line"><span class="comment">// 获取根节点</span></span><br><span class="line"><span class="built_in">Element</span> root = <span class="built_in">document</span>.getRootElement();      </span><br><span class="line"><span class="comment">// 获取孩子节点</span></span><br><span class="line"><span class="built_in">Iterator</span>&lt;<span class="built_in">Element</span>&gt; it1 = root.elementIterator();</span><br><span class="line"><span class="comment">// 获取属性</span></span><br><span class="line"><span class="built_in">Iterator</span>&lt;Attribute&gt; attributes = ele.attributeIterator();</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">以上两个获取孩子节点和属性都是获取迭代器, 通过it.hasnext()方法可以遍历得到所有的节点和属性.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="comment">// 获取节点名</span></span><br><span class="line">ele.getName()</span><br><span class="line"><span class="comment">// 获取节点值</span></span><br><span class="line">ele.getText()</span><br><span class="line"><span class="comment">// 获取属性名</span></span><br><span class="line">ele.getBName</span><br><span class="line"><span class="comment">// 获取属性值</span></span><br><span class="line">ele.getValue()    </span><br><span class="line"><span class="comment">// 设置文本</span></span><br><span class="line">ele.setText(<span class="string">"张三"</span>);</span><br><span class="line"><span class="comment">//设置属性</span></span><br><span class="line">ele.addAttribute(<span class="string">"show"</span>, <span class="string">"yes"</span>);</span><br><span class="line"><span class="comment">//添加注释</span></span><br><span class="line">ele.addComment(<span class="string">"This is a test for dom4j "</span>)</span><br><span class="line"><span class="comment">// 删除子节点</span></span><br><span class="line">ele.remove(element);</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建XML"><a href="#创建XML" class="headerlink" title="创建XML"></a>创建XML</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">public <span class="class"><span class="keyword">class</span> <span class="title">CreateXML</span> </span>&#123;</span><br><span class="line">    public <span class="keyword">static</span> <span class="keyword">void</span> main(<span class="built_in">String</span>[] args) throws Exception &#123;</span><br><span class="line">        <span class="comment">// 创建文档对象</span></span><br><span class="line">        Document <span class="built_in">document</span> = DocumentHelper.createDocument();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 创建根节点</span></span><br><span class="line">        <span class="built_in">Element</span> root = <span class="built_in">document</span>.addElement(<span class="string">"root"</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 添加节点信息</span></span><br><span class="line">        <span class="built_in">Element</span> auther1 = root.addElement(<span class="string">"auther"</span>)</span><br><span class="line">                .addAttribute(<span class="string">"name"</span>, <span class="string">"Tom"</span>)        <span class="comment">// 属性</span></span><br><span class="line">                .addAttribute(<span class="string">"loation"</span>, <span class="string">"UK"</span>)      </span><br><span class="line">                .addText(<span class="string">"Tom Wang"</span>);               <span class="comment">// 节点内容</span></span><br><span class="line">        </span><br><span class="line">        <span class="built_in">Element</span> auther2 = root.addElement(<span class="string">"auther"</span>)</span><br><span class="line">                .addAttribute(<span class="string">"name"</span>, <span class="string">"Ted"</span>)</span><br><span class="line">                .addAttribute(<span class="string">"loation"</span>, <span class="string">"USA"</span>)</span><br><span class="line">                .addText(<span class="string">"Ted Chen"</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 输出到xml文件</span></span><br><span class="line">        FileWriter out = <span class="keyword">new</span> FileWriter(<span class="string">"src/new.xml"</span>);</span><br><span class="line">        <span class="built_in">document</span>.write(out);</span><br><span class="line">        out.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="输出的内容为"><a href="#输出的内容为" class="headerlink" title="输出的内容为"></a>输出的内容为</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--new.xml--&gt;</span></span><br><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">root</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">auther</span> <span class="attr">name</span>=<span class="string">"Tom"</span> <span class="attr">loation</span>=<span class="string">"UK"</span>&gt;</span>Tom Wang<span class="tag">&lt;/<span class="name">auther</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">auther</span> <span class="attr">name</span>=<span class="string">"Ted"</span> <span class="attr">loation</span>=<span class="string">"USA"</span>&gt;</span>Ted Chen<span class="tag">&lt;/<span class="name">auther</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">root</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="修改XML"><a href="#修改XML" class="headerlink" title="修改XML"></a>修改XML</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建xml解析器对象reader</span></span><br><span class="line">SAXReader reader = <span class="keyword">new</span> SAXReader();</span><br><span class="line"><span class="comment">// 加载xml文件, 获取document对象</span></span><br><span class="line">Document <span class="built_in">document</span> = reader.read(<span class="string">"src/test_xml/first.xml"</span>);</span><br><span class="line"><span class="comment">//选定节点属性集 xpath写法 </span></span><br><span class="line"><span class="built_in">List</span> arrList = <span class="built_in">document</span>.selectNodes(<span class="string">"/books/book/@show"</span>)</span><br><span class="line"><span class="built_in">Iterator</span> arrIter = arrList.iterator();  </span><br><span class="line"></span><br><span class="line"><span class="comment">//选定节点集</span></span><br><span class="line"><span class="built_in">List</span> list = <span class="built_in">document</span>.selectNodes(<span class="string">"/books/book/title"</span>)</span><br><span class="line"><span class="built_in">Iterator</span> texIter = list.iterator(); </span><br><span class="line"><span class="comment">//修改节点属性</span></span><br><span class="line"><span class="keyword">while</span> (arrIter.hasNext()) &#123;  </span><br><span class="line">    Attribute attribute = (Attribute) iter.next();  </span><br><span class="line">    <span class="keyword">if</span> (attribute.getValue().equals(<span class="string">"yes"</span>))   </span><br><span class="line">        attribute.setValue(<span class="string">"no"</span>); </span><br><span class="line">&#125;  </span><br><span class="line"> <span class="comment">//修改节点文本内容 </span></span><br><span class="line"><span class="keyword">while</span> (texIter.hasNext()) &#123;  </span><br><span class="line">     <span class="built_in">Element</span> element = (<span class="built_in">Element</span>) iter.next();  </span><br><span class="line">  	 element.setText(<span class="string">"xxx"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="字符串转XML"><a href="#字符串转XML" class="headerlink" title="字符串转XML"></a>字符串转XML</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String text = &quot;&lt;members&gt; &lt;member&gt;sitinspring&lt;/member&gt; &lt;/members&gt;&quot;;      </span><br><span class="line">Document document = DocumentHelper.parseText(text);</span><br></pre></td></tr></table></figure>
+
+<h3 id="XML转字符串"><a href="#XML转字符串" class="headerlink" title="XML转字符串"></a>XML转字符串</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 创建xml解析器对象reader</span><br><span class="line">SAXReader reader = new SAXReader();</span><br><span class="line">// 加载xml文件, 获取document对象</span><br><span class="line">Document document = reader.read(&quot;src/test_xml/first.xml&quot;);</span><br><span class="line">//xml转换成字符串</span><br><span class="line">String memberXmlText=document.asXML();</span><br></pre></td></tr></table></figure>
+
+<p><strong>本帖附件</strong></p>
+<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../80.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1223,631 +1908,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../110.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../110.html" itemprop="url">解决android中EditText设置末尾省略号不生效的情况</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-28T10:15:36+08:00">
-                2019-12-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在Textiew中可以通过设置TextView的属性</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">android:maxEms</span><br></pre></td></tr></table></figure>
-
-<p>和</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">android:ellipseize</span><br></pre></td></tr></table></figure>
-
-<p>来使过多的文字显示为省略号，<strong>但在在EditText中设置只这两个属性则不行</strong>，</p>
-<p><strong>android默认只有在文字不可编辑的状态下才可以显示这些效果</strong>，但是EditText重写了这个属性，使得文字默认都是可以编辑的。</p>
-<p>所以若想要呈现TextView的效果，必须加上以下属性</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">android：editable= &quot;false&quot;</span><br></pre></td></tr></table></figure>
-
-<p>另外EditText不支持跑马等的效果.咱们来看看android源码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">override</span><br><span class="line">public void setEllipsize(TextUtils.TruncateAt ellipsis) &#123;</span><br><span class="line">	if (ellipsis == TextUtils.TruncateAt.MARQUEE) &#123;</span><br><span class="line">		throw new IllegalArgumentException(&quot;EditText cannot use the ellipsize mode TextUtils.TruncateAt.MARQUEE&quot;);	</span><br><span class="line">	&#125;</span><br><span class="line">	super.setEllipsize(ellipsis);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>如果设置跑马灯效果,会直接抛出异常</strong></p>
-<p>那么有同学会说了,editable设为false, 那岂不是没法进行文本编辑了?</p>
-<p>这里呢, 建议大家自定义EditText并重写onTouchEvent方法,从外部进行控制是否获取焦点, 如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">class FocusEditText(context: Context, attrs: AttributeSet) : EditText(context, attrs)&#123;</span><br><span class="line">    override fun onTouchEvent(event: MotionEvent?): Boolean &#123;</span><br><span class="line">        return isEnabled &amp;&amp; super.onTouchEvent(event)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../109.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../109.html" itemprop="url">将代码发布至jcenter步骤</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-24T17:21:08+08:00">
-                2019-12-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Step-1"><a href="#Step-1" class="headerlink" title="Step 1"></a>Step 1</h3><p>在项目的build.gradle中buildscript中添加如下脚本，使用最新版本号，在<code>https://github.com/novoda/bintray-release</code>查看：</p>
-<p>      </p>
-<pre><code>buildscript {
-repositories {
-    jcenter()
-}
-dependencies {
-    //classpath &apos;com.novoda:bintray-release:&lt;latest-version&gt;&apos;
-    classpath &apos;com.novoda:bintray-release:0.8.1&apos;
-}
-}</code></pre><h3 id="Step-2"><a href="#Step-2" class="headerlink" title="Step 2"></a>Step 2</h3><p>在库模块（需要上传的模块）的build.gradle中添加：</p>
-<pre><code>apply plugin: &apos;com.novoda.bintray-release&apos;
-
-publish {
-    userOrg = &apos;组织ID&apos; //bintray账户下某个组织id 个人用户填写账户名
-    groupId = &apos;com.insworks.plugin&apos; //maven仓库下库的包名，一般为模块包名
-    artifactId = &apos;framework-plugin&apos; //项目名称
-    publishVersion = &apos;1.0.2&apos; //版本号
-    desc = &apos;组件化架构插件&apos; //项目介绍，可以不写
-    website = &apos;&apos; //项目主页，可以不写
-}
-tasks.withType(Javadoc) {//防止编码问题
-    options.addStringOption(&apos;Xdoclint:none&apos;, &apos;-quiet&apos;)
-    options.addStringOption(&apos;encoding&apos;, &apos;UTF-8&apos;)
-    options.addStringOption(&apos;charSet&apos;, &apos;UTF-8&apos;)
-}</code></pre><h3 id="Step-3"><a href="#Step-3" class="headerlink" title="Step 3"></a>Step 3</h3><p>在bintray中创建仓库并获取仓库key。Bintray网站点击右上角用户名–&gt;Edit Your Profile -&gt; API Key –&gt;输入密码–&gt;Submit–&gt;Show。</p>
-<h3 id="Step-4"><a href="#Step-4" class="headerlink" title="Step 4"></a>Step 4</h3><p>使用指令上传代码：</p>
-<p> 在Android Studio的Terminal面板中执行下面命令，其中BINTRAY_USERNAME替换为你的binatray用户名，BINTRAY_KEY替换为上面获取的API Key，-PdryRun=false会上传到仓库中，如果为true，只会执行gradle任务，但不会上传。替换完成后回车执行</p>
-<pre><code>示例
-gradlew clean build bintrayUpload -PbintrayUser=BINTRAY_USERNAME -PbintrayKey=BINTRAY_KEY -PdryRun=false
-
-我的
-gradlew clean build bintrayUpload -PbintrayUser=songjianziana -PbintrayKey=5e7f0ea95e85af4cceca20cb109fb50ad7cba6bc -PdryRun=false</code></pre><p><strong>或者使用gradle快捷上传, 需要先编译项目(切记)</strong></p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200101002037.png" alt></p>
-<h3 id="Step-5"><a href="#Step-5" class="headerlink" title="Step 5"></a>Step 5</h3><p> Android Studio中配置<a href="https://bintray.com仓库地址" target="_blank" rel="noopener">https://bintray.com仓库地址</a></p>
-<pre><code>maven { url &apos;https://dl.bintray.com/songjianzaina/insoan&apos; }</code></pre><p>和然后在app模块build.gradle中添加依赖：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation &apos;com.xxx.xxx.xx.:1.0.0&apos;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Step-6"><a href="#Step-6" class="headerlink" title="Step 6"></a>Step 6</h3><p>添加到JCenter。点击“Add to JCenter”，填写项目介绍，点击Send发送，然后等待审核，审核成功之后会发送站内通知</p>
-<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20191224171122.png" alt></p>
-<p>上传成功之后将<code>maven { url &#39;https://dl.bintray.com/songjianzaina/insoan&#39; }</code>替换成jcenter即可</p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../74.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../74.html" itemprop="url">Android源码下载</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-24T17:04:20+08:00">
-                2019-12-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>Android源码下载支持的系统目前只有Ubuntu和Mac OS两种操作系统, 本次以Ubuntu系统为例.</p>
-<p>官方网站: <a href="http://source.android.com/source/downloading.html" target="_blank" rel="noopener">http://source.android.com/source/downloading.html</a></p>
-<p>下载单独项目的源码：<a href="https://github.com/android" target="_blank" rel="noopener">https://github.com/android</a></p>
-</blockquote>
-<ol>
-<li><p>下载Git(版本控制工具). 调出命令行: ctrl + alt + T</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install git   （下载地址在源中,&quot;系统设置/软件和更新&quot;,路径：/etc/apt/sources.list）</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>安装curl(上传和下载数据的工具).</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install curl</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>安装repo(一个基于git的版本库管理工具, 这里用于自动批量下载android整个项目.).</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// 创建目录</span><br><span class="line">mkdir ~/bin</span><br><span class="line"></span><br><span class="line">// 下载repo脚本到本地bin文件夹下</span><br><span class="line">curl http://android.git.kernel.org/repo &gt;~/bin/repo  （官网：curl https://storage.googleapis.com/git-repo-downloads/repo &gt; ~/bin/repo）</span><br><span class="line">// 如果上面下载失败, 采用下面这种方式</span><br><span class="line">curl &quot;http://php.webtutor.pl/en/wp-content/uploads/2011/09/repo&quot; &gt;~/bin/repo</span><br><span class="line"></span><br><span class="line">// 给所有用户追加可执行的权限</span><br><span class="line">chmod a+x ~/bin/repo</span><br><span class="line"></span><br><span class="line">// 临时把repo添加到环境变量中, 方便后面执行.</span><br><span class="line">// 注意: 每次重启ubuntu之后此环境变量失效, 重新配置就可以了.</span><br><span class="line">export PATH=~/bin:$PATH</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>创建文件夹, 用于存放下载的Android源码.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 创建目录</span><br><span class="line">mkdir ~/android_source </span><br><span class="line"></span><br><span class="line">// 修改权限</span><br><span class="line">chmod 777 ~/android_source</span><br><span class="line"></span><br><span class="line">cd ~/android_source</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>初始化库.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 需要先配置git的用户信息</span><br><span class="line">git config --global user.email &quot;dai_zhenliang@163.com&quot;</span><br><span class="line">git config --global user.name &quot;haha&quot;</span><br><span class="line"></span><br><span class="line">repo init -u https://android.googlesource.com/platform/manifest -b android-2.3_r1</span><br><span class="line"></span><br><span class="line">// 如果上面初始化失败, 用下面的代码</span><br><span class="line">repo init -u git://codeaurora.org/platform/manifest.git -b gingerbread</span><br></pre></td></tr></table></figure>
-
-<h6 id="当屏幕出现以下信息表示成功初始化"><a href="#当屏幕出现以下信息表示成功初始化" class="headerlink" title="当屏幕出现以下信息表示成功初始化"></a>当屏幕出现以下信息表示成功初始化</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">repo initialized in /home/haha/android_source</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>开始同步下载.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">repo sync</span><br></pre></td></tr></table></figure>
-
-<p><strong>注意: 下载过程中, 因为网络问题, 可能会中断下载. 当中断下载时, 继续使用repo sync命令继续下载.</strong></p>
-</li>
-</ol>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../73.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../73.html" itemprop="url">Android源码编译</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-24T16:52:30+08:00">
-                2019-12-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="在编译源码之前需要做一些准备操作-详细步骤如下"><a href="#在编译源码之前需要做一些准备操作-详细步骤如下" class="headerlink" title="在编译源码之前需要做一些准备操作, 详细步骤如下:"></a>在编译源码之前需要做一些准备操作, 详细步骤如下:</h3><blockquote>
-<h4 id="1-安装JDK-google官方要求编译2-3源码需要JDK1-6"><a href="#1-安装JDK-google官方要求编译2-3源码需要JDK1-6" class="headerlink" title="1. 安装JDK, google官方要求编译2.3源码需要JDK1.6."></a>1. 安装JDK, google官方要求编译2.3源码需要JDK1.6.</h4></blockquote>
-<ul>
-<li><p>1). 下载JDK1.6, 下载地址:<a href="http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase6-419409.html、http://download.oracle.com/otn/java/jdk/6u45-b06/jdk-6u45-linux-x64.bin" target="_blank" rel="noopener">http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase6-419409.html、http://download.oracle.com/otn/java/jdk/6u45-b06/jdk-6u45-linux-x64.bin</a></p>
-</li>
-<li><p>2). 创建目录.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir /usr/java</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>3). 在文件系统中右击上面的创建的文件夹，选择“以管理员权限打开”，然后把下载好的jdk-6u45-linux-x64.bin拖动到/usr/java目录中</p>
-</li>
-<li><p>4). 添加可执行权限.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod 755 /usr/java/jdk-6u45-linux-x64.bin</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>5). 解压.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/java</span><br><span class="line">sudo ./jdk-6u45-linux-x64.bin</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>6). 配置环境变量.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/usr/java/jdk1.6.0_45</span><br><span class="line">export PATH=$PATH:$JAVA_HOME/bin</span><br><span class="line">export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>7). 验证是否成功.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -version</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h4 id="2-安装其他编译时依赖的软件"><a href="#2-安装其他编译时依赖的软件" class="headerlink" title="2. 安装其他编译时依赖的软件."></a>2. 安装其他编译时依赖的软件.</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install gnupg</span><br><span class="line">sudo apt-get install flex</span><br><span class="line">sudo apt-get install bison</span><br><span class="line">sudo apt-get install gperf</span><br><span class="line">sudo apt-get install zip</span><br><span class="line">sudo apt-get install curl</span><br><span class="line">sudo apt-get install build-essential</span><br><span class="line">sudo apt-get install libesd0-dev</span><br><span class="line">sudo apt-get install libwxgtk2.8-dev</span><br><span class="line">sudo apt-get install libsdl-dev</span><br><span class="line">sudo apt-get install lsb-core</span><br><span class="line">sudo apt-get install lib32readline-gplv2-dev</span><br><span class="line">sudo apt-get install g++-multilib</span><br><span class="line">sudo apt-get install lib32z1-dev</span><br><span class="line">sudo apt-get install libswitch-perl</span><br></pre></td></tr></table></figure>
-
-<p>安装注意事项： <img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20191224165624.png" alt></p>
-<h4 id="3-开始编译-在源码的目录下-执行一下命令"><a href="#3-开始编译-在源码的目录下-执行一下命令" class="headerlink" title="3. 开始编译, 在源码的目录下, 执行一下命令:"></a>3. 开始编译, 在源码的目录下, 执行一下命令:</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd ~/android_source</span><br><span class="line">make clean(如果之前有编译过，则需要调用这个命令)</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
-
-<h4 id="注意-ubuntu自带的源中速度比较慢-有些软件找不到-所以需要修改为国内的源-修改源步骤如下"><a href="#注意-ubuntu自带的源中速度比较慢-有些软件找不到-所以需要修改为国内的源-修改源步骤如下" class="headerlink" title="注意: ubuntu自带的源中速度比较慢, 有些软件找不到, 所以需要修改为国内的源, 修改源步骤如下:"></a>注意: ubuntu自带的源中速度比较慢, 有些软件找不到, 所以需要修改为国内的源, 修改源步骤如下:</h4><ul>
-<li><p>1). 备份ubuntu自带的源.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo cp /etc/apt/sources.list /etc/apt/sources.list.old</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>2). 修改源文件.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gedit /etc/apt/sources.list</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>3). 这时会弹出一个文本编辑框, 先删除所有内容, 然后把以下内容拷贝进去, 并保存.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.163.com/ubuntu/ trusty main restricted universe multiverse</span><br><span class="line">deb http://mirrors.163.com/ubuntu/ trusty-security main restricted universe multiverse</span><br><span class="line">deb http://mirrors.163.com/ubuntu/ trusty-updates main restricted universe multiverse</span><br><span class="line">deb http://mirrors.163.com/ubuntu/ trusty-proposed main restricted universe multiverse</span><br><span class="line">deb http://mirrors.163.com/ubuntu/ trusty-backports main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.163.com/ubuntu/ trusty main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.163.com/ubuntu/ trusty-security main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.163.com/ubuntu/ trusty-updates main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.163.com/ubuntu/ trusty-proposed main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.163.com/ubuntu/ trusty-backports main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb http://mirrors.sohu.com/ubuntu/ trusty main restricted universe multiverse</span><br><span class="line">deb http://mirrors.sohu.com/ubuntu/ trusty-security main restricted universe multiverse</span><br><span class="line">deb http://mirrors.sohu.com/ubuntu/ trusty-updates main restricted universe multiverse</span><br><span class="line">deb http://mirrors.sohu.com/ubuntu/ trusty-proposed main restricted universe multiverse</span><br><span class="line">deb http://mirrors.sohu.com/ubuntu/ trusty-backports main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.sohu.com/ubuntu/ trusty main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.sohu.com/ubuntu/ trusty-security main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.sohu.com/ubuntu/ trusty-updates main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.sohu.com/ubuntu/ trusty-proposed main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.sohu.com/ubuntu/ trusty-backports main restricted universe multiverse</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>4). 保存之后, 更新数据源.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1898,7 +1958,7 @@ gradlew clean build bintrayUpload -PbintrayUser=songjianziana -PbintrayKey=5e7f0
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">265</span>
+                  <span class="site-state-item-count">269</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

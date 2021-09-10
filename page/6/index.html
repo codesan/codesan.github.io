@@ -287,6 +287,668 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../218.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../218.html" itemprop="url">GDB与GDBServer配合实现在安卓设备中进行程序调试</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-30T17:14:19+08:00">
+                2021-01-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h2><ul>
+<li><p>windows开发平台</p>
+</li>
+<li><p>安卓模拟器(ARM架构+linux系统 已Root):</p>
+<blockquote>
+<p>可以通过<code>adb shell getprop</code>指令查看当前设备的cpu架构</p>
+</blockquote>
+</li>
+<li><p><code>arm-linux-androideabi</code>编译工具 <code>gdb</code>和<code>gdbserver</code>皆存放在此开发包下</p>
+</li>
+</ul>
+<h2 id="实验开始"><a href="#实验开始" class="headerlink" title="实验开始"></a>实验开始</h2><p><strong>第一步 编写测试代码 文件名为<code>test.c</code></strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line"> 	<span class="keyword">char</span> *a=<span class="string">"he"</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"hello pangshu"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>第二步 将测试代码编译成可执行文件</strong></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arm-linux-androideabi-gcc.exe -g test.c -o main -static <span class="comment">#输出可执行文件名为main</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>第三步 将可执行文件传送到模拟器中</strong></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb push main /data/<span class="built_in">local</span>/tmp</span><br></pre></td></tr></table></figure>
+
+<p><strong>第四步 将<code>gdbserver</code>工具传送到模拟器中</strong></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb push gdbserver /data/<span class="built_in">local</span>/tmp</span><br></pre></td></tr></table></figure>
+
+<p><strong>第五步 进入模拟器<code>shell</code>窗口,使用<code>gdbserver</code>执行程序</strong></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gdbserver 192.168.177.71:23946 main <span class="comment">#这里的ip是宿主机的ip  23946为监听端口</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>第六步 在宿主机中运行<code>gdb</code>工具</strong></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb.exe main  <span class="comment">#这里需要指定调试的执行文件</span></span><br></pre></td></tr></table></figure>
+
+<p>此时进入到<code>gdb</code>模式</p>
+<p><strong>第七步 在<code>gdb</code>模式下连接模拟器中的<code>gdbserver</code></strong></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) target remote 192.168.0.1:23946  <span class="comment">#这里的ip是模拟器的ip</span></span><br></pre></td></tr></table></figure>
+
+<p>连接成功后进入断点调试模式,该模式下可以使用~调试指令进行相关调试</p>
+<h2 id="开始调试"><a href="#开始调试" class="headerlink" title="开始调试"></a>开始调试</h2><ol>
+<li><p>使用<code>list</code>指令列出所有源代码 可简写为<code>l</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) l</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>break</code>指令设置断点位置 可简写为<code>b</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) b main <span class="comment">#在main函数处打断点</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>continue</code>指令运行到断点处 可简写为<code>c</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) c</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>step</code>指令进行单步执行 可简写为<code>s</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) s   <span class="comment">#会进入函数内部</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>next</code>执行进行单步执行 可简写为<code>n</code> </p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) n  <span class="comment">#不会进入函数内部</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>print</code>指令打印变量的值 可简写为<code>a</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) p a <span class="comment">#打印变量a的值</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>quit</code>指令退出调试模式 可简写为<code>q</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) q</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h4 id="更多调试指令"><a href="#更多调试指令" class="headerlink" title="更多调试指令"></a>更多调试指令</h4><p><a href="http://code.newban.cn/217.html">GCC调试工具GDB的常用指令</a></p>
+<h3 id="关于arm-linux-androideabi的获取"><a href="#关于arm-linux-androideabi的获取" class="headerlink" title="关于arm-linux-androideabi的获取"></a>关于<code>arm-linux-androideabi</code>的获取</h3><p>建议下载<code>Android NDK</code>开发包，然后将里面的GCC套件单独抽出来使用，NDK提供了抽包脚本<code>make-standalone-toolchain</code>，在<code>bulid</code>目录的<code>tools</code>文件夹中可以找到，执行脚本自动抽取打包成压缩包到当前目录：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python make-standalone-toolchain.py --arch arm</span><br></pre></td></tr></table></figure>
+
+<h2 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h2><p>如果是在非安卓系统的ARM模拟器上，比如qemu模拟器，那么直接使用官方的<code>arm-none-linux-eabi</code>即可，即便是安卓设备，如果没有代码调试需求的话，仅仅是编译运行程序，也是完全够用了</p>
+<p>但是你需要进行代码调试的话，由于<code>android</code>系统的安全策略，<code>arm-none-linux-eabi</code>包中的<code>gdbserver</code>无法运行，提示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">error: only position independent executables (PIE) are supported.</span><br></pre></td></tr></table></figure>
+
+<p>为了解决这个问题，我们因此采用<code>arm-linux-androideabi</code>，这里面的<code>gdbserver</code>可以正常运行</p>
+<p>上面的例子中使用的NDKr17的版本</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../216.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../216.html" itemprop="url">Makefile的详细介绍和使用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-29T18:14:19+08:00">
+                2021-01-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>待完善。。。</p>
+<p><a href="https://seisman.github.io/how-to-write-makefile/invoke.html" target="_blank" rel="noopener">makefile详细介绍和使用</a></p>
+<h3 id="Makefile定义规则"><a href="#Makefile定义规则" class="headerlink" title="Makefile定义规则"></a>Makefile定义规则</h3><p>参考链接1：<a href="https://seisman.github.io/how-to-write-makefile/invoke.html" target="_blank" rel="noopener">https://seisman.github.io/how-to-write-makefile/invoke.html</a></p>
+<p>参考链接2：<a href="https://www.cnblogs.com/LittleHann/p/3855905.html" target="_blank" rel="noopener">https://www.cnblogs.com/LittleHann/p/3855905.html</a></p>
+<p>规则是<code>makefile</code>中<strong>最重要的概念</strong>，其告诉<code>make</code> 目标文件的依赖关系，以及如何生成及更新这些目标文件。在<code>makefile</code>文件规则有2种，一种是<strong>显式规则</strong>，另一种是<strong>隐式规则。</strong></p>
+<ol>
+<li><strong>显示规则</strong></li>
+</ol>
+<p>显式规则用于说明何时及如何重新生成目标，其列出了目标依赖的文件信息，并通过调用命令来创建或更新目标，其语法一般为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">targets : prerequisites</span><br><span class="line"></span><br><span class="line">recipe</span><br><span class="line">…</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>targets：为要生成或更新的目标</p>
+</li>
+<li><p>prerequisites：为目标依赖的关系</p>
+</li>
+<li><p>recipe：为生成目标的命令，</p>
+<p>一个规则可以有多条recipe，比如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">foo.o : foo.c defs.h</span><br><span class="line"></span><br><span class="line">cc -c -g foo.c</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>其中<code>foo.o</code>为target，<code>foo.c defs.h</code> 为prerequisites，<code>cc -c -g foo.c</code>为recipe。</p>
+<h4 id="示例讲解"><a href="#示例讲解" class="headerlink" title="示例讲解"></a>示例讲解</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">test:main.o channle.o</span><br><span class="line">	gcc main.o channle.o -o test</span><br><span class="line">main.o:main.c function.h</span><br><span class="line">	gcc -c main.c -o main.o</span><br><span class="line">channle.o:channle.c  WavHead.h</span><br><span class="line">	gcc -c channle.c -o channle.o -<span class="built_in">std</span>=c99</span><br><span class="line"></span><br><span class="line">.PHONY:clean</span><br><span class="line">clean:</span><br><span class="line">	-rm -rf *.o</span><br></pre></td></tr></table></figure>
+
+<p>执行的过程简单说就是最终需要生成一个名为test的文件，这个文件需要<code>main.o</code>和<code>channle.o</code>，于是继续往下执行，然后通过命令<code>gcc -c main.c -o main.o</code>得到了<code>main.o</code>文件，同理再得到<code>channle.o</code>文件，最后通过命令<code>gcc main.o channle.o -o test</code>进行链接最终就会得到一个名为test的可执行文件了。</p>
+<p>上面的代码在<code>linux</code>的命令窗口下输入<code>make</code>命令就可以执行了，最终会生成一个<code>test</code>的可执行文件。 如果需要清除生成的中间<code>.o</code>文件，输入<code>make clean</code>就可以全部清除了。</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../215.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../215.html" itemprop="url">GCC工具的具体使用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-29T16:14:19+08:00">
+                2021-01-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="编译工具链"><a href="#编译工具链" class="headerlink" title="编译工具链"></a>编译工具链</h2><p>高级语言翻译成机器语言不是一步到位的,以C语言为例,通常要经历以下四个步骤:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">预处理---&gt;编译---&gt;汇编---&gt;连接</span><br><span class="line"></span><br><span class="line">源代码---&gt;汇编代码---&gt;目标代码---&gt;可执行程序</span><br></pre></td></tr></table></figure>
+
+<p>每一步都需要使用不同的工具,比如源代码需要借助编译工具翻译成汇编代码,汇编代码需要借助汇编器翻译成目标代码,最后还要借助连接器帮忙整理汇总, 那么这些个工具集合到一块就叫做<strong>工具链</strong></p>
+<h2 id="GCC工具链"><a href="#GCC工具链" class="headerlink" title="GCC工具链"></a>GCC工具链</h2><p>由GNU提供的一整套的工具集,这套工具集中包含了汇编器,编译器和链接器,二进制转换,调试工具等</p>
+<p>通过GCC，我们可以一步完成源码到可执行文件的编译， 也可以单步独立进行，方便程序员获取中间代码代码，进行调试 </p>
+<h2 id="GCC常用命令选项"><a href="#GCC常用命令选项" class="headerlink" title="GCC常用命令选项"></a>GCC常用命令选项</h2><p>假设只编译<strong>单个源文件test.c</strong></p>
+<ol>
+<li><p>无选项编译</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gcc test.c  </span><br><span class="line">或者</span><br><span class="line">gcc test.o</span><br></pre></td></tr></table></figure>
+
+<p>在当前目录下直接生成可执行文件,默认名称为<code>a.out</code></p>
+</li>
+<li><p>选项<code>-o</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc test.c  -o test</span><br></pre></td></tr></table></figure>
+
+<p>在当前目录下生成名为<code>test</code>的可执行文件</p>
+</li>
+<li><p>选项<code>-E</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -E test.c  -o test.i</span><br></pre></td></tr></table></figure>
+
+<p>在当前目录下生成名为<code>test.i</code>的预处理文件</p>
+</li>
+<li><p>选项<code>-S</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -S test.c  -o test.s</span><br></pre></td></tr></table></figure>
+
+<p>在当前目录下生成名为<code>test.s</code>的汇编文件，将源码转成汇编代码</p>
+</li>
+<li><p>选项<code>-c</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -c test.c</span><br></pre></td></tr></table></figure>
+
+<p>在当前目录下生成名为<code>test.o</code>的目标文件</p>
+</li>
+<li><p>选项<code>-O数字</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -O1 test.c  -o test</span><br></pre></td></tr></table></figure>
+
+<p>在当前目录下生成名为<code>test</code>的可执行文件,并且使用编译优化级别1编译程序。可选级别为1~3，级别越大优化效果越好，但编译时间越长。 </p>
+</li>
+</ol>
+<h2 id="多文件编译"><a href="#多文件编译" class="headerlink" title="多文件编译"></a>多文件编译</h2><p>比如一个汇编文件<code>aaa.s</code>一个C源文件<code>test.c</code>:</p>
+<ol>
+<li><p><strong>方式一 多文件同时编译</strong></p>
+<p>直接追加文件名进行同时编译输出即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc aaa.s test.c -o bbb</span><br></pre></td></tr></table></figure>
+
+<p> 如果要编译的文件都在同一个目录下，可以用通配符<code>gcc *.c -o</code> 来进行编译 </p>
+</li>
+<li><p><strong>方式二 多文件分开编译</strong></p>
+<p>首先将源文件编译成目标文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gcc -c aaa.s  //生成aaa.o</span><br><span class="line"></span><br><span class="line">gcc -c test.c  //生成test.o</span><br></pre></td></tr></table></figure>
+
+<p>然后将所有目标文件连接成可执行文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc  test.o aaa.o -o test</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>方式三 编写makefile文件进行编译</strong></p>
+<p>第一步 <code>makefile</code>文件编写</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 我是注释</span></span><br><span class="line">SRC=aaa.s test.c</span><br><span class="line">main: $(OBJS)   <span class="comment">#指定需要生成的文件名称以及相应的依赖关系 </span></span><br><span class="line">        gcc -o main $(SRC) <span class="comment">#生成所需要的指令</span></span><br></pre></td></tr></table></figure>
+
+<p>第二步 使用<code>bin</code>包下的<code>cs-make</code>工具，直接在命令窗口中执行该指令，默认在当前目录虚招makefile文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> cs-make</span></span><br></pre></td></tr></table></figure>
+
+<p>该指令实际上执行的就是makefile中我们编写的指令<code>gcc -o main aaa.s test.c</code></p>
+</li>
+</ol>
+<p>以上三种方法相比较，第一中方法编译时需要所有文件重新编译，而第二种方法可以只重新编译修改的文件，未修改的文件不用重新编译 ,第三种方法适用于文件较多依赖关系复杂的工程编译</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../214.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../214.html" itemprop="url">汇编语言之行x86_32汇编</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-28T16:14:19+08:00">
+                2021-01-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="两大汇编语法"><a href="#两大汇编语法" class="headerlink" title="两大汇编语法"></a>两大汇编语法</h2><p>两种语法主要是针对x86架构汇编而言，对于其他架构没有这么一个说法</p>
+<ul>
+<li>Intel型语法: Intel官方语法，在Windows平台原生环境中采用该语法</li>
+<li>AT&amp;T型 :非Intel官方语法，在Unix/Linux的GCC编译环境中采用该语法</li>
+</ul>
+<h2 id="原生环境搭建"><a href="#原生环境搭建" class="headerlink" title="原生环境搭建"></a>原生环境搭建</h2><ul>
+<li>windows系统</li>
+<li>RedAsm集成工具</li>
+</ul>
+<h2 id="指令和语法"><a href="#指令和语法" class="headerlink" title="指令和语法"></a>指令和语法</h2><p>在让我们看看 x86_64 平台提供了哪些寄存器给我们使用，</p>
+<ul>
+<li>16个通用寄存器，例如，rax，rbx，rcx，rdx等</li>
+<li>6个16位段寄存器，例如：cs，ds，等</li>
+</ul>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../213.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1523,604 +2185,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../209.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../209.html" itemprop="url">从0到1打造一门属于自己的编程语言(一)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-17T16:14:19+08:00">
-                2021-01-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>学习编程语言的开发,目的不是为了造轮子,而是为了了解程序语言的本质和原理,方便我们日常的开发</p>
-<p>学习此课程前需要提前掌握以下知识:</p>
-<ul>
-<li>了解汇编语言</li>
-<li>熟悉至少一门高级编程语言</li>
-</ul>
-<h2 id="编程语言的来源"><a href="#编程语言的来源" class="headerlink" title="编程语言的来源"></a>编程语言的来源</h2><p>我们如果想要和外国人交流,那么我们必须学会外语, 或者让外国人学咱们的语言</p>
-<p>我们如果想要指挥计算机,那么我们必须学会计算机语言,让计算机学咱们的语言不太可能,至少现在不行! </p>
-<p>很多人都认为我们平常使用的编程语言比如C语言 Java语言等就是计算机语言,这种说法不太严谨, 因为计算机压根不认识编程语言,它只认识二进制码, 也就是说 二进制码才是计算机真正的语言</p>
-<p>那我们要指挥计算机岂不是得学<strong>二进制码(机器码)</strong>,在编程语言发明之前,确实是如此</p>
-<p><strong>科技的进步来源于懒惰</strong></p>
-<p>人类势必不会甘愿长期忍受机器码的摧残, 为了摆脱效率低下的编码,于是乎,聪明的人类发明了编程语言,比如汇编, 相比机器码汇编显然要舒服的多, 但是随着时间的推移,人们发现汇编语言存在非常严重的弊端, 最突出的一点就是不同cpu架构需要制定一套不同指令集,通俗一点就是不同cpu对应着不同的一套汇编语言,这就导致了无法跨平台</p>
-<p>有人会问,为什么当时大家不使用同一种cpu呢, 历史不能预知未来的发展,每个时代都有各自的商业竞争</p>
-<p><strong>新技术的出现往往是因为问题的长期累积</strong></p>
-<p>于是乎,跨平台语言C语言问世了, 但是C语言知识语言跨平台,但是其编写的程序并不跨平台</p>
-<p>于是乎,可以程序跨平台的Java语言问世了</p>
-<p>……..</p>
-<p>从这段历史,我们不难发现:</p>
-<p><strong>编程语言只是一个方便人类与计算机交流的工具</strong></p>
-<p>只是工具,仅此而已</p>
-<p>我们现在花大量时间和精力所学所用的都是别人制作出来的工具</p>
-<p>当我们因熟练掌握几门编程语言而洋洋得意时,是否有想过,我们只是一个工具的熟练运用者</p>
-<p>我并不是说学语言很low, 毕竟编程语言的门槛也不低,需要花大量时间和精力才能有效掌握,我只是想说,一旦你明白了语言的创造过程, 那就等于你掌握了现在市面上所有的编程语言, 所有的语言,原理都是一样的,只不过语法和关键字不同,仅此而已</p>
-<p>也就是说,我们需要去了解工具的生产过程</p>
-<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><p>如果你去网上搜相关编程语言制作的视频或资料, 基本上都是词法分析,语法分析,语义分析等等, 让人一头雾水, 直接劝退</p>
-<p>试想一下,在若干年前编程语言还没有问世的时候,有词法语法语义符号token等等这一些个含义么? 完全没有!</p>
-<p>这些理论都是前人经验总结而成, 经验固然很好,能少走弯路,但是对于初学者来讲极其不友好</p>
-<p>只有从初学者的角度出发,才能更平滑地学习到原本复杂的知识</p>
-<p>因此抛开这些专业术语吧,从0开始出发</p>
-<h2 id="起步"><a href="#起步" class="headerlink" title="起步"></a>起步</h2><p>假如现在编程语言还未问世,你现在要自创一门语言方便人类开发, 你会怎么做?</p>
-<p> 比如我想让计算机帮忙算个数,计算1+1</p>
-<p>原本使用机器码可能得这样写:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">4F 9B 55 7C 2D 3A  ;实际过程中我们一般使用十六进制进行表示,cpu执行的时候执行的是对应的二进制</span><br></pre></td></tr></table></figure>
-
-<p>此时,我可能会考虑用一句话来代替这个计算1加1的功能,比如</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">加:1+1   ;这是不是好理解多了</span><br></pre></td></tr></table></figure>
-
-<p>问题来了, 如果将我这句话转成机器码呢? 也就是说,我们需要将这句话翻译成机器码, 那怎么翻译呢? 是不是得需要一个翻译工具呀</p>
-<p>于是乎,我们与此同时需要想办法整一个翻译工具, 由于我设计的这句话是敲在计算机上的,而不是写在纸上的, 如果是写在纸上的,兴许我们可以造一台机器将我写的内容转印成机器码,然后机器码敲入计算机:cry:… 这种愚蠢的做法, 简直就是科技的倒退</p>
-<p>既然是直接敲在计算机中,那我们的翻译工具必然也是一个能被cpu执行的程序, 那我们需要先编写翻译工具这个程序的机器码</p>
-<p>理论上是这么个逻辑</p>
-<p>我们需要一边指定语法规则,一边编写和优化的翻译程序,因为我们的需求不单单是让计算机做加法运算</p>
-<blockquote>
-<p>这个能把我们指定的语言翻译成机器码的翻译工具，就是当今所说的编译器，后文皆以编译器替代</p>
-</blockquote>
-<h2 id="编译器该如何写"><a href="#编译器该如何写" class="headerlink" title="编译器该如何写"></a>编译器该如何写</h2><p>由于源代码都是存放在文件中，按照我们的正常思维，最先想到的是将这个文件中的内容读取出来，然后从头到尾进行匹配判断，根据不同的关键字判断不同的功能，然后用与之对应的机器码进行替换</p>
-<p>cpu在进行文件读取的时候，本质上读取的是二进制，那我们编写的中文或者英文和二进制数据的一一对应关系就涉及到编码格式问题，常见的编码格式有：</p>
-<ul>
-<li>ASCII码 (只识别英文)</li>
-<li>GBK （识别英文和中文）</li>
-<li>UTF-8 （识别各个国家的语言）</li>
-<li>…</li>
-</ul>
-<p>假如我们接下来要使用UTF-8进行编码，那么我们需要指定一张表，也就是二进制码和功能之间的一一对应关系，比如算术运算中<code>加</code>这个关键字：编译器从文本中连续读取两个字节二进制数据然后查表，如果对应上了加法功能，那么继续往后读取需要进行运算的内容，读到结束标记的时候，然后将之前所读取的二进制转化成与之对应功能的机器码，以此类推，这个结束标记也是由我们来定，我们可以使用分号、回车换行或者其它特殊的符号作为一行语句的结束</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../207.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../207.html" itemprop="url">硬件开发之个人PCB电路板制作</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-07T16:14:19+08:00">
-                2021-01-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h2><h4 id="第一步-画电路原理图"><a href="#第一步-画电路原理图" class="headerlink" title="第一步 画电路原理图"></a>第一步 画电路原理图</h4><ol>
-<li><p>工具</p>
-<p><strong>Altium Designer 19</strong>: 中文官网：<a href="https://www.altium.com.cn/products/downloads" target="_blank" rel="noopener">https://www.altium.com.cn/products/downloads</a> </p>
-</li>
-</ol>
-<h4 id="第二步-联系PCB厂家"><a href="#第二步-联系PCB厂家" class="headerlink" title="第二步 联系PCB厂家"></a>第二步 联系PCB厂家</h4><ol>
-<li>廉价厂家推荐<ul>
-<li><a href="https://www.jlc.com/" target="_blank" rel="noopener">嘉立创</a> :10x10cm的板子5张 只需5块钱</li>
-<li><a href="https://www.jiepei.com" target="_blank" rel="noopener">捷配</a>  :10x10cm的板子5张 19块钱</li>
-</ul>
-</li>
-</ol>
-<h4 id="第三步-电子元器件采购"><a href="#第三步-电子元器件采购" class="headerlink" title="第三步 电子元器件采购"></a>第三步 电子元器件采购</h4><h4 id="第四步-电子元器件焊接"><a href="#第四步-电子元器件焊接" class="headerlink" title="第四步 电子元器件焊接"></a>第四步 电子元器件焊接</h4><h4 id="第四步-电路板测试"><a href="#第四步-电路板测试" class="headerlink" title="第四步 电路板测试"></a>第四步 电路板测试</h4><p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../206.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../206.html" itemprop="url">硬件开发之基础知识(-)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-06T16:14:19+08:00">
-                2021-01-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>随着智能家居的兴起,5G时代的到来, 智能硬件扮演者越来越关键的角色, 对于老百姓的我们而言,占据先机最好的办法的就是了解并掌握它, 因为知识是公平的</p>
-<h2 id="基础物理知识"><a href="#基础物理知识" class="headerlink" title="基础物理知识"></a>基础物理知识</h2><p>这些我们在学生时代都学过,现在需要把它们都重新拾起来</p>
-<h4 id="1-电压"><a href="#1-电压" class="headerlink" title="1. 电压"></a>1. 电压</h4><p>可以理解为电子移动的动力,压力即是动力,单位:V</p>
-<h4 id="2-电流"><a href="#2-电流" class="headerlink" title="2. 电流"></a>2. 电流</h4><p> 电荷的定向流动 ,犹如水流</p>
-<p>流动的电才能将电灯点亮</p>
-<p>单位:A</p>
-<h4 id="3-电的产生"><a href="#3-电的产生" class="headerlink" title="3.电的产生"></a>3.电的产生</h4><p>产生电的方式有很多种,摩擦生电,电解质生电,一般我们日常使用的电,是通过发电机发电,它的原理是:</p>
-<p> 闭合电路的一部分导体在磁场里做切割磁感线的运动时，导体中就会产生电流</p>
-<p>材料:</p>
-<pre><code>1. 磁铁
- 2. 线圈</code></pre><p>自制发电机:<a href="https://v.163.com/static/1/VYUIDVSRG.html" target="_blank" rel="noopener">https://v.163.com/static/1/VYUIDVSRG.html</a></p>
-<h2 id="电子元器件"><a href="#电子元器件" class="headerlink" title="电子元器件"></a>电子元器件</h2><p>分类:</p>
-<ul>
-<li>元件:工厂在加工时没改变原材料分子成分的产品可称为元件。元件属于不需要能源的器件。它包括：电阻、电容、电感等</li>
-<li>器件:工厂在生产加工时改变了原材料分子结构的产品称为器件。器件需要消耗能源,它包括双极性晶体三极管 场效应晶体管 可控硅 等</li>
-</ul>
-<h4 id="常见电子元器件"><a href="#常见电子元器件" class="headerlink" title="常见电子元器件"></a>常见电子元器件</h4><ol>
-<li>电阻</li>
-<li>电容</li>
-<li>二极管</li>
-<li>三极管</li>
-<li>继电器</li>
-<li>电容器</li>
-<li>电位器</li>
-<li>传感器</li>
-<li></li>
-</ol>
-<h3 id="电流的的流向判断"><a href="#电流的的流向判断" class="headerlink" title="电流的的流向判断"></a>电流的的流向判断</h3><p><strong>第一步</strong>:判断是否有一条电路直接将正负极向连,如果有则短路,没有则进入第二步</p>
-<p><strong>第二步</strong>:在电流分叉路口,判断是否有一条电路没有连接任何元器件,如果有则走这条路,其他路不通, 如果都连接了器件,那么都有电流通过</p>
-<h2 id="串联和并联电路"><a href="#串联和并联电路" class="headerlink" title="串联和并联电路"></a>串联和并联电路</h2><p> 1.串联电路的特点：<br>（1）电流：文字表达：串联电路中各处电流都相等.<br>公式表达：I=I1=I2=I3=……=In<br>（2）电压：文字表达：串联电路中的总电压等于各部分电路电压之和.<br>公式表达：U=U1+U2+U3+……+Un<br>（3）电阻：文字表达：串联电路中的总电阻等于各部分电路的电阻之和.<br>公式表达：R=R1+R2+R3+……+Rn<br>（4）分压定律：文字表达：串联电路中各部分电路两端电压与其电阻成正比.<br>公式表达：U1/R1=U2/R2=U3/R3=.=Un/Rn<br>另种表达：U1：U2：U3：…：Un= R1：R2：R3：…：Rn<br>特例：U1/U2=R1/R2<br>2.并联电路的特点：<br>（1）电流：文字表达：并联电路中总电流等于各支路中的电流之和.<br>公式表达：I=I1+I2+I3+……+In<br>（2）电压：文字表达：并联电路中各支路两端的电压都相等.<br>公式表达：U=U1=U2=U3=……=Un<br>（3）电阻：文字表达：并联电路总电阻的倒数等于各支路电阻倒数之和.<br>公式表达：1/R=1/R1+1/R2+1/R3+……+1/Rn<br>（4）分流定律：文字表达：并联电路中,流过各支路的电流与其电阻成反比.<br>公式表达：I1R1=I2R2=I3R3= …=InRn<br>特例：I1/I2=R2/R1 </p>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>在串联电路中</p>
-<ul>
-<li>电阻越大,截取的电压越大</li>
-</ul>
-<p>在并联电路中</p>
-<ul>
-<li>电阻越大, 截取的电流越小</li>
-<li>分支电路越多,总电流越大</li>
-</ul>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../203.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../203.html" itemprop="url">关于字节和字长以及半字的关系</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-05T16:14:19+08:00">
-                2021-01-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="关于字节"><a href="#关于字节" class="headerlink" title="关于字节"></a>关于字节</h2><p>一个字节是固定为8个二进制位</p>
-<h2 id="关于字-word"><a href="#关于字-word" class="headerlink" title="关于字(word)"></a>关于字(word)</h2><p>字的长度是可变的,它和cpu一次性能操作的实际位数有关</p>
-<p>比如16位的cpu一次能操作16位数,因次2个字节代表一个字</p>
-<p>如果是32位cpu,那么32位也就是4个字节代表一个字的长度(word)</p>
-<h2 id="关于半字"><a href="#关于半字" class="headerlink" title="关于半字"></a>关于半字</h2><p>半字即为字长的一半,在16位cpu中,半字即为一个字节,故在16位中没有半字这个说法,一半32位以上cpu环境中常用</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2171,7 +2235,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">265</span>
+                  <span class="site-state-item-count">269</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
