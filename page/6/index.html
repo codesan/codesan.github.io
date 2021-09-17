@@ -287,6 +287,737 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../225.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../225.html" itemprop="url">Git HEAD detached from XXX (git HEAD 游离) 解决办法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-08T14:14:19+08:00">
+                2021-03-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>通常我们在首次进行代码的拉取的时候容易出现HEAD游离状态, 也就是说当前操作不在任何一个现有分支上, 一般情况下我们在进行代码修改时需要先将对分支进行相应切换, 比如在<code>master</code>分支上进行开发, 那就<code>git checkout master</code>切换到<code>master</code>分支</p>
+<p>但是很多情况下我们容易忽视这个习惯, 导致代码提交时才发现处在游离分支上, 这个时候如果进行分支的强行切换意味着所做的代码修改全部付之一炬, 那我们该如何处理这种情况呢?</p>
+<p>事实上, <code>git</code>已经给我们提供了相应的智能提示, 在我们<code>push</code>代码时会警告提示我们:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Warning: you are leaving 1 commit behind, not connected to</span><br><span class="line">any of your branches:</span><br><span class="line"></span><br><span class="line">  84220ac update</span><br><span class="line"></span><br><span class="line">If you want to keep it by creating a new branch, this may be a good time</span><br><span class="line">to do so with:</span><br><span class="line"></span><br><span class="line"> git branch &lt;new-branch-name&gt; 84220ac</span><br><span class="line"></span><br><span class="line">Switched to branch &apos;master&apos;</span><br></pre></td></tr></table></figure>
+
+<p>这时我们只需要新开一个分支存储游离的内容, 然后再将两个分支进行合并即可</p>
+<h3 id="解决方案一"><a href="#解决方案一" class="headerlink" title="解决方案一"></a>解决方案一</h3><ol>
+<li><p>第一步 将游离部分代码放到一个临时分支</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch temp 84220ac</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>第二步 切换到开发主分支</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout master</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>第三步 将临时分支代码合并到开发主分支</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git merge temp</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>第四步 删除临时分支</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch -d temp</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="解决方案二"><a href="#解决方案二" class="headerlink" title="解决方案二"></a>解决方案二</h3><p><strong>本方案适用于代码还未commit</strong></p>
+<ol>
+<li><p>第一步 将游离代码放置到暂存区域</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git stash</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>第二步 将暂存区域的代码pop出来到当前分支</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git pop</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+</li>
+</ol>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../224.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../224.html" itemprop="url">Windows平台使用QEMU搭建ARM+Linux开发环境</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-02T17:14:19+08:00">
+                2021-02-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>由于目前市面上很多模拟器诸如夜神,网易MUMU,基本上使用的是x86的架构,虽然运行ARM程序没有问题,但是如果想使用<code>gdb</code>对ARM程序进行调试的话,就显得力不从心了,各种问题层出不穷,</p>
+<p>当然调试x86程序是没有问题的，</p>
+<p>如果非要对ARM程序进行<code>gdb</code>调试的话，可以采用Android Studio原生的模拟器（原生ARM太卡），但是考虑到很多人并不是从事安卓开发，加上Studio中的模拟器本就基于QEMU,  那么为了方便，我们直接搭建QEMU的环境</p>
+<h2 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h2><ul>
+<li><p>Windows宿主平台</p>
+</li>
+<li><p>QEMU安装包（这里使用的是20201124的版本）：<a href="https://qemu.weilnetz.de/w64/" target="_blank" rel="noopener">https://qemu.weilnetz.de/w64/</a></p>
+</li>
+<li><p>树莓派系统镜像：<a href="http://downloads.raspberrypi.org/raspbian/images/raspbian-2020-02-14/" target="_blank" rel="noopener">http://downloads.raspberrypi.org/raspbian/images/raspbian-2020-02-14/</a></p>
+<blockquote>
+<p>树莓派是基于Debian的Linux系统</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h2><p>QEMU下载安装完毕后,其安装目录会包含很多不同架构的执行文件,这里我们选择<code>qemu-system-arm.exe</code>,打开命令窗口:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-arm.exe -machine versatilepb -L  -m 128  -hda 2020-02-13-raspbian-buster.img</span><br></pre></td></tr></table></figure>
+
+<p><strong>相关指令选项介绍:</strong></p>
+<ul>
+<li><strong>-M</strong> :指定机器</li>
+<li><strong>-name</strong>：给虚拟系统起个名称</li>
+<li><strong>-cpu</strong>:指定cpu型号</li>
+<li><strong>-smp</strong> :指定cpu的个数 比如<code>-smp 2</code></li>
+<li><strong>-m</strong>: 指定内存大小单位MB</li>
+<li><strong>-vga</strong> :指定显卡 比如 <code>-vga vmware</code> </li>
+<li><strong>-hda</strong>: 指定硬盘镜像</li>
+<li><strong>-initrd</strong>: 指定 RAM磁盘镜像</li>
+<li><strong>-fda</strong> : 指定软盘镜像</li>
+<li><strong>-L</strong>:bios位置</li>
+<li><strong>-cdrom</strong>:光盘镜像</li>
+<li><strong>-no-reboot:</strong> 不重启退出 </li>
+<li><strong>-kernel</strong> :指定内核文件</li>
+<li><strong>-serial</strong> :设置串口 比如:<code>-serial stdio</code> 表示 重定向Guest 的串口到Host的标准输入输出 </li>
+<li><strong>-boot</strong> :启动模式 一共有三种 , 分别为<code>floppy(a), hard disk(c), CD-ROM(d)</code></li>
+</ul>
+<p>上面这条指令显然无法启动系统，因为还缺少了相应<code>kernel-qemu</code>文件和配置：</p>
+<p><strong>kernel-qemu下载</strong>：</p>
+<p><a href="https://github.com/dhruvvyas90/qemu-rpi-kernel" target="_blank" rel="noopener">GitHub - dhruvvyas90/qemu-rpi-kernel: Qemu kernel for emulating Rpi on QEMU</a></p>
+<p>我们选择里面的<code>versatile-pb-buster.dtb</code> 和<code>kernel-qemu-5.4.51-buster</code> 这两个文件进行下载，这是和系统版本一一对应的。下载后最好放在qemu的安装目录</p>
+<p>然后输入以下指令：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-arm -M versatilepb -cpu arm1176 -m <span class="number">256</span> -drive <span class="string">"file=系统镜像路径,if=none,index=0,media=disk,format=raw,id=disk0"</span> -device <span class="string">"virtio-blk-pci,drive=disk0,disable-modern=on,disable-legacy=off"</span> -net <span class="string">"user,hostfwd=tcp::5022-:22"</span> -dtb versatile-pb-buster.dtb -kernel kernel-qemu-<span class="number">5.4</span>.<span class="number">51</span>-buster -append <span class="string">"root=/dev/vda2 panic=1"</span> -no-reboot -net nic</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：需要按照以上指令运行，否则有可能出现系统启动不起来的情况</p>
+<p><code>-net nic</code> 可开启网络 方便远程连接</p>
+<p><code>-net &quot;user,hostfwd=tcp::5022-:22&quot;</code>  表示设置端口映射</p>
+</blockquote>
+<p>系统安装完毕后，直接进入树莓派桌面，在弹出的设置窗口中可以更改系统语言为中文, 还可以设置系统密码</p>
+<p>至此<code>ARM+Linux</code>环境搭建完毕</p>
+<h2 id="准备开发"><a href="#准备开发" class="headerlink" title="准备开发"></a>准备开发</h2><p>接下来我们通过<code>ssh</code>连接树莓派终端,打开<code>cmd</code>命令窗口,输入:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh pi@127.0.0.1 -p 5022</span><br></pre></td></tr></table></figure>
+
+<p>回车后会提示输入密码,这里输入之前设置的系统密码</p>
+<p>此时就进入树莓派的<code>Linux</code>终端,为什么不直接使用<code>qemu</code>中的LX终端? 还不是因为模拟器延迟卡顿</p>
+<p>如果想往树莓派中传输文件,可以直接使用<code>ftp</code>工具,比如<code>FileZilla</code>或者 <code>SecureCRT</code> 选择<code>sftp</code>或者<code>ssh2</code>模式,其登陆参数如下:</p>
+<ul>
+<li><strong>主机</strong>:127.0.0.1</li>
+<li><strong>用户名</strong>:pi</li>
+<li><strong>端口</strong>:5022,</li>
+<li><strong>密码同上</strong></li>
+</ul>
+<h2 id="程序调试"><a href="#程序调试" class="headerlink" title="程序调试"></a>程序调试</h2><p>紧接着使用<code>gdb+gdbserver</code>对C程序进行调试</p>
+<p>首先利用<code>ftp</code>工具将已经编译好的可执行文件和GCC包下<code>arm-none-linux-gnueabi\libc\usr\bin</code>目录中的<code>gdbserver</code>传送到模拟器中</p>
+<p>然后执行以下命令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gdbserver :22349 test</span><br></pre></td></tr></table></figure>
+
+<p>开始监听端口, 但是问题来了,该模拟器的<code>ip</code>不在局域网段上,导致宿主机连接不上, 如果你也出现同样的问题,可以采用端口映射的办法来替代,方法很简单,只需要在模拟器启动时多追加加上一行参数<code>hostfwd=tcp::22349-:22349</code>,具体启动指令修改如下:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-arm -M versatilepb -cpu arm1176 -m 256 -drive "file=2020-02-13-raspbian-buster.img,if=none,index=0,media=disk,format=raw,id=disk0" -device "virtio-blk-pci,drive=disk0,disable-modern=on,disable-legacy=off" -net "user,hostfwd=tcp::5022-:22,hostfwd=tcp::22349-:22349" -dtb versatile-pb-buster.dtb -kernel kernel-qemu-5.4.51-buster -append "root=/dev/vda2 panic=1" -no-reboot  -net nic</span><br></pre></td></tr></table></figure>
+
+<p>如此一来就可以在宿主<code>gdb</code>调试窗口中直接使用以下指令进行连接:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) target remote 127.0.0.1:22349</span><br></pre></td></tr></table></figure>
+
+<p>连接成功了,通过以上这种方式,我们只需要将模拟器启动使其后台运行,我们通过ssh进行登录连接,这样速度快了很多,而且相比一些安卓模拟器,QEMU占用系统资源也不高</p>
+<p>另外我们发现，还存在<strong>声卡缺失，</strong>同时运行有<strong>延迟卡顿</strong>现象，我们接下来对这两方面进行优化</p>
+<h2 id="小问题"><a href="#小问题" class="headerlink" title="小问题"></a>小问题</h2><p>如果是raw格式,可能会有些风险警告,可以通过<code>-drive format=raw</code>进行指定处理:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-arm.exe  -machine raspi2b -drive file=2020-02-13-raspbian-buster.img,format=raw,index=0,media=disk</span><br></pre></td></tr></table></figure>
+
+<h2 id="附加内容"><a href="#附加内容" class="headerlink" title="附加内容"></a>附加内容</h2><p><strong>查看cpu信息:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lscpu</span><br></pre></td></tr></table></figure>
+
+<p><strong>查看系统和内核版本:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -a</span><br></pre></td></tr></table></figure>
+
+<h3 id="镜像备份模式"><a href="#镜像备份模式" class="headerlink" title="镜像备份模式"></a>镜像备份模式</h3><p>随着我们对系统的频繁操作我们发现系统镜像文件在不断增大，此时想要回到原来的状态，只能重新下载镜像安装了，如果你不想遭受重新下载的痛苦，那么建议你使用备份镜像的模式进行系统的安装</p>
+<p>这时<code>qemu-img.exe</code>派上了用场，它不仅可以帮助你创建空镜像文件，而且还可以对已有的镜像文件进行格式转换，QEMU支持的镜像有以下：</p>
+<table>
+<thead>
+<tr>
+<th align="left">Image format</th>
+<th align="center">Argument for -f and -O options</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">VMDK (VMware)</td>
+<td align="center">vmdk</td>
+</tr>
+<tr>
+<td align="left">QCOW2 (KVM, Xen)</td>
+<td align="center">qcow2</td>
+</tr>
+<tr>
+<td align="left">VHD (Hyper-V)</td>
+<td align="center">vpc</td>
+</tr>
+<tr>
+<td align="left">VHDX (Hyper-V)</td>
+<td align="center">vhdx</td>
+</tr>
+<tr>
+<td align="left">RAW</td>
+<td align="center">raw</td>
+</tr>
+<tr>
+<td align="left">VDI (VirtualBox)</td>
+<td align="center">vdi</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p> <code>qemu-img</code> 支持非常多种的文件格式，可以通过 <code>qemu-img -h</code> 查看.<br>其中 <code>raw</code> 和 <code>qcow2</code> 是比较常用的两种，</p>
+<p><code>raw</code> 是 <code>qemu-img</code> 命令默认的，<code>qcow2</code> 是 <code>qemu</code> 目前推荐的镜像格式，是功能最多的格式 </p>
+</blockquote>
+<p><strong>创建空镜像文件：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-img create -f qcow2 test.qcow2 10G</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>-f</code> 选项用于指定镜像的格式，</p>
+</li>
+<li><p><code>qcow2</code> 格式是 QEMU最常用的镜像格式，采用来写时复制技术来优化性能。</p>
+</li>
+<li><p><code>test.qcow2</code> 是镜像文件的名字，</p>
+</li>
+<li><p>10G是镜像文件最大值</p>
+</li>
+</ul>
+<p><strong>镜像转换:</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-img.exe  convert -f raw system.img -O vmdk  system.vmdk</span><br></pre></td></tr></table></figure>
+
+<p>表示将原始格式的镜像文件转换成<code>vmdk</code>格式</p>
+<p><strong>使用备份镜像的方式启动镜像示例：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-x86_64 -m 2048 -enable-kvm test.qcow2 -cdrom Centos-Desktop-x86_64-20-1.iso</span><br></pre></td></tr></table></figure>
+
+<h2 id="附加镜像"><a href="#附加镜像" class="headerlink" title="附加镜像"></a>附加镜像</h2><ul>
+<li><p>openwrt:<a href="https://archive.openwrt.org/chaos_calmer/" target="_blank" rel="noopener">https://archive.openwrt.org/chaos_calmer/</a></p>
+</li>
+<li><p>Debian系统镜像：<a href="https://people.debian.org/~aurel32/qemu/" target="_blank" rel="noopener">https://people.debian.org/~aurel32/qemu/</a></p>
+</li>
+<li><p>谷歌安卓原生镜像：<a href="https://developers.google.cn/android/images" target="_blank" rel="noopener">https://developers.google.cn/android/images</a></p>
+</li>
+<li><p>树莓派x86镜像: <a href="https://www.raspberrypi.org/downloads/raspberry-pi-desktop/" target="_blank" rel="noopener">https://www.raspberrypi.org/downloads/raspberry-pi-desktop/</a> </p>
+</li>
+</ul>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../223.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../223.html" itemprop="url">使用Clang编译C程序在安卓设备中执行</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-01T16:39:19+08:00">
+                2021-02-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>由于<code>Android NDK</code>从r18开始就已经抛弃GCC,转而将Clang当作默认编译器，因此我们直接使用NDK工具包进行编译</p>
+</blockquote>
+<h2 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h2><ul>
+<li>安卓模拟器</li>
+<li><code>android-ndk-r19c</code></li>
+</ul>
+<h2 id="实验步骤"><a href="#实验步骤" class="headerlink" title="实验步骤"></a>实验步骤</h2><p> <strong>第一步 源码编写</strong></p>
+<p>新建<code>test.c</code>文件</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;  </span></span></span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello world!\n"</span>);  </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> <strong>第二步 源码编译</strong></p>
+<p>在<code>android-ndk-r19c</code>目录下<code>toolchains</code>文件夹中的<code>llvm</code>文件夹即为<code>clang</code>编译工具包</p>
+<p>在<code>llvm</code>的子目录<code>bin</code>下存放这针对各个架构的clang编译器，由于模拟器是ARM架构，这里我们使用<code>armv7a-linux-androideabi23-clang</code></p>
+<p>在命令窗口执行如下指令：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">armv7a-linux-androideabi23-clang test.c -o test</span><br></pre></td></tr></table></figure>
+
+<p> 由于clang已经指定了Android23版本的SDK，这里无需要像GCC那样指定<code>-static</code>编译</p>
+<p><strong>第三步 将编译后的可执行文件传至安卓设备</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb push test /data/</span><br></pre></td></tr></table></figure>
+
+<p> <strong>第四步 执行文件</strong></p>
+<p>直接在控制台输入文件名即可执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./test</span><br></pre></td></tr></table></figure>
+
+<p>如果提示权限拒绝,那么</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 test</span><br></pre></td></tr></table></figure>
+
+<h2 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h2><p><strong>如果C语言和汇编语言混合开发</strong>，同样也可使用clang编译：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">armv7a-linux-androideabi23-clang aaa.s test.c -o test</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../222.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../222.html" itemprop="url">xcode中三种编译器的区别</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-01T15:39:19+08:00">
+                2021-02-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>在xcode中有三种编译器供我们选择，分别是GCC、LLVM GCC、LLVM compliler </p>
+</blockquote>
+<h2 id="三者区别"><a href="#三者区别" class="headerlink" title="三者区别"></a>三者区别</h2><ul>
+<li><strong>GCC</strong> ：是一套由 GNU 开发的编程语言编译器。Linux/Unix操作系统的标准编译器。编译前端和后端皆使用GCC</li>
+<li><strong>LLVM GCC</strong>：编译前端使用GCC，后端使用LLVM</li>
+<li><strong>LLVM compliler</strong> ：编译前端使用Clang，后端使用LLVM</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210201154646.png" alt></p>
+<h2 id="为什么存在三种编译器"><a href="#为什么存在三种编译器" class="headerlink" title="为什么存在三种编译器"></a>为什么存在三种编译器</h2><p>苹果公司最开始使用GCC编译器</p>
+<p>为了实现对 <strong>Objective-C</strong> 新特性的支持，苹果公司结合LLVM改进GCC，从而衍生出了一个GCC分支，也就是<strong>LLVM GCC</strong></p>
+<p>由于<strong>LLVM GCC</strong>的笨重和局限性,苹果公司从零开始开发了一套自己的编译前端系统<strong>Clang</strong>,配合<strong>LLVM</strong>,就有了<strong>LLVM GCC</strong></p>
+<h2 id="Clang的优势"><a href="#Clang的优势" class="headerlink" title="Clang的优势"></a>Clang的优势</h2><p>相比GCC而言:</p>
+<ul>
+<li>编译速度快,占用内存小</li>
+<li>模块化设计,易于扩展,易于IDE集成</li>
+<li>错误提示人性化</li>
+<li>产出小</li>
+</ul>
+<p>值得一提的是,<code>Android NDK</code>从<code>r18</code>开始就已经抛弃GCC,转而采用Clang编译,Clang未来可期</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../221.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1331,773 +2062,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../214.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../214.html" itemprop="url">汇编语言之行x86_32汇编</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-28T16:14:19+08:00">
-                2021-01-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="两大汇编语法"><a href="#两大汇编语法" class="headerlink" title="两大汇编语法"></a>两大汇编语法</h2><p>两种语法主要是针对x86架构汇编而言，对于其他架构没有这么一个说法</p>
-<ul>
-<li>Intel型语法: Intel官方语法，在Windows平台原生环境中采用该语法</li>
-<li>AT&amp;T型 :非Intel官方语法，在Unix/Linux的GCC编译环境中采用该语法</li>
-</ul>
-<h2 id="原生环境搭建"><a href="#原生环境搭建" class="headerlink" title="原生环境搭建"></a>原生环境搭建</h2><ul>
-<li>windows系统</li>
-<li>RedAsm集成工具</li>
-</ul>
-<h2 id="指令和语法"><a href="#指令和语法" class="headerlink" title="指令和语法"></a>指令和语法</h2><p>在让我们看看 x86_64 平台提供了哪些寄存器给我们使用，</p>
-<ul>
-<li>16个通用寄存器，例如，rax，rbx，rcx，rdx等</li>
-<li>6个16位段寄存器，例如：cs，ds，等</li>
-</ul>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../213.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../213.html" itemprop="url">GCC工具链都包含哪些工具</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T16:14:19+08:00">
-                2021-01-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="GCC"><a href="#GCC" class="headerlink" title="GCC"></a>GCC</h2><p> GCC原名为GNU C语言编译器（GNU C Compiler），原本只能处理C语言。后来随着功能的扩展,支持的语言种类越来越多 ,故更名为<em>GCC</em>（GNU Compiler Collection，GNU编译器套件）</p>
-<p>因此 GCC既可以指代C编译器,也可以指代GNU编译套件</p>
-<p>其套件囊括了许多子工具:</p>
-<ul>
-<li><p>gcc: C 编译器</p>
-</li>
-<li><p>g++: C++ 编译器</p>
-</li>
-<li><p>cpp: C 预处理器</p>
-</li>
-<li><p>as: 汇编器</p>
-</li>
-<li><p>ld: 连接器</p>
-</li>
-<li><p>objcopy: 目标文件翻译器,用于从连接器输出中创建一个ROM 映像</p>
-</li>
-<li><p>objdump: 目标文件阅读器, 用于反汇编目标文件</p>
-</li>
-<li><p>make: make 工具</p>
-</li>
-<li><p>gdb: 源代码调试器</p>
-</li>
-</ul>
-<h2 id="GCC工具链"><a href="#GCC工具链" class="headerlink" title="GCC工具链"></a>GCC工具链</h2><p>一个程序从代码编译到机器执行,中间需要经历很多步骤,比如从预编译,编译,到汇编和连接, 这一系列环环相扣过程中涉及到的GNU工具集,称之为GCC工具链</p>
-<p>在windows平台中,我们有许多的图形化IDE可以选择,一般编译工具链都集成进了软件内部,无需开发者关心,但是在Linux平台,基本以命令行的方式进行操作,那么对于开发者来说,需要了解每个工具的作用和具体使用方法</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../212.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../212.html" itemprop="url">汇编语言之GNU ARM</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-25T16:14:19+08:00">
-                2021-01-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="什么是GNU"><a href="#什么是GNU" class="headerlink" title="什么是GNU"></a>什么是GNU</h2><p>GNU最开始其实是一个<strong>操作系统</strong>,旨为打造一个开源免费自由的操作系统,目前操作系统还在完善中</p>
-<p><strong>GNU计划</strong>: 最初目标是创建一套完全自由的操作系统GNU 和相应的软件</p>
-<p><strong>GCC</strong> :（GNU Compiler Collection）GNU编译器套件,GNU提供的一整套的工具集,这套工具集中包含了汇编器,编译器和链接器,二进制转换,调试工具等</p>
-<p><strong>GCC优势</strong>:</p>
-<ul>
-<li>免费开源</li>
-<li>贴近系统底层,功能强大,灵活性高</li>
-<li>跨平台，方便<a href="http://code.newban.cn/201.html">交叉编译</a></li>
-</ul>
-<p><strong>GCC劣势</strong>:</p>
-<ul>
-<li>工具基本采用命令行方式,学习和使用门槛较高</li>
-</ul>
-<p>接下来我们要学习的就是GNU计划众多的产物之一<strong>GNU FOR ARM</strong></p>
-<h2 id="汇编器与指令集"><a href="#汇编器与指令集" class="headerlink" title="汇编器与指令集"></a>汇编器与指令集</h2><ol>
-<li><p><strong>什么是汇编器</strong></p>
-<p>将汇编语言翻译成机器码的工具</p>
-</li>
-<li><p><strong>什么是编译器</strong></p>
-<p>将高级语言翻译成机器语言或者汇编语言的工具</p>
-</li>
-<li><p><strong>汇编器和编译器的区别</strong></p>
-<p>汇编器的服务对象是汇编语言,编译器的服务对象是高级语言</p>
-</li>
-<li><p><strong>汇编器和汇编语法伪指令的关系</strong></p>
-<p>不同的CPU对应不同的指令集 ,不同的汇编器对应不同的伪指令集和汇编语法。</p>
-<p>每种汇编器都可以有自己的伪指令集和自己的语法</p>
-</li>
-</ol>
-<p>使用不同的汇编器汇编同一个cpu架构的汇编代码,所对应的指令绝对是一致的,但伪指令各有千秋</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">;使用ARM官方的汇编器</span><br><span class="line">  	AREA test, CODE</span><br><span class="line">	mov R3,#5</span><br><span class="line">    END		</span><br><span class="line">    </span><br><span class="line">;使用GNU的汇编器</span><br><span class="line">    .text    ;伪指令</span><br><span class="line">    mov R3,#5   ;传送指令皆为mov</span><br><span class="line">    .end</span><br></pre></td></tr></table></figure>
-
-<h2 id="常见的汇编器"><a href="#常见的汇编器" class="headerlink" title="常见的汇编器"></a>常见的汇编器</h2><ul>
-<li><strong>MASM汇编器</strong>:微软旗下专为<strong>x86架构</strong>打造的一款汇编器,支持8086汇编和win32汇编</li>
-<li><strong>GNU汇编器</strong> : 简称为<strong>GAS</strong>,是GNU旗下的一款免费开源跨平台汇编器其子集中包含了支持多种架构的汇编器,比如<code>GNU FOR ARM</code>就是单独面向ARM架构的汇编器,此外还有<code>GNU FOR X86</code>等</li>
-<li><strong><a href="https://www.nasm.us/pub/nasm/releasebuilds/2.14.03rc2/win64/" target="_blank" rel="noopener">NASM汇编器</a></strong>: 是一款面向<strong>x86架构</strong>的汇编器,支持8086汇编和win32汇编,同时可跨平台, 免费开源</li>
-<li><strong>ARMASM汇编器</strong>:ARM官方原生的汇编器,集成在了ADS工具上,适用于<strong>ARM架构</strong>,我们也一般称之为<strong>ADS汇编器</strong></li>
-</ul>
-<h2 id="两种ARM汇编器的各自用途"><a href="#两种ARM汇编器的各自用途" class="headerlink" title="两种ARM汇编器的各自用途"></a>两种ARM汇编器的各自用途</h2><ul>
-<li><strong>ARMASM汇编器</strong>:一般用于windows平台</li>
-<li><strong>GAS汇编器</strong>:支持windows平台和linux平台，方便跨平台<a href="http://code.newban.cn/201.html">交叉编译</a></li>
-</ul>
-<p>由于移动设备如<strong>安卓和iphone</strong>底层都是采用GNU的编译环境，我们如果要进行移动端的开发，那么势必需要掌握GNU ARM, 同时和ADS和KEIL收费工具相比,GUN工具全部免费,方便开发者进行使用</p>
-<blockquote>
-<p>如果你是从事android开发,有兴趣可以去翻NDK r17以下版本的库,里面用的编译工具就是GCC</p>
-</blockquote>
-<h2 id="GNU-ARM开发环境搭建"><a href="#GNU-ARM开发环境搭建" class="headerlink" title="GNU ARM开发环境搭建"></a>GNU ARM开发环境搭建</h2><p>我们需要准备以下两个工具:</p>
-<ol>
-<li><strong>GCC编译套件</strong></li>
-<li><strong>安卓模拟器</strong></li>
-</ol>
-<p>GCC编译套件根据cpu架构和操作系统的不同,又分为了很多子类:</p>
-<ul>
-<li><strong>纯ARM裸机</strong>: 对应<code>arm-none-eabi</code>工具包</li>
-<li><strong>ARM架构+Linux操作系统</strong>:对应<code>arm-none-linux-eabi</code>工具包</li>
-</ul>
-<p>由于接下来我们选择在安卓模拟器上进行开发学习,因此我们选择<code>arm-none-linux-eabi</code>这套工具来进行代码的编译</p>
-<p><a href="http://code.newban.cn/202.html">工具下载</a></p>
-<p><a href="http://code.newban.cn/215.html">GCC工具的具体使用</a></p>
-<h2 id="伪指令和伪操作"><a href="#伪指令和伪操作" class="headerlink" title="伪指令和伪操作"></a>伪指令和伪操作</h2><ol>
-<li><p>注释</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@我是注释</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>段的声明</p>
-<ul>
-<li><p>代码段</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.text</span><br><span class="line">	@代码</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>数据段</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.data</span><br><span class="line">	@代码</span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ul>
-</li>
-</ol>
-<ul>
-<li><p>自定义一个段</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.section .pangshu @定义一个名为.panghsu的段</span><br></pre></td></tr></table></figure>
-
-
-
-
-</li>
-</ul>
-<ol start="3">
-<li><p>函数或者标签的声明</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fun:  @在GNU环境中标签后面需要加冒号,而原生环境则不用</span><br><span class="line">	mov R0,#4</span><br><span class="line">	bx lr</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>数据的声明</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.byte @定义单字节数据，例如：.byte 0x14；</span><br><span class="line">.short @定义双字节数据，例如：.short 0x1000；</span><br><span class="line">.long @定义四字节数据，例如：.long 0x10001000；</span><br><span class="line">.quad @定义8字节，如：.quad 0x1234567890abcd；</span><br><span class="line">.float @定义浮点数，如：.float 0f-314159265358979323846264338327/95028841971.693993751E-40 @ -pi</span><br><span class="line"></span><br><span class="line">@字符串定义</span><br><span class="line">.string “abcd”, “efgh”, “hello!”</span><br><span class="line">.asciz “qwer”, “sun”, “world!”</span><br><span class="line">.ascii “welcome/0”</span><br><span class="line">@需要注意的是：.ascii伪操作定义的字符串需要自行添加结尾字符’/0’。</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>数据的批量定义</p>
-<ul>
-<li><p>格式如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.rept @重复次数</span><br><span class="line">  @数据定义代码</span><br><span class="line">.endr @结束重复定义</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>示例</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.rept 3</span><br><span class="line">.byte 0x23</span><br><span class="line">.endr</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>关于align</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">.global _start</span><br><span class="line">_start:</span><br><span class="line">    mov r0, #0x12</span><br><span class="line">	</span><br><span class="line">    .byte 0x12</span><br><span class="line">    .byte 0x34</span><br><span class="line"></span><br><span class="line">    ;.align 后跟为0，1，2或者不跟参数时都当作是4字节对齐</span><br><span class="line">.align </span><br><span class="line">    .byte 0x56</span><br><span class="line"></span><br><span class="line">    ; 2^3次方，8字节对齐</span><br><span class="line">.align 3</span><br><span class="line">    .word 0x1</span><br><span class="line">	</span><br><span class="line">    ; 2^5次访，32字节对齐</span><br><span class="line">.align 5</span><br><span class="line">    .word 0x2	</span><br><span class="line">	</span><br><span class="line">    ; 填充0x12345678，直到16字节对齐</span><br><span class="line">.balignl 16,0x12345678	</span><br><span class="line"></span><br><span class="line">    ;字符串</span><br><span class="line">    .ascii &quot;abc123&quot;</span><br><span class="line">	</span><br><span class="line">.align	</span><br><span class="line">    ;.ascii和.asciz的区别是，.asciz会在字符串后自动添加结束符\0. </span><br><span class="line">    .asciz &quot;def456&quot;</span><br><span class="line"></span><br><span class="line">    mov r0, #0xab</span><br><span class="line">	</span><br><span class="line">    ;.balign[wl] align, fill_value, max_padding</span><br><span class="line">.align</span><br><span class="line">    ; .balign 后跟的align参数必须为2的次方，否则会报错，按字节填充， fill_value要为字节</span><br><span class="line">.balign 8, 0x12</span><br><span class="line"></span><br><span class="line">    ; .balignw 按2字节填充</span><br><span class="line">.balignw 8, 0x3456	</span><br><span class="line"></span><br><span class="line">    ; .balignl 按4字节填充</span><br><span class="line">.balignl 8, 0xabcdef01</span><br></pre></td></tr></table></figure>
-
-<p>反汇编后的结果：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">00000000</span> &lt;_start&gt;:</span><br><span class="line">   <span class="number">0</span>:	e3a00012 	mov	r0, #<span class="number">18</span></span><br><span class="line">   <span class="number">4</span>:	<span class="number">3412</span>      	.<span class="keyword">short</span>	<span class="number">0x3412</span>              <span class="comment">// .byte 0x12 和 .byte 0x34</span></span><br><span class="line">   <span class="number">6</span>:	<span class="number">0000</span>      	.<span class="keyword">short</span>	<span class="number">0x0000</span>              <span class="comment">// .align 引起的填充</span></span><br><span class="line">   <span class="number">8</span>:	<span class="number">00000056</span> 	andeq	r0, r0, r6, asr r0  <span class="comment">// .byte 0x56</span></span><br><span class="line">   c:	e1a00000 	nop			; (mov r0, r0)  <span class="comment">// .align 3 8字节对齐</span></span><br><span class="line">  <span class="number">10</span>:	<span class="number">00000001</span> 	.word	<span class="number">0x00000001</span>          <span class="comment">// .word 0x1</span></span><br><span class="line">  <span class="number">14</span>:	e1a00000 	nop			; (mov r0, r0)  <span class="comment">// .align 5 ,32字节对齐</span></span><br><span class="line">  <span class="number">18</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">1</span>c:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">20</span>:	<span class="number">00000002</span> 	.word	<span class="number">0x00000002</span>          <span class="comment">// .word 0x2	</span></span><br><span class="line">  <span class="number">24</span>:	<span class="number">12345678</span> 	.word	<span class="number">0x12345678</span>          <span class="comment">// .balignl 16,0x12345678,填充0x12345678，直到16字节对齐</span></span><br><span class="line">  <span class="number">28</span>:	<span class="number">12345678</span> 	.word	<span class="number">0x12345678</span></span><br><span class="line">  <span class="number">2</span>c:	<span class="number">12345678</span> 	.word	<span class="number">0x12345678</span></span><br><span class="line">  <span class="number">30</span>:	<span class="number">31636261</span> 	.word	<span class="number">0x31636261</span>          <span class="comment">// .ascii "abc123"</span></span><br><span class="line">  <span class="number">34</span>:	<span class="number">3332</span>      	.<span class="keyword">short</span>	<span class="number">0x3332</span></span><br><span class="line">  <span class="number">36</span>:	<span class="number">0000</span>      	.<span class="keyword">short</span>	<span class="number">0x0000</span></span><br><span class="line">  <span class="number">38</span>:	<span class="number">34666564</span> 	.word	<span class="number">0x34666564</span>          <span class="comment">// .asciz "def456"</span></span><br><span class="line">  <span class="number">3</span>c:	<span class="number">3635</span>      	.<span class="keyword">short</span>	<span class="number">0x3635</span></span><br><span class="line">  <span class="number">3</span>e:	<span class="number">00</span>          	.byte	<span class="number">0x00</span></span><br><span class="line">  <span class="number">3f</span>:	e3a000ab 	mov	r0, #<span class="number">171</span>	; <span class="number">0xab</span>      <span class="comment">// mov r0, #0xab, 这里就不对齐了</span></span><br><span class="line">  <span class="number">43</span>:	<span class="number">00</span>          	.byte	<span class="number">0x00</span></span><br><span class="line">  <span class="number">44</span>:	<span class="number">12121212</span> 	.word	<span class="number">0x12121212</span>          <span class="comment">// .balign 8, 0x12</span></span><br><span class="line">  <span class="number">48</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">4</span>c:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">50</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">54</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">58</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">5</span>c:	e1a00000 	nop			; (mov r0, r0)</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<h2 id="指令和伪指令的区别"><a href="#指令和伪指令的区别" class="headerlink" title="指令和伪指令的区别"></a>指令和伪指令的区别</h2><ul>
-<li><p><strong>指令</strong>: 有与之对应的机器码,能被cpu所识别,和编译器无关</p>
-</li>
-<li><p><strong>伪指令</strong>:没有与之对应的机器码,无法被cpu识别,只能被编译器识别,不同编译器伪指令不一样</p>
-<p>不同的CPU对应不同的指令集；不同的汇编器对应不同的语法和伪指令集 </p>
-</li>
-</ul>
-<p>例子:ARM原生编译器和GNU FOR ARM</p>
-<h2 id="两种汇编器语法对比一览表"><a href="#两种汇编器语法对比一览表" class="headerlink" title="两种汇编器语法对比一览表"></a>两种汇编器语法对比一览表</h2><table>
-<thead>
-<tr>
-<th>GNU ARM汇编</th>
-<th>ADS ARM汇编</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>“@”或“/<em>…</em>/”</td>
-<td>“;”</td>
-</tr>
-<tr>
-<td>.include</td>
-<td>GET</td>
-</tr>
-<tr>
-<td>.equ</td>
-<td>EQU</td>
-</tr>
-<tr>
-<td>.global</td>
-<td>EXPORT</td>
-</tr>
-<tr>
-<td>.extern</td>
-<td>IMPORT</td>
-</tr>
-<tr>
-<td>.long</td>
-<td>DCD</td>
-</tr>
-<tr>
-<td>.end</td>
-<td>END</td>
-</tr>
-<tr>
-<td>entry:</td>
-<td>ENTRY</td>
-</tr>
-<tr>
-<td>.text</td>
-<td>AREA Init,CODE,READONLY</td>
-</tr>
-<tr>
-<td>.data</td>
-<td>AREA Block,DATA,READWRITE</td>
-</tr>
-<tr>
-<td>.macro</td>
-<td>MACRO</td>
-</tr>
-<tr>
-<td>.endm</td>
-<td>MEND</td>
-</tr>
-</tbody></table>
-<h2 id="汇编语言和C语言交互"><a href="#汇编语言和C语言交互" class="headerlink" title="汇编语言和C语言交互"></a>汇编语言和C语言交互</h2><h4 id="1-引入其他源文件函数"><a href="#1-引入其他源文件函数" class="headerlink" title="1.引入其他源文件函数"></a>1.引入其他源文件函数</h4><p>使用<code>import</code>或者<code>extern</code>伪指令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">;使用import伪指令</span><br><span class="line">AREA code, CODE</span><br><span class="line">import fun1         ;导入其他源文件中名为fun1的函数</span><br><span class="line">END</span><br><span class="line"></span><br><span class="line">;使用extern伪指令</span><br><span class="line">AREA code, CODE</span><br><span class="line">extern fun1       </span><br><span class="line">END</span><br></pre></td></tr></table></figure>
-
-<p><strong>两者区别:</strong></p>
-<ul>
-<li><code>import</code>:不管当前文件是否使用该引入的函数,该标签都会加入当前文件符号表,即为静态引用</li>
-<li><code>extern</code>:只有当前文件使用了该函数,才会将此标签加入符号表,即为动态引用</li>
-</ul>
-<h4 id="2-导出当前源文件中函数供其他文件访问"><a href="#2-导出当前源文件中函数供其他文件访问" class="headerlink" title="2.导出当前源文件中函数供其他文件访问"></a>2.导出当前源文件中函数供其他文件访问</h4><p>使用<code>export</code>或者<code>global</code>伪指令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">;使用import伪指令</span><br><span class="line">AREA code, CODE</span><br><span class="line">export fun         ;导出fun函数供其他源文件使用</span><br><span class="line"></span><br><span class="line">fun </span><br><span class="line">	mov R0,#4</span><br><span class="line">	bx lr</span><br><span class="line">END</span><br></pre></td></tr></table></figure>
-
-<h4 id="3-外链汇编之C语言调汇编函数"><a href="#3-外链汇编之C语言调汇编函数" class="headerlink" title="3.外链汇编之C语言调汇编函数"></a>3.外链汇编之C语言调汇编函数</h4><p>第一步,在汇编原文件中将函数暴露出来给供外部调用,使用<code>export</code>或者<code>global</code>伪指令:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">AREA code, CODE</span><br><span class="line">export arm_strcpy  ;或者使用global</span><br><span class="line"></span><br><span class="line">arm_strcpy</span><br><span class="line">loop </span><br><span class="line">	ldrb R4,[R0],#1 ;如果使用ldr 那么将偏移值改成4</span><br><span class="line">	cmp R4,#0</span><br><span class="line">	beq over</span><br><span class="line">	strb R4,[R1],#1</span><br><span class="line">	b loop</span><br><span class="line">over	</span><br><span class="line">END</span><br></pre></td></tr></table></figure>
-
-<p>第二步,在C文件中引用汇编中的函数,C文件中只能使用<code>extern</code>伪指令:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">extern arm_strcpy(char *src,char*des);</span><br><span class="line"></span><br><span class="line">int main2()&#123;</span><br><span class="line">	char *a=&quot;hello pangshu&quot;;</span><br><span class="line">	char b[64];</span><br><span class="line">	arm_strcpy(a,b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="4-外链汇编之汇编调c语言函数"><a href="#4-外链汇编之汇编调c语言函数" class="headerlink" title="4.外链汇编之汇编调c语言函数"></a>4.外链汇编之汇编调c语言函数</h4><p>第一步,在C文件中编写好函数</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">c_sum</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> a+b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>第二步, 在汇编文件中引入函数,使用<code>import</code>或者<code>extern</code>伪指令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AREA code, CODE</span><br><span class="line">import c_sum  </span><br><span class="line"></span><br><span class="line">mov R0,#1 ;第一个参数</span><br><span class="line">mov R1,#2 ;第二个参数</span><br><span class="line"></span><br><span class="line">END</span><br></pre></td></tr></table></figure>
-
-<p>第三步, 使用BL指令调用函数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AREA code, CODE</span><br><span class="line">import c_sum  </span><br><span class="line"></span><br><span class="line">mov R0,#1 ;第一个参数</span><br><span class="line">mov R1,#2 ;第二个参数</span><br><span class="line">BL c_sum</span><br><span class="line">END</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>在ARM中函数参数使用R0~R3这三个寄存器来进行传递,最多传递4个参数,超过4个参数使用栈进行处理,函数返回值通过R0进行传递</p>
-</blockquote>
-<h4 id="5-内嵌汇编"><a href="#5-内嵌汇编" class="headerlink" title="5.内嵌汇编"></a>5.内嵌汇编</h4><p>GNU内嵌汇编,格式如下:</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main2</span><span class="params">()</span></span>&#123;</span><br><span class="line">	__asm__(           <span class="comment">//大括号改成中括号</span></span><br><span class="line">	<span class="string">"mov R5,#0x00000005\n"</span>   <span class="comment">//汇编指令需要使用引号包裹，多条语句之间使用回车换行符进行分隔</span></span><br><span class="line">	<span class="string">"mov R6,#0x00000005"</span></span><br><span class="line">	);  <span class="comment">//需要以分号结尾</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="学习工具"><a href="#学习工具" class="headerlink" title="学习工具"></a>学习工具</h2><ul>
-<li>在线ARM汇编编辑器:<a href="https://azm.azerialabs.com/" target="_blank" rel="noopener">https://azm.azerialabs.com/</a></li>
-</ul>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../211.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../211.html" itemprop="url">视频帧率和码率对视频质量和文件大小的影响</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-24T16:14:19+08:00">
-                2021-01-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>我们从<strong>画面流畅度</strong>,<strong>画面清晰度</strong>,和<strong>视频文件体积</strong>三个方面进行分析:</p>
-<h2 id="帧率-FPS"><a href="#帧率-FPS" class="headerlink" title="帧率(FPS)"></a>帧率(FPS)</h2><p><strong>指每秒显示图像的张数</strong></p>
-<p>比如30帧,表示每秒显示30张图像</p>
-<p><strong>帧率越大,画面越流畅,帧率越小,画面越卡顿</strong>,如果低到1帧/秒,那么就相当于一个幻灯片了</p>
-<p><strong>帧率不会影响到画面的清晰度,只会影响画面的流畅度和文件的体积</strong>,帧率越大,视频对应的体积越大</p>
-<h2 id="分辨率-resolution"><a href="#分辨率-resolution" class="headerlink" title="分辨率(resolution)"></a>分辨率(resolution)</h2><p><strong>指像素点分布密度</strong></p>
-<p>比如24寸的显示器,设置1920x1080的分辨率,那就是横向由1920个像素点构成,纵向由1080个像素点构成,也就是说在屏幕尺寸固定的情况下,<strong>分辨率越高,画面越清晰细腻,反之,画面越模糊</strong></p>
-<p><strong>分辨率不会影响画面的流畅度,只会影响画面的清晰度和文件的体积</strong>,分辨率越大,视频体积越大</p>
-<h2 id="码率-Bitrate"><a href="#码率-Bitrate" class="headerlink" title="码率(Bitrate)"></a>码率(Bitrate)</h2><p><strong>指每秒传输的数据位数</strong>,单位kbps 即千位每秒 ,这里的位指的是二进制位</p>
-<p>基本的算法是:</p>
-<ul>
-<li><p>每秒传输的数据量=码率/8 </p>
-</li>
-<li><p>视频文件体积=码率/8x视频时长(s) =每秒传输的数据量*视频时长(s)</p>
-</li>
-</ul>
-<p>比如500Kbps,也就是每秒传输62K大小的数据, 假如按照帧率30fps进行计算,那么每张图片大小约为2kb大小</p>
-<p>也就是说视频时长和固定的情况下,<strong>码率越高,文件体积越大,同时视频显示的有效像素越多</strong>,视频更加接近原始分辨率,反之,码率越低,文件体积越小,但是视频能显示的有效像素就越少,原本1080p的分辨率,每帧图像至少需要占用20k的数据量,但是码率过低每帧只能分配2K的量,此时像素点显示不全,就会造成视频模糊不清晰</p>
-<p>因此,码率若是过低,再高的分辨率都拯救不了画质,反而会适得其反, </p>
-<p>事实上,低码率环境下,低分辨率画面要比高分辨率画面更加清晰</p>
-<p><strong>码率不会影响画面的流畅度,但是会影响画面的清晰度和文件的体积</strong></p>
-<h2 id="我们的需求"><a href="#我们的需求" class="headerlink" title="我们的需求"></a>我们的需求</h2><p>我们一般<strong>追求高清流畅的画质,同时文件体积尽可能小</strong>,那么该如何找到帧率 码率和分辨率三者的平衡点呢?</p>
-<p>首先在我们录制视频的时候,<strong>屏幕的分辨率一般是固定的</strong>,随着不同的电脑分辨率也不同(当然你要手动调整也行)</p>
-<p>其次,为了保证视频的流畅度我们一般将<strong>帧率设置在25fps</strong>以上</p>
-<p>那么我们想减小视频的体积的话,只能从码率入手了, 找到一个画质能接受,体积小的平衡点</p>
-<p>比如1980x1080的分辨率,我使用500kbps左右的码率,差不多可以接受,OBS在录制时默认也是在这个码率内来回波动</p>
-<p>以下是常见分辨率和码率之间平衡参考表:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210124171800.png" alt></p>
-<p><strong>举例</strong>:如果要想百分百还原1080p HQ的画质,至少需要5.76Mkpbs码率的支撑,如果是直播的话需要至少9M的宽带才能稳定传输对应的数据量,否则画面卡顿</p>
-<p>直播中,在分辨率和网速一定的情况下,我们会适当降低码率,牺牲部分清晰度的来保证视频的流畅性</p>
-<p>如果网速不行又希望画面还清晰流畅,那么就降低拍摄的分辨率,同时降低数据传输量也就是码率值,当然分辨率降低之后所谓的视频清晰度也只是相对的,凡事总有取舍</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2148,7 +2112,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">272</span>
+                  <span class="site-state-item-count">276</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

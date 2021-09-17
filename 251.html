@@ -89,12 +89,13 @@
 <meta property="og:site_name" content="乱码三千 – 分享实用IT技术">
 <meta property="og:description" content="起因最近有台云服务器到期, 续费太贵, 打算换一台便宜的, 之前服务器上使用docker部署了几个网站, 涉及到数据和程序迁移的问题, 在此做个记录 持久化数据迁移首先使用scp指令进行数据卷的迁移, 也就是跨服务器数据拷贝 假设两台机器IP分别为：  服务器A: 114.238.161.75，  服务器B: 143.224.34.73。   比如我在A服务器上操作，需要将B服务器上/home/l">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210913143619200.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png">
-<meta property="og:updated_time" content="2021-09-01T06:06:44.618Z">
+<meta property="og:updated_time" content="2021-09-16T06:11:37.106Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="跨服务器数据迁移">
 <meta name="twitter:description" content="起因最近有台云服务器到期, 续费太贵, 打算换一台便宜的, 之前服务器上使用docker部署了几个网站, 涉及到数据和程序迁移的问题, 在此做个记录 持久化数据迁移首先使用scp指令进行数据卷的迁移, 也就是跨服务器数据拷贝 假设两台机器IP分别为：  服务器A: 114.238.161.75，  服务器B: 143.224.34.73。   比如我在A服务器上操作，需要将B服务器上/home/l">
-<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210913143619200.png">
 
 
 
@@ -390,6 +391,30 @@
 <p>此外 加上<code>-p</code>参数还可以保留原文件的修改时间，访问权限:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r  -p root@143.224.34.73:/home/lk /root</span><br></pre></td></tr></table></figure>
 
+<h5 id="scp后台运行"><a href="#scp后台运行" class="headerlink" title="scp后台运行"></a>scp后台运行</h5><ol>
+<li><p>方式一 使用<code>nohup</code>, 同时尾部加<code>&amp;</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup scp -r  -p root@143.224.34.73:/home/lk /root &amp;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong>nohup</strong>: 表示忽略<code>hup</code>信号, 终端关闭任务进程也不销毁</p>
+</li>
+<li><p><strong>&amp;</strong>: 表示后台运行</p>
+</li>
+</ul>
+</li>
+<li><p>方式二 使用<code>bg</code>+<code>disown</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1.输入ctrl + z 暂停任务</span><br><span class="line">2.输入jobs查看任务号</span><br><span class="line">3.使用 bg %任务号 将该任务号放入后台</span><br><span class="line">4.使用 disown -h %任务号 使后台任务忽略hup信号</span><br></pre></td></tr></table></figure>
+
+<p>如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210913143619200.png" alt="image-20210913143619200"></p>
+<p><strong>注</strong>: 执行<code>disown</code>后, 任务被移出<code>jobs</code>, 使用<code>jobs</code>指令已经无法查看该任务, 可以使用<code>ps</code>进程查看指令判断任务是否已经结束:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -aux</span><br></pre></td></tr></table></figure>
+
+
+
+
+</li>
+</ol>
 <h3 id="Docker容器迁移"><a href="#Docker容器迁移" class="headerlink" title="Docker容器迁移"></a>Docker容器迁移</h3><ol>
 <li><p>首先 需要将容器保存为镜像</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker commit 容器名称 镜像名称</span><br></pre></td></tr></table></figure>
@@ -409,6 +434,8 @@
 </li>
 </ol>
 <h3 id="数据库迁移"><a href="#数据库迁移" class="headerlink" title="数据库迁移"></a>数据库迁移</h3><p>详情查看《<a href="https://code.newban.cn/131.html">mysql使用命令导入和导出sql文件</a>》</p>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><p><code>docker</code>容器在创建时配置的挂载目录, 如果宿主中挂载的目录不存在则自动创建并写入默认数据, 如果目录已经存在则使用已存在的目录和数据</p>
+<p>也就是说我们在进行容器迁移重新运行时, 不用担心原先目录下的数据会被覆盖重写 </p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
 <p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
 <p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
@@ -553,7 +580,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">272</span>
+                  <span class="site-state-item-count">276</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -606,7 +633,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#起因"><span class="nav-number">1.</span> <span class="nav-text">起因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#持久化数据迁移"><span class="nav-number">2.</span> <span class="nav-text">持久化数据迁移</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker容器迁移"><span class="nav-number">3.</span> <span class="nav-text">Docker容器迁移</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库迁移"><span class="nav-number">4.</span> <span class="nav-text">数据库迁移</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#起因"><span class="nav-number">1.</span> <span class="nav-text">起因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#持久化数据迁移"><span class="nav-number">2.</span> <span class="nav-text">持久化数据迁移</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#scp后台运行"><span class="nav-number">2.0.1.</span> <span class="nav-text">scp后台运行</span></a></li></ol></li></ol><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker容器迁移"><span class="nav-number">3.</span> <span class="nav-text">Docker容器迁移</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库迁移"><span class="nav-number">4.</span> <span class="nav-text">数据库迁移</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注意事项"><span class="nav-number">5.</span> <span class="nav-text">注意事项</span></a></li></div>
             
 
           </div>

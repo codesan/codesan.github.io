@@ -287,6 +287,767 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../245.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../245.html" itemprop="url">Web中关于转发和重定向的区别</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-16T11:02:19+08:00">
+                2021-08-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="转发"><a href="#转发" class="headerlink" title="转发"></a>转发</h3><p>服务端内部页面的跳转, 只作用于服务器内部, 和浏览器无关</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MDAwMTEyNQ==,size_16,color_FFFFFF,t_70.png" alt="在这里插入图片描述"></p>
+<p><strong>特点</strong>:</p>
+<ul>
+<li><p>地址栏不发生变化，显示的是上一个页面的地址</p>
+</li>
+<li><p>请求次数：只有1次请求</p>
+</li>
+<li><p>请求域中数据不会丢失</p>
+</li>
+</ul>
+<p><strong>关键方法</strong>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">request.getRequestDispatcher(&quot;/jump_ad&quot;).forward(request, response)</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例</strong>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">@CrossOrigin</span><br><span class="line">@RestController</span><br><span class="line">class JumpControllor &#123;</span><br><span class="line"></span><br><span class="line">    @Autowired</span><br><span class="line">    lateinit var shortService: ShortKeyService</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @GetMapping(&quot;/test&quot;)</span><br><span class="line">    fun test(</span><br><span class="line">        response: HttpServletResponse,</span><br><span class="line">        request: HttpServletRequest</span><br><span class="line">    ) &#123;</span><br><span class="line">                request.getRequestDispatcher(&quot;/jump_ad&quot;).forward(request, response)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    @GetMapping(&quot;/jump_ad&quot;)</span><br><span class="line">    fun jumpAd(request: HttpServletRequest,response: HttpServletResponse) &#123;</span><br><span class="line">        response.writer.println(&quot;哈哈哈&quot;)</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="转发-1"><a href="#转发-1" class="headerlink" title="转发"></a>转发</h3><p>浏览器端的页面跳转, 同时作用于浏览器和服务端</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MDAwMTEyNQ==,size_16,color_FFFFFF,t_70-20210816111205564.png" alt="在这里插入图片描述"></p>
+<p><strong>特点</strong>:</p>
+<ul>
+<li>地址栏：显示新的地址</li>
+<li>请求次数：2次</li>
+<li>请求域中的数据会丢失，因为是2次请求</li>
+</ul>
+<p><strong>关键方法</strong>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">response.sendRedirect(&quot;新地址&quot;)</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例</strong>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">@CrossOrigin</span><br><span class="line">@RestController</span><br><span class="line">class JumpControllor &#123;</span><br><span class="line"></span><br><span class="line">    @Autowired</span><br><span class="line">    lateinit var shortService: ShortKeyService</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @GetMapping(&quot;/test&quot;)</span><br><span class="line">    fun test(</span><br><span class="line">        response: HttpServletResponse,</span><br><span class="line">        request: HttpServletRequest</span><br><span class="line">    ) &#123;</span><br><span class="line">        response.sendRedirect(&quot;http://www.baidu.com&quot;)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../243.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../243.html" itemprop="url">Javascript中click点击事件的若干种种写法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-16T10:51:19+08:00">
+                2021-08-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="第一种"><a href="#第一种" class="headerlink" title="第一种"></a>第一种</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Javascript中点击事件方法一<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn"</span>&gt;</span>click<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">var</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">"btn"</span>);</span></span><br><span class="line"><span class="actionscript">        btn.onclick=<span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="actionscript">            alert(<span class="string">"hello world"</span>);</span></span><br><span class="line">        &#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>移除事件:</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">btn.onclick=<span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="第二种"><a href="#第二种" class="headerlink" title="第二种"></a>第二种</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Javascript中点击事件方法二<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn"</span>&gt;</span>click<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">var</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">"btn"</span>);</span></span><br><span class="line"><span class="actionscript">        btn.addEventListener(<span class="string">'click'</span>,<span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="actionscript">            alert(<span class="string">"hello wrold"</span>);</span></span><br><span class="line"><span class="actionscript">        &#125;,<span class="literal">false</span>)</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="第三种"><a href="#第三种" class="headerlink" title="第三种"></a>第三种</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Javascript中点击事件方法三<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="actionscript">        <span class="function"><span class="keyword">function</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="actionscript">            alert(<span class="string">"hello world"</span>);</span></span><br><span class="line">        &#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn"</span> <span class="attr">onclick</span>=<span class="string">"test()"</span>&gt;</span>click<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="第四种"><a href="#第四种" class="headerlink" title="第四种"></a>第四种</h4><p>模拟触发事件:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>usually function<span class="tag">&lt;/<span class="name">title</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span> </span><br><span class="line"><span class="actionscript"><span class="function"><span class="keyword">function</span> <span class="title">load</span><span class="params">()</span></span>&#123; </span></span><br><span class="line"><span class="actionscript">  <span class="comment">//下面两种方法效果是一样的 </span></span></span><br><span class="line"><span class="javascript"> <span class="built_in">document</span>.getElementById(<span class="string">"target"</span>).onclick(); </span></span><br><span class="line"><span class="javascript">  <span class="built_in">document</span>.getElementById(<span class="string">"target"</span>).click(); </span></span><br><span class="line">&#125; </span><br><span class="line"><span class="actionscript"><span class="function"><span class="keyword">function</span> <span class="title">test</span><span class="params">()</span></span>&#123; </span></span><br><span class="line"><span class="actionscript">  alert(<span class="string">"test"</span>); </span></span><br><span class="line">&#125; </span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span> <span class="attr">onload</span>=<span class="string">"load()"</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"target"</span> <span class="attr">onclick</span>=<span class="string">"test()"</span>&gt;</span>test<span class="tag">&lt;/<span class="name">button</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../244.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../244.html" itemprop="url">数据库操作之多表联合查询sql语句</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-12T16:14:19+08:00">
+                2021-08-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="表准备"><a href="#表准备" class="headerlink" title="表准备"></a>表准备</h4><p>假设数据库有两张表 名为<code>person</code>和<code>city</code></p>
+<p>表<code>person</code>字段如下:</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+<th>c_id</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>张三</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>李四</td>
+<td>2</td>
+</tr>
+<tr>
+<td>3</td>
+<td>王五</td>
+<td>5</td>
+</tr>
+</tbody></table>
+<p>表<code>city</code>字段如下</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>city</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>北京</td>
+</tr>
+<tr>
+<td>2</td>
+<td>上海</td>
+</tr>
+<tr>
+<td>3</td>
+<td>广州</td>
+</tr>
+</tbody></table>
+<h4 id="多表合一查询"><a href="#多表合一查询" class="headerlink" title="多表合一查询"></a>多表合一查询</h4><ol>
+<li><strong>第一种</strong></li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> xxx,xxx <span class="keyword">from</span> 表<span class="number">1</span>，表<span class="number">2</span> <span class="keyword">where</span> 表<span class="number">1.</span>xxx=表<span class="number">2.</span>xxx</span><br></pre></td></tr></table></figure>
+
+<p>示例:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">name</span>, city <span class="keyword">from</span> person, city <span class="keyword">where</span> name.c_id = city.id;</span><br></pre></td></tr></table></figure>
+
+<p>查询结果:</p>
+<table>
+<thead>
+<tr>
+<th>city</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>北京</td>
+<td>张三</td>
+</tr>
+<tr>
+<td>上海</td>
+<td>李四</td>
+</tr>
+</tbody></table>
+<ol start="2">
+<li><strong>第二种 使用 <code>join</code></strong></li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> xxx,xxx <span class="keyword">from</span> 表<span class="number">1</span> <span class="keyword">inner</span> <span class="keyword">join</span> 表<span class="number">2</span> <span class="keyword">on</span> 表<span class="number">1.</span>xxx=表<span class="number">2.</span>xxx</span><br></pre></td></tr></table></figure>
+
+<p>示例:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">name</span>, city <span class="keyword">from</span> person <span class="keyword">inner</span> <span class="keyword">join</span> city <span class="keyword">on</span> name.c_id = city.id;</span><br></pre></td></tr></table></figure>
+
+<p>查询结果和第一种一致</p>
+<h4 id="根据一张表字段查询另外一张表"><a href="#根据一张表字段查询另外一张表" class="headerlink" title="根据一张表字段查询另外一张表"></a>根据一张表字段查询另外一张表</h4><ol>
+<li>查询所属北京的都有哪些人</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 嵌套查询方式</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">name</span></span><br><span class="line"><span class="keyword">from</span> person </span><br><span class="line"><span class="keyword">where</span> c_id = ( <span class="keyword">select</span> <span class="keyword">id</span>  <span class="keyword">from</span> city  <span class="keyword">where</span> city = <span class="string">'北京'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#或者非嵌套查询方式</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">name</span></span><br><span class="line"><span class="keyword">from</span> person p, city c</span><br><span class="line"><span class="keyword">where</span> p.c_id = c.id <span class="keyword">and</span> c.city= <span class="string">'北京'</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><code>like</code>关键字查询姓张的有多少人</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(<span class="keyword">distinct</span>(<span class="keyword">name</span>)) </span><br><span class="line">  <span class="keyword">from</span> person</span><br><span class="line">  <span class="keyword">where</span> <span class="keyword">name</span> <span class="keyword">like</span> <span class="string">'张%'</span>;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><code>in</code>嵌套查询 判断查询的表达式是否在多个值的列表中</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">name</span> </span><br><span class="line"><span class="keyword">from</span> person </span><br><span class="line"><span class="keyword">where</span> c_id <span class="keyword">in</span> ( <span class="keyword">select</span> <span class="keyword">id</span> <span class="keyword">from</span> city);</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><code>some</code>部分匹配查询 如果在一系列比较中，有些值为True，那么结果就为True</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">name</span> </span><br><span class="line"><span class="keyword">from</span> person </span><br><span class="line"><span class="keyword">where</span> c_id = <span class="keyword">some</span> ( <span class="keyword">select</span> <span class="keyword">id</span> <span class="keyword">from</span> city);</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li><code>all</code>全部匹配查询 如果一系列的比较都为true，那么结果才能为true</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#大于以下返回的所有id，此结果才为True，此结果才返回</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">name</span> </span><br><span class="line"><span class="keyword">from</span> person </span><br><span class="line"><span class="keyword">where</span> c_id &gt; <span class="keyword">all</span> ( <span class="keyword">select</span> <span class="keyword">id</span> <span class="keyword">from</span> city);</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li><code>exists</code>嵌套查询 如果子查询有结果集返回，那么就为True 一旦找到第一个匹配的记录后，就马上停止查找</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * </span><br><span class="line"><span class="keyword">from</span> person </span><br><span class="line"><span class="keyword">where</span> <span class="keyword">exists</span> ( <span class="keyword">select</span> * <span class="keyword">from</span> city);</span><br></pre></td></tr></table></figure>
+
+<p>子查询必定返回true的三种情况:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#第一种select 1</span></span><br><span class="line"><span class="keyword">select</span> * </span><br><span class="line"><span class="keyword">from</span> person </span><br><span class="line"><span class="keyword">where</span> <span class="keyword">exists</span> ( <span class="keyword">select</span> <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">#第二种select 0</span></span><br><span class="line"><span class="keyword">select</span> * </span><br><span class="line"><span class="keyword">from</span> person </span><br><span class="line"><span class="keyword">where</span> <span class="keyword">exists</span> ( <span class="keyword">select</span> <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">#第三种select null</span></span><br><span class="line"><span class="keyword">select</span> * </span><br><span class="line"><span class="keyword">from</span> person </span><br><span class="line"><span class="keyword">where</span> <span class="keyword">exists</span> ( <span class="keyword">select</span> <span class="literal">null</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="根据子查询结果充当临时表进行查询"><a href="#根据子查询结果充当临时表进行查询" class="headerlink" title="根据子查询结果充当临时表进行查询"></a>根据子查询结果充当临时表进行查询</h4><ol>
+<li>子查询是一种嵌套查询，将一个查询用小括号包围起来，然后作为下一个查询的结果，<strong>子查询必须有别名</strong> ,一般用于二次或多次筛查。</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> nan.id <span class="keyword">FROM</span> (<span class="keyword">SELECT</span> <span class="keyword">name</span>,c_id <span class="keyword">FROM</span> person <span class="keyword">WHERE</span> <span class="keyword">id</span>=<span class="number">2</span>) <span class="keyword">AS</span> <span class="keyword">nan</span> <span class="keyword">WHERE</span> c_id = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="关于join的特殊用法"><a href="#关于join的特殊用法" class="headerlink" title="关于join的特殊用法"></a>关于<code>join</code>的特殊用法</h4><ul>
+<li><strong>JOIN</strong>: 如果表中有至少一个匹配，则返回行</li>
+<li><strong>LEFT JOIN</strong>: 即使右表中没有匹配，也从左表返回所有的行</li>
+<li><strong>RIGHT JOIN</strong>: 即使左表中没有匹配，也从右表返回所有的行</li>
+<li><strong>FULL JOIN</strong>: 只要其中一个表中存在匹配，就返回行 </li>
+</ul>
+<p><strong>LEFT JOIN示例:</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">name</span>, city <span class="keyword">from</span> person <span class="keyword">left</span> <span class="keyword">join</span> city <span class="keyword">on</span> name.c_id = city.id;</span><br></pre></td></tr></table></figure>
+
+<p>返回结果:</p>
+<table>
+<thead>
+<tr>
+<th>city</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>北京</td>
+<td>张三</td>
+</tr>
+<tr>
+<td>上海</td>
+<td>李四</td>
+</tr>
+<tr>
+<td></td>
+<td>王五</td>
+</tr>
+</tbody></table>
+<p><strong>RIGHT JOIN示例:</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">name</span>, city <span class="keyword">from</span> person <span class="keyword">right</span> <span class="keyword">join</span> city <span class="keyword">on</span> name.c_id = city.id;</span><br></pre></td></tr></table></figure>
+
+<p>返回结果:</p>
+<table>
+<thead>
+<tr>
+<th>city</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>北京</td>
+<td>张三</td>
+</tr>
+<tr>
+<td>上海</td>
+<td>李四</td>
+</tr>
+<tr>
+<td>广州</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>FULL JOIN示例:</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">name</span>, city <span class="keyword">from</span> person <span class="keyword">full</span> <span class="keyword">join</span> city <span class="keyword">on</span> name.c_id = city.id;</span><br></pre></td></tr></table></figure>
+
+<p>返回结果:</p>
+<table>
+<thead>
+<tr>
+<th>city</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>北京</td>
+<td>张三</td>
+</tr>
+<tr>
+<td>上海</td>
+<td>李四</td>
+</tr>
+<tr>
+<td>广州</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>王五</td>
+</tr>
+</tbody></table>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../242.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../242.html" itemprop="url">springboot整合mybatis访问mysql数据库</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-12T13:14:19+08:00">
+                2021-08-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><ul>
+<li><strong>构建工具</strong>:Gradle</li>
+<li><strong>开发语言</strong>:Kotlin</li>
+<li><strong>mysql版本</strong>: 8.0</li>
+</ul>
+<h2 id="配置步骤"><a href="#配置步骤" class="headerlink" title="配置步骤"></a>配置步骤</h2><h4 id="1-引入依赖"><a href="#1-引入依赖" class="headerlink" title="1.引入依赖"></a>1.引入依赖</h4><p>在build,gradle文件引入mybatis-spring-boot-starter-web的依赖：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation &quot;org.springframework.boot:spring-boot-starter-web:2.4.9&quot;</span><br></pre></td></tr></table></figure>
+
+<p>引入数据库连接依赖：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation &quot;mysql:mysql-connector-java:8.0.26&quot;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-引入数据源"><a href="#2-引入数据源" class="headerlink" title="2.引入数据源"></a>2.引入数据源</h4><p><code>application.yml</code>配置文件中引入数据源：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  datasource:</span><br><span class="line">    url: jdbc:mysql://localhost:3306/test?characterEncoding=utf-8&amp;useSSL=false</span><br><span class="line">    username: root</span><br><span class="line">    password: 123456</span><br><span class="line">    driver: com.mysql.cj.jdbc.Driver</span><br></pre></td></tr></table></figure>
+
+<p>这样，<code>springboot</code>就可以访问数据了。</p>
+<h4 id="3-创建数据库表"><a href="#3-创建数据库表" class="headerlink" title="3.创建数据库表"></a>3.创建数据库表</h4><p>建表语句：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">-- create table `account`</span><br><span class="line"># DROP TABLE `account` IF EXISTS</span><br><span class="line">CREATE TABLE `account` (</span><br><span class="line">  `id` int(11) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` varchar(20) NOT NULL,</span><br><span class="line">  `money` double DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;</span><br><span class="line">INSERT INTO `account` VALUES (&apos;1&apos;, &apos;aaa&apos;, &apos;1000&apos;);</span><br><span class="line">INSERT INTO `account` VALUES (&apos;2&apos;, &apos;bbb&apos;, &apos;1000&apos;);</span><br><span class="line">INSERT INTO `account` VALUES (&apos;3&apos;, &apos;ccc&apos;, &apos;1000&apos;);</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-具体实现"><a href="#4-具体实现" class="headerlink" title="4.具体实现"></a>4.具体实现</h4><p>这篇文篇通过注解的形式实现。</p>
+<h5 id="5-创建实体："><a href="#5-创建实体：" class="headerlink" title="5.创建实体："></a>5.创建实体：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">data class Account (</span><br><span class="line">    var id:Int = 0,</span><br><span class="line">    var name: String? = null,</span><br><span class="line">    var money :Double= 0.0</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h5 id="6-Dao层"><a href="#6-Dao层" class="headerlink" title="6.Dao层"></a>6.Dao层</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">@Mapperpublic interface AccountMapper &#123;</span><br><span class="line"></span><br><span class="line">    @Insert(&quot;insert into account(name, money) values(#&#123;name&#125;, #&#123;money&#125;)&quot;)</span><br><span class="line">    int add(@Param(&quot;name&quot;) String name, @Param(&quot;money&quot;) double money);</span><br><span class="line"></span><br><span class="line">    @Update(&quot;update account set name = #&#123;name&#125;, money = #&#123;money&#125; where id = #&#123;id&#125;&quot;)</span><br><span class="line">    int update(@Param(&quot;name&quot;) String name, @Param(&quot;money&quot;) double money, @Param(&quot;id&quot;) int  id);</span><br><span class="line"></span><br><span class="line">    @Delete(&quot;delete from account where id = #&#123;id&#125;&quot;)</span><br><span class="line">    int delete(int id);</span><br><span class="line"></span><br><span class="line">    @Select(&quot;select id, name as name, money as money from account where id = #&#123;id&#125;&quot;)</span><br><span class="line">    Account findAccount(@Param(&quot;id&quot;) int id);</span><br><span class="line"></span><br><span class="line">    @Select(&quot;select id, name as name, money as money from account&quot;)</span><br><span class="line">    List&lt;Account&gt; findAccountList();&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="7-service层"><a href="#7-service层" class="headerlink" title="7.service层"></a>7.service层</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">@Mapper</span><br><span class="line">interface AccountMapper &#123;</span><br><span class="line">    @Insert(&quot;insert into account(name, money) values(#&#123;name&#125;, #&#123;money&#125;)&quot;)</span><br><span class="line">    fun add(@Param(&quot;name&quot;) name: String?, @Param(&quot;money&quot;) money: Double): Int</span><br><span class="line"></span><br><span class="line">    @Update(&quot;update account set name = #&#123;name&#125;, money = #&#123;money&#125; where id = #&#123;id&#125;&quot;)</span><br><span class="line">    fun update(</span><br><span class="line">        @Param(&quot;name&quot;) name: String?,</span><br><span class="line">        @Param(&quot;money&quot;) money: Double,</span><br><span class="line">        @Param(&quot;id&quot;) id: Int</span><br><span class="line">    ): Int</span><br><span class="line"></span><br><span class="line">    @Delete(&quot;delete from account where id = #&#123;id&#125;&quot;)</span><br><span class="line">    fun delete(id: Int): Int</span><br><span class="line"></span><br><span class="line">    @Select(&quot;select id, name as name, money as money from account where id = #&#123;id&#125;&quot;)</span><br><span class="line">    fun findAccount(@Param(&quot;id&quot;) id: Int): Account?</span><br><span class="line"></span><br><span class="line">    @Select(&quot;select id, name as name, money as money from account&quot;)</span><br><span class="line">    fun findAccountList(): List&lt;Account?&gt;?</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="8-controller层，构建restful-API"><a href="#8-controller层，构建restful-API" class="headerlink" title="8.controller层，构建restful API"></a>8.controller层，构建restful API</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">@CrossOrigin</span><br><span class="line">@RestController</span><br><span class="line">class MainControl &#123;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    @Autowired</span><br><span class="line">    lateinit var accountService: AccountService</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @GetMapping(value = [&quot;/list&quot;])</span><br><span class="line">    fun getAccounts(): List&lt;Account&gt; &#123;</span><br><span class="line">        return accountService.findAccountList()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @GetMapping(value = [&quot;/&#123;id&#125;&quot;])</span><br><span class="line">    fun getAccountById(@PathVariable(&quot;id&quot;) id: Int): Account? &#123;</span><br><span class="line">        return accountService.findAccount(id)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @PutMapping(value = [&quot;/&#123;id&#125;&quot;])</span><br><span class="line">    fun updateAccount(</span><br><span class="line">        @PathVariable(&quot;id&quot;) id: Int, @RequestParam(value = &quot;name&quot;, required = true) name: String?,</span><br><span class="line">        @RequestParam(value = &quot;money&quot;, required = true) money: Double</span><br><span class="line">    ): String &#123;</span><br><span class="line">        val t = accountService.update(name, money, id)</span><br><span class="line">        return if (t == 1) &#123;</span><br><span class="line">            &quot;success&quot;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            &quot;fail&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @DeleteMapping(value = [&quot;/&#123;id&#125;&quot;])</span><br><span class="line">    fun delete(@PathVariable(value = &quot;id&quot;) id: Int): String &#123;</span><br><span class="line">        val t = accountService.delete(id)</span><br><span class="line">        return if (t == 1) &#123;</span><br><span class="line">            &quot;success&quot;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            &quot;fail&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>配置完毕</p>
+<p>最后启动程序, 浏览器访问:<a href="http://localhost:8080/list进行测试" target="_blank" rel="noopener">http://localhost:8080/list进行测试</a></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../241.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1467,682 +2228,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../236.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../236.html" itemprop="url">为什么建议你使用枚举</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-07-28T11:14:19+08:00">
-                2021-07-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>枚举是 JDK 1.5 新增的数据类型，使用枚举我们可以很好的描述一些特定的业务场景，比如一年中的春、夏、秋、冬，还有每周的周一到周天，还有各种颜色，以及可以用它来描述一些状态信息，比如错误码等。</p>
-<p>枚举类型不止存在在 Java 语言中，在其它语言中也都能找到它的身影，例如 C# 和 Python 等，但我发现在实际的项目中使用枚举的人很少，所以本文就来聊一聊枚举的相关内容，好让朋友们对枚举有一个大概的印象，这样在编程时起码还能想到有“枚举”这样一个类型。</p>
-<p>本文的结构目录如下：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/v2-80ca1407a3ceabbf7e2be786b4c9bdcf_720w.jpg" alt="img"></p>
-<h2 id="枚举的-7-种使用方法"><a href="#枚举的-7-种使用方法" class="headerlink" title="枚举的 7 种使用方法"></a>枚举的 7 种使用方法</h2><p>很多人不使用枚举的一个重要的原因是对枚举不够熟悉，那么我们就先从枚举的 7 种使用方法说起。</p>
-<h3 id="用法一：常量"><a href="#用法一：常量" class="headerlink" title="用法一：常量"></a>用法一：常量</h3><p>在 JDK 1.5 之前，我们定义常量都是 <code>public static final...</code> ，但有了枚举，我们就可以把这些常量定义成一个枚举类了，实现代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public enum ColorEnum &#123;  </span><br><span class="line">  RED, GREEN, BLANK, YELLOW  </span><br><span class="line">&#125; </span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<h3 id="用法二：switch"><a href="#用法二：switch" class="headerlink" title="用法二：switch"></a>用法二：switch</h3><p>将枚举用在 switch 判断中，使得代码可读性更高了，实现代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">enum ColorEnum &#123;</span><br><span class="line">    GREEN, YELLOW, RED</span><br><span class="line">&#125;</span><br><span class="line">public class ColorTest &#123;</span><br><span class="line">    ColorEnum color = ColorEnum.RED;</span><br><span class="line"></span><br><span class="line">    public void change() &#123;</span><br><span class="line">        switch (color) &#123;</span><br><span class="line">            case RED:</span><br><span class="line">                color = ColorEnum.GREEN;</span><br><span class="line">                break;</span><br><span class="line">            case YELLOW:</span><br><span class="line">                color = ColorEnum.RED;</span><br><span class="line">                break;</span><br><span class="line">            case GREEN:</span><br><span class="line">                color = ColorEnum.YELLOW;</span><br><span class="line">                break;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<h3 id="用法三：枚举中增加方法"><a href="#用法三：枚举中增加方法" class="headerlink" title="用法三：枚举中增加方法"></a>用法三：枚举中增加方法</h3><p>我们可以在枚举中增加一些方法，让枚举具备更多的特性，实现代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        ErrorCodeEnum errorCode = ErrorCodeEnum.SUCCESS;</span><br><span class="line">        System.out.println(&quot;状态码：&quot; + errorCode.code() + </span><br><span class="line">                           &quot; 状态信息：&quot; + errorCode.msg());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum ErrorCodeEnum &#123;</span><br><span class="line">    SUCCESS(1000, &quot;success&quot;),</span><br><span class="line">    PARAM_ERROR(1001, &quot;parameter error&quot;),</span><br><span class="line">    SYS_ERROR(1003, &quot;system error&quot;),</span><br><span class="line">    NAMESPACE_NOT_FOUND(2001, &quot;namespace not found&quot;),</span><br><span class="line">    NODE_NOT_EXIST(3002, &quot;node not exist&quot;),</span><br><span class="line">    NODE_ALREADY_EXIST(3003, &quot;node already exist&quot;),</span><br><span class="line">    UNKNOWN_ERROR(9999, &quot;unknown error&quot;);</span><br><span class="line"></span><br><span class="line">    private int code;</span><br><span class="line">    private String msg;</span><br><span class="line"></span><br><span class="line">    ErrorCodeEnum(int code, String msg) &#123;</span><br><span class="line">        this.code = code;</span><br><span class="line">        this.msg = msg;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int code() &#123;</span><br><span class="line">        return code;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String msg() &#123;</span><br><span class="line">        return msg;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static ErrorCodeEnum getErrorCode(int code) &#123;</span><br><span class="line">        for (ErrorCodeEnum it : ErrorCodeEnum.values()) &#123;</span><br><span class="line">            if (it.code() == code) &#123;</span><br><span class="line">                return it;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return UNKNOWN_ERROR;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>以上程序的执行结果为：</p>
-<blockquote>
-<p>状态码：1000 状态信息：success</p>
-</blockquote>
-<h3 id="用法四：覆盖枚举方法"><a href="#用法四：覆盖枚举方法" class="headerlink" title="用法四：覆盖枚举方法"></a>用法四：覆盖枚举方法</h3><p>我们可以覆盖一些枚举中的方法用于实现自己的业务，比如我们可以覆盖 <code>toString()</code> 方法，实现代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        ColorEnum colorEnum = ColorEnum.RED;</span><br><span class="line">        System.out.println(colorEnum.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum ColorEnum &#123;</span><br><span class="line">    RED(&quot;红色&quot;, 1), GREEN(&quot;绿色&quot;, 2), BLANK(&quot;白色&quot;, 3), YELLOW(&quot;黄色&quot;, 4);</span><br><span class="line">    //  成员变量</span><br><span class="line">    private String name;</span><br><span class="line">    private int index;</span><br><span class="line"></span><br><span class="line">    //  构造方法</span><br><span class="line">    private ColorEnum(String name, int index) &#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">        this.index = index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //覆盖方法</span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return this.index + &quot;：&quot; + this.name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>以上程序的执行结果为：</p>
-<blockquote>
-<p>1：红色</p>
-</blockquote>
-<h3 id="用法五：实现接口"><a href="#用法五：实现接口" class="headerlink" title="用法五：实现接口"></a>用法五：实现接口</h3><p>枚举类可以用来实现接口，但不能用于继承类，因为枚举默认继承了 <code>java.lang.Enum</code> 类，在 Java 语言中允许实现多接口，但不能继承多个父类，实现代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        ColorEnum colorEnum = ColorEnum.RED;</span><br><span class="line">        colorEnum.print();</span><br><span class="line">        System.out.println(&quot;颜色：&quot; + colorEnum.getInfo());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface Behaviour &#123;</span><br><span class="line">    void print();</span><br><span class="line"></span><br><span class="line">    String getInfo();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum ColorEnum implements Behaviour &#123;</span><br><span class="line">    RED(&quot;红色&quot;, 1), GREEN(&quot;绿色&quot;, 2), BLANK(&quot;白色&quot;, 3), YELLOW(&quot;黄色&quot;, 4);</span><br><span class="line">    private String name;</span><br><span class="line">    private int index;</span><br><span class="line"></span><br><span class="line">    private ColorEnum(String name, int index) &#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">        this.index = index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void print() &#123;</span><br><span class="line">        System.out.println(this.index + &quot;：&quot; + this.name);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String getInfo() &#123;</span><br><span class="line">        return this.name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>以上程序的执行结果为：</p>
-<blockquote>
-<p>1：红色</p>
-<p>颜色：红色</p>
-</blockquote>
-<h3 id="用法六：在接口中组织枚举类"><a href="#用法六：在接口中组织枚举类" class="headerlink" title="用法六：在接口中组织枚举类"></a>用法六：在接口中组织枚举类</h3><p>我们可以在一个接口中创建多个枚举类，用它可以很好的实现“多态”，也就是说我们可以将拥有相同特性，但又有细微实现差别的枚举类聚集在一个接口中，实现代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        // 赋值第一个枚举类</span><br><span class="line">        ColorInterface colorEnum = ColorInterface.ColorEnum.RED;</span><br><span class="line">        System.out.println(colorEnum);</span><br><span class="line">        // 赋值第二个枚举类</span><br><span class="line">        colorEnum = ColorInterface.NewColorEnum.NEW_RED;</span><br><span class="line">        System.out.println(colorEnum);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface ColorInterface &#123;</span><br><span class="line">    enum ColorEnum implements ColorInterface &#123;</span><br><span class="line">        GREEN, YELLOW, RED</span><br><span class="line">    &#125;</span><br><span class="line">    enum NewColorEnum implements ColorInterface &#123;</span><br><span class="line">        NEW_GREEN, NEW_YELLOW, NEW_RED</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>以上程序的执行结果为：</p>
-<blockquote>
-<p>RED</p>
-<p>NEW_RED</p>
-</blockquote>
-<h3 id="用法七：使用枚举集合"><a href="#用法七：使用枚举集合" class="headerlink" title="用法七：使用枚举集合"></a>用法七：使用枚举集合</h3><p>在 Java 语言中和枚举类相关的，还有两个枚举集合类 <code>java.util.EnumSet</code> 和 <code>java.util.EnumMap</code>，使用它们可以实现更多的功能。</p>
-<p>使用 <code>EnumSet</code> 可以保证元素不重复，并且能获取指定范围内的元素，示例代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.EnumSet;</span><br><span class="line">import java.util.List;</span><br><span class="line"></span><br><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        List&lt;ColorEnum&gt; list = new ArrayList&lt;ColorEnum&gt;();</span><br><span class="line">        list.add(ColorEnum.RED);</span><br><span class="line">        list.add(ColorEnum.RED);  // 重复元素</span><br><span class="line">        list.add(ColorEnum.YELLOW);</span><br><span class="line">        list.add(ColorEnum.GREEN);</span><br><span class="line">        // 去掉重复数据</span><br><span class="line">        EnumSet&lt;ColorEnum&gt; enumSet = EnumSet.copyOf(list);</span><br><span class="line">        System.out.println(&quot;去重：&quot; + enumSet);</span><br><span class="line"></span><br><span class="line">        // 获取指定范围的枚举（获取所有的失败状态）</span><br><span class="line">        EnumSet&lt;ErrorCodeEnum&gt; errorCodeEnums = EnumSet.range(ErrorCodeEnum.ERROR, ErrorCodeEnum.UNKNOWN_ERROR);</span><br><span class="line">        System.out.println(&quot;所有失败状态：&quot; + errorCodeEnums);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum ColorEnum &#123;</span><br><span class="line">    RED(&quot;红色&quot;, 1), GREEN(&quot;绿色&quot;, 2), BLANK(&quot;白色&quot;, 3), YELLOW(&quot;黄色&quot;, 4);</span><br><span class="line">    private String name;</span><br><span class="line">    private int index;</span><br><span class="line"></span><br><span class="line">    private ColorEnum(String name, int index) &#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">        this.index = index;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum ErrorCodeEnum &#123;</span><br><span class="line">    SUCCESS(1000, &quot;success&quot;),</span><br><span class="line">    ERROR(2001, &quot;parameter error&quot;),</span><br><span class="line">    SYS_ERROR(2002, &quot;system error&quot;),</span><br><span class="line">    NAMESPACE_NOT_FOUND(2003, &quot;namespace not found&quot;),</span><br><span class="line">    NODE_NOT_EXIST(3002, &quot;node not exist&quot;),</span><br><span class="line">    NODE_ALREADY_EXIST(3003, &quot;node already exist&quot;),</span><br><span class="line">    UNKNOWN_ERROR(9999, &quot;unknown error&quot;);</span><br><span class="line"></span><br><span class="line">    private int code;</span><br><span class="line">    private String msg;</span><br><span class="line"></span><br><span class="line">    ErrorCodeEnum(int code, String msg) &#123;</span><br><span class="line">        this.code = code;</span><br><span class="line">        this.msg = msg;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int code() &#123;</span><br><span class="line">        return code;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String msg() &#123;</span><br><span class="line">        return msg;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>以上程序的执行结果为：</p>
-<blockquote>
-<p>去重：[RED, GREEN, YELLOW]</p>
-<p>所有失败状态：[ERROR, SYS_ERROR, NAMESPACE_NOT_FOUND, NODE_NOT_EXIST, NODE_ALREADY_EXIST, UNKNOWN_ERROR]</p>
-</blockquote>
-<p><code>EnumMap</code> 与 <code>HashMap</code> 类似，不过它是一个专门为枚举设计的 <code>Map</code> 集合，相比 <code>HashMap</code> 来说它的性能更高，因为它内部放弃使用链表和红黑树的结构，采用数组作为数据存储的结构。</p>
-<p><code>EnumMap</code> 基本使用示例如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">import java.util.EnumMap;</span><br><span class="line"></span><br><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        EnumMap&lt;ColorEnum, String&gt; enumMap = new EnumMap&lt;&gt;(ColorEnum.class);</span><br><span class="line">        enumMap.put(ColorEnum.RED, &quot;红色&quot;);</span><br><span class="line">        enumMap.put(ColorEnum.GREEN, &quot;绿色&quot;);</span><br><span class="line">        enumMap.put(ColorEnum.BLANK, &quot;白色&quot;);</span><br><span class="line">        enumMap.put(ColorEnum.YELLOW, &quot;黄色&quot;);</span><br><span class="line">        System.out.println(ColorEnum.RED + &quot;:&quot; + enumMap.get(ColorEnum.RED));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum ColorEnum &#123;</span><br><span class="line">    RED, GREEN, BLANK, YELLOW;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>以上程序的执行结果为：</p>
-<blockquote>
-<p>RED:红色</p>
-</blockquote>
-<h3 id="使用注意事项"><a href="#使用注意事项" class="headerlink" title="使用注意事项"></a>使用注意事项</h3><p>阿里《Java开发手册》对枚举的相关规定如下，我们在使用时需要稍微注意一下。</p>
-<blockquote>
-<p>【强制】所有的枚举类型字段必须要有注释，说明每个数据项的用途。</p>
-<p>【参考】枚举类名带上 Enum 后缀，枚举成员名称需要全大写，单词间用下划线隔开。说明：枚举其实就是特殊的常量类，且构造方法被默认强制是私有。正例：枚举名字为 ProcessStatusEnum 的成员名称：SUCCESS / UNKNOWN_REASON。</p>
-</blockquote>
-<h2 id="假如不使用枚举"><a href="#假如不使用枚举" class="headerlink" title="假如不使用枚举"></a>假如不使用枚举</h2><p>在枚举没有诞生之前，也就是 JDK 1.5 版本之前，我们通常会使用 <code>int</code> 常量来表示枚举，实现代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public static final int COLOR_RED = 1;</span><br><span class="line">public static final int COLOR_BLUE = 2;</span><br><span class="line">public static final int COLOR_GREEN = 3;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>但是使用 <code>int</code> 类型可能存在两个问题：</p>
-<p>第一， <code>int</code> 类型本身并不具备安全性，假如某个程序员在定义 <code>int</code> 时少些了一个 <code>final</code> 关键字，那么就会存在被其他人修改的风险，而反观枚举类，它“天然”就是一个常量类，不存在被修改的风险（原因详见下半部分）；</p>
-<p>第二，使用 <code>int</code> 类型的语义不够明确，比如我们在控制台打印时如果只输出 1…2…3 这样的数字，我们肯定不知道它代表的是什么含义。</p>
-<p><img src="https://user-gold-cdn.xitu.io/2020/6/28/172f889e786a4b0b?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="img"></p>
-<p>那有人就说了，那就使用常量字符呗，这总不会还不知道语义吧？实现示例代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public static final String COLOR_RED = &quot;RED&quot;;</span><br><span class="line">public static final String COLOR_BLUE = &quot;BLUE&quot;;</span><br><span class="line">public static final String COLOR_GREEN = &quot;GREEN&quot;;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>但是这样同样存在一个问题，有些初级程序员会不按套路出牌，他们可能会直接使用字符串的值进行比较，而不是直接使用枚举的字段，实现示例代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static final String COLOR_RED = &quot;RED&quot;;</span><br><span class="line">    public static final String COLOR_BLUE = &quot;BLUE&quot;;</span><br><span class="line">    public static final String COLOR_GREEN = &quot;GREEN&quot;;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        String color = &quot;BLUE&quot;;</span><br><span class="line">        if (&quot;BLUE&quot;.equals(color)) &#123;</span><br><span class="line">            System.out.println(&quot;蓝色&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>这样当我们修改了枚举中的值，那程序就凉凉了。</p>
-<h2 id="枚举使用场景"><a href="#枚举使用场景" class="headerlink" title="枚举使用场景"></a>枚举使用场景</h2><p>枚举的常见使用场景是单例，它的完整实现代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public class Singleton &#123;</span><br><span class="line">    // 枚举类型是线程安全的，并且只会装载一次</span><br><span class="line">    private enum SingletonEnum &#123;</span><br><span class="line">        INSTANCE;</span><br><span class="line">        // 声明单例对象</span><br><span class="line">        private final Singleton instance;</span><br><span class="line">        // 实例化</span><br><span class="line">        SingletonEnum() &#123;</span><br><span class="line">            instance = new Singleton();</span><br><span class="line">        &#125;</span><br><span class="line">        private Singleton getInstance() &#123;</span><br><span class="line">            return instance;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    // 获取实例（单例对象）</span><br><span class="line">    public static Singleton getInstance() &#123;</span><br><span class="line">        return SingletonEnum.INSTANCE.getInstance();</span><br><span class="line">    &#125;</span><br><span class="line">    private Singleton() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    // 类方法</span><br><span class="line">    public void sayHi() &#123;</span><br><span class="line">        System.out.println(&quot;Hi,Java.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class SingletonTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Singleton singleton = Singleton.getInstance();</span><br><span class="line">        singleton.sayHi();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>因为枚举只会在类加载时装载一次，所以它是线程安全的，这也是《Effective Java》作者极力推荐使用枚举来实现单例的主要原因。</p>
-<h2 id="知识扩展"><a href="#知识扩展" class="headerlink" title="知识扩展"></a>知识扩展</h2><h3 id="枚举为什么是线程安全的？"><a href="#枚举为什么是线程安全的？" class="headerlink" title="枚举为什么是线程安全的？"></a>枚举为什么是线程安全的？</h3><p>这一点要从枚举最终生成的字节码说起，首先我们先来定义一个简单的枚举类：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public enum ColorEnumTest &#123;</span><br><span class="line">    RED, GREEN, BLANK, YELLOW;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>然后我们再将上面的那段代码编译为字节码，具体内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public final class ColorEnumTest extends java.lang.Enum&lt;ColorEnumTest&gt; &#123;</span><br><span class="line">  public static final ColorEnumTest RED;</span><br><span class="line">  public static final ColorEnumTest GREEN;</span><br><span class="line">  public static final ColorEnumTest BLANK;</span><br><span class="line">  public static final ColorEnumTest YELLOW;</span><br><span class="line">  public static ColorEnumTest[] values();</span><br><span class="line">  public static ColorEnumTest valueOf(java.lang.String);</span><br><span class="line">  static &#123;&#125;;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>从上述结果可以看出枚举类最终会被编译为被 <code>final</code> 修饰的普通类，它的所有属性也都会被 <code>static</code> 和 <code>final</code> 关键字修饰，所以枚举类在项目启动时就会被 JVM 加载并初始化，而这个执行过程是线程安全的，所以枚举类也是线程安全的类。</p>
-<blockquote>
-<p>小贴士：代码反编译的过程是先用 javac 命令将 java 代码编译字节码（.class），再使用 javap 命令查看编译的字节码。</p>
-</blockquote>
-<h3 id="枚举比较小技巧"><a href="#枚举比较小技巧" class="headerlink" title="枚举比较小技巧"></a>枚举比较小技巧</h3><p>我们在枚举比较时使用 == 就够了，因为枚举类是在程序加载时就创建了（它并不是 <code>new</code> 出来的），并且枚举类不允许在外部直接使用 <code>new</code> 关键字来创建枚举实例，所以我们在使用枚举类时本质上只有一个对象，因此在枚举比较时使用 == 就够了。</p>
-<p>并且我们在查看枚举的 <code>equlas()</code> 源码会发现，它的内部其实还是直接调用了 == 方法，源码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public final boolean equals(Object other) &#123;</span><br><span class="line">    return this==other;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文我们介绍了枚举类的 7 种使用方法：常量、switch、枚举中添加方法、覆盖枚举方法、实现接口、在接口中组织枚举类和使用枚举集合等，然后讲了如果不使用枚举类使用 <code>int</code> 类型和 <code>String</code> 类型存在的一些弊端：语义不够清晰、容易被修改、存在被误用的风险，所以我们在适合的环境下应该尽量使用枚举类。并且我们还讲了枚举类的使用场景——单例，以及枚举类为什么是安全的，最后我们讲了枚举比较的小技巧，希望本文对你有帮助。</p>
-<p><strong>本文转载自</strong>:<a href="https://juejin.cn/post/6844904200652980231" target="_blank" rel="noopener">https://juejin.cn/post/6844904200652980231</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../234.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../234.html" itemprop="url">Android开发者快速上手鸿蒙应用开发</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-07-28T10:14:19+08:00">
-                2021-07-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="Android和鸿蒙对比"><a href="#Android和鸿蒙对比" class="headerlink" title="Android和鸿蒙对比"></a>Android和鸿蒙对比</h4><p>组件</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/4d086e061d950a7ba9141cf42a128ddef2d3c92c.png" alt="img"></p>
-<p>触摸事件</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/3801213fb80e7bec6a5e07440eed563f99506bdd.png" alt="img"></p>
-<p>鸿蒙页面生命周期</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/267f9e2f07082838628466f7a65a46064e08f197.png" alt="img"></p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../233.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../233.html" itemprop="url">如何将自定义库上传至jitpack仓库</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-07-27T13:14:19+08:00">
-                2021-07-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>最近<code>bintray</code>好像不能用了, 以前传的依赖包全都挂了, 目前正在进行库转移</p>
-<p>相比<code>bintray</code>而言 <code>jitpack</code>可以说是非常简单, 只需一个<code>github</code>就完全搞定了</p>
-<h4 id="快速上手"><a href="#快速上手" class="headerlink" title="快速上手"></a>快速上手</h4><p>首先 将代码推送至<code>github</code>, 然后进入<a href="https://jitpack.io/" target="_blank" rel="noopener">https://jitpack.io/</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727145153403.png" alt="image-20210727145153403"></p>
-<p>绿色表示 编译成功 红色表示编译失败, 编译成功后 就可以开始使用库啦</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727145906319.png" alt="image-20210727145906319"></p>
-<p>是不是非常简单</p>
-<p>由于大部分人习惯使用版本号的依赖形式, 因此 如果你想将<code>commitId</code>换成版本号, 那么只需在<code>github</code>上<code>push release</code>即可, 如下:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727150302447.png" alt="image-20210727150302447"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727150429243.png" alt="image-20210727150429243"></p>
-<p>创建成功后,回到<code>jitpack</code>主页刷新, 此时在<code>Release</code>一栏下出现相应的版本</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727150604728.png" alt="image-20210727150604728"></p>
-<p>我们发现<code>1.0.5</code>版本的<code>Log</code>一栏是红色, 我们可以点击进入查看编译日志 寻找编译失败原因</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727150827296.png" alt="image-20210727150827296"></p>
-<p>如果编译成功, 将会生成相应的<code>jar</code>包并存储在<code>jitpack</code>仓库中</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727151000773.png" alt="image-20210727151000773"></p>
-<p>此时我们就可以使用版本号形式的啦</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727151055721.png" alt="image-20210727151055721"></p>
-<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><ul>
-<li>对于<code>android</code> 必须是<code>Lib</code>库 而不是<code>APP</code></li>
-<li>由于<code>jitpack</code>会对整个项目库进行编译打包, 因此项目中避免出现多个库的情况, 如果是<code>android</code> 可以在<code>settings.gradle</code>里面进行注释屏蔽</li>
-</ul>
-<p>除了<code>github</code>之外,<code>jitpack</code>还支持以下仓库:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727153831851.png" alt="image-20210727153831851"></p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../232.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../232.html" itemprop="url">关于android scheme跳转配置中pathPattern的使用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-03T10:14:19+08:00">
-                2021-06-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="Scheme协议在Android中使用场景"><a href="#Scheme协议在Android中使用场景" class="headerlink" title="Scheme协议在Android中使用场景"></a>Scheme协议在Android中使用场景</h4><ol>
-<li><p>H5页面和Native页面的交互</p>
-</li>
-<li><p>客户端获取push消息中后，点击消息跳转到APP内部页面</p>
-</li>
-<li><p>APP根据URL跳转到另外一个APP指定页面</p>
-</li>
-<li><p>外部浏览器唤醒App</p>
-</li>
-</ol>
-<h4 id="Scheme协议的使用"><a href="#Scheme协议的使用" class="headerlink" title="Scheme协议的使用"></a>Scheme协议的使用</h4><ol>
-<li><strong>场景一 外部浏览器唤醒app</strong></li>
-</ol>
-<p>以<code>app://test/good?goodsId=3</code>这个内链为例, 假设浏览器中点击该内链需要跳转到应用的指定Activity</p>
-<p>那么,首先在清单文件中对指定Activity进行intent过滤配置:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;activity</span><br><span class="line">          android:name=&quot;.ui.login.LoginActivity&quot;</span><br><span class="line">          android:screenOrientation=&quot;portrait&quot;&gt;</span><br><span class="line">          &lt;intent-filter&gt;</span><br><span class="line">          &lt;!--可以根据用户的数据类型，打开相应的Activity--&gt;</span><br><span class="line">              &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;</span><br><span class="line">              &lt;!--界面可以被隐式调用--&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;</span><br><span class="line">              &lt;!--界面可以通过浏览器的连接启动--&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; /&gt;</span><br><span class="line">              &lt;!--协议部分，主要是配置scheme和host--&gt;</span><br><span class="line">              &lt;data</span><br><span class="line">              		android:path=&quot;/good&quot;</span><br><span class="line">                  android:host=&quot;test&quot;</span><br><span class="line">                  android:scheme=&quot;app&quot; /&gt;</span><br><span class="line">          &lt;/intent-filter&gt;</span><br><span class="line">      &lt;/activity&gt;</span><br></pre></td></tr></table></figure>
-
-<p>然后在<code>Activity</code>的<code>onCreate</code>方法中进行参数的获取和逻辑的处理:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Uri data = getIntent().getData();</span><br><span class="line">String param = data.getQueryParameter(&quot;goodsId&quot;);//获取指定key下的参数</span><br></pre></td></tr></table></figure>
-
-<p>最后测试跳转即可</p>
-<ol start="2">
-<li><p><strong>场景二 应用内部H5交互(页面跳转)</strong></p>
-<p>还是以<code>app://test/good?goodsId=3</code>这个内链为例, 假设WebView中点击该内链需要跳转到应用的指定Activity</p>
-<p>首先还是在清单文件中配置,如上</p>
-<p>然后配置webview:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean &#123;</span><br><span class="line">startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))</span><br><span class="line">  return true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>因为webview属于开发者自定义, 因此内链跳转逻辑需要在<code>shouldOverrideUrlLoading</code>方法中自行处理</p>
-</li>
-<li><p><strong>场景三 应用内部H5交互(非页面跳转)</strong></p>
-<p>有时候需求不单单是页面的跳转, 可能还涉及到其他ui或者逻辑的交互, 比如跳转到支付宝失败后弹出弹窗等等, 这个时候,我们需要在<code>shouldOverrideUrlLoading</code>方法中进行不同scheme的处理:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean &#123;</span><br><span class="line">                 if (url.startsWith(&quot;alipay&quot;)) &#123;</span><br><span class="line">                        try &#123;</span><br><span class="line">                            startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))</span><br><span class="line">                        &#125; catch (e: Exception) &#123;</span><br><span class="line">                            e.printStackTrace()</span><br><span class="line">                            AlertDialog.Builder(requireContext())</span><br><span class="line">                                .setMessage(&quot;未检测到支付宝客户端，请安装后重试。&quot;)</span><br><span class="line">                                .setPositiveButton(&quot;&quot;) &#123; _, _ -&gt;</span><br><span class="line">                                    startActivity(</span><br><span class="line">                                        Intent(</span><br><span class="line">                                            Intent.ACTION_VIEW,</span><br><span class="line">                                            &quot;https://d.alipay.com&quot;.toUri()</span><br><span class="line">                                        )</span><br><span class="line">                                    )</span><br><span class="line">                                &#125;</span><br><span class="line">                                .setNegativeButton(&quot;取消&quot;, null).show()</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; </span><br><span class="line">                    return true</span><br><span class="line">                    &#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>场景四 应用内Activity之间的跳转</strong></p>
-<p>首先依然在清单文件中配置</p>
-<p>然后使用隐式跳转:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(&quot;`app://test/good?goodsId=3`&quot;)))</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<h4 id="多个不同scheme跳转同一个页面"><a href="#多个不同scheme跳转同一个页面" class="headerlink" title="多个不同scheme跳转同一个页面"></a>多个不同scheme跳转同一个页面</h4><p>只需要在清单文件增加多个<code>data</code>标签即可:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;activity</span><br><span class="line">          android:name=&quot;.ui.login.LoginActivity&quot;</span><br><span class="line">          android:screenOrientation=&quot;portrait&quot;&gt;</span><br><span class="line">          &lt;intent-filter&gt;</span><br><span class="line">              &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; /&gt;</span><br><span class="line">					</span><br><span class="line">              &lt;data</span><br><span class="line">              		android:path=&quot;/good&quot;</span><br><span class="line">                  android:host=&quot;test&quot;</span><br><span class="line">                  android:scheme=&quot;app&quot; /&gt;</span><br><span class="line">                  </span><br><span class="line">					</span><br><span class="line">              &lt;data</span><br><span class="line">                  android:host=&quot;test2&quot;</span><br><span class="line">                  android:scheme=&quot;app&quot; /&gt;</span><br><span class="line">          &lt;/intent-filter&gt;</span><br><span class="line">      &lt;/activity&gt;</span><br></pre></td></tr></table></figure>
-
-<h4 id="使用pathPattern匹配模式"><a href="#使用pathPattern匹配模式" class="headerlink" title="使用pathPattern匹配模式"></a>使用pathPattern匹配模式</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;data</span><br><span class="line">                   android:pathPattern=&quot;/.*&quot;</span><br><span class="line">                   android:host=&quot;test&quot;</span><br><span class="line">                   android:scheme=&quot;app&quot; /&gt;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.表示匹配任意字符 *表示匹配0次或多次  遗憾的是pathPattern无法使用标准的正则表达式 只有* 和.可用</span><br></pre></td></tr></table></figure>
-
-<h4 id="关于sspPattern匹配模式"><a href="#关于sspPattern匹配模式" class="headerlink" title="关于sspPattern匹配模式"></a>关于sspPattern匹配模式</h4><p>我们使用内链的格式一般和<code>url</code>格式一致,比如<code>app://test</code>, 如果我们想使用自定义格式比如这种<code>app:test</code>, 那常规的方法则不奏效,此时<code>sspPattern</code>就可以派上用场</p>
-<p>我们在清单文件中如下配置即可:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;data</span><br><span class="line">                   android:ssp=&quot;test&quot;</span><br><span class="line">                   android:scheme=&quot;app&quot; /&gt;</span><br></pre></td></tr></table></figure>
-
-<p>同样该模式下对应三个属性:</p>
-<ul>
-<li>ssp :字面值匹配模式(PATTERN_LITERAL) 内部采用equals函数</li>
-<li>sspPrefix 前缀匹配模式(PATTERN_PREFIX) 内部采用startWith函数</li>
-<li>sspPattern 全局匹配模式(PATTERN_GLOB) glob规则是一种简化的模式，只支持“*”和“.”作为通配符 </li>
-</ul>
-<p>实际上类似于url格式的内链, 比如<code>app://test</code>也可以使用<code>ssp</code>进行匹配:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;data</span><br><span class="line">                    android:ssp=&quot;//test&quot;</span><br><span class="line">                    android:scheme=&quot;app&quot; /&gt;</span><br></pre></td></tr></table></figure>
-
-<p>不过一般我们不会这么做, 因为直接使用<code>host</code>属性更加简洁</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2193,7 +2278,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">272</span>
+                  <span class="site-state-item-count">276</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

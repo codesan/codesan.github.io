@@ -287,6 +287,540 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../185.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../185.html" itemprop="url">汇编语言之Loop</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-11T12:14:19+08:00">
+                2020-12-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="LOOP指令"><a href="#LOOP指令" class="headerlink" title="LOOP指令"></a>LOOP指令</h2><p>Loop指令和cx寄存器配合使用, 用于循环操作,类似于高级语言中的do while循环</p>
+<h2 id="使用格式"><a href="#使用格式" class="headerlink" title="使用格式"></a>使用格式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">	mov cx,循环次数</span><br><span class="line">标号:</span><br><span class="line">	循环执行的程序代码</span><br><span class="line">	loop 标号</span><br></pre></td></tr></table></figure>
+
+<p>标号的名称可以自定义</p>
+<h2 id="执行流程"><a href="#执行流程" class="headerlink" title="执行流程"></a>执行流程</h2><ul>
+<li><strong>第一步:不管cx中值是否大于0, 先执行一遍循环体</strong>(因为程序还未执行到<code>loop 标号</code>位置时,程序不知道是个循环体, 当做正常流程代码执行)</li>
+<li><strong>第二步: 执行到<code>loop 标号</code>位置,确认是个循环体后, 先将cx减1,也就是cx=cx-1</strong></li>
+<li><strong>第三步:减1后结果如果大于1,则重复执行循环体, 否则跳过循环体代码,继续执行<code>loop 标号</code>后面的代码</strong></li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>因此,从代码层面上看cx的值代表了循环次数, 事实上只循环了cx-1次 只不过判断之前会先执行一遍循环体, 类似于do while </p>
+<h2 id="特殊案例"><a href="#特殊案例" class="headerlink" title="特殊案例"></a>特殊案例</h2><p>根据以上结论, 如果cx的值为0, 减1后为-1, 那程序会怎么执行呢?</p>
+<p>答案是会进入死循环 , 8086cpu是16位 的会循环执行65535次  </p>
+<p><strong>为什么?</strong></p>
+<p>因为-1在计算机里面对应的十六进制为FFFF, 二进制第一位为符号位</p>
+<h2 id="小练习"><a href="#小练习" class="headerlink" title="小练习"></a>小练习</h2><p>题目: 取出以下内存地址中的值并且相加取和</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">FFFF0H-----&gt;20h  #每个内存单元存放一个字节数据</span><br><span class="line"></span><br><span class="line">FFFF1H-----&gt;ach</span><br><span class="line"></span><br><span class="line">FFFF2H-----&gt;FFh</span><br></pre></td></tr></table></figure>
+
+<p>正常思维是使用八位寄存器取出对应地址的值,比如:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mov ax,ffffh</span><br><span class="line">mov ds,ax</span><br><span class="line">mov al,[<span class="number">0</span>]</span><br><span class="line">add al,[<span class="number">1</span>]</span><br><span class="line">add al,[<span class="number">2</span>]</span><br></pre></td></tr></table></figure>
+
+<p>但是这里面存在一个问题, ach+ffh明显超出一个字节, 如果使用al寄存器接收势必数据保存不全,此时,需要再借助一个寄存器,代码修改后如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mov ax,ffffh</span><br><span class="line">mov ds,ax</span><br><span class="line">mov dx <span class="number">0</span>h ;确保数据为<span class="number">0</span>  避免系统脏数据</span><br><span class="line">    </span><br><span class="line">mov al,[<span class="number">0</span>]</span><br><span class="line">mov ah,<span class="number">0</span>h</span><br><span class="line">add dx,ax</span><br><span class="line">    </span><br><span class="line">mov al,[<span class="number">1</span>]</span><br><span class="line">mov ah,<span class="number">0</span>h</span><br><span class="line">add dx,ax</span><br><span class="line">    </span><br><span class="line">mov al,[<span class="number">2</span>]</span><br><span class="line">mov ah,<span class="number">0</span>h</span><br><span class="line">add dx,ax</span><br></pre></td></tr></table></figure>
+
+<p>这种方式保证了数据超出后自动进位, 最后结合loop循环优化代码,如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mov ax,ffffh</span><br><span class="line">mov ds,ax</span><br><span class="line">mov dx <span class="number">0</span>h ;确保数据为<span class="number">0</span>  避免系统脏数据</span><br><span class="line">mov bx <span class="number">0</span>h</span><br><span class="line">    mov cx,<span class="number">3</span>h</span><br><span class="line">s:  mov al,[bx]</span><br><span class="line">    mov ah,<span class="number">0</span>h</span><br><span class="line">    add dx,ax</span><br><span class="line">    add,bx,<span class="number">1</span>H</span><br><span class="line">    loop s</span><br></pre></td></tr></table></figure>
+
+<h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><p>获取数据, 除了通过ds来获取数据之外, 还可以利用其它段地址来获取, 比如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mov ax,ds:[0]</span><br><span class="line">mov ax,cs:[0]</span><br><span class="line">mov ax,ss:[0]</span><br><span class="line">mov ax,es:[0]</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../184.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../184.html" itemprop="url">汇编学习之关于栈段相关知识</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-09T10:14:19+08:00">
+                2020-12-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Push和Pop"><a href="#Push和Pop" class="headerlink" title="Push和Pop"></a>Push和Pop</h2><p><strong>Push(入栈)</strong>:是修改栈内的数据, 并且将sp指针往低地址偏移</p>
+<p><strong>Pop(出栈)</strong>:是读取栈顶数据, 并且将sp指针往高地址偏移</p>
+<p><strong>注: Pop指令并未删除栈内原有的数据, 仅仅是读取而已</strong></p>
+<h2 id="关于栈底指针位置"><a href="#关于栈底指针位置" class="headerlink" title="关于栈底指针位置"></a>关于栈底指针位置</h2><p>如果是一个空栈, 那么<strong>ss:sp指向栈空间最高地址单元的一个单元</strong></p>
+<h2 id="数据宽度"><a href="#数据宽度" class="headerlink" title="数据宽度"></a>数据宽度</h2><p>在8086十六位CPU中, Push和Pop操作的数据都是两个字节的, 也就是说无论是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">push ax ;将ax里数据写入栈顶 两个字节</span><br><span class="line"></span><br><span class="line">pop ax  ;读取栈顶数据赋值给ax 两个字节</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">pop al ;读取栈顶数据赋值给al 读取两个字节 al接收低八位数据</span><br></pre></td></tr></table></figure>
+
+<p>统统操作两个字节数据</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../183.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../183.html" itemprop="url">如何执行smali代码</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-08T16:14:19+08:00">
+                2020-12-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>java代码的执行需要编译成字节码文件然后借助java虚拟机JVM执行, 那么smali代码的执行同样需要借助虚拟机, 只不过是安卓虚拟机DalvikVM, 但是由于Dalvik虚拟机默认识别dex文件, 因此需要将smali文件封装成dex文件</p>
+</blockquote>
+<h4 id="1-创建smali文件"><a href="#1-创建smali文件" class="headerlink" title="1.创建smali文件"></a>1.创建smali文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">.class public LTest;</span><br><span class="line">.super Ljava/lang/Object;</span><br><span class="line"></span><br><span class="line">.method public constructor &lt;init&gt;()V</span><br><span class="line">    .registers 1</span><br><span class="line"></span><br><span class="line">   </span><br><span class="line">    invoke-direct &#123;p0&#125;, Ljava/lang/Object;-&gt;&lt;init&gt;()V</span><br><span class="line"></span><br><span class="line">    return-void</span><br><span class="line">.end method</span><br><span class="line"></span><br><span class="line">.method public static main([Ljava/lang/String;)V</span><br><span class="line">    .registers 3</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    sget-object v0, Ljava/lang/System;-&gt;out:Ljava/io/PrintStream;</span><br><span class="line"></span><br><span class="line">    const-string v1, &quot;Hello Pangshu!&quot;</span><br><span class="line"></span><br><span class="line">    invoke-virtual &#123;v0, v1&#125;, Ljava/io/PrintStream;-&gt;println(Ljava/lang/String;)V</span><br><span class="line"></span><br><span class="line">    return-void</span><br><span class="line">.end method</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-smali文件转dex-或者打包成Apk也一样"><a href="#2-smali文件转dex-或者打包成Apk也一样" class="headerlink" title="2.smali文件转dex(或者打包成Apk也一样)"></a>2.smali文件转dex(或者打包成Apk也一样)</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar smali-2.4.0.jar a smali文件或目录 -o 输出目录/xxx.dex</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-将dex传至android设备中-真机或者模拟器"><a href="#3-将dex传至android设备中-真机或者模拟器" class="headerlink" title="3.将dex传至android设备中(真机或者模拟器)"></a>3.将dex传至android设备中(真机或者模拟器)</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb push test.dex /sdcard/</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-调用Dalvik-VM执行代码"><a href="#4-调用Dalvik-VM执行代码" class="headerlink" title="4.调用Dalvik VM执行代码"></a>4.调用Dalvik VM执行代码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">adb shell</span><br><span class="line"></span><br><span class="line">dalvikvm -cp /sdcard/test.dex Test</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../182.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../182.html" itemprop="url">汇编学习之大小端模式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-07T20:14:19+08:00">
+                2020-12-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><ul>
+<li>大端模式: 是指数据的高字节保存在内存中的低地址中, 而数据的低字节保存在内存的高地址中(高低/低高)(Big Endian)</li>
+<li>小端模式: 是指数据的高字节保存在内存中的高地址中, 而数据的低字节保存在内存的低地址中(高高/低低)(Little Endian)</li>
+</ul>
+<p>ARM既可以工作在大端,也可工作在小端模式</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../181.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1088,617 +1622,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../179.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../179.html" itemprop="url">Charles抓取Https请求的相关配置Windows篇</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-17T16:14:19+08:00">
-                2020-11-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="第一步添加SSL代理配置"><a href="#第一步添加SSL代理配置" class="headerlink" title="第一步添加SSL代理配置"></a>第一步添加SSL代理配置</h2><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201117233257.png" alt></p>
-<p><strong>添加代理主机</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201117233433.png" alt></p>
-<h2 id="第二步-添加根证书"><a href="#第二步-添加根证书" class="headerlink" title="第二步 添加根证书"></a>第二步 添加根证书</h2><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201117233616.png" alt></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201117233701.png" alt></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201117233918.png" alt></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201117233947.png" alt></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201117234024.png" alt></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201117234100.png" alt></p>
-<h2 id="最后重启Charles即可抓包"><a href="#最后重启Charles即可抓包" class="headerlink" title="最后重启Charles即可抓包"></a>最后重启Charles即可抓包</h2><p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../173.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../173.html" itemprop="url">smali基本语法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-06T10:14:19+08:00">
-                2020-11-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h2 id="类声明"><a href="#类声明" class="headerlink" title="类声明"></a>类声明</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h2 id="方法声明"><a href="#方法声明" class="headerlink" title="方法声明"></a>方法声明</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h2 id="字段声明"><a href="#字段声明" class="headerlink" title="字段声明"></a>字段声明</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h2 id="字段取值赋值"><a href="#字段取值赋值" class="headerlink" title="字段取值赋值"></a>字段取值赋值</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h2 id="方法调用"><a href="#方法调用" class="headerlink" title="方法调用"></a>方法调用</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h2 id="方法取值"><a href="#方法取值" class="headerlink" title="方法取值"></a>方法取值</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../174.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../174.html" itemprop="url">包名和签名</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-06T10:14:19+08:00">
-                2020-11-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="包名作用"><a href="#包名作用" class="headerlink" title="包名作用?"></a>包名作用?</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">唯一标识</span><br></pre></td></tr></table></figure>
-
-<h2 id="一台机器能否同时运行两个相同包名的不同应用"><a href="#一台机器能否同时运行两个相同包名的不同应用" class="headerlink" title="一台机器能否同时运行两个相同包名的不同应用?"></a>一台机器能否同时运行两个相同包名的不同应用?</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">不可以</span><br><span class="line">原因: 一个包名代表一个应用, 相同包名系统认为是同一个应用, 会进行覆盖安装</span><br><span class="line">原理: 签名不一致</span><br></pre></td></tr></table></figure>
-
-<h2 id="一台机器能否同时运行两个相同签名的不同应用"><a href="#一台机器能否同时运行两个相同签名的不同应用" class="headerlink" title="一台机器能否同时运行两个相同签名的不同应用?"></a>一台机器能否同时运行两个相同签名的不同应用?</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">可以</span><br></pre></td></tr></table></figure>
-
-<h2 id="历史问题-反编译为什么必须要修改包名"><a href="#历史问题-反编译为什么必须要修改包名" class="headerlink" title="历史问题:反编译为什么必须要修改包名?"></a>历史问题:反编译为什么必须要修改包名?</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">成为一款独立的应用, 方便用户下载安装</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../171.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../171.html" itemprop="url">smali语言之locals和registers的区别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-04T16:14:19+08:00">
-                2020-11-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>  对于dalviks字节码寄存器<strong>都是32位</strong>的，它能够表示任何类型，2个寄存器用于表示64位的类型(Long and Double)。  </p>
-<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>声明于方法内部(必须)</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.<span class="function">method <span class="keyword">public</span> <span class="title">getName</span><span class="params">()</span>V</span></span><br><span class="line"><span class="function">    .registers 6 </span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">	return-<span class="keyword">void</span></span></span><br><span class="line"><span class="function">.end method</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="registers和locals基本区别"><a href="#registers和locals基本区别" class="headerlink" title=".registers和locals基本区别"></a>.registers和locals基本区别</h2><p>在一个方法（method）中有两中方式指定有多少个可用的寄存器。指令.registers指令指定了在这个方法中有多少个可用的寄存器，</p>
-<p>指令.locals指明了在这个方法中非参（non-parameter）寄存器的数量。然而寄存器的总数也包括保存方法参数的寄存器。</p>
-<h2 id="参数是如何传递的？"><a href="#参数是如何传递的？" class="headerlink" title="参数是如何传递的？"></a>参数是如何传递的？</h2><h4 id="1-如果是非静态方法"><a href="#1-如果是非静态方法" class="headerlink" title="1.如果是非静态方法"></a>1.如果是非静态方法</h4><p>例如，你写了一个非静态方法<code>LMyObject;-&gt;callMe(II)V</code>。这个方法有2个int参数，但在这两个整型参数前面还有一个隐藏的参数<code>LMyObject</code>；也就是当前对象的引用，所以这个方法总共有3个参数。<br>假如在一个方法中包含了五个寄存器(V0-V4)，如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.<span class="function">method <span class="keyword">public</span> <span class="title">callMe</span><span class="params">(II)</span>V</span></span><br><span class="line"><span class="function"> 	<span class="keyword">const</span>-string v0,"1"</span></span><br><span class="line"><span class="function">    <span class="keyword">const</span>-string v1,"1"</span></span><br><span class="line"><span class="function"> </span></span><br><span class="line"><span class="function">   return-<span class="keyword">void</span></span></span><br><span class="line"><span class="function">.end method</span></span><br></pre></td></tr></table></figure>
-
-<p>那么只需用.register指令指定5个，或者使用.locals指令指定2个（2个local寄存器+3个参数寄存器）。如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">.<span class="function">method <span class="keyword">public</span> <span class="title">callMe</span><span class="params">(II)</span>V</span></span><br><span class="line"><span class="function">    .registers 5</span></span><br><span class="line"><span class="function"> 	<span class="keyword">const</span>-string v0,"1"</span></span><br><span class="line"><span class="function">    <span class="keyword">const</span>-string v1,"1"</span></span><br><span class="line"><span class="function">    v3</span>==&gt;p0</span><br><span class="line">    V4==&gt;P1</span><br><span class="line">    V5==&gt;P2</span><br><span class="line">   </span><br><span class="line">   <span class="keyword">return</span>-<span class="keyword">void</span></span><br><span class="line">.end method</span><br><span class="line"></span><br><span class="line">或者</span><br><span class="line">.<span class="function">method <span class="keyword">public</span> <span class="title">callMe</span><span class="params">(II)</span>V</span></span><br><span class="line"><span class="function">    .locals 2</span></span><br><span class="line"><span class="function"> 	<span class="keyword">const</span>-string v0,"1"</span></span><br><span class="line"><span class="function">    <span class="keyword">const</span>-string v1,"1"</span></span><br><span class="line"><span class="function">   return-<span class="keyword">void</span></span></span><br><span class="line"><span class="function">.end method</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>该方法被调用的时候，调用方法的对象（即this引用）会保存在V2中，第一个参数在V3中，第二个参数在v4中。</strong></p>
-<h4 id="2-如果是静态方法"><a href="#2-如果是静态方法" class="headerlink" title="2.如果是静态方法"></a>2.如果是静态方法</h4><p>那么参数少了对象引用，除此之外和非静态原理相同，<strong>registers为4 locals依然是2</strong></p>
-<h2 id="关于寄存器命名规则"><a href="#关于寄存器命名规则" class="headerlink" title="关于寄存器命名规则"></a>关于寄存器命名规则</h2><h4 id="v命名法"><a href="#v命名法" class="headerlink" title="v命名法"></a>v命名法</h4><p>上面的例子中我们使用的是<strong>v命名法</strong>，也就是在本地寄存器后面依次添加参数寄存器，</p>
-<p><strong>但是这种命名方式存在一种问题</strong>：假如我后期想要修改方法体的内容，涉及到增加或者删除寄存器，由于<strong>v命名法需要排序</strong>的局限性，那么会造成大量代码的改动，有没有一种办法让我们只改动registers或者locals的值就可以了呢， 答案是：有的</p>
-<p>除<strong>v命名法</strong>之外，还有一种命名法叫做<strong>p命名法</strong></p>
-<h4 id="p命名法"><a href="#p命名法" class="headerlink" title="p命名法"></a>p命名法</h4><p>p命名法只能给方法参数命名，不能给本地变量命名</p>
-<p>假如有一个非静态方法如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.method public print(Ljava/lang/String;Ljava/lang/String;I)V</span><br></pre></td></tr></table></figure>
-
-<p>以下是p命名法参数对应表：</p>
-<table>
-<thead>
-<tr>
-<th>p0</th>
-<th>this</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>p1</td>
-<td>第一个参数Ljava/lang/String;</td>
-</tr>
-<tr>
-<td>p2</td>
-<td>第二个参数Ljava/lang/String;</td>
-</tr>
-<tr>
-<td>p3</td>
-<td>第三个参数I</td>
-</tr>
-</tbody></table>
-<p>如前面提到的，long和double类型都是64位，需要2个寄存器。当你引用参数的时候一定要记住，例如：你有一个非静态方法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LMyObject;-&gt;MyMethod(IJZ)V</span><br></pre></td></tr></table></figure>
-
-<p>方法的参数为int、long、bool。所以这个方法的所有参数需要5个寄存器。 </p>
-<table>
-<thead>
-<tr>
-<th>p0</th>
-<th>this</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>p1</td>
-<td>I</td>
-</tr>
-<tr>
-<td>p2, p3</td>
-<td>J</td>
-</tr>
-<tr>
-<td>p4</td>
-<td>Z</td>
-</tr>
-</tbody></table>
-<p>另外当你调用方法后，你必须在寄存器列表，调用指令中指明，两个寄存器保存了double-wide宽度的参数。</p>
-<p>注意：在默认的baksmali中，参数寄存器将使用P命名方式，如果出于某种原因你要禁用P命名方式，而要强制使用V命名方式，应当使用-p/–no-parameter-registers选项。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li><strong>locals和registers都可以表示寄存器数量</strong>，locals指定本地局部变量寄存器个数，registers是locals和参数寄存器数量的总数，两者使用任选其一</li>
-<li>同时，寄存器命名一共分两种，一种是v命名法，另一种是p命名法</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>v0</th>
-<th></th>
-<th>the first local register</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>v1</td>
-<td></td>
-<td>the second local register</td>
-</tr>
-<tr>
-<td>v2</td>
-<td>p0</td>
-<td>the first parameter register</td>
-</tr>
-<tr>
-<td>v3</td>
-<td>p1</td>
-<td>the second parameter register</td>
-</tr>
-<tr>
-<td>v4</td>
-<td>p2</td>
-<td>the third parameter register</td>
-</tr>
-</tbody></table>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1749,7 +1672,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">272</span>
+                  <span class="site-state-item-count">276</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
