@@ -91,7 +91,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1608824-20190920010803495-1744046885.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png">
-<meta property="og:updated_time" content="2021-09-16T06:05:12.014Z">
+<meta property="og:updated_time" content="2021-09-18T09:19:13.525Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="docker容器相互通信的实现">
 <meta name="twitter:description" content="前言docker容器处在宿主内部的局域网络之中, 一般来说, 我们直接使用局域网ip即可访问, 但考虑到容器重启后ip可能会发生变化, 所以这种直接使用容器的ip的方案并不稳妥 那如果使用公网ip, 映射访问的话, 似乎稳定一些, 但是也存在问题, 比如docker跨服迁移, 那么ip还得手动修改, 同时公网访问速度上肯定不如内网 所以还得另寻他法 事实上 Docker官方已经给我们提供了解决办法">
@@ -400,6 +400,8 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http&#123;</span><br><span class="line">upstream wordpress_sex&#123;</span><br><span class="line">server 容器名:80;</span><br><span class="line">&#125;</span><br><span class="line">server&#123;</span><br><span class="line">        listen       80;</span><br><span class="line">    server_name sex.newban.cn;</span><br><span class="line">    location / &#123;</span><br><span class="line">            proxy_redirect off;</span><br><span class="line">            proxy_set_header Host $host;</span><br><span class="line">            proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">            proxy_pass http://wordpress_sex;</span><br><span class="line">            break;</span><br><span class="line">                 &#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>无论是移植性和安全性都得到了大大的提升</p>
+<p><strong>但是有一点需要注意</strong>, <code>nginx</code>配置文件在<code>nginx</code>启动成功之前会检测<code>server</code>节点下的<code>host</code>地址是否可通, 如果存在无法接通的<code>host</code>, 则<code>nginx</code>无法启动,</p>
+<p>也就是说我们使用<code>server 容器名:80</code>这种配置 当我们的<code>docker</code>容器挂了或者停止运行时, 如果此时重启<code>nginx</code>则会启动失败, 这一点我们需要提前知晓, 避免到时重启时出了问题摸不着头脑</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
 <p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
 <p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
@@ -544,7 +546,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">276</span>
+                  <span class="site-state-item-count">279</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

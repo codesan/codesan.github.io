@@ -287,6 +287,889 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../54.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../54.html" itemprop="url">Markdown中图片插入的近似优雅法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-18T11:23:37+08:00">
+                2020-05-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="最终实现效果"><a href="#最终实现效果" class="headerlink" title="最终实现效果"></a>最终实现效果</h1><ul>
+<li><p>在图片上右键上传，自动生成markdown<code>图片链接格式</code>到剪切板中，任意地方<code>Ctrl+v</code>均可粘贴</p>
+</li>
+<li><p>在文件上右键上传，自动生成markdown<code>超链接格式</code>到剪切板中，任意地方<code>Ctrl+v</code>均可粘贴</p>
+</li>
+</ul>
+<h1 id="markdown介绍"><a href="#markdown介绍" class="headerlink" title="markdown介绍"></a>markdown介绍</h1><ul>
+<li>Markdown是一种可以使用普通文本编辑器编写的标记语言，通过简单的标记语法，它可以使普通文本内容具有一定的格式。</li>
+<li>Markdown的语法简洁明了、学习容易，10分钟即可完全学会掌握。Markdown 的语法全由一些符号所组成，这些符号经过精挑细选，其作用一目了然。 即使没有渲染器，以纯文本方式阅读，也毫无障碍。</li>
+<li>对于开发人员还有一个特别棒的优点：得益于其纯文本属性，用markdown编写的文档、表格等，存放与svn/git/perforce以后，可以非常方便的使用比较工具，对比历史版本！这个word、excel……所不能或者不易办到的。</li>
+</ul>
+<h1 id="markdown的痛点"><a href="#markdown的痛点" class="headerlink" title="markdown的痛点"></a>markdown的痛点</h1><h2 id="图片保存现状"><a href="#图片保存现状" class="headerlink" title="图片保存现状"></a>图片保存现状</h2><p>成也萧何败也萧何，由于markdown的纯文本属性，决定了它不可能优雅的存储图片，在实践中有2种图形表示法</p>
+<ul>
+<li><p>markdown标准</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">![Alt text](/path/to/img.jpg)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这样实际是存放的图片地址，而非图片本身</p>
+</blockquote>
+</li>
+<li><p>html转义</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">![](data:image/*;base64,iVBORw0KGgoAAAANSUhEUgAAAJgAAADZCAIAAABTpG6/AAANaklEQVR4Ae2de1BU1x3H97ILC8gCRh5RjC9sEozPaQc7TiCO02o6+aMZp8M/plOn/8TEtv/V/OMM5Z9OdPJPk5ohbWfazNSJ0o6dSf6IEkubYlLt1PgAwReagK7A4gPEFVjY7Xf3wOYII=)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>以上是base64编码以后的二进制数据</p>
+</blockquote>
+</li>
+</ul>
+<p>上述2种方法，在书写markdown的过程中，都很不方便</p>
+<h2 id="便利的编辑器"><a href="#便利的编辑器" class="headerlink" title="便利的编辑器"></a>便利的编辑器</h2><ul>
+<li><p>typora</p>
+<p>在windows下最好的markdown编辑器，没有之一</p>
+<p>拖动图片到文档中，会自动拷贝图片到硬盘的指定位置，算是半自动化解决了问题</p>
+<p>但是依然存在问题：分享为博客后，这些图片的路径很难正确处理</p>
+</li>
+</ul>
+<h1 id="理想中的解决方案"><a href="#理想中的解决方案" class="headerlink" title="理想中的解决方案"></a>理想中的解决方案</h1><ul>
+<li>在“我的电脑”中任意位置找到图片，右键点击“上传”，</li>
+<li>自动生成markdown格式<code>![Alt text](http://***.***.***/***.jpg)</code>或者<code>[filedes](http://****.*****.***/***.zip)</code>在剪切板中</li>
+<li>在任何文本/markdown编辑器中，直接<code>Ctrl+V</code>即可完成编写</li>
+</ul>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><h3 id="COS"><a href="#COS" class="headerlink" title="COS"></a>COS</h3><blockquote>
+<p>对象存储（Cloud Object Storage，COS）</p>
+</blockquote>
+<p>我们需要一个空间，用于存放图片或者文件，这里推荐使用腾讯云或者七牛云</p>
+<p>他们提供的免费额度足够普通用户使用了</p>
+<h4 id="腾讯云的免费额度"><a href="#腾讯云的免费额度" class="headerlink" title="腾讯云的免费额度"></a>腾讯云的免费额度</h4><table>
+<thead>
+<tr>
+<th align="left">资源类型</th>
+<th align="left">资源子类型</th>
+<th align="left">每月免费额度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">存储空间</td>
+<td align="left">存储空间</td>
+<td align="left">50 GB</td>
+</tr>
+<tr>
+<td align="left">流量</td>
+<td align="left">外网下行流量</td>
+<td align="left">10 GB</td>
+</tr>
+<tr>
+<td align="left">流量</td>
+<td align="left">腾讯云 CDN 回源流量</td>
+<td align="left">10 GB</td>
+</tr>
+<tr>
+<td align="left">请求</td>
+<td align="left">读请求</td>
+<td align="left">100 万次</td>
+</tr>
+<tr>
+<td align="left">请求</td>
+<td align="left">写请求</td>
+<td align="left">100 万次</td>
+</tr>
+</tbody></table>
+<h4 id="七牛云的免费额度"><a href="#七牛云的免费额度" class="headerlink" title="七牛云的免费额度"></a>七牛云的免费额度</h4><table>
+<thead>
+<tr>
+<th align="left">资源类型</th>
+<th align="left">免费额度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">标准存储空间</td>
+<td align="left">0-10 GB</td>
+</tr>
+<tr>
+<td align="left">每月上传流量</td>
+<td align="left">无上限</td>
+</tr>
+<tr>
+<td align="left">标准存储每月写请求 Put / Delete</td>
+<td align="left">0-10 万次</td>
+</tr>
+<tr>
+<td align="left">标准存储每月读请求 Get</td>
+<td align="left">0-100 万次</td>
+</tr>
+</tbody></table>
+<h3 id="本地环境"><a href="#本地环境" class="headerlink" title="本地环境"></a>本地环境</h3><p>这里以腾讯云接口为例，本地需要<code>nodejs</code>运行环境</p>
+<ul>
+<li><p><a href="https://nodejs.org/en/download/" target="_blank" rel="noopener">nodejs</a></p>
+</li>
+<li><p><a href="https://github.com/tencentyun/cos-nodejs-sdk-v5" target="_blank" rel="noopener">腾讯云SDK</a></p>
+<h3 id="环境变量配置"><a href="#环境变量配置" class="headerlink" title="环境变量配置"></a>环境变量配置</h3></li>
+<li><p>在<code>windows环境变量</code>中增加一项<code>NODE_PATH</code>，最好同时指向2处，例如：<code>C:\Users\ZNMLR\node_modules</code>和<code>C:\Users\ZNMLR\AppData\Roaming\npm\node_modules</code></p>
+</li>
+<li><p>前者对应npm的本地安装，后者对应npm的全局安装</p>
+</li>
+</ul>
+<h1 id="开始优雅之旅"><a href="#开始优雅之旅" class="headerlink" title="开始优雅之旅"></a>开始优雅之旅</h1><h2 id="实现右键调用某bat"><a href="#实现右键调用某bat" class="headerlink" title="实现右键调用某bat"></a>实现右键调用某bat</h2><blockquote>
+<p>目标：在任意格式文件上单击右键，弹出菜单“上传”，然后调用指定bat</p>
+</blockquote>
+<ul>
+<li><p>打开注册表编辑器</p>
+<p><code>WIN+R</code>调用运行库，输入<code>regedit</code>，会打开注册表编辑器</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/markdwon%E4%B8%AD%E6%8F%92%E5%85%A5%E5%9B%BE%E7%89%87_1.png" alt></p>
+</li>
+<li><p>找到<code>计算机\HKEY_CLASSES_ROOT\*\shell</code></p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/markdwon%E4%B8%AD%E6%8F%92%E5%85%A5%E5%9B%BE%E7%89%87_2.png" alt></p>
+</li>
+<li><p>新建项，名字随意</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/markdwon%E4%B8%AD%E6%8F%92%E5%85%A5%E5%9B%BE%E7%89%87_3.png" alt></p>
+</li>
+<li><p>再新建<code>command</code>子项，并修改右侧默认值</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/markdwon%E4%B8%AD%E6%8F%92%E5%85%A5%E5%9B%BE%E7%89%87_4.png" alt></p>
+<p>图中的D:\1.bat是我测试用的，其存放于某合理的地方</p>
+</li>
+<li><p>修改批处理内容，测试是否工作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@echo off</span><br><span class="line">echo %1%</span><br><span class="line">pause</span><br><span class="line">exit</span><br></pre></td></tr></table></figure>
+
+<p>该批处理暂时只获取输入参数，并打印出来</p>
+<p>然后等待用户敲个<code>Enter</code>就自动退出了</p>
+</li>
+<li><p>右键点击任意文件</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/markdwon%E4%B8%AD%E6%8F%92%E5%85%A5%E5%9B%BE%E7%89%87_5.png" alt></p>
+</li>
+<li><p>查看运行效果</p>
+</li>
+</ul>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/markdwon%E4%B8%AD%E6%8F%92%E5%85%A5%E5%9B%BE%E7%89%87_6.png" alt></p>
+<h2 id="不那么严肃的声明"><a href="#不那么严肃的声明" class="headerlink" title="不那么严肃的声明"></a>不那么严肃的声明</h2><p>今天是我用nodejs的第二天，代码可能写不那么符合标准不那么优雅，见谅</p>
+<p>如果发现有更好的优化方法，请发邮件通知我，谢谢 yangyunzhao#qq.com</p>
+<h2 id="安装腾讯云SDK"><a href="#安装腾讯云SDK" class="headerlink" title="安装腾讯云SDK"></a>安装腾讯云SDK</h2><ul>
+<li><p>安装nodejs运行环境</p>
+<p>这个没什么好说的，双击下一步就好了</p>
+</li>
+<li><p>安装sdk</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\ZNMLR&gt;npm i cos-nodejs-sdk-v5 --save -g</span><br><span class="line">+ cos-nodejs-sdk-v5@2.4.0</span><br><span class="line">added 68 packages in 10.082s</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>再次安装sdk</p>
+<blockquote>
+<p>不要问我为何有这一步，腾讯云文档这样写的</p>
+<p>先下载<a href="https://github.com/tencentyun/cos-nodejs-sdk-v5" target="_blank" rel="noopener">腾讯云SDK</a>，解压，到指定目录执行命令</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\ZNMLR&gt;d:</span><br><span class="line">D:\&gt;cd cos-nodejs-sdk-v5-master</span><br><span class="line">D:\cos-nodejs-sdk-v5-master&gt;npm install -g</span><br><span class="line">+ cos-nodejs-sdk-v5@2.4.0</span><br><span class="line">updated 1 package in 6.33s</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="获取腾讯云上传鉴权码"><a href="#获取腾讯云上传鉴权码" class="headerlink" title="获取腾讯云上传鉴权码"></a>获取腾讯云上传鉴权码</h2><ul>
+<li><p>请到<a href="https://cloud.tencent.com/product/cos" target="_blank" rel="noopener">腾讯云</a>注册账号并实名认证，</p>
+</li>
+<li><p>新建存储桶</p>
+</li>
+<li><p>获取APPID、SecretId、SecretKey、存储桶名称、所属地域</p>
+<p>以上步骤请自行阅读腾讯云文档，这里不做说明</p>
+</li>
+</ul>
+<h2 id="编写上传脚本"><a href="#编写上传脚本" class="headerlink" title="编写上传脚本"></a>编写上传脚本</h2><h3 id="官方示例"><a href="#官方示例" class="headerlink" title="官方示例"></a>官方示例</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// 引入模块</span><br><span class="line">var COS = require(&apos;cos-nodejs-sdk-v5&apos;);</span><br><span class="line">// 创建实例</span><br><span class="line">var cos = new COS(&#123;</span><br><span class="line">    AppId: &apos;1250000000&apos;,   // 修改为自己的appid</span><br><span class="line">    SecretId: &apos;AKIDxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&apos;, // 修改为自己的SecretId</span><br><span class="line">    SecretKey: &apos;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&apos;, // 修改为自己的SecretKey</span><br><span class="line">&#125;);</span><br><span class="line">// 分片上传</span><br><span class="line">cos.sliceUploadFile(&#123;</span><br><span class="line">    Bucket: &apos;test&apos;, // 修改为自己的存储桶名称，由英文、数字和标点符号组成</span><br><span class="line">    Region: &apos;ap-guangzhou&apos;, // 修改为自己的所属地域，应该是纯英文的部分</span><br><span class="line">    Key: &apos;1.zip&apos;, // 这个是远端的地址</span><br><span class="line">    FilePath: &apos;./1.zip&apos; // 这个是本地地址</span><br><span class="line">&#125;, function (err, data) &#123;</span><br><span class="line">    console.log(err, data);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>执行js文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">D:\&gt;node 2.js</span><br><span class="line">warning: AppId has been deprecated, Please put it at the end of parameter Bucket(E.g: &quot;test-1250000000&quot;).</span><br><span class="line">(node:11824) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.</span><br><span class="line">null &#123; Location: &apos;**********.cos.ap-shanghai.myqcloud.com/1.png&apos;,</span><br><span class="line">  Bucket: &apos;*****&apos;,</span><br><span class="line">  Key: &apos;1.png&apos;,</span><br><span class="line">  ETag: &apos;&quot;*******************-1&quot;&apos;,</span><br><span class="line">  statusCode: 200,</span><br><span class="line">  headers:</span><br><span class="line">   &#123; &apos;content-type&apos;: &apos;application/xml&apos;,</span><br><span class="line">     &apos;transfer-encoding&apos;: &apos;chunked&apos;,</span><br><span class="line">     connection: &apos;close&apos;,</span><br><span class="line">     date: &apos;Sun, 06 May 2018 03:38:13 GMT&apos;,</span><br><span class="line">     server: &apos;tencent-cos&apos;,</span><br><span class="line">     &apos;x-cos-request-id&apos;: &apos;************************&apos; &#125; &#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>上传成功了</p>
+<p>敏感信息用*号代替了</p>
+<p>但是文件在根目录下</p>
+</blockquote>
+<p>###优化：上传到指定路径</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">var filepath=&apos;D:/135.png&apos;;</span><br><span class="line">var filename = filepath.substring(filepath.lastIndexOf(&quot;/&quot;)+1); </span><br><span class="line">var today = new Date();</span><br><span class="line">var year = today.getFullYear();</span><br><span class="line">var month = today.getMonth() + 1;</span><br><span class="line">var urlkey=year+&quot;/&quot;+(month&lt;10?&apos;0&apos;+month:month)+&quot;/&quot;+filename;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 引入模块</span><br><span class="line">var COS = require(&apos;cos-nodejs-sdk-v5&apos;);</span><br><span class="line">// 创建实例</span><br><span class="line">var cos = new COS(&#123;</span><br><span class="line">    AppId: &apos;*&apos;,</span><br><span class="line">    SecretId: &apos;*&apos;,</span><br><span class="line">    SecretKey: &apos;*&apos;,</span><br><span class="line">&#125;);</span><br><span class="line">// 分片上传</span><br><span class="line">cos.sliceUploadFile(&#123;</span><br><span class="line">    Bucket: &apos;*&apos;,</span><br><span class="line">    Region: &apos;*&apos;,</span><br><span class="line">    Key: urlkey,</span><br><span class="line">    FilePath: filepath</span><br><span class="line">&#125;, function (err, data) &#123;</span><br><span class="line">    console.log(err, data);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>执行脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">D:\&gt;node 2.js</span><br><span class="line">warning: AppId has been deprecated, Please put it at the end of parameter Bucket(E.g: &quot;test-1250000000&quot;).</span><br><span class="line">(node:7620) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.</span><br><span class="line">null &#123; Location: &apos;*.cos.*.myqcloud.com/2018/05/135.png&apos;,</span><br><span class="line">  Bucket: &apos;*&apos;,</span><br><span class="line">  Key: &apos;2018/05/135.png&apos;,</span><br><span class="line">  ETag: &apos;&quot;*-1&quot;&apos;,</span><br><span class="line">  statusCode: 200,</span><br><span class="line">  headers:</span><br><span class="line">   &#123; &apos;content-type&apos;: &apos;application/xml&apos;,</span><br><span class="line">     &apos;transfer-encoding&apos;: &apos;chunked&apos;,</span><br><span class="line">     connection: &apos;close&apos;,</span><br><span class="line">     date: &apos;Sun, 06 May 2018 04:16:42 GMT&apos;,</span><br><span class="line">     server: &apos;tencent-cos&apos;,</span><br><span class="line">     &apos;x-cos-request-id&apos;: &apos;*=&apos; &#125; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>查看返回值Location生成路径已经有年月了</p>
+<h3 id="优化：上传后自动存放在剪切板"><a href="#优化：上传后自动存放在剪切板" class="headerlink" title="优化：上传后自动存放在剪切板"></a>优化：上传后自动存放在剪切板</h3><p>略</p>
+<h3 id="优化：生成markdown格式"><a href="#优化：生成markdown格式" class="headerlink" title="优化：生成markdown格式"></a>优化：生成markdown格式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">var picsuffix=new Array(&quot;.jpg&quot;, &quot;.png&quot;, &quot;.bmp&quot;, &quot;.jpeg&quot;);</span><br><span class="line">function contains(arr, obj) &#123;</span><br><span class="line">  var i = arr.length;</span><br><span class="line">  while (i--) &#123;</span><br><span class="line">    if (arr[i] === obj) &#123;</span><br><span class="line">      return true;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return false;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var filepath=&apos;D:/tk.db&apos;;</span><br><span class="line">var filename = filepath.substring(filepath.lastIndexOf(&quot;/&quot;)+1); </span><br><span class="line">var today = new Date();</span><br><span class="line">var year = today.getFullYear();</span><br><span class="line">var month = today.getMonth() + 1;</span><br><span class="line">var urlkey=year+&quot;/&quot;+(month&lt;10?&apos;0&apos;+month:month)+&quot;/&quot;+filename;</span><br><span class="line">var suffix=filename.substring(filename.lastIndexOf(&quot;.&quot;), filename.length);</span><br><span class="line"></span><br><span class="line">// 引入模块</span><br><span class="line">var COS = require(&apos;cos-nodejs-sdk-v5&apos;);</span><br><span class="line">// 创建实例</span><br><span class="line">var cos = new COS(&#123;</span><br><span class="line">    AppId: &apos;*&apos;,</span><br><span class="line">    SecretId: &apos;*&apos;,</span><br><span class="line">    SecretKey: &apos;*&apos;,</span><br><span class="line">&#125;);</span><br><span class="line">// 分片上传</span><br><span class="line">cos.sliceUploadFile(&#123;</span><br><span class="line">    Bucket: &apos;*&apos;,</span><br><span class="line">    Region: &apos;*&apos;,</span><br><span class="line">    Key: urlkey,</span><br><span class="line">    FilePath: filepath</span><br><span class="line">&#125;, function (err, data) &#123;</span><br><span class="line">    console.log(err, data);</span><br><span class="line">	const util = require(&apos;util&apos;);</span><br><span class="line">	var url=&apos;&apos;;</span><br><span class="line">	if (contains(picsuffix, suffix)) &#123;</span><br><span class="line">		url=&apos;![](https://&apos;+data.Location+&apos;)&apos;;</span><br><span class="line">	&#125;</span><br><span class="line">	else &#123;</span><br><span class="line">		url=&apos;[](https://&apos;+data.Location+&apos;)&apos;;</span><br><span class="line">	&#125;</span><br><span class="line">	require(&apos;child_process&apos;).spawn(&apos;clip&apos;).stdin.end(url);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>这次定义了数组picsuffix，实现了图片与文件生成不同的字符串</li>
+<li>实现了自动拷贝到剪切板的功能</li>
+</ul>
+<h2 id="关联bat与上传脚本"><a href="#关联bat与上传脚本" class="headerlink" title="关联bat与上传脚本"></a>关联bat与上传脚本</h2><ul>
+<li><p>修改之前的bat批处理文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@echo off</span><br><span class="line">node D:\2.js %1%</span><br><span class="line">exit</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改js脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">var picsuffix=new Array(&quot;.jpg&quot;, &quot;.png&quot;, &quot;.bmp&quot;, &quot;.jpeg&quot;);</span><br><span class="line">function contains(arr, obj) &#123;</span><br><span class="line">  var i = arr.length;</span><br><span class="line">  while (i--) &#123;</span><br><span class="line">    if (arr[i] === obj) &#123;</span><br><span class="line">      return true;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return false;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var filepath=process.argv.splice(2).toString();</span><br><span class="line">var filename = filepath.substring(filepath.lastIndexOf(&quot;\\&quot;)+1); </span><br><span class="line">var today = new Date();</span><br><span class="line">var year = today.getFullYear();</span><br><span class="line">var month = today.getMonth() + 1;</span><br><span class="line">var urlkey=year+&quot;/&quot;+(month&lt;10?&apos;0&apos;+month:month)+&quot;/&quot;+filename;</span><br><span class="line">var suffix=filename.substring(filename.lastIndexOf(&quot;.&quot;), filename.length);</span><br><span class="line"></span><br><span class="line">// 引入模块</span><br><span class="line">var COS = require(&apos;cos-nodejs-sdk-v5&apos;);</span><br><span class="line">// 创建实例</span><br><span class="line">var cos = new COS(&#123;</span><br><span class="line">    AppId: &apos;*&apos;,</span><br><span class="line">    SecretId: &apos;*&apos;,</span><br><span class="line">    SecretKey: &apos;*&apos;,</span><br><span class="line">&#125;);</span><br><span class="line">// 分片上传</span><br><span class="line">cos.sliceUploadFile(&#123;</span><br><span class="line">    Bucket: &apos;*&apos;,</span><br><span class="line">    Region: &apos;*&apos;,</span><br><span class="line">    Key: urlkey,</span><br><span class="line">    FilePath: filepath</span><br><span class="line">&#125;, function (err, data) &#123;</span><br><span class="line">	if(err)&#123;</span><br><span class="line">		console.log(err);</span><br><span class="line">	&#125;</span><br><span class="line">	else&#123;</span><br><span class="line">		console.log(data);</span><br><span class="line">		const util = require(&apos;util&apos;);</span><br><span class="line">		var url=&apos;&apos;;</span><br><span class="line">		if (contains(picsuffix, suffix)) &#123;</span><br><span class="line">			url=&apos;![](https://&apos;+data.Location+&apos;)&apos;;</span><br><span class="line">		&#125;</span><br><span class="line">		else &#123;</span><br><span class="line">			url=&apos;[](https://&apos;+data.Location+&apos;)&apos;;</span><br><span class="line">		&#125;</span><br><span class="line">		require(&apos;child_process&apos;).spawn(&apos;clip&apos;).stdin.end(url);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>大功告成</p>
+</li>
+</ul>
+<p><strong>本文为转载自:</strong><a href="http://blog.znmlr.cn/" target="_blank" rel="noopener">http://blog.znmlr.cn/</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../55.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../55.html" itemprop="url">一篇文章让你从此不再畏惧正则表达式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-15T16:42:24+08:00">
+                2020-05-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="1-什么是正则表达式"><a href="#1-什么是正则表达式" class="headerlink" title="1.什么是正则表达式"></a>1.什么是正则表达式</h4><p>正则表达式，又称正规表示式、正规表示法、正规表达式、规则表达式、常规表示法（英语：Regular Expression，在代码中常简写为regex、regexp或RE），计算机科学的一个概念。正则表达式使用单个字符串来描述、匹配一系列匹配某个句法规则的字符串。在很多文本编辑器里，正则表达式通常被用来检索、替换那些匹配某个模式的文本。</p>
+<p>通俗的讲就是按照某种规则去匹配符合条件的字符串</p>
+<h4 id="2-利用图形化工具理解正则表达式"><a href="#2-利用图形化工具理解正则表达式" class="headerlink" title="2.利用图形化工具理解正则表达式"></a>2.利用图形化工具理解正则表达式</h4><p>辅助理解正则表达的在线工具:</p>
+<ul>
+<li><p><a href="https://regexper.com/" target="_blank" rel="noopener">https://regexper.com/</a> </p>
+</li>
+<li><p><a href="http://rubular.com/" target="_blank" rel="noopener">http://rubular.com/</a> </p>
+</li>
+<li><p><a href="https://tool.lu/regex/" target="_blank" rel="noopener">https://tool.lu/regex/</a></p>
+</li>
+<li><p>正则匹配软件</p>
+<p>​      <a href="http://pan.baidu.com/s/19Yn49" target="_blank" rel="noopener">McTracer</a> </p>
+<p>我们利用这个工具辅助理解，正则表达式。语法没懂表着急，后面会有，这里只是学会用工具帮助我们学习。</p>
+</li>
+</ul>
+<p><strong>手机号正则</strong>: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/^1[34578][0-9]&#123;9&#125;$/</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=592966765,1238863996&fm=173&s=40B03D728F817149547948C60000A0B2&w=376&h=168&img.JPEG" alt></p>
+<blockquote>
+<p>注释：以1开头，第二位为3 4 5 7 9 其中一个，以9位（本身1次加重复8次）0-9数字结尾</p>
+</blockquote>
+<p><strong>单词边界</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/\bis\b/</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=2615878050,770295845&fm=173&w=268&h=40&img.JPEG" alt></p>
+<blockquote>
+<p>注释： is前后都是单词的边界，比较晦涩难懂？感受下两者的区别，\b 会方道语法部分讲解</p>
+</blockquote>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=766802235,4226265389&fm=173&s=84AA74331B485C494855B4DA000080B3&w=321&h=166&img.JPEG" alt></p>
+<p><strong>URL分组替换</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/http:(\/\/.+\.jpg)/</span><br></pre></td></tr></table></figure>
+
+<p>看不懂的不要慌语法部分后面会有介绍，这里只是展示利用可视化的图形帮助我们理解正则表达式，可以回来再看木有关系</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=2994882449,1200138689&fm=173&s=401AC532DCBABE015DE115C60100A0A2&w=297&h=77&img.JPEG" alt></p>
+<p>正则表达式中括号用来分组，这个时候我们可以通过用$1来获取 group#1的内容</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=201062960,2805738176&fm=173&s=C550ED33C534C82016E591D1000080B1&w=422&h=92&img.JPEG" alt></p>
+<p>说下这个正则的意义，如果网站用了https，网站引用静态资源也必须是https，否则报错。如果写成 // 会自动识别 http 或者 https</p>
+<p><strong>日期匹配与分组替换</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/^\d&#123;4&#125;[/-]\d&#123;2&#125;[/-]\d&#123;2&#125;$/</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=3505405751,3483604314&fm=173&s=6966B853C576FE204851DD51010080B2&w=484&h=89&img.JPEG" alt></p>
+<p>这个正则比较复杂，画符念咒的地方太多了，一一分析：</p>
+<p>Start of line 是由^生效的表示以此开头</p>
+<p>对应结尾End of line 由$生效表示以此结尾</p>
+<p>接着看digit 由 \d 生效表示数字</p>
+<p>3times 由{4} 生效表示重复4次，开始的时候有疑问，为什么不是 4times 。后来明白作者的用意，正则表达式是一个规则，用这个规则去从字符串开始匹配到结束（注意计算机读字符串可是不会分行的，都是一个串，我们看到的多行，人家会认为是个 \t ）这里设计好像小火车的轨道一直开到末尾。digit 传过一次，3times表示再来三次循环，共4次，后面的once同理。 自己被自己啰嗦到了。</p>
+<p>接下来，是 one of 在手机正则里面已经出现了。表示什么都行。只要符合这两个都让通过。</p>
+<p>好了这个正则解释完了，接下来用它做什么呢？</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=217541058,1393507368&fm=173&s=8492703311484D494E5484DE0000C0B1&w=341&h=181&img.JPEG" alt></p>
+<p>我们可以验证日期的合法性</p>
+<p>结合URL分组替换所用到的分组特性，我们可以轻松写出日期格式化的方法</p>
+<p><strong>改造下这个正则</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/^(\d&#123;4&#125;)[/-](\d&#123;2&#125;)[/-](\d&#123;2&#125;)$/</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=1578594236,3808167222&fm=173&s=0026F813C5F676214C7DC04A010080B2&w=543&h=105&img.JPEG" alt></p>
+<p>轻松的可以拿到 group#1 #2 #3 的内容，对应 $1$2$3</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/11111" alt></p>
+<p>到现在已经能结合图形化工具看懂正则表达式表达式了，如果想自己写，还要在正则语法上下点功夫</p>
+<h4 id="3-正则表达式语法"><a href="#3-正则表达式语法" class="headerlink" title="3. 正则表达式语法"></a>3. 正则表达式语法</h4><p><strong>1 修饰符 （三个 g i m）</strong></p>
+<p>修饰符与其他语法特殊，字面量方法声名的时候放到//后，构造函数声明的时候，作为第二个参数传入。整个正则表达式可以理解为正则表达式规则字符串+修饰符</p>
+<ul>
+<li><p>g：global 执行一个全局匹配</p>
+</li>
+<li><p>i：ignore case执行一个不区分大小写的匹配</p>
+</li>
+<li><p>m: multiple lines多行匹配</p>
+</li>
+</ul>
+<p>修饰符可以一起用 const reg =/\bis\b/gim</p>
+<p>来说说他们有什么作用</p>
+<p><strong>有g和没有g的区别</strong></p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=344032591,1933667552&fm=173&s=8570E033CF704C011C6590D00000C0B3&w=539&h=200&img.JPEG" alt></p>
+<p>没有g只替换了第一个，有g 所有的都换了</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=2615754428,2250290345&fm=173&s=617E38D34D66E7225B710F7103009077&w=269&h=55&img.JPEG" alt></p>
+<p><strong>有i和没有i的区别</strong></p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=3310944985,1165756769&fm=173&s=87F0E03315485D4B0C6D98DA000080B3&w=365&h=199&img.JPEG" alt></p>
+<p>有i忽略大小写，没有i严格区分大小写</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=1941717778,1808875963&fm=173&s=707E38D3C714CE234A718B7103004077&w=273&h=59&img.JPEG" alt></p>
+<h3 id="2-元字符"><a href="#2-元字符" class="headerlink" title="2 元字符"></a>2 元字符</h3><p>正则表达式由两种基本字符组成：</p>
+<ul>
+<li><p>原义字符</p>
+</li>
+<li><p>非打印字符</p>
+</li>
+<li><p>元字符 (* + ? $ ^ . | \ ( ) { } [ ])</p>
+</li>
+</ul>
+<p><strong>原义字符</strong></p>
+<p>这个没什么好解释的，我们一直在举例的 /is/ 匹配字符串’is’</p>
+<p>\将下一个字符标记为一个特殊字符、或一个原义字符、或一个向后引用、或一个八进制转义符。例如，n”匹配字符“n”。“\n”匹配一个换行符。序列“\”匹配“\”而“(”则匹配“(”。</p>
+<p><strong>非打印字符</strong></p>
+<p>字符</p>
+<p>描述</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\cx</span><br></pre></td></tr></table></figure>
+
+<p>匹配由x指明的控制字符。例如， \cM 匹配一个 Control-M 或回车符。x 的值必须为 A-Z 或 a-z 之一。否则，将 c 视为一个原义的 ‘c’ 字符。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\f</span><br></pre></td></tr></table></figure>
+
+<p>匹配一个换页符。等价于 \x0c 和 \cL。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\n</span><br></pre></td></tr></table></figure>
+
+<p>匹配一个换行符。等价于 \x0a 和 \cJ。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\r</span><br></pre></td></tr></table></figure>
+
+<p>匹配一个回车符。等价于 \x0d 和 \cM。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\s</span><br></pre></td></tr></table></figure>
+
+<p>匹配任何空白字符，包括空格、制表符、换页符等等。等价于 [ \f\n\r\t\v]。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\S</span><br></pre></td></tr></table></figure>
+
+<p>匹配任何非空白字符。等价于 [^ \f\n\r\t\v]。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\t</span><br></pre></td></tr></table></figure>
+
+<p>匹配一个制表符。等价于 \x09 和 \cI。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\v</span><br></pre></td></tr></table></figure>
+
+<p>匹配一个垂直制表符。等价于 \x0b 和 \cK。</p>
+<p>非打印字符，以\n为例</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=1340764868,3292114517&fm=173&s=8510EC334B424D4D0CD0A1DA0000C0B0&w=382&h=208&img.JPEG" alt></p>
+<p>其他的在前端引用比较少，应该在后端处理文本文件的时候会用到</p>
+<p><strong>字符类 []</strong></p>
+<p>在前面的手机号正则例子中，我们已经使用过[] /^1[34578][0-9]{9}$/ : [34578]表示34578任意一个数字即可。在日期匹配与分组替换例子中 <code>/^\d{4}[/-]\d{2}[/-]\d{2}$/</code> 表示符合 <code>／-</code> 都可以</p>
+<p><strong>字符类取反 [^]</strong></p>
+<p>表示不属于此类</p>
+<p>空格也不属于，好多狗</p>
+<p><strong>范围类[-]</strong></p>
+<p>正则表达式支持一定范围规则比如 [a-z][A-Z][0-9] 可以连写[a-z0-9] 如果你只是想匹配-在 范围类最后加-即可。请看实例。</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=1856837476,3098413748&fm=173&s=8552E13305584DC84C50A4DE0000C0B1&w=332&h=197&img.JPEG" alt></p>
+<h3 id="预定义类"><a href="#预定义类" class="headerlink" title="预定义类"></a>预定义类</h3><p>常用为了方便书写</p>
+<p>字符</p>
+<p>等价类</p>
+<p>含义</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line"></span><br><span class="line">[^\n\r]</span><br></pre></td></tr></table></figure>
+
+<p>除了回车符和换行符之外的所有字符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">\d</span><br><span class="line"></span><br><span class="line">[0-9]</span><br></pre></td></tr></table></figure>
+
+<p>数字字符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">\D</span><br><span class="line"></span><br><span class="line">[^0-9]</span><br></pre></td></tr></table></figure>
+
+<p>非数字字符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">\s</span><br><span class="line"></span><br><span class="line">[\t\n\x0B\f\r]</span><br></pre></td></tr></table></figure>
+
+<p>空白符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">\S</span><br><span class="line"></span><br><span class="line">[^\t\n\x0B\f\r]</span><br></pre></td></tr></table></figure>
+
+<p>非空白符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">\w</span><br><span class="line"></span><br><span class="line">[a-zA-Z_0-9]</span><br></pre></td></tr></table></figure>
+
+<p>单词字符（字母、数字、下划线）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">\W</span><br><span class="line"></span><br><span class="line">[^a-zA-Z_0-9]</span><br></pre></td></tr></table></figure>
+
+<p>非单词字符</p>
+<p>有了这些预定义类，写一些正则就很方便了，比如我们希望匹配一个 ab+数字+任意字符 的字符串，就可以这样写了 /ab\d./</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=2564052864,1792019635&fm=173&w=208&h=34&img.JPEG" alt></p>
+<p><strong>边界</strong></p>
+<p>字符</p>
+<p>含义</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">^</span><br></pre></td></tr></table></figure>
+
+<p>以xx开头</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$</span><br></pre></td></tr></table></figure>
+
+<p>以xx结尾</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\b</span><br></pre></td></tr></table></figure>
+
+<p>单词边界，指[a-zA-Z_0-9]之外的字符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\B</span><br></pre></td></tr></table></figure>
+
+<p>非单词边界</p>
+<p> <strong>量词</strong></p>
+<p>字符</p>
+<p>含义</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?</span><br></pre></td></tr></table></figure>
+
+<p>出现零次或一次</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*</span><br></pre></td></tr></table></figure>
+
+<p>出现零次或多次(任意次)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+</span><br></pre></td></tr></table></figure>
+
+<p>出现一次或多次（至少一次）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;n&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对应零次或者n次</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;n,m&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至少出现n次但不超过m次</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;n,&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至少出现n次(+的升级版)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;0,n&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至多出现n次(其实就是{n,m} 方便记忆而已)</p>
+<p>如果没有量词，要匹配4位数字这样写就可以/\d\d\d\d/, 如果匹配50位100位呢？那不是要疯掉了？</p>
+<p>有了量词，就可以这样写/\d{100}/, 量词的使用我们在手机号中使用过，表现在可视化中就是循环多少次。</p>
+<p>凑一个上面都包含的实例/\d?@\d*@\d+@\d{10}@\d{10,20}@\d{10,}@\d{0,10}/</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=3700410048,913876598&fm=173&w=640&h=73&img.JPEG" alt></p>
+<p><strong>贪婪与懒惰（非贪婪）</strong></p>
+<p>正则表达式默认会匹配贪婪模式，什么是贪婪模式呢？如其名尽可能多的匹配。我们看个例子。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/\d&#123;3,6&#125;/</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=683364840,3489026062&fm=173&s=04BAE8328CF06C827664144F0300A0E0&w=121&h=67&img.JPEG" alt></p>
+<p>贪婪模式下，匹配的了最多的情况。</p>
+<p>与贪婪对应就是懒惰模式，懒惰对应的就是匹配的尽可能少的情况。如何开启懒惰模式？ 在量词后面加?。继续上面的例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/\d&#123;3,6&#125;?/</span><br></pre></td></tr></table></figure>
+
+<p>如果想知道，正则表达式是如何匹配量词的，请看 进阶正则表达式 文中有介绍，正则是如何回溯的。</p>
+<p><strong>分组与反向引用</strong></p>
+<p>分组，又称为子表达式。把正则表达式拆分成小表达式。概念枯燥，说个例子为嘛用分组：</p>
+<p>不分组 /abc{2}/</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=789192488,2437398908&fm=173&s=A643B25ACC20F40140FD50C90100E0B2&w=137&h=60&img.JPEG" alt></p>
+<p>量词仅作用到最后的c</p>
+<p>分组 /(abc){2}/</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=2955596776,864467602&fm=173&s=0636EC238CB0798A0CF5D1CE0100C0B1&w=135&h=86&img.JPEG" alt></p>
+<p>注意这里 group #1</p>
+<p>分组虽然和运算符() 很像，但是分组在正则表达式中，注意理解组的含义。经常有人滥用分组</p>
+<p><code>/^(http|https)/</code> 真的需要这样么？其实 <code>/^https?/</code>就可以了，你正则写的特别长的时候，会出现一堆没用的结果，看着都头疼吧。</p>
+<p>分组往往和反向引用一起使用，别被概念吓到：当一个正则表达式被分组后，每个分组自动被赋予一个组号，一左到右分别是 $1$2…</p>
+<p>再把之前的例子拿出来</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/^(\d&#123;4&#125;)[/-](\d&#123;2&#125;)[/-](\d&#123;2&#125;)$/</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=2869364792,376582695&fm=173&s=2920E813CE59E4014E79E844010090B3&w=547&h=122&img.JPEG" alt></p>
+<p>轻松的可以拿到 group#1 #2 #3 的内容，对应 $1$2$3</p>
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/2222" alt></p>
+<p>如果在反向引用中不想捕获年该如何操作? 加上 ?:即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/^(?:\d&#123;4&#125;)[/-](\d&#123;2&#125;)[/-](\d&#123;2&#125;)$/</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/u=645903390,1928085484&fm=173&s=00A4F813CDF4F4010C59E8420100A0B3&w=530&h=110&img.JPEG" alt></p>
+<h4 id="12-前瞻"><a href="#12-前瞻" class="headerlink" title="12.前瞻"></a>12.前瞻</h4><p>这部分为进阶部分—选看</p>
+<p>正则表达式中有前瞻（Lookahead）和后顾（Lookbehind）的概念，这两个术语非常形象的描述了正则引擎的匹配行为。需要注意一点，正则表达式中的前和后和我们一般理解的前后有点不同。一段文本，我们一般习惯把文本开头的方向称作“前面”，文本末尾方向称为“后面”。但是对于正则表达式引擎来说，因为它是从文本头部向尾部开始解析的（可以通过正则选项控制解析方向），因此对于文本尾部方向，称为“前”，因为这个时候，正则引擎还没走到那块，而对文本头部方向，则称为“后”，因为正则引擎已经走过了那一块地方。</p>
+<p>注意：后顾性能损耗比较大，js只支持前瞻（知乎上看到的，具体原因不详）</p>
+<p>上面的比较概念话，尝试用大白话讲讲，就说皇上选妃吧，先行条件得是美女吧，长得“如花”那样皇上可不要，漂亮这关过了，皇上想要这个美女也不行，皇室有规矩，必须是贵族血统。</p>
+<p>那么“漂亮”就是正常的匹配，匹配到了，还得看看家室是不是贵族。”贵族”相当于前瞻条件</p>
+<p>前瞻分两种一种是正向前瞻(?=xxx), 另一种是负向前瞻(?!xxx)</p>
+<h2 id="需要区分的地方"><a href="#需要区分的地方" class="headerlink" title="需要区分的地方"></a>需要区分的地方</h2><h4 id="1-正则表达式中-的用法"><a href="#1-正则表达式中-的用法" class="headerlink" title="1.正则表达式中^的用法"></a>1.正则表达式中^的用法</h4><p><strong>用法一:   限定开头</strong></p>
+<p>​    文档上给出了解释是匹配输入的开始，如果多行标示被设置成了true，同时会匹配后面紧跟的字符。    比如 /^A/会匹配”An e”中的A，但是不会匹配”ab A”中的A</p>
+<p><strong>用法二：（否）取反</strong></p>
+<p>​    当这个字符出现在一个字符集合模式的第一个字符时，他将会有不同的含义。</p>
+<p>​    <strong>比如：</strong><code>/[^a-z\s]/会匹配&quot;my 3 sisters&quot;中的&quot;3&quot;</code>这里的”^”的意思是字符类的否定，上面的正则表达式的意思是匹配不是（a到z和空白字符）的字符。 </p>
+<p><strong>总结：</strong></p>
+<p>什么时候”^”是否定字符，什么时候是匹配开始行</p>
+<p>表示限定开头的示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`/``[(^\s``+``)(\s``+``$)]``/``g``(^cat)$``(^cat$)``^(cat)$``^(cat$)`</span><br></pre></td></tr></table></figure>
+
+<p>表示否定的示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`[^a]表示“匹配除了a的任意字符”。``[^a``-``zA``-``Z0``-``9``]表示“找到一个非字母也非数字的字符”。``[\^abc]表示“找到一个插入符或者a或者b或者c”。`</span><br></pre></td></tr></table></figure>
+
+<p>经过对比，只要是”^”这个字符是在中括号”[]”中被使用的话就是表示字符类的否定，如果不是的话就是表示限定开头。我这里说的是直接在”[]”中使用，不包括嵌套使用。<br>其实也就是说”[]”代表的是一个字符集，”^”只有在字符集中才是反向字符集的意思。</p>
+<h2 id="特殊案例"><a href="#特殊案例" class="headerlink" title="特殊案例"></a>特殊案例</h2><h4 id="1-正则匹配中括号"><a href="#1-正则匹配中括号" class="headerlink" title="1.正则匹配中括号"></a>1.正则匹配中括号</h4><p>在正则表达式中，前中括号 [ 属于特殊字符，要匹配它，需要转义，即加上 \；而后中括号 ] 不属于特殊字符，不必加转义字符</p>
+<p>举例说明:</p>
+<p>需要匹配以下字符串中括号里面的内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&quot;www.baidu.com&quot;,&quot;www.wenta.com&quot;,&quot;www.insoan.com&quot;]</span><br></pre></td></tr></table></figure>
+
+<p>有两种规则可以使用,任选一:</p>
+<ul>
+<li>第一种: <code>&quot;|]|\[</code>  过滤不需要的</li>
+<li>第二种: <code>\[(.+)]</code>   取出需要的</li>
+</ul>
+<h3 id="整理出常用的正则供学习参考"><a href="#整理出常用的正则供学习参考" class="headerlink" title="整理出常用的正则供学习参考"></a>整理出常用的正则供学习参考</h3><ul>
+<li>手机号码匹配</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/^1[34578][0-9]&#123;9&#125;$/</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>网址校验</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/^https?/</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>日期抽取</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/^(\d&#123;4&#125;)[/-](\d&#123;2&#125;)[/-](\d&#123;2&#125;)$/</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>IP校验</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\d&#123;1,3&#125;\.\d&#123;1,3&#125;\.\d&#123;1,3&#125;\.\d&#123;1,3&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>IP单段提取</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(\d&#123;1,3&#125;)\.(\d&#123;1,3&#125;)\.(\d&#123;1,3&#125;)\.(\d&#123;1,3&#125;)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>提取一段内容中的所有IP地址</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">((2(5[0-5]|[0-4]\d))|[0-1]?\d&#123;1,2&#125;)(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d&#123;1,2&#125;))&#123;3&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>判断字符串是否是IP地址</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">^((2(5[0-5]|[0-4]\d))|[0-1]?\d&#123;1,2&#125;)(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d&#123;1,2&#125;))&#123;3&#125;$</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>邮箱校验</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+([A-Za-z]&#123;2,14&#125;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="附上常用正则英文版"><a href="#附上常用正则英文版" class="headerlink" title="附上常用正则英文版"></a>附上常用正则英文版</h3><p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1573183725749.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../44.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../44.html" itemprop="url">Android studio解决依赖冲突的三种有效方法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-15T16:33:12+08:00">
+                2020-05-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="http://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20150819072344805.jpg" alt></p>
+<h3 id="第一种："><a href="#第一种：" class="headerlink" title="第一种："></a>第一种：</h3><p>排除依赖中的指定包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">compile (&apos;com.mcxiaoke.viewpagerindicator:library:2.4.1&apos;) &#123;</span><br><span class="line">  exclude group: &apos;com.android.support&apos;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="第二种："><a href="#第二种：" class="headerlink" title="第二种："></a>第二种：</h3><p>force强制设置某个模块的版本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">configurations.all &#123;</span><br><span class="line"> resolutionStrategy &#123;</span><br><span class="line">      force &apos;com.android.support:support-v4:24.1.0&apos;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="第二种：-1"><a href="#第二种：-1" class="headerlink" title="第二种："></a>第二种：</h3><p>force强制设置整个工程的的版本 在根目录的gradle.build文件中设置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">allprojects &#123;</span><br><span class="line">   </span><br><span class="line">    configurations.all &#123;</span><br><span class="line">        resolutionStrategy.eachDependency &#123; DependencyResolveDetails details -&gt;</span><br><span class="line">            def requested = details.requested</span><br><span class="line">            if (requested.group == &apos;com.android.support&apos;) &#123;</span><br><span class="line">                if (requested.name.startsWith(&quot;support-fragment&quot;)) &#123;</span><br><span class="line">                    details.useVersion &apos;28.0.0&apos;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../48.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1426,410 +2309,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../68.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../68.html" itemprop="url">Android 设置TextView Drawable大小的几种方法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-10T17:45:33+08:00">
-                2020-04-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="第一种-使用-layer-list"><a href="#第一种-使用-layer-list" class="headerlink" title="第一种 使用 layer-list"></a>第一种 使用 layer-list</h2><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"utf-8"</span>?&gt;</span><br><span class="line">&lt;layer-list xmlns:android=<span class="string">"http://schemas.android.com/apk/res/android"</span>&gt;</span><br><span class="line">&lt;!--设置图片的大小  --&gt;</span><br><span class="line">    &lt;item</span><br><span class="line">        android:width=<span class="string">"45dp"</span></span><br><span class="line">        android:height=<span class="string">"45dp"</span>&gt;</span><br><span class="line">        &lt;bitmap android:src=<span class="string">"@drawable/icon_profit"</span> /&gt;</span><br><span class="line">    &lt;/item&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&lt;/layer-list&gt;</span><br></pre></td></tr></table></figure>
-
-<h2 id="第二种-使用自定义控件"><a href="#第二种-使用自定义控件" class="headerlink" title="第二种 使用自定义控件"></a>第二种 使用自定义控件</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 可自定义设置drawable宽高的TextView</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DrawableTextView</span> <span class="keyword">extends</span> <span class="title">AppCompatTextView</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Drawable drawableLeft;</span><br><span class="line">    <span class="keyword">private</span> Drawable drawableRight;</span><br><span class="line">    <span class="keyword">private</span> Drawable drawableTop;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> leftWidth;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> rightWidth;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> topWidth;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> leftHeight;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> rightHeight;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> topHeight;</span><br><span class="line">    <span class="keyword">private</span> Context mContext;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DrawableTextView</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context);</span><br><span class="line">        <span class="keyword">this</span>.mContext = context;</span><br><span class="line">        init(context, <span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DrawableTextView</span><span class="params">(Context context, AttributeSet attrs)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context, attrs);</span><br><span class="line">        <span class="keyword">this</span>.mContext = context;</span><br><span class="line">        init(context, attrs);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DrawableTextView</span><span class="params">(Context context, AttributeSet attrs, <span class="keyword">int</span> defStyleAttr)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context, attrs, defStyleAttr);</span><br><span class="line">        <span class="keyword">this</span>.mContext = context;</span><br><span class="line">        init(context, attrs);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(Context context, AttributeSet attrs)</span> </span>&#123;</span><br><span class="line">        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.DrawableTextView);</span><br><span class="line">        drawableLeft = typedArray.getDrawable(R.styleable.DrawableTextView_leftDrawable);</span><br><span class="line">        drawableRight = typedArray.getDrawable(R.styleable.DrawableTextView_rightDrawable);</span><br><span class="line">        drawableTop = typedArray.getDrawable(R.styleable.DrawableTextView_topDrawable);</span><br><span class="line">        <span class="keyword">if</span> (drawableLeft != <span class="keyword">null</span>) &#123;</span><br><span class="line">            leftWidth = typedArray.getDimensionPixelOffset(R.styleable.DrawableTextView_leftDrawableWidth, dip2px(context, <span class="number">20</span>));</span><br><span class="line">            leftHeight = typedArray.getDimensionPixelOffset(R.styleable.DrawableTextView_leftDrawableHeight, dip2px(context, <span class="number">20</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (drawableRight != <span class="keyword">null</span>) &#123;</span><br><span class="line">            rightWidth = typedArray.getDimensionPixelOffset(R.styleable.DrawableTextView_rightDrawableWidth, dip2px(context, <span class="number">20</span>));</span><br><span class="line">            rightHeight = typedArray.getDimensionPixelOffset(R.styleable.DrawableTextView_rightDrawableHeight, dip2px(context, <span class="number">20</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (drawableTop != <span class="keyword">null</span>) &#123;</span><br><span class="line">            topWidth = typedArray.getDimensionPixelOffset(R.styleable.DrawableTextView_topDrawableWidth, dip2px(context, <span class="number">20</span>));</span><br><span class="line">            topHeight = typedArray.getDimensionPixelOffset(R.styleable.DrawableTextView_topDrawableHeight, dip2px(context, <span class="number">20</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">dip2px</span><span class="params">(Context context, <span class="keyword">float</span> dpValue)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">float</span> scale = context.getResources().getDisplayMetrics().density;</span><br><span class="line">        <span class="keyword">return</span> (<span class="keyword">int</span>) (dpValue * scale + <span class="number">0.5f</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onMeasure</span><span class="params">(<span class="keyword">int</span> widthMeasureSpec, <span class="keyword">int</span> heightMeasureSpec)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onMeasure(widthMeasureSpec, heightMeasureSpec);</span><br><span class="line">        <span class="keyword">if</span> (drawableLeft != <span class="keyword">null</span>) &#123;</span><br><span class="line">            drawableLeft.setBounds(<span class="number">0</span>, <span class="number">0</span>, leftWidth, leftHeight);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (drawableRight != <span class="keyword">null</span>) &#123;</span><br><span class="line">            drawableRight.setBounds(<span class="number">0</span>, <span class="number">0</span>, rightWidth, rightHeight);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (drawableTop != <span class="keyword">null</span>) &#123;</span><br><span class="line">            drawableTop.setBounds(<span class="number">0</span>, <span class="number">0</span>, topWidth, topHeight);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDraw</span><span class="params">(Canvas canvas)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onDraw(canvas);</span><br><span class="line">        <span class="keyword">this</span>.setCompoundDrawables(drawableLeft, drawableTop, drawableRight, <span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 设置左侧图片并重绘</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setDrawableLeft</span><span class="params">(Drawable drawableLeft)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.drawableLeft = drawableLeft;</span><br><span class="line">        invalidate();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 设置左侧图片并重绘</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setDrawableLeft</span><span class="params">(<span class="keyword">int</span> drawableLeftRes)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.drawableLeft = mContext.getResources().getDrawable(drawableLeftRes);</span><br><span class="line">        invalidate();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 设置右侧图片并重绘</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setDrawableRight</span><span class="params">(Drawable drawableRight)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.drawableRight = drawableLeft;</span><br><span class="line">        invalidate();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 设置右侧图片并重绘</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setDrawableRight</span><span class="params">(<span class="keyword">int</span> drawableRightRes)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.drawableRight = mContext.getResources().getDrawable(drawableRightRes);</span><br><span class="line">        invalidate();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 设置上部图片并重绘</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setDrawable</span><span class="params">(Drawable drawableTop)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.drawableTop = drawableTop;</span><br><span class="line">        invalidate();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 设置右侧图片并重绘</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setDrawableTop</span><span class="params">(<span class="keyword">int</span> drawableTopRes)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.drawableTop = mContext.getResources().getDrawable(drawableTopRes);</span><br><span class="line">        invalidate();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../22.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../22.html" itemprop="url">Android 图片实现阴影效果的若干种方法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-10T17:42:02+08:00">
-                2020-04-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="第一种-使用-layer-list"><a href="#第一种-使用-layer-list" class="headerlink" title="第一种 使用 layer-list"></a>第一种 使用 layer-list</h2><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"utf-8"</span>?&gt;</span><br><span class="line">&lt;layer-list xmlns:android=<span class="string">"http://schemas.android.com/apk/res/android"</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;!--底层的左边距离上层左边<span class="number">3</span>dp, 底层的顶部，距离上层的顶部<span class="number">6</span>dp,如果不做这个控制，底层和上层的左侧和上侧会重合在一起--&gt;</span><br><span class="line">&lt;item android:left=<span class="string">"3dp"</span></span><br><span class="line">      android:top=<span class="string">"6dp"</span>&gt;</span><br><span class="line">    &lt;shape&gt;</span><br><span class="line">        &lt;solid android:color=<span class="string">"#b4b5b6"</span>/&gt;</span><br><span class="line">    &lt;/shape&gt;</span><br><span class="line">&lt;/item&gt;</span><br><span class="line"></span><br><span class="line">&lt;!--上层的右边距离底层的右边<span class="number">3</span>dp, 上层的底部距离底层的底部<span class="number">6</span>dp--&gt;</span><br><span class="line">&lt;item android:bottom=<span class="string">"6dp"</span></span><br><span class="line">      android:right=<span class="string">"3dp"</span>&gt;</span><br><span class="line">    &lt;shape&gt;</span><br><span class="line">        &lt;solid android:color=<span class="string">"#fff"</span>/&gt;</span><br><span class="line">    &lt;/shape&gt;</span><br><span class="line">&lt;/item&gt;</span><br><span class="line"></span><br><span class="line">&lt;/layer-list&gt;</span><br></pre></td></tr></table></figure>
-
-<h2 id="第二种-使用-shadow属性"><a href="#第二种-使用-shadow属性" class="headerlink" title="第二种 使用 shadow属性"></a>第二种 使用 shadow属性</h2><p>shadowDX、shadowDy、shadowRadius，分别指的是阴影的横、纵坐标偏移，以及阴影的半径，</p>
-<p><strong>如果是TextView可以直接在布局中设置</strong>:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;TextView </span><br><span class="line">	    android:id=<span class="string">"@+id/test_shadow"</span></span><br><span class="line">	    android:layout_width=<span class="string">"wrap_content"</span></span><br><span class="line">	    android:layout_height=<span class="string">"wrap_content"</span></span><br><span class="line">	    android:textSize=<span class="string">"60sp"</span></span><br><span class="line">	    android:textColor=<span class="string">"#cc000000"</span></span><br><span class="line">	    android:text=<span class="string">"Test Shadow"</span></span><br><span class="line">	    android:layout_gravity=<span class="string">"center"</span></span><br><span class="line">	    android:shadowColor=<span class="string">"#aa22ff22"</span></span><br><span class="line">	    android:shadowRadius=<span class="string">"10"</span></span><br><span class="line">	    android:shadowDx=<span class="string">"0"</span></span><br><span class="line">	    android:shadowDy=<span class="string">"0"</span></span><br><span class="line">	    /&gt;</span><br></pre></td></tr></table></figure>
-
-<h2 id="第三种-使用android-elevation属性"><a href="#第三种-使用android-elevation属性" class="headerlink" title="第三种 使用android:elevation属性"></a>第三种 使用android:elevation属性</h2><pre><code>&lt;TextView
-android:id=&quot;@+id/btn_test_performance&quot;
-android:layout_width=&quot;wrap_content&quot;
-android:layout_height=&quot;wrap_content&quot;
-android:elevation=&quot;5dp&quot;
-android:text=&quot;@string/hello&quot;
-android:background=&quot;@drawable/shape_round_white&quot;
-android:padding=&quot;20dp&quot;
-android:layout_marginTop=&quot;10dp&quot;
-android:layout_gravity=&quot;center&quot;/&gt;</code></pre><p><strong>这种方式有个局限性, 那就是api25以上才能显示出来</strong></p>
-<h2 id="第四种-使用第三方控件"><a href="#第四种-使用第三方控件" class="headerlink" title="第四种 使用第三方控件"></a>第四种 使用第三方控件</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * ShadowLayout.java</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;</span></span><br><span class="line"><span class="comment"> * Created by lijiankun on 17/8/11.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ShadowLayout</span> <span class="keyword">extends</span> <span class="title">RelativeLayout</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> ALL = <span class="number">0x1111</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> LEFT = <span class="number">0x0001</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TOP = <span class="number">0x0010</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> RIGHT = <span class="number">0x0100</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> BOTTOM = <span class="number">0x1000</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Paint mPaint = <span class="keyword">new</span> Paint(Paint.ANTI_ALIAS_FLAG);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> RectF mRectF = <span class="keyword">new</span> RectF();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 阴影的颜色</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mShadowColor = Color.TRANSPARENT;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 阴影的大小范围</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">float</span> mShadowRadius = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 阴影 x 轴的偏移量</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">float</span> mShadowDx = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 阴影 y 轴的偏移量</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">float</span> mShadowDy = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 阴影显示的边界</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mShadowSide = ALL;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ShadowLayout</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(context, <span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ShadowLayout</span><span class="params">(Context context, AttributeSet attrs)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(context, attrs, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ShadowLayout</span><span class="params">(Context context, AttributeSet attrs, <span class="keyword">int</span> defStyleAttr)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context, attrs, defStyleAttr);</span><br><span class="line">        init(attrs);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取绘制阴影的位置，并为 ShadowLayout 设置 Padding 以为显示阴影留出空间</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onLayout</span><span class="params">(<span class="keyword">boolean</span> changed, <span class="keyword">int</span> left, <span class="keyword">int</span> top, <span class="keyword">int</span> right, <span class="keyword">int</span> bottom)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onLayout(changed, left, top, right, bottom);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">float</span> effect = mShadowRadius + dip2px(<span class="number">5</span>);</span><br><span class="line">        <span class="keyword">float</span> rectLeft = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">float</span> rectTop = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">float</span> rectRight = <span class="keyword">this</span>.getWidth();</span><br><span class="line">        <span class="keyword">float</span> rectBottom = <span class="keyword">this</span>.getHeight();</span><br><span class="line">        <span class="keyword">int</span> paddingLeft = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> paddingTop = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> paddingRight = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> paddingBottom = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (((mShadowSide &amp; LEFT) == LEFT)) &#123;</span><br><span class="line">            rectLeft = effect;</span><br><span class="line">            paddingLeft = (<span class="keyword">int</span>) effect;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (((mShadowSide &amp; TOP) == TOP)) &#123;</span><br><span class="line">            rectTop = effect;</span><br><span class="line">            paddingTop = (<span class="keyword">int</span>) effect;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (((mShadowSide &amp; RIGHT) == RIGHT)) &#123;</span><br><span class="line">            rectRight = <span class="keyword">this</span>.getWidth() - effect;</span><br><span class="line">            paddingRight = (<span class="keyword">int</span>) effect;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (((mShadowSide &amp; BOTTOM) == BOTTOM)) &#123;</span><br><span class="line">            rectBottom = <span class="keyword">this</span>.getHeight() - effect;</span><br><span class="line">            paddingBottom = (<span class="keyword">int</span>) effect;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (mShadowDy != <span class="number">0.0f</span>) &#123;</span><br><span class="line">            rectBottom = rectBottom - mShadowDy;</span><br><span class="line">            paddingBottom = paddingBottom + (<span class="keyword">int</span>) mShadowDy;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (mShadowDx != <span class="number">0.0f</span>) &#123;</span><br><span class="line">            rectRight = rectRight - mShadowDx;</span><br><span class="line">            paddingRight = paddingRight + (<span class="keyword">int</span>) mShadowDx;</span><br><span class="line">        &#125;</span><br><span class="line">        mRectF.left = rectLeft;</span><br><span class="line">        mRectF.top = rectTop;</span><br><span class="line">        mRectF.right = rectRight;</span><br><span class="line">        mRectF.bottom = rectBottom;</span><br><span class="line">        <span class="keyword">this</span>.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 真正绘制阴影的方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDraw</span><span class="params">(Canvas canvas)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onDraw(canvas);</span><br><span class="line">        canvas.drawRect(mRectF, mPaint);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 读取设置的阴影的属性</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> attrs 从其中获取设置的值</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(AttributeSet attrs)</span> </span>&#123;</span><br><span class="line">        setLayerType(View.LAYER_TYPE_SOFTWARE, <span class="keyword">null</span>);  <span class="comment">// 关闭硬件加速</span></span><br><span class="line">        <span class="keyword">this</span>.setWillNotDraw(<span class="keyword">false</span>);                    <span class="comment">// 调用此方法后，才会执行 onDraw(Canvas) 方法</span></span><br><span class="line"></span><br><span class="line">        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.ShadowLayout);</span><br><span class="line">        <span class="keyword">if</span> (typedArray != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mShadowColor = typedArray.getColor(R.styleable.ShadowLayout_shadowColor,</span><br><span class="line">                    ContextCompat.getColor(getContext(), android.R.color.black));</span><br><span class="line">            mShadowRadius = typedArray.getDimension(R.styleable.ShadowLayout_shadowRadius, dip2px(<span class="number">0</span>));</span><br><span class="line">            mShadowDx = typedArray.getDimension(R.styleable.ShadowLayout_shadowDx, dip2px(<span class="number">0</span>));</span><br><span class="line">            mShadowDy = typedArray.getDimension(R.styleable.ShadowLayout_shadowDy, dip2px(<span class="number">0</span>));</span><br><span class="line">            mShadowSide = typedArray.getInt(R.styleable.ShadowLayout_shadowSide, ALL);</span><br><span class="line">            typedArray.recycle();</span><br><span class="line">        &#125;</span><br><span class="line">        mPaint.setAntiAlias(<span class="keyword">true</span>);</span><br><span class="line">        mPaint.setColor(Color.TRANSPARENT);</span><br><span class="line">        mPaint.setShadowLayer(mShadowRadius, mShadowDx, mShadowDy, mShadowColor);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * dip2px dp 值转 px 值</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> dpValue dp 值</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> px 值</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">float</span> <span class="title">dip2px</span><span class="params">(<span class="keyword">float</span> dpValue)</span> </span>&#123;</span><br><span class="line">        DisplayMetrics dm = getContext().getResources().getDisplayMetrics();</span><br><span class="line">        <span class="keyword">float</span> scale = dm.density;</span><br><span class="line">        <span class="keyword">return</span> (dpValue * scale + <span class="number">0.5F</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>属性文件:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;declare-styleable name=&quot;ShadowLayout&quot;&gt;</span><br><span class="line">    &lt;attr name=&quot;shadowColor&quot; format=&quot;color&quot;/&gt;</span><br><span class="line">    &lt;attr name=&quot;shadowRadius&quot; format=&quot;dimension&quot;/&gt;</span><br><span class="line">    &lt;attr name=&quot;shadowDx&quot; format=&quot;dimension&quot;/&gt;</span><br><span class="line">    &lt;attr name=&quot;shadowDy&quot; format=&quot;dimension&quot;/&gt;</span><br><span class="line">    &lt;attr name=&quot;shadowSide&quot; format=&quot;integer&quot;/&gt;</span><br><span class="line">&lt;/declare-styleable&gt;</span><br></pre></td></tr></table></figure>
-
-<h2 id="第五种-使用9patch图片-强烈推荐"><a href="#第五种-使用9patch图片-强烈推荐" class="headerlink" title="第五种 使用9patch图片(强烈推荐)"></a>第五种 使用9patch图片(强烈推荐)</h2><p>该种方式定制性强, 兼容性好, 需要注意的是避免将9patch宽高设置过大  小图可以拉大  大图不方便缩小</p>
-<p>链接地址:<a href="http://inloop.github.io/shadow4android/" target="_blank" rel="noopener">http://inloop.github.io/shadow4android/</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/dsff.png" alt></p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../117.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../117.html" itemprop="url">同一个局域网内远程控制电脑桌面的若干种方法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-11T10:40:57+08:00">
-                2020-02-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>本文持续更新中</p>
-</blockquote>
-<ul>
-<li>第三方软件</li>
-<li>局域网ip+3389端口</li>
-</ul>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1880,7 +2359,7 @@ android:layout_gravity=&quot;center&quot;/&gt;</code></pre><p><strong>这种方�
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">276</span>
+                  <span class="site-state-item-count">279</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
