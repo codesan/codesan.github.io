@@ -287,6 +287,528 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../132.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../132.html" itemprop="url">Linux文件误删后如何恢复</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-30T16:14:19+08:00">
+                2020-09-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>以下方法适用于文件或目录被删,如果被覆盖则无法恢复</strong></p>
+<h3 id="方法一-使用系统自带的还原工具debugfs"><a href="#方法一-使用系统自带的还原工具debugfs" class="headerlink" title="方法一 使用系统自带的还原工具debugfs"></a>方法一 使用系统自带的还原工具<code>debugfs</code></h3><ol>
+<li>第一步 查看文件或目录锁挂载的磁盘名</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df  /root/你被删的目录</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>输入<code>debugfs</code>指令进入命令区</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@xxx:# /debugfs</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>进入挂载磁盘 查找被删目录和文件</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">open dev/vda1 #这个是我服务磁盘名 你的也许不一样</span><br><span class="line">ls -d /root/你被删的目录 #查找被删文件</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200930130559.png" alt></p>
+<p><strong>带尖括号开头的文件表示已经被删除的 无尖括号表示当前已经存在的文件</strong></p>
+<p>接下来 咱们需要借助尖括号中的地址进行文件还原</p>
+<ol start="4">
+<li>根据node地址查找文件信息, 在debugfs命令区中输入</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">logdump -i &lt;19662057&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200930131041.png" alt></p>
+<ol start="5">
+<li><p>文件还原</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dd  if=/dev/vda1 of=/root/被删除文件  bs=3456 count=1 skip=524974</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>*　bs对应offset 表示文件大小<br>*　count 表示需要还原几份<br>*　skip对应block值 表示跳过blocks个块后再开始复制</p>
+<p>至此　恢复完毕</p>
+<p>###　方法二 使用第三方的还原工具<code>extundelete</code></p>
+<ol>
+<li>第一步 安装 </li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install extundelete -y</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>第二步 获取被删文件或目录的node</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -lia 目标目录</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>根据node查看文件信息</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extundelete /dev/sda5 --inode 24904454</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#以下为控制台输出信息</span></span><br><span class="line">File name                                       <span class="params">| Inode number |</span> Deleted status</span><br><span class="line">.                                                 <span class="number">2</span></span><br><span class="line">..                                                <span class="number">2</span></span><br><span class="line">deletetest                                        <span class="number">12</span>             Deleted</span><br><span class="line">tmppasswd                                         <span class="number">14</span>             Deleted</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>恢复全部数据</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extundelete /dev/sda5 --restore-all</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>恢复单个数据</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extundelete /dev/sdb5 --restore-file xxx</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li>恢复指定目录</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extundelete /dev/sdb5 --restore-directory  xxx</span><br></pre></td></tr></table></figure>
+
+<p>至此 ，恢复完毕</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../123.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../123.html" itemprop="url">使用nginx部署django项目需要注意的问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-23T17:42:15+08:00">
+                2020-09-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="首先配置nginx-conf文件"><a href="#首先配置nginx-conf文件" class="headerlink" title="首先配置nginx.conf文件"></a>首先配置nginx.conf文件</h3><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">worker_processes</span>  <span class="number">1</span><span class="string">;</span></span><br><span class="line"><span class="string">events</span> <span class="string">&#123;</span></span><br><span class="line">        <span class="string">worker_connections</span>  <span class="number">1024</span><span class="string">;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">http&#123;</span></span><br><span class="line">	<span class="string">server&#123;</span></span><br><span class="line">        <span class="string">listen</span> <span class="number">80</span><span class="string">;</span></span><br><span class="line">        <span class="string">server_name</span> <span class="string">py.newban.cn;</span>   <span class="comment">#</span></span><br><span class="line">        <span class="string">root</span> <span class="string">/usr/share/nginx/html/blog;</span></span><br><span class="line">        <span class="string">index</span> <span class="string">index.html;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">server&#123;</span></span><br><span class="line">    <span class="string">listen</span> <span class="number">80</span><span class="string">;</span></span><br><span class="line">    <span class="string">server_name</span> <span class="string">blog.newban.cn;</span>   <span class="comment">#</span></span><br><span class="line">    <span class="string">root</span> <span class="string">/usr/share/nginx/html/blog2;</span></span><br><span class="line">    <span class="string">index</span> <span class="string">index.html;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> <span class="comment">#反向代理部分</span></span><br><span class="line"><span class="string">upstream</span> <span class="string">my.blog&#123;</span> <span class="comment">#部署django 名称不能使用下滑线分割比如my_blog 否则报错</span></span><br><span class="line">	<span class="string">server</span> <span class="number">118.10</span><span class="number">.25</span><span class="number">.17</span><span class="string">:8000</span> <span class="string">weight=1;</span></span><br><span class="line">	<span class="comment">#负载均衡 随机访问 权重1：1 各占50%</span></span><br><span class="line">	<span class="string">server</span> <span class="number">118.10</span><span class="number">.25</span><span class="number">.17</span><span class="string">:8001</span>  <span class="string">weight=1;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">server&#123;</span></span><br><span class="line">    <span class="string">listen</span> <span class="number">80</span><span class="string">;</span></span><br><span class="line">    <span class="string">server_name</span> <span class="string">py.insoan.com;</span>   <span class="comment">#</span></span><br><span class="line">	<span class="string">location</span> <span class="string">/</span> <span class="string">&#123;</span></span><br><span class="line">         <span class="string">proxy_pass</span> <span class="attr">http://my.blog;</span></span><br><span class="line">        <span class="string">index</span> <span class="string">index.html;</span></span><br><span class="line">		<span class="string">&#125;</span></span><br><span class="line">	<span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="问题1-DisallowedHost-at"><a href="#问题1-DisallowedHost-at" class="headerlink" title="问题1 DisallowedHost at /"></a>问题1 DisallowedHost at /</h3><p>使用 nginx 部署django时，会出现下面的错误</p>
+<ol>
+<li>首先使用的域名不符合 RFC 1034/1035.规范时，会出现下面的错误（如包含下划线）</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DisallowedHost at /Invalid HTTP_HOST header: <span class="string">'learning_log.cent.com'</span>. The domain name provided <span class="keyword">is</span> <span class="keyword">not</span> valid according to RFC <span class="number">1034</span>/<span class="number">1035.</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>解决方式：</li>
+</ol>
+<p>修改域名，去除下划线，即将 learning_log.cent.com 修改成 llog.cent.com</p>
+<ol start="3">
+<li>再重新访问出现另外一个错误</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">invalid http_host header</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>解决方式</li>
+</ol>
+<p>将 setting.py 的 ALLOWED_HOSTS = [] 修改成 ALLOWED_HOSTS = [‘*’]</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../125.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../125.html" itemprop="url">docker部署Django项目</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-23T14:38:50+08:00">
+                2020-09-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h1><p>已经写好了一个Django项目，需要将这个项目用docker封装一个镜像，使用k8s发布！</p>
+<p>在封装并运行的过程中，发现了很多问题，这里会一一介绍！</p>
+<h1 id="二、时区问题"><a href="#二、时区问题" class="headerlink" title="二、时区问题"></a>二、时区问题</h1><p>采用的是镜像是 ubuntu:16.04 默认的时区是UTC，比中国时间，晚了8个小时！</p>
+<p>那么因此，需要将默认的时区给覆盖掉！</p>
+<p>默认是没有安装 tzdata，因此没有 /usr/share/zoneinfo 目录！</p>
+<p>安装tzdata，使用命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install -y tzdata</span><br></pre></td></tr></table></figure>
+
+<p> 设置时区为 上海，使用以下命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TZ=Asia/Shanghai</span><br><span class="line">ln -snf /usr/share/zoneinfo/$TZ /etc/localtime &amp;&amp; echo $TZ &gt; /etc/timezone</span><br></pre></td></tr></table></figure>
+
+<h1 id="三、中文乱码问题"><a href="#三、中文乱码问题" class="headerlink" title="三、中文乱码问题"></a>三、中文乱码问题</h1><p>默认的系统编码是ascii，因此不支持中文！</p>
+<p>需要安装 locales 软件包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install -y locales</span><br></pre></td></tr></table></figure>
+
+<p>设置utf-8编码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">locale-gen en_US.UTF-8</span><br></pre></td></tr></table></figure>
+
+<p>设置全局变量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">LANG en_US.UTF-8</span><br><span class="line">LANGUAGE en_US:en</span><br><span class="line">LC_ALL en_US.UTF-8</span><br></pre></td></tr></table></figure>
+
+<p>设置utf-8编码之后，那么在python的print命令，就可以输出中文了，而不会提示</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&apos;ascii&apos; codec can&apos;t encode characters in position 8-50: ordinal not in range(128)</span><br></pre></td></tr></table></figure>
+
+<p>在python文件头部，记得增加一行代码，指定utf-8编码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># coding: utf-8</span><br></pre></td></tr></table></figure>
+
+<h1 id="四、任务计划问题"><a href="#四、任务计划问题" class="headerlink" title="四、任务计划问题"></a>四、任务计划问题</h1><h2 id="启动问题"><a href="#启动问题" class="headerlink" title="启动问题"></a>启动问题</h2><p>在ubuntu:16.04 的镜像中，默认是没有cron包的，所以需要手动安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install -y cron</span><br></pre></td></tr></table></figure>
+
+<p>那么启动任务计划时，不能使用命令 /etc/init.d/cron start 以及 service cron start</p>
+<p>在dockerfile中，会启动不成功的。</p>
+<p><strong>必须使用 /usr/sbin/cron 命令，才能启动成功！</strong></p>
+<h2 id="添加问题"><a href="#添加问题" class="headerlink" title="添加问题"></a>添加问题</h2><p>一般来讲，添加任务计划，直接修改 /etc/crontab 文件即可。</p>
+<p>在dockerfile 中，不能使用echo EOF 等命令修改/etc/crontab文件</p>
+<p><strong>必须使用 sed 命令修改/etc/crontab文件，才能成功！</strong></p>
+<p>如果需要在最后一行添加任务计划，可以使用以下命令：</p>
+<p>语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;$a需要添加的内容&apos; 文件名</span><br></pre></td></tr></table></figure>
+
+<p>比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;$a* * * * * root python3 /messagecenter/cron/voc_receipt.py&apos; /etc/crontab</span><br></pre></td></tr></table></figure>
+
+<h1 id="五、封装Django项目镜像"><a href="#五、封装Django项目镜像" class="headerlink" title="五、封装Django项目镜像"></a>五、封装Django项目镜像</h1><p> 新建空目录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir /opt/messagecenter</span><br></pre></td></tr></table></figure>
+
+<p>目录结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">./</span><br><span class="line">├── dockerfile</span><br><span class="line">├── messagecenter.tar</span><br><span class="line">├── run.sh</span><br><span class="line">└── sources.list</span><br></pre></td></tr></table></figure>
+
+<p><strong>dockerfile</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu:16.04</span><br><span class="line"># 修改更新源为阿里云</span><br><span class="line">ADD sources.list /etc/apt/sources.list</span><br><span class="line">ADD messagecenter.tar /</span><br><span class="line"># 时区为上海</span><br><span class="line">ENV TZ Asia/Shanghai</span><br><span class="line"></span><br><span class="line"># 设置时区,设置utf-8编码,安装django,添加任务计划</span><br><span class="line">RUN apt-get update &amp;&amp; apt-get install -y tzdata locales python3-pip cron &amp;&amp; apt-get clean all &amp;&amp; \</span><br><span class="line">    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime &amp;&amp; echo $TZ &gt; /etc/timezone &amp;&amp; \</span><br><span class="line">    locale-gen en_US.UTF-8 &amp;&amp; \</span><br><span class="line">    pip3 install django requests</span><br><span class="line"></span><br><span class="line"># 解决中文乱码问题</span><br><span class="line">#RUN locale-gen en_US.UTF-8</span><br><span class="line">ENV LANG en_US.UTF-8</span><br><span class="line">ENV LANGUAGE en_US:en</span><br><span class="line">ENV LC_ALL en_US.UTF-8</span><br><span class="line"></span><br><span class="line">EXPOSE 8000</span><br><span class="line"># 添加启动脚本</span><br><span class="line">ADD run.sh .</span><br><span class="line">RUN chmod 755 run.sh</span><br><span class="line">ENTRYPOINT [ &quot;/run.sh&quot;]</span><br></pre></td></tr></table></figure>
+
+<p><strong>messagecenter.tar</strong> 这个是Django项目，已经打成tar包了。在dockerfile中，执行ADD命令时，会自动解压tar包</p>
+<p><strong>run.sh</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line"># 启动任务计划</span><br><span class="line">/usr/sbin/cron</span><br><span class="line"></span><br><span class="line"># 最后一行增加任务计划</span><br><span class="line">sed -i &apos;$a* * * * * root python3 /messagecenter/cron/voc_receipt.py&apos; /etc/crontab</span><br><span class="line"></span><br><span class="line"># 启动django项目</span><br><span class="line">cd /messagecenter/</span><br><span class="line">python3 manage.py runserver 0.0.0.0:8000</span><br></pre></td></tr></table></figure>
+
+<p>在Django项目中，有一个python脚本，需要每分钟执行一次！</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial main restricted</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-updates main restricted</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial universe</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-updates universe</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-updates multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-backports main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu xenial-security main restricted</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu xenial-security universe</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu xenial-security multiverse</span><br></pre></td></tr></table></figure>
+
+<p>生成镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t messagecenter /opt/messagecenter</span><br></pre></td></tr></table></figure>
+
+<p>启动镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -it -p 8000:8000 messagecenter</span><br></pre></td></tr></table></figure>
+
+<p>访问页面：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.0.162:8000</span><br></pre></td></tr></table></figure>
+
+<p>就可以访问Django的默认页面了！</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../142.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1339,548 +1861,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../3.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../3.html" itemprop="url">使用docker安装mysql</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-18T14:00:30+08:00">
-                2020-09-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="部署MySql"><a href="#部署MySql" class="headerlink" title="部署MySql"></a>部署MySql</h2><ol>
-<li>搜索mysql镜像</li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker search mysql</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>拉取mysql镜像</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull mysql</span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li>在/root目录下创建mysql目录用于存储mysql数据信息</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir ~/mysql</span><br><span class="line">cd ~/mysql</span><br></pre></td></tr></table></figure>
-
-<ol start="4">
-<li>创建容器 设置端口映射</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">docker run -id \</span><br><span class="line">-p 3306:3306 \</span><br><span class="line">--name=c_mysql \</span><br><span class="line">-h c_mysql \</span><br><span class="line">-v $PWD/conf:/etc/mysql/conf.d \</span><br><span class="line">-v $PWD/logs:/logs \</span><br><span class="line">-v $PWD/data:/var/lib/mysql \</span><br><span class="line">-e MYSQL_ROOT_PASSWORD=12345 \</span><br><span class="line">mysql:latest</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>参数说明<ul>
-<li><strong>-p 3306：3306将容器的3306端口映射到主机的3306端口</strong></li>
-<li><strong>-v $PWD/conf:/etc/mysql/conf.d 将容器中配置文件目录与主机挂载</strong></li>
-<li><strong>-h 设置容器的hostname</strong> </li>
-<li><strong>$PWD表示当前所在目录</strong></li>
-</ul>
-</li>
-</ul>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../1.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../1.html" itemprop="url">Linux Crontab 命令安装和使用教程：在 VPS 上设置定时任务</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-18T13:20:02+08:00">
-                2020-09-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="一、Crontab-命令安装教程"><a href="#一、Crontab-命令安装教程" class="headerlink" title="一、Crontab 命令安装教程"></a><strong>一、Crontab 命令安装教程</strong></h2><p>首先检查一下 Crontab 是否安装：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -l</span><br></pre></td></tr></table></figure>
-
-<p>如果没报错，就是已经安装好了，一般来说系统都会自带。</p>
-<p>如果没安装，进行安装：</p>
-<p>CentOS：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install vixie-cron</span><br><span class="line">yum install crontabs</span><br></pre></td></tr></table></figure>
-
-<p>Ubuntu：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install cron</span><br></pre></td></tr></table></figure>
-
-<h2 id="二、Crontab-命令使用教程"><a href="#二、Crontab-命令使用教程" class="headerlink" title="二、Crontab 命令使用教程"></a><strong>二、Crontab 命令使用教程</strong></h2><p>命令格式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab [-u user] file crontab [-u user] [ -e | -l | -r ]</span><br></pre></td></tr></table></figure>
-
-<p>是不是觉得怪复杂的，其实一般来说其实就三个命令：</p>
-<ul>
-<li>列出所有定时任务：<code>crontab -l</code></li>
-<li>编辑所有定时任务：<code>crontab -e</code></li>
-<li>删除所有定时任务：<code>crontab -r</code></li>
-</ul>
-<p>使用 crontab -l 可以列出所有的定时任务，一行一个任务，一般来说，每行的格式如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">分 时 日 月 星期 要运行的命令</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>第 1 列：分钟，取值范围：0～59</li>
-<li>第 2 列：小时，取值范围：0～23（0表示子夜）</li>
-<li>第 3 列：日，取值范围：1～31</li>
-<li>第 4 列：月，取值范围：1～12</li>
-<li>第 5 列：星期，取值范围：0～7（0 和 7 表示星期天）</li>
-<li>第 6 列：要运行的命令</li>
-</ul>
-<p>对于每一列，有如下几种表示方法：</p>
-<ul>
-<li>*：每单位（比如每分钟，每小时）</li>
-<li>具体数字：就是具体的时间或者日期</li>
-<li>取值范围：比如 3 – 5，就是从 3 到 5 的所有值都取</li>
-<li>*/数字：比如 */2，就是每 2 分钟或者每 2 天之类的意思</li>
-</ul>
-<p>下面看几个例子：</p>
-<p>实例 1：每 1 分钟执行一次 myCommand</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* * * * * myCommand</span><br></pre></td></tr></table></figure>
-
-<p>实例 2：每小时的第 3 和第 15 分钟执行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3,15 * * * * myCommand</span><br></pre></td></tr></table></figure>
-
-<p>实例 3：在上午 8 点到 11 点的第 3 和第 15 分钟执行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3,15 8-11 * * * myCommand</span><br></pre></td></tr></table></figure>
-
-<p>实例 4：每隔两天的上午 8 点到 11 点的第 3 和第 15 分钟执行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3,15 8-11 */2  *  * myCommand</span><br></pre></td></tr></table></figure>
-
-<p>实例 5：每周一上午 8 点到 11 点的第 3 和第 15 分钟执行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3,15 8-11 * * 1 myCommand</span><br></pre></td></tr></table></figure>
-
-<p>实例 6：每晚的 21:30 重启 smb</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">30 21 * * * /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p>实例 7：每月 1、10、22 日的 4 : 45 重启 smb</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">45 4 1,10,22 * * /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p>实例 8：每周六、周日的 1 : 10 重启 smb</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">10 1 * * 6,0 /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p>实例 9：每天 18 : 00 至 23 : 00 之间每隔 30 分钟重启 smb</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0,30 18-23 * * * /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p>实例 10：每星期六的晚上 11 : 00 pm 重启 smb</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 23 * * 6 /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p>实例 11：每一小时重启 smb</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 */1 * * * /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p>实例 12：晚上 11 点到早上 7 点之间，每隔一小时重启 smb</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 23-7 * * * /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p>实例 13：5小时后 每一小时重启 smb</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 5/1 * * * /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p><strong>错误示例</strong>:</p>
-<p>如果你想定一个每天两点执行的任务:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 2 * * * /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p>但不能写成:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* 2 * * * /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p>这种写法表示每天两点开始每分钟执行一次任务, 可能会陷入嵌套重复执行的问题</p>
-<h3 id="配置完后-最后启动定时任务"><a href="#配置完后-最后启动定时任务" class="headerlink" title="配置完后 最后启动定时任务"></a>配置完后 最后启动定时任务</h3><p>ubuntu下启动、停止与重启cron:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$sudo /etc/init.d/cron start</span><br><span class="line">$sudo /etc/init.d/cron stop</span><br><span class="line">$sudo /etc/init.d/cron restart</span><br><span class="line">$sudo service cron status# 查看当前cron服务运行状态</span><br></pre></td></tr></table></figure>
-
-<h4 id="定时任务备份"><a href="#定时任务备份" class="headerlink" title="定时任务备份"></a>定时任务备份</h4><p>可以使用这种方法在$HOME目录中对crontab文件做一备份:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ crontab -l &gt; $HOME/mycron</span><br></pre></td></tr></table></figure>
-
-<h3 id="问题排查"><a href="#问题排查" class="headerlink" title="问题排查"></a>问题排查</h3><p><strong>1. 启动cron 报错：</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cron: can&apos;t lock /var/run/crond.pid, otherpid may be 4187: Resource temporarily unavailable</span><br></pre></td></tr></table></figure>
-
-<p><strong>解决方案：</strong></p>
-<p>依次执行以下三个命令</p>
-<p>删除pid 重新加载配置 重启启动cron</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /var/run/crond.pid</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cron reload</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cron restart</span><br></pre></td></tr></table></figure>
-
-<p><strong>2.任务不执行 日志不打印</strong></p>
-<p>指令必须以绝对路径开头 比如:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* */2 * * *  /usr/bin/python3  /root/xxx/xxx.py &gt;&gt;/root/xxx/mylog_$(date +\%Y-\%m-\%d-\%H:\%M:\%S).log 2&gt;&amp;1</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../5.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../5.html" itemprop="url">利用 IntelliJ IDEA 远程连接服务器并做ftp上传</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-18T13:11:33+08:00">
-                2020-09-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>对于windows用户来说上传文件到服务器有很多资源可以利用,例如xshell,xftp等可视化进行服务器的管控,但是对于mac的小伙伴来说现在找一个替代xshell的不是很好找,要么不好用要么用起来比较繁琐.小编发现idea自带ssh连接,也可以通过idea进行文件管理上传至服务器.</p>
-<p>打开idea可以单独设置一个空包作为服务器管理,只需要把要上传的文件放到包里面即可.</p>
-<p><strong>idea &gt;&gt; Tools &gt;&gt; Deployment &gt;&gt; Configuration 进入到配置页面</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200918131554.png" alt></p>
-<p><strong>点击加号出现配置服务器信息.我们选择sftp文件上传模式,名称为为当前上产服务器设置的别名</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200918131613.png" alt></p>
-<p>录入必要信息:</p>
-<ul>
-<li><p>SFTP host 服务器地址.</p>
-</li>
-<li><p>Port.     端口号</p>
-</li>
-<li><p>Root path  默认上传路径</p>
-</li>
-<li><p>User name 登录服务器用户名</p>
-</li>
-<li><p>Auth type 授权方式,这里小编采用密码授权模式</p>
-</li>
-<li><p>Password. 登录服务器密码</p>
-</li>
-</ul>
-<p>录入完必要信息以后可以点击Test SFTP connection进行连接测试</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200918131521.png" alt></p>
-<p><strong>通过 Tools &gt;&gt; Start SSH 进行ssh远程连接,点击后会出现配置好的ssh信息,选择即可</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200918131628.png" alt></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200918131646.png" alt></p>
-<p>链接成功后在idea的Terminal中可以看到链接成功的信息</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200918131702.png" alt></p>
-<p><strong>通过Configuration 下选择配置好的ssh服务器进入Mappings文件夹 可以配置上传路径和本地文件存放路径</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200918131750.png" alt></p>
-<p><strong>配置完以后 通过项目右键可以看到一个上传到服务器按钮点击即可把要上传的文件上传至服务器</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200918131716.png" alt></p>
-<p><strong>上传后的效果.</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200918131808.png" alt></p>
-<p>至此通过idea远程链接ssh并上传文件至服务器配置完毕.需要的小伙伴们可以去使用啦</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="../15/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../15/">15</a><span class="page-number current">16</span><a class="page-number" href="../17/">17</a><span class="space">&hellip;</span><a class="page-number" href="../28/">28</a><a class="extend next" rel="next" href="../17/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="../15/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../15/">15</a><span class="page-number current">16</span><a class="page-number" href="../17/">17</a><span class="space">&hellip;</span><a class="page-number" href="../29/">29</a><a class="extend next" rel="next" href="../17/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1926,7 +1911,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">279</span>
+                  <span class="site-state-item-count">282</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1939,7 +1924,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">87</span>
+                  <span class="site-state-item-count">89</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

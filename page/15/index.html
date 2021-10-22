@@ -287,6 +287,528 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../141.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../141.html" itemprop="url">SpringBoot开发之采用Feign进行第三方网络请求</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-19T19:55:32+08:00">
+                2020-10-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>1、在maven项目中添加依赖</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-cloud-starter-feign&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;1.2.2.RELEASE&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<p>2、编写接口，放置在service层</p>
+<p>这里的decisionEngine.url 是配置在properties中的 是ip地址和端口号<br>decisionEngine.url=<a href="https://link.zhihu.com/?target=http%3A//10.2.1.148%3A3333/decision/person" target="_blank" rel="noopener">http://10.2.1.148:3333/decision/person</a> 是接口名字</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@FeignClient(url = &quot;$&#123;decisionEngine.url&#125;&quot;,name=&quot;engine&quot;)</span><br><span class="line">public interface DecisionEngineService &#123;</span><br><span class="line">　　@RequestMapping(value=&quot;/decision/person&quot;,method= RequestMethod.POST)</span><br><span class="line">　　public JSONObject getEngineMesasge(@RequestParam(&quot;uid&quot;) String uid,@RequestParam(&quot;productCode&quot;) String productCode);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3、在Java的启动类上加上@EnableFeignClients</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">@EnableFeignClients //参见此处</span><br><span class="line">@EnableDiscoveryClient</span><br><span class="line">@SpringBootApplication</span><br><span class="line">@EnableResourceServer</span><br><span class="line">public class Application   implements CommandLineRunner &#123;</span><br><span class="line">    private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);</span><br><span class="line">    @Autowired</span><br><span class="line">    private AppMetricsExporter appMetricsExporter;</span><br><span class="line"></span><br><span class="line">    @Autowired</span><br><span class="line">    private AddMonitorUnitService addMonitorUnitService;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        new SpringApplicationBuilder(Application.class).web(true).run(args);</span><br><span class="line">    &#125;    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>4、在代码中调用接口即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@Autowired</span><br><span class="line">private DecisionEngineService decisionEngineService ;</span><br><span class="line">// ...</span><br><span class="line">decisionEngineService.getEngineMesasge(&quot;uid&quot; ,  &quot;productCode&quot;);</span><br></pre></td></tr></table></figure>
+
+<h3 id><a href="#" class="headerlink" title></a></h3><p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../138.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../138.html" itemprop="url">Xposed进阶之app资源替换</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-15T19:55:32+08:00">
+                2020-10-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="替换Boolean-Color-Integer-int-String-and-String-类型的简单资源"><a href="#替换Boolean-Color-Integer-int-String-and-String-类型的简单资源" class="headerlink" title="替换Boolean, Color, Integer, int[], String and String[]类型的简单资源"></a>替换Boolean, Color, Integer, int[], String and String[]类型的简单资源</h2><h3 id="1-替换系统框架（Android-Framwork）资源"><a href="#1-替换系统框架（Android-Framwork）资源" class="headerlink" title="1.替换系统框架（Android Framwork）资源"></a>1.替换系统框架（Android Framwork）资源</h3><p>替换系统框架资源（对所有app 起作用）需要实现 <code>IXposedHookZygoteInit</code>接口的 <code>initZygote</code> 方法，并在该方法中调用<code>Resources.setSystemWideReplacement(...)</code> 方法替换资源</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> de.robv.android.xposed.mods.tutorial;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.content.res.XResources;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.IXposedHookZygoteInit;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Tutorial2</span>  <span class="keyword">implements</span> <span class="title">IXposedHookZygoteInit</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initZygote</span><span class="params">(StartupParam arg0)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        XResources.setSystemWideReplacement(<span class="string">"android"</span>, <span class="string">"bool"</span>, <span class="string">"config_unplugTurnsOnScreen"</span>, <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-替换app应用资源"><a href="#2-替换app应用资源" class="headerlink" title="2.替换app应用资源"></a>2.替换app应用资源</h3><p>替换app应用资源需要实现 <code>IXposedHookInitPackageResources</code> 类的<br><code>andleInitPackageResources</code>方法，并在该方法中调用<code>res.setReplacement(...)</code>方法替换资源，注意在该方法中不要使用<code>XResources.setSystemWideReplacement</code> 方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> de.robv.android.xposed.mods.tutorial;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.content.res.XResources;</span><br><span class="line"><span class="keyword">import</span> android.graphics.Color;</span><br><span class="line"><span class="keyword">import</span> android.graphics.drawable.ColorDrawable;</span><br><span class="line"><span class="keyword">import</span> android.graphics.drawable.Drawable;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.IXposedHookInitPackageResources;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Tutorial3</span> <span class="keyword">implements</span>  <span class="title">IXposedHookInitPackageResources</span>  </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleInitPackageResources</span><span class="params">(InitPackageResourcesParam resparam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="comment">//只替换systemui应用的资源</span></span><br><span class="line">        <span class="keyword">if</span> (!resparam.packageName.equals(<span class="string">"com.android.systemui"</span>))</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 替换资源的不同方式</span></span><br><span class="line">        resparam.res.setReplacement(<span class="number">0x7f080083</span>, <span class="string">"YEAH!"</span>); <span class="comment">// WLAN toggle text. You should not do this because the id is not fixed. Only for framework resources, you could use android.R.string.something</span></span><br><span class="line">        resparam.res.setReplacement(<span class="string">"com.android.systemui:string/quickpanel_bluetooth_text"</span>, <span class="string">"WOO!"</span>);</span><br><span class="line">        resparam.res.setReplacement(<span class="string">"com.android.systemui"</span>, <span class="string">"string"</span>, <span class="string">"quickpanel_gps_text"</span>, <span class="string">"HOO!"</span>);</span><br><span class="line">        resparam.res.setReplacement(<span class="string">"com.android.systemui"</span>, <span class="string">"integer"</span>, <span class="string">"config_maxLevelOfSignalStrengthIndicator"</span>, <span class="number">6</span>);</span><br><span class="line">        resparam.res.setReplacement(<span class="string">"com.android.systemui"</span>, <span class="string">"drawable"</span>, <span class="string">"status_bar_background"</span>, <span class="keyword">new</span> XResources.DrawableLoader() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> Drawable <span class="title">newDrawable</span><span class="params">(XResources res, <span class="keyword">int</span> id)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> ColorDrawable(Color.WHITE);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);<span class="comment">//你不能直接使用Drawble类进行替换，因为Drawble类可以影响其他引用Ddrawble类实例的ImageView ,最好使用一个包装器。</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="替换复杂的资源"><a href="#替换复杂的资源" class="headerlink" title="替换复杂的资源"></a>替换复杂的资源</h2><p>对于复制的资源，如动画资源 ，我们也能够替换，下面我们来替换battery icon</p>
+<p>动画资源布局</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">animation-list</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">     <span class="attr">android:oneshot</span>=<span class="string">"true"</span> &gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/icon1"</span> <span class="attr">android:duration</span>=<span class="string">"150"</span>&gt;</span><span class="tag">&lt;/<span class="name">item</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/icon2"</span> <span class="attr">android:duration</span>=<span class="string">"150"</span>&gt;</span><span class="tag">&lt;/<span class="name">item</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/icon3"</span> <span class="attr">android:duration</span>=<span class="string">"150"</span>&gt;</span><span class="tag">&lt;/<span class="name">item</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/icon4"</span> <span class="attr">android:duration</span>=<span class="string">"150"</span>&gt;</span><span class="tag">&lt;/<span class="name">item</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/icon5"</span> <span class="attr">android:duration</span>=<span class="string">"150"</span>&gt;</span><span class="tag">&lt;/<span class="name">item</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/icon6"</span> <span class="attr">android:duration</span>=<span class="string">"150"</span>&gt;</span><span class="tag">&lt;/<span class="name">item</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">animation-list</span>&gt;</span></span><br><span class="line">123456789101112</span><br></pre></td></tr></table></figure>
+
+<p>代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> de.robv.android.xposed.mods.tutorial;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.example.xposedmoduletest.R;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.content.res.XModuleResources;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.IXposedHookInitPackageResources;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.IXposedHookZygoteInit;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Tutorial4</span> <span class="keyword">implements</span> <span class="title">IXposedHookZygoteInit</span>, <span class="title">IXposedHookInitPackageResources</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String MODULE_PATH = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initZygote</span><span class="params">(StartupParam startupParam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        MODULE_PATH = startupParam.modulePath;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleInitPackageResources</span><span class="params">(InitPackageResourcesParam resparam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!resparam.packageName.equals(<span class="string">"com.android.systemui"</span>))</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">        XModuleResources modRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);</span><br><span class="line">        resparam.res.setReplacement(<span class="string">"com.android.systemui"</span>, <span class="string">"drawable"</span>, <span class="string">"stat_sys_battery"</span>,</span><br><span class="line">                modRes.fwd(R.drawable.animation));</span><br><span class="line">        resparam.res.setReplacement(<span class="string">"com.android.systemui"</span>, <span class="string">"drawable"</span>, <span class="string">"stat_sys_battery_charge"</span>,</span><br><span class="line">                modRes.fwd(R.drawable.animation));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Xposed框架会将模块请求资源的请求指向你模块中的资源 </p>
+<h2 id="替换布局"><a href="#替换布局" class="headerlink" title="替换布局"></a>替换布局</h2><p>你可以用替换资源的方法来替换布局文件，但这样你不得不将目标apk中的整个layout文件复制出来进行修改，这样会使模块的Rom兼容性降低。并且如果两个以上的模块修改布局后，最后修改布局的模块会起作用。更重要的是，布局中指向其它资源的ID很难确定下来。推荐使用下面的方法修改布局：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> de.robv.android.xposed.mods.tutorial;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.graphics.Color;</span><br><span class="line"><span class="keyword">import</span> android.widget.TextView;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.IXposedHookInitPackageResources;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.XposedBridge;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.callbacks.XC_LayoutInflated;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.callbacks.XC_LayoutInflated.LayoutInflatedParam;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Tutorial5</span> <span class="keyword">implements</span>   <span class="title">IXposedHookInitPackageResources</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleInitPackageResources</span><span class="params">(InitPackageResourcesParam resparam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">         <span class="keyword">if</span> (!resparam.packageName.equals(<span class="string">"com.android.systemui"</span>))</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">            resparam.res.hookLayout(<span class="string">"com.android.systemui"</span>, <span class="string">"layout"</span>, <span class="string">"status_bar"</span>, <span class="keyword">new</span> XC_LayoutInflated() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleLayoutInflated</span><span class="params">(LayoutInflatedParam liparam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    TextView clock = (TextView) liparam.view.findViewById(</span><br><span class="line">                            liparam.res.getIdentifier(<span class="string">"clock"</span>, <span class="string">"id"</span>, <span class="string">"com.android.systemui"</span>));</span><br><span class="line">                    clock.setTextColor(Color.RED);</span><br><span class="line">                    XposedBridge.log(<span class="string">"layout  resNames.fullname:"</span>+liparam.resNames.fullName);</span><br><span class="line">                    XposedBridge.log(<span class="string">"layout  resNames.id:"</span>+liparam.resNames.id);</span><br><span class="line">                    XposedBridge.log(<span class="string">"layout  resNames.name:"</span>+liparam.resNames.name);</span><br><span class="line">                    XposedBridge.log(<span class="string">"layout  resNames.pkg:"</span>+liparam.resNames.pkg);</span><br><span class="line">                    XposedBridge.log(<span class="string">"layout  resNames.type:"</span>+liparam.resNames.type);</span><br><span class="line"></span><br><span class="line">                    XposedBridge.log(<span class="string">"layout  resNames.variant:"</span>+liparam.variant);</span><br><span class="line">                    XposedBridge.log(<span class="string">"layout  resNames.view:"</span>+liparam.view);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;); </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>回调方法<code>handleLayoutInflated</code> 会在layout文件被填充后回调，在方法的 LayoutInflatedParam 对象 参数中，你可以找到你想修改的View组件。你也可以通过调用<code>resNames</code>来确定加载的那一个布局文件。用 <code>variant</code>来确定加载的布局的目录’layout-land‘。<code>res</code> 同时也会帮你获取资源的ID和其它的资源。</p>
+<h1 id="五、用反射来hook方法"><a href="#五、用反射来hook方法" class="headerlink" title="五、用反射来hook方法"></a>五、用反射来hook方法</h1><p>每当应用加载的时候，IXposedHookLoadPackPage接口的handLoadPackage方法就会被调用执行，为了让我们在正确的进程中执行，需要先判断被加载的包是不是正确的包</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> de.robv.android.xposed.mods.tutorial;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.IXposedHookLoadPackage;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Tutorial6</span> <span class="keyword">implements</span> <span class="title">IXposedHookLoadPackage</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleLoadPackage</span><span class="params">(LoadPackageParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(!param.packageName.equals(<span class="string">"com.android.systemui"</span>))</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>一旦我们进入到正确的进程进后，我们就能用param变中的ClassLoad来访问该进程中加载的类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> de.robv.android.xposed.mods.tutorial;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.webkit.WebView.FindListener;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.IXposedHookLoadPackage;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.XC_MethodHook;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.XC_MethodHook.MethodHookParam;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> de.robv.android.xposed.XposedHelpers.findAndHookMethod;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Tutorial6</span> <span class="keyword">implements</span> <span class="title">IXposedHookLoadPackage</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleLoadPackage</span><span class="params">(LoadPackageParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(!param.packageName.equals(<span class="string">"com.android.systemui"</span>))</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">         findAndHookMethod(<span class="string">"com.android.systemui.statusbar.policy.Clock"</span>,param.classLoader, <span class="string">"updateClock"</span>, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    <span class="comment">// this will be called before the clock was updated by the original method</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    <span class="comment">// this will be called after the clock was updated by the original method</span></span><br><span class="line">                &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://github.com/rovo89/XposedBridge/wiki/Helpers" target="_blank" rel="noopener">XposedHelpers</a>是一个重要的工具类，推荐用Eclipse的同学静态导入该类中的方法 <code>import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;</code>。该类能够通过反射机制来访问方法、构造器、域。<br><code>findAndHookMehthod(String packageName,Class clazz, String methodName, Object... args))</code>方法来对函数进行Hook。如果在方法前和方法后Hook,该方法最后一个参数需要实现<code>XC_MethodHook</code>类的<code>beforeHookedMethod</code>和<code>afterHookedMethod</code>方法，如果想要替换整个方法，则需要实现<code>XC_MethodReplacement</code>类的<code>replaceHookedMethod</code>方法<br>XposedBridge保存了每个Hook方法的回调方法。优先级高的回调方法被优先调用<code>A.before -&gt; B.before -&gt; original method -&gt; B.after -&gt; A.after</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> de.robv.android.xposed.mods.tutorial;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.graphics.Color;</span><br><span class="line"><span class="keyword">import</span> android.webkit.WebView.FindListener;</span><br><span class="line"><span class="keyword">import</span> android.widget.TextView;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.IXposedHookLoadPackage;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.XC_MethodHook;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.XC_MethodHook.MethodHookParam;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> de.robv.android.xposed.XposedHelpers.findAndHookMethod;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Tutorial6</span> <span class="keyword">implements</span> <span class="title">IXposedHookLoadPackage</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleLoadPackage</span><span class="params">(LoadPackageParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(!param.packageName.equals(<span class="string">"com.android.systemui"</span>))</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">         findAndHookMethod(<span class="string">"com.android.systemui.statusbar.policy.Clock"</span>,param.classLoader, <span class="string">"updateClock"</span>, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    <span class="comment">// this will be called before the clock was updated by the original method</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    TextView tv = (TextView) param.thisObject;<span class="comment">//获取调用该方法类的对象</span></span><br><span class="line">                    String text = tv.getText().toString();</span><br><span class="line">                    tv.setText(text + <span class="string">" :)"</span>);</span><br><span class="line">                    tv.setTextColor(Color.RED);</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>搭建本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../136.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../136.html" itemprop="url">Xposed 如何Hook静态变量or构造方法or复杂参数的方法or替换函数执行内容or内部类中的函数or匿名类的函数</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-14T19:55:32+08:00">
+                2020-10-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Xposed框架Hook相关api的使用"><a href="#Xposed框架Hook相关api的使用" class="headerlink" title="Xposed框架Hook相关api的使用"></a>Xposed框架Hook相关api的使用</h2><p><strong>首先创建测试类继承IXposedHookLoadPackage, 以下所有的hook方法都在handleLoadPackage方法内部进行调用</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HookTest</span> <span class="keyword">implements</span> <span class="title">IXposedHookLoadPackage</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleLoadPackage</span><span class="params">(XC_LoadPackage.LoadPackageParam lpparam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        XposedBridge.log(<span class="string">"HOOK初体验："</span> + lpparam.processName + <span class="string">":"</span> + lpparam.packageName);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="准备需要被hook的代码用于测试"><a href="#准备需要被hook的代码用于测试" class="headerlink" title="准备需要被hook的代码用于测试"></a>准备需要被hook的代码用于测试</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HookDemo</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String Tag = <span class="string">"HookDemo"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span>  <span class="keyword">int</span> staticInt = <span class="number">100</span>;</span><br><span class="line">    <span class="keyword">public</span>  <span class="keyword">int</span> publicInt = <span class="number">200</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> privateInt = <span class="number">300</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HookDemo</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(<span class="string">"NOHook"</span>);</span><br><span class="line">        Log.d(Tag, <span class="string">"HookDemo() was called|||"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">HookDemo</span><span class="params">(String str)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"HookDemo(String str) was called|||"</span> + str);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hookDemoTest</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"staticInt = "</span> + staticInt);</span><br><span class="line">        Log.d(Tag, <span class="string">"PublicInt = "</span> + publicInt);</span><br><span class="line">        Log.d(Tag, <span class="string">"privateInt = "</span> + privateInt);</span><br><span class="line">        publicFunc(<span class="string">"NOHook"</span>);</span><br><span class="line">        Log.d(Tag, <span class="string">"PublicInt = "</span> + publicInt);</span><br><span class="line">        Log.d(Tag, <span class="string">"privateInt = "</span> + privateInt);</span><br><span class="line">        privateFunc(<span class="string">"NOHook"</span>);</span><br><span class="line">        staticPrivateFunc(<span class="string">"NOHook"</span>);</span><br><span class="line"></span><br><span class="line">        String[][] str = <span class="keyword">new</span> String[<span class="number">1</span>][<span class="number">2</span>];</span><br><span class="line">        Map map = <span class="keyword">new</span> HashMap&lt;String, String&gt;();</span><br><span class="line">        map.put(<span class="string">"key"</span>, <span class="string">"value"</span>);</span><br><span class="line">        ArrayList arrayList = <span class="keyword">new</span> ArrayList();</span><br><span class="line">        arrayList.add(<span class="string">"listValue"</span>);</span><br><span class="line">        complexParameterFunc(<span class="string">"NOHook"</span>, str, map, arrayList);</span><br><span class="line"></span><br><span class="line">        repleaceFunc();</span><br><span class="line">        anonymousInner(<span class="keyword">new</span> Animal() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eatFunc</span><span class="params">(String value)</span> </span>&#123;</span><br><span class="line">                Log.d(Tag, <span class="string">"eatFunc(String value)  was called|||"</span> + value);</span><br><span class="line">                Log.d(Tag, <span class="string">"anonymoutInt =  "</span> + anonymoutInt);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, <span class="string">"NOHook"</span>);</span><br><span class="line"></span><br><span class="line">        InnerClass innerClass = <span class="keyword">new</span> InnerClass();</span><br><span class="line">        innerClass.InnerFunc(<span class="string">"NOHook"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">publicFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"publicFunc(String value) was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">privateFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"privateFunc(String value) was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">private</span> <span class="keyword">void</span> <span class="title">staticPrivateFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">        Log.d(<span class="string">"HookDemo"</span>, <span class="string">"staticPrivateFunc(Strin value) was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">complexParameterFunc</span><span class="params">(String value, String[][] str, Map&lt;String,String&gt; map, ArrayList arrayList)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        Log.d(<span class="string">"HookDemo"</span>, <span class="string">"complexParameter(Strin value) was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">repleaceFunc</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"repleaceFunc will be replace|||"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">anonymousInner</span><span class="params">(Animal dog, String value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"anonymousInner was called|||"</span> + value);</span><br><span class="line">        dog.eatFunc(<span class="string">"NOHook"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">hideFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"hideFunc was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">argFunc</span><span class="params">(Objcet... value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"argFunc was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">InnerClass</span></span>&#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">int</span> innerPublicInt = <span class="number">10</span>;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> innerPrivateInt = <span class="number">20</span>;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">InnerClass</span><span class="params">()</span></span>&#123;</span><br><span class="line">            Log.d(Tag, <span class="string">"InnerClass constructed func was called"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">InnerFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">            Log.d(Tag, <span class="string">"InnerFunc(String value) was called|||"</span> + value);</span><br><span class="line">            Log.d(Tag, <span class="string">"innerPublicInt = "</span> + innerPublicInt);</span><br><span class="line">            Log.d(Tag, <span class="string">"innerPrivateInt = "</span> + innerPrivateInt);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><strong>修改类中的私有静态变量</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; clazz = XposedHelpers.findClass(<span class="string">"com.example.xposedhooktarget.HookDemo"</span>, lpparam.classLoader);</span><br><span class="line">XposedHelpers.setStaticIntField(clazz, <span class="string">"staticInt"</span>, <span class="number">99</span>);</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><strong>Hook无参构造函数</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; clazz = XposedHelpers.findClass(<span class="string">"com.example.xposedhooktarget.HookDemo"</span>, loadPackageParam.classLoader);</span><br><span class="line">XposedHelpers.findAndHookConstructor(clazz, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                XposedBridge.log(<span class="string">"Haha, HookDemo constructed was hooked"</span>);</span><br><span class="line">                <span class="comment">//大坑，此时对象还没有建立，即不能获取对象，也不能修改非静态变量的值</span></span><br><span class="line">                <span class="comment">//XposedHelpers.setIntField(param.thisObject, "publicInt", 199);</span></span><br><span class="line">                <span class="comment">//XposedHelpers.setIntField(param.thisObject, "privateInt", 299);</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><strong>Hook有参构造函数，并修改参数</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookConstructor(clazz, String.class,  <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                param.args[<span class="number">0</span>] = <span class="string">"Haha, HookDemo(str) are hooked"</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><strong>Hook公有方法publicFunc，并修改参数以及修改下publicInt和privateInt的值,再顺便调用一下隐藏函数hideFunc</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"publicFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    param.args[<span class="number">0</span>] = <span class="string">"Haha, publicFunc are hooked"</span>;</span><br><span class="line">                    <span class="comment">//修改成员变量的值</span></span><br><span class="line">                    XposedHelpers.setIntField(param.thisObject, <span class="string">"publicInt"</span>, <span class="number">199</span>);</span><br><span class="line">                    XposedHelpers.setIntField(param.thisObject, <span class="string">"privateInt"</span>, <span class="number">299</span>);</span><br><span class="line">                  	<span class="comment">//调用函数</span></span><br><span class="line">                    XposedHelpers.callMethod(param.thisObject, <span class="string">"hideFunc"</span>, <span class="string">"Haha, hideFunc was hooked"</span>);</span><br><span class="line"></span><br><span class="line">                   </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li><strong>Hook私有方法privateFunc，并修改参数</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"privateFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">               <span class="meta">@Override</span></span><br><span class="line">               <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                   param.args[<span class="number">0</span>] = <span class="string">"Haha, privateFunc are hooked"</span>;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li><strong>Hook私有静态方法staticPrivateFunc, 并修改参数</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"staticPrivateFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">              <span class="meta">@Override</span></span><br><span class="line">              <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                  param.args[<span class="number">0</span>] = <span class="string">"Haha, staticPrivateFunc are hooked"</span>;</span><br><span class="line">              &#125;</span><br><span class="line">          &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li><strong>Hook复杂参数函数complexParameterFunc</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Class fclass1 = XposedHelpers.findClass(<span class="string">"java.util.Map"</span>, loadPackageParam.classLoader);</span><br><span class="line">           Class fclass2 = XposedHelpers.findClass(<span class="string">"java.util.ArrayList"</span>, loadPackageParam.classLoader);</span><br><span class="line">           XposedHelpers.findAndHookMethod(clazz, <span class="string">"complexParameterFunc"</span>, String.class,</span><br><span class="line">                   <span class="string">"[[Ljava.lang.String;"</span>, fclass1, fclass2, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                       <span class="meta">@Override</span></span><br><span class="line">                       <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                           param.args[<span class="number">0</span>] = <span class="string">"Haha, complexParameterFunc are hooked"</span>;</span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="8">
+<li><strong>Hook私有方法repleaceFunc, 并替换打印内容</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"repleaceFunc"</span>, <span class="keyword">new</span> XC_MethodReplacement() &#123;</span><br><span class="line">             <span class="meta">@Override</span></span><br><span class="line">             <span class="function"><span class="keyword">protected</span> Object <span class="title">replaceHookedMethod</span><span class="params">(MethodHookParam methodHookParam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                 Log.d(<span class="string">"HookDemo"</span>, <span class="string">"Haha, repleaceFunc are replaced"</span>);</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="9">
+<li><strong>Hook方法, anonymousInner， 参数是抽象类，先加载所需要的类即可</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Class animalClazz  = loadPackageParam.classLoader.loadClass(<span class="string">"com.example.xposedhooktarget.Animal"</span>);</span><br><span class="line">           XposedHelpers.findAndHookMethod(clazz, <span class="string">"anonymousInner"</span>, animalClazz, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">               <span class="meta">@Override</span></span><br><span class="line">               <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                   XposedBridge.log(<span class="string">"HookDemo This is test"</span>);</span><br><span class="line">                   param.args[<span class="number">1</span>] = <span class="string">"Haha, anonymousInner are hooked"</span>;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="10">
+<li><strong>Hook匿名类的eatFunc方法，修改参数，顺便修改类中的anonymoutInt变量</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(<span class="string">"com.example.xposedhooktarget.HookDemo$1"</span>, clazz.getClassLoader(),</span><br><span class="line">                    <span class="string">"eatFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                        <span class="meta">@Override</span></span><br><span class="line">                        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                            param.args[<span class="number">0</span>] = <span class="string">"Haha, eatFunc are hooked"</span>;</span><br><span class="line">                            XposedHelpers.setIntField(param.thisObject, <span class="string">"anonymoutInt"</span>, <span class="number">499</span>);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="11">
+<li><strong>Hook内部类InnerClass的InnerFunc方法，修改参数，顺便修改类中的innerPublicInt和innerPrivateInt变量</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> Class&lt;?&gt; clazz1 = XposedHelpers.findClass(<span class="string">"com.example.xposedhooktarget.HookDemo$InnerClass"</span>, loadPackageParam.classLoader);</span><br><span class="line">            XposedHelpers.findAndHookMethod(clazz1, <span class="string">"InnerFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                        <span class="meta">@Override</span></span><br><span class="line">                        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                            param.args[<span class="number">0</span>] = <span class="string">"Haha, InnerFunc was hooked"</span>;</span><br><span class="line">                            XposedHelpers.setIntField(param.thisObject, <span class="string">"innerPublicInt"</span>, <span class="number">9</span>);</span><br><span class="line">                            XposedHelpers.setIntField(param.thisObject, <span class="string">"innerPrivateInt"</span>, <span class="number">19</span>);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="12">
+<li><strong>对于一些延迟动态加载的代码,hook方式</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(<span class="string">"dalvik.system.DexFile"</span>, lpparam.classLoader, <span class="string">"loadClass"</span>,</span><br><span class="line">                String.class, <span class="string">"java.lang.ClassLoader"</span>, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                        String className = (String) param.args[<span class="number">0</span>];</span><br><span class="line">                        Object result = param.getResult();</span><br><span class="line">                        <span class="keyword">if</span> (result != <span class="keyword">null</span> &amp;&amp; result <span class="keyword">instanceof</span> Class) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (<span class="string">"com.alipay.mobile.nebulauc.impl.UCWebViewClient"</span>.equals(className)) &#123;</span><br><span class="line">                                <span class="comment">// hookLoadWebViewClient(((Class) result).getClassLoader());</span></span><br><span class="line">                            &#125; </span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="13">
+<li><strong>Hook有可变参数的方法</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"argFunc"</span>, Object[].class,<span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">             <span class="meta">@Override</span></span><br><span class="line">             <span class="function"><span class="keyword">protected</span> Object <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam methodHookParam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                </span><br><span class="line">             &#125;</span><br><span class="line">         &#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li><p>无论hook公有私有方法还是静态方法 ,抑或可变参方法,甚至是带返回值的方法,统一使用<code>findAndHookMethod</code>这个Api</p>
+</li>
+<li><p>xposed无法hook接口和抽象类方法</p>
+</li>
+<li><p>Hook逻辑类可实现的接口有 : </p>
+<ul>
+<li><p>安卓系统启动的时候（使用 IXposedHookZygoteInit 接口）、</p>
+</li>
+<li><p>一个新的app被加载的时候（使用 IXposedHookLoadPackage 接口）、</p>
+</li>
+<li><p>一个资源被初始化的时候（ 使用 IXposedHookInitPackageResources 接口 )</p>
+</li>
+</ul>
+</li>
+<li><p>实现IXposedHookLoadPackage 并使用 XposedBridge.log 打印的日志,当启动第三方应用后,Android Studio控制台无法查看到日志信息,需要在xposed应用内进行查看</p>
+</li>
+<li><p>参数为基本数据类型时需要传对应包装类的type属性,比如int传Integer.TYPE, 否则提示找不到方法,如果参数为引用数据类型,那直接传xxx.class即可</p>
+</li>
+<li><ul>
+<li><p>beforeHookedMethod 会在调用原方法前执行，如果使用setResult则跳过原方法，并返回setResult参数中的值。</p>
+</li>
+<li><p>afterHookedMethod 会在调用原方法后执行，setResult可改变返回值</p>
+</li>
+<li><p>replaceHookedMethod 会完全替换原方法，即原方法不执行，且返回值可以直接return，setResult不生效。</p>
+</li>
+</ul>
+</li>
+</ol>
+<p><strong>注:每次修改完毕后需要重启才生效</strong></p>
+<h2 id="附"><a href="#附" class="headerlink" title="附"></a>附</h2><h5 id="Hook-修改方法返回值"><a href="#Hook-修改方法返回值" class="headerlink" title="Hook 修改方法返回值"></a>Hook 修改方法返回值</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, method, <span class="keyword">new</span> Object[]&#123;<span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">     <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                   param.setResult(result);  <span class="comment">// 设置返回值</span></span><br><span class="line">               &#125;</span><br><span class="line">           &#125;&#125;);</span><br></pre></td></tr></table></figure>
+
+<h5 id="Hook-获取方法返回值"><a href="#Hook-获取方法返回值" class="headerlink" title="Hook 获取方法返回值"></a>Hook 获取方法返回值</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, method, <span class="keyword">new</span> Object[]&#123;<span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">      <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    Object result = param.getResult(); <span class="comment">//获取返回值</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;&#125;);</span><br></pre></td></tr></table></figure>
+
+<h5 id="Hook-获取方法传入的参数值"><a href="#Hook-获取方法传入的参数值" class="headerlink" title="Hook 获取方法传入的参数值"></a>Hook 获取方法传入的参数值</h5><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(claName, cl, <span class="string">"i"</span>, String.<span class="keyword">class</span>, String.<span class="keyword">class</span>, Object[].<span class="keyword">class</span>, new XC_MethodHook() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> void afterHookedMethod(MethodHookParam param) throws Throwable &#123;</span><br><span class="line">         <span class="comment">// 数组param.args存储的参数列表里的值</span></span><br><span class="line">         XposedBridge.log(TAG + param.args[<span class="number">0</span>]);</span><br><span class="line">         XposedBridge.log(TAG + param.args[<span class="number">1</span>]);</span><br><span class="line">         XposedBridge.log(TAG + param.args[<span class="number">2</span>]);</span><br><span class="line">          &#125;</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+
+<h5 id="Hook-给方法传值"><a href="#Hook-给方法传值" class="headerlink" title="Hook 给方法传值"></a>Hook 给方法传值</h5><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Class cla = XposedHelpers.findClass(className, loadPackageParam.classLoader);</span><br><span class="line"><span class="built_in">Object</span> com = XposedHelpers.callStaticMethod(cla, <span class="string">"getInstance"</span>);</span><br><span class="line">XposedHelpers.callMethod(com, <span class="string">"setDebug"</span>, <span class="keyword">true</span>); <span class="comment">// 传入指定值</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="Hook-获取Intent的值"><a href="#Hook-获取Intent的值" class="headerlink" title="Hook 获取Intent的值"></a>Hook 获取Intent的值</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">hookGetIntent</span><span class="params">(XC_LoadPackage.LoadPackageParam loadPackageParam)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        XposedHelpers.findAndHookMethod(<span class="string">"android.app.Activity"</span>, loadPackageParam.classLoader, <span class="string">"getIntent"</span>, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                Intent sou = (Intent) param.getResult();</span><br><span class="line">                KLog.d(<span class="string">"hookGetIntent:"</span> + sou.toURI().toString());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="Hook-广播发送的Intent信息"><a href="#Hook-广播发送的Intent信息" class="headerlink" title="Hook 广播发送的Intent信息"></a>Hook 广播发送的Intent信息</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">hookSendBroadcast</span><span class="params">(XC_LoadPackage.LoadPackageParam loadPackageParam)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        XposedHelpers.findAndHookMethod(<span class="string">"android.content.ContextWrapper"</span>, loadPackageParam.classLoader, <span class="string">"sendBroadcast"</span>, Intent.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                Intent sou = (Intent) param.args[<span class="number">0</span>];</span><br><span class="line">                KLog.d(<span class="string">"sendBroadcast:"</span> + sou.toURI().toString());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Xposed一般Hook的是默认的dex文件，但是现在很多的APP都有多个Dex文件，所以使用Xposed时，经常遇到类名路径正确却出现ClassNotFoundError找不到类的错误。要解决这个问题，需要获取对应Dex文件的上下文环境。</p>
+<p>Android在加载dex文件后会创建一个Application类，然后会调用attach方法，attach方法的参数就是上下文context，而且attach方法是final方法，不会因为被覆盖而hook不到，拿到这个context就可以获取对应的classload，然后就可以顺利hook到multidex的类了。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(Application.<span class="keyword">class</span>, <span class="string">"attach"</span>, Context.<span class="keyword">class</span>, new XC_MethodHook() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> void afterHookedMethod(MethodHookParam param) throws Throwable &#123;</span><br><span class="line">        ClassLoader cl = ((Context) param.args[<span class="number">0</span>]).getClassLoader(); <span class="comment">// 获取ClassLoader</span></span><br><span class="line">        Class&lt;?&gt; hookClass = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            hookClass = cl.loadClass(claName); <span class="comment">// 获取Class</span></span><br><span class="line">            <span class="comment">// 使用cl 和 hookClass 完成hook</span></span><br><span class="line">            XposedHelpers.setStaticIntField(hookClass, fieldName, <span class="keyword">val</span>);</span><br><span class="line">            XposedHelpers.findAndHookMethod(claName, cl, <span class="string">"i"</span>, String.<span class="keyword">class</span>, String.<span class="keyword">class</span>, Object[].<span class="keyword">class</span>, new XC_MethodHook() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="keyword">protected</span> void afterHookedMethod(MethodHookParam param) throws Throwable &#123;</span><br><span class="line">                    XposedBridge.log(TAG + param.args[<span class="number">0</span>]);</span><br><span class="line">                    XposedBridge.log(TAG + param.args[<span class="number">1</span>]);</span><br><span class="line">                    XposedBridge.log(TAG + param.args[<span class="number">2</span>]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../134.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1273,533 +1795,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../132.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../132.html" itemprop="url">Linux文件误删后如何恢复</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-30T16:14:19+08:00">
-                2020-09-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>以下方法适用于文件或目录被删,如果被覆盖则无法恢复</strong></p>
-<h3 id="方法一-使用系统自带的还原工具debugfs"><a href="#方法一-使用系统自带的还原工具debugfs" class="headerlink" title="方法一 使用系统自带的还原工具debugfs"></a>方法一 使用系统自带的还原工具<code>debugfs</code></h3><ol>
-<li>第一步 查看文件或目录锁挂载的磁盘名</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df  /root/你被删的目录</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>输入<code>debugfs</code>指令进入命令区</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@xxx:# /debugfs</span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li>进入挂载磁盘 查找被删目录和文件</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">open dev/vda1 #这个是我服务磁盘名 你的也许不一样</span><br><span class="line">ls -d /root/你被删的目录 #查找被删文件</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200930130559.png" alt></p>
-<p><strong>带尖括号开头的文件表示已经被删除的 无尖括号表示当前已经存在的文件</strong></p>
-<p>接下来 咱们需要借助尖括号中的地址进行文件还原</p>
-<ol start="4">
-<li>根据node地址查找文件信息, 在debugfs命令区中输入</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">logdump -i &lt;19662057&gt;</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200930131041.png" alt></p>
-<ol start="5">
-<li><p>文件还原</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dd  if=/dev/vda1 of=/root/被删除文件  bs=3456 count=1 skip=524974</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<p>*　bs对应offset 表示文件大小<br>*　count 表示需要还原几份<br>*　skip对应block值 表示跳过blocks个块后再开始复制</p>
-<p>至此　恢复完毕</p>
-<p>###　方法二 使用第三方的还原工具<code>extundelete</code></p>
-<ol>
-<li>第一步 安装 </li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install extundelete -y</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>第二步 获取被删文件或目录的node</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -lia 目标目录</span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li>根据node查看文件信息</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extundelete /dev/sda5 --inode 24904454</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#以下为控制台输出信息</span></span><br><span class="line">File name                                       <span class="params">| Inode number |</span> Deleted status</span><br><span class="line">.                                                 <span class="number">2</span></span><br><span class="line">..                                                <span class="number">2</span></span><br><span class="line">deletetest                                        <span class="number">12</span>             Deleted</span><br><span class="line">tmppasswd                                         <span class="number">14</span>             Deleted</span><br></pre></td></tr></table></figure>
-
-<ol start="4">
-<li>恢复全部数据</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extundelete /dev/sda5 --restore-all</span><br></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>恢复单个数据</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extundelete /dev/sdb5 --restore-file xxx</span><br></pre></td></tr></table></figure>
-
-<ol start="6">
-<li>恢复指定目录</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extundelete /dev/sdb5 --restore-directory  xxx</span><br></pre></td></tr></table></figure>
-
-<p>至此 ，恢复完毕</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../123.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../123.html" itemprop="url">使用nginx部署django项目需要注意的问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-23T17:42:15+08:00">
-                2020-09-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="首先配置nginx-conf文件"><a href="#首先配置nginx-conf文件" class="headerlink" title="首先配置nginx.conf文件"></a>首先配置nginx.conf文件</h3><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">worker_processes</span>  <span class="number">1</span><span class="string">;</span></span><br><span class="line"><span class="string">events</span> <span class="string">&#123;</span></span><br><span class="line">        <span class="string">worker_connections</span>  <span class="number">1024</span><span class="string">;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">http&#123;</span></span><br><span class="line">	<span class="string">server&#123;</span></span><br><span class="line">        <span class="string">listen</span> <span class="number">80</span><span class="string">;</span></span><br><span class="line">        <span class="string">server_name</span> <span class="string">py.newban.cn;</span>   <span class="comment">#</span></span><br><span class="line">        <span class="string">root</span> <span class="string">/usr/share/nginx/html/blog;</span></span><br><span class="line">        <span class="string">index</span> <span class="string">index.html;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">server&#123;</span></span><br><span class="line">    <span class="string">listen</span> <span class="number">80</span><span class="string">;</span></span><br><span class="line">    <span class="string">server_name</span> <span class="string">blog.newban.cn;</span>   <span class="comment">#</span></span><br><span class="line">    <span class="string">root</span> <span class="string">/usr/share/nginx/html/blog2;</span></span><br><span class="line">    <span class="string">index</span> <span class="string">index.html;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> <span class="comment">#反向代理部分</span></span><br><span class="line"><span class="string">upstream</span> <span class="string">my.blog&#123;</span> <span class="comment">#部署django 名称不能使用下滑线分割比如my_blog 否则报错</span></span><br><span class="line">	<span class="string">server</span> <span class="number">118.10</span><span class="number">.25</span><span class="number">.17</span><span class="string">:8000</span> <span class="string">weight=1;</span></span><br><span class="line">	<span class="comment">#负载均衡 随机访问 权重1：1 各占50%</span></span><br><span class="line">	<span class="string">server</span> <span class="number">118.10</span><span class="number">.25</span><span class="number">.17</span><span class="string">:8001</span>  <span class="string">weight=1;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">server&#123;</span></span><br><span class="line">    <span class="string">listen</span> <span class="number">80</span><span class="string">;</span></span><br><span class="line">    <span class="string">server_name</span> <span class="string">py.insoan.com;</span>   <span class="comment">#</span></span><br><span class="line">	<span class="string">location</span> <span class="string">/</span> <span class="string">&#123;</span></span><br><span class="line">         <span class="string">proxy_pass</span> <span class="attr">http://my.blog;</span></span><br><span class="line">        <span class="string">index</span> <span class="string">index.html;</span></span><br><span class="line">		<span class="string">&#125;</span></span><br><span class="line">	<span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="问题1-DisallowedHost-at"><a href="#问题1-DisallowedHost-at" class="headerlink" title="问题1 DisallowedHost at /"></a>问题1 DisallowedHost at /</h3><p>使用 nginx 部署django时，会出现下面的错误</p>
-<ol>
-<li>首先使用的域名不符合 RFC 1034/1035.规范时，会出现下面的错误（如包含下划线）</li>
-</ol>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DisallowedHost at /Invalid HTTP_HOST header: <span class="string">'learning_log.cent.com'</span>. The domain name provided <span class="keyword">is</span> <span class="keyword">not</span> valid according to RFC <span class="number">1034</span>/<span class="number">1035.</span></span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>解决方式：</li>
-</ol>
-<p>修改域名，去除下划线，即将 learning_log.cent.com 修改成 llog.cent.com</p>
-<ol start="3">
-<li>再重新访问出现另外一个错误</li>
-</ol>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">invalid http_host header</span><br></pre></td></tr></table></figure>
-
-<ol start="4">
-<li>解决方式</li>
-</ol>
-<p>将 setting.py 的 ALLOWED_HOSTS = [] 修改成 ALLOWED_HOSTS = [‘*’]</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../125.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../125.html" itemprop="url">docker部署Django项目</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-23T14:38:50+08:00">
-                2020-09-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h1><p>已经写好了一个Django项目，需要将这个项目用docker封装一个镜像，使用k8s发布！</p>
-<p>在封装并运行的过程中，发现了很多问题，这里会一一介绍！</p>
-<h1 id="二、时区问题"><a href="#二、时区问题" class="headerlink" title="二、时区问题"></a>二、时区问题</h1><p>采用的是镜像是 ubuntu:16.04 默认的时区是UTC，比中国时间，晚了8个小时！</p>
-<p>那么因此，需要将默认的时区给覆盖掉！</p>
-<p>默认是没有安装 tzdata，因此没有 /usr/share/zoneinfo 目录！</p>
-<p>安装tzdata，使用命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install -y tzdata</span><br></pre></td></tr></table></figure>
-
-<p> 设置时区为 上海，使用以下命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TZ=Asia/Shanghai</span><br><span class="line">ln -snf /usr/share/zoneinfo/$TZ /etc/localtime &amp;&amp; echo $TZ &gt; /etc/timezone</span><br></pre></td></tr></table></figure>
-
-<h1 id="三、中文乱码问题"><a href="#三、中文乱码问题" class="headerlink" title="三、中文乱码问题"></a>三、中文乱码问题</h1><p>默认的系统编码是ascii，因此不支持中文！</p>
-<p>需要安装 locales 软件包</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install -y locales</span><br></pre></td></tr></table></figure>
-
-<p>设置utf-8编码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">locale-gen en_US.UTF-8</span><br></pre></td></tr></table></figure>
-
-<p>设置全局变量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">LANG en_US.UTF-8</span><br><span class="line">LANGUAGE en_US:en</span><br><span class="line">LC_ALL en_US.UTF-8</span><br></pre></td></tr></table></figure>
-
-<p>设置utf-8编码之后，那么在python的print命令，就可以输出中文了，而不会提示</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&apos;ascii&apos; codec can&apos;t encode characters in position 8-50: ordinal not in range(128)</span><br></pre></td></tr></table></figure>
-
-<p>在python文件头部，记得增加一行代码，指定utf-8编码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># coding: utf-8</span><br></pre></td></tr></table></figure>
-
-<h1 id="四、任务计划问题"><a href="#四、任务计划问题" class="headerlink" title="四、任务计划问题"></a>四、任务计划问题</h1><h2 id="启动问题"><a href="#启动问题" class="headerlink" title="启动问题"></a>启动问题</h2><p>在ubuntu:16.04 的镜像中，默认是没有cron包的，所以需要手动安装</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install -y cron</span><br></pre></td></tr></table></figure>
-
-<p>那么启动任务计划时，不能使用命令 /etc/init.d/cron start 以及 service cron start</p>
-<p>在dockerfile中，会启动不成功的。</p>
-<p><strong>必须使用 /usr/sbin/cron 命令，才能启动成功！</strong></p>
-<h2 id="添加问题"><a href="#添加问题" class="headerlink" title="添加问题"></a>添加问题</h2><p>一般来讲，添加任务计划，直接修改 /etc/crontab 文件即可。</p>
-<p>在dockerfile 中，不能使用echo EOF 等命令修改/etc/crontab文件</p>
-<p><strong>必须使用 sed 命令修改/etc/crontab文件，才能成功！</strong></p>
-<p>如果需要在最后一行添加任务计划，可以使用以下命令：</p>
-<p>语法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;$a需要添加的内容&apos; 文件名</span><br></pre></td></tr></table></figure>
-
-<p>比如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;$a* * * * * root python3 /messagecenter/cron/voc_receipt.py&apos; /etc/crontab</span><br></pre></td></tr></table></figure>
-
-<h1 id="五、封装Django项目镜像"><a href="#五、封装Django项目镜像" class="headerlink" title="五、封装Django项目镜像"></a>五、封装Django项目镜像</h1><p> 新建空目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir /opt/messagecenter</span><br></pre></td></tr></table></figure>
-
-<p>目录结构如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">./</span><br><span class="line">├── dockerfile</span><br><span class="line">├── messagecenter.tar</span><br><span class="line">├── run.sh</span><br><span class="line">└── sources.list</span><br></pre></td></tr></table></figure>
-
-<p><strong>dockerfile</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu:16.04</span><br><span class="line"># 修改更新源为阿里云</span><br><span class="line">ADD sources.list /etc/apt/sources.list</span><br><span class="line">ADD messagecenter.tar /</span><br><span class="line"># 时区为上海</span><br><span class="line">ENV TZ Asia/Shanghai</span><br><span class="line"></span><br><span class="line"># 设置时区,设置utf-8编码,安装django,添加任务计划</span><br><span class="line">RUN apt-get update &amp;&amp; apt-get install -y tzdata locales python3-pip cron &amp;&amp; apt-get clean all &amp;&amp; \</span><br><span class="line">    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime &amp;&amp; echo $TZ &gt; /etc/timezone &amp;&amp; \</span><br><span class="line">    locale-gen en_US.UTF-8 &amp;&amp; \</span><br><span class="line">    pip3 install django requests</span><br><span class="line"></span><br><span class="line"># 解决中文乱码问题</span><br><span class="line">#RUN locale-gen en_US.UTF-8</span><br><span class="line">ENV LANG en_US.UTF-8</span><br><span class="line">ENV LANGUAGE en_US:en</span><br><span class="line">ENV LC_ALL en_US.UTF-8</span><br><span class="line"></span><br><span class="line">EXPOSE 8000</span><br><span class="line"># 添加启动脚本</span><br><span class="line">ADD run.sh .</span><br><span class="line">RUN chmod 755 run.sh</span><br><span class="line">ENTRYPOINT [ &quot;/run.sh&quot;]</span><br></pre></td></tr></table></figure>
-
-<p><strong>messagecenter.tar</strong> 这个是Django项目，已经打成tar包了。在dockerfile中，执行ADD命令时，会自动解压tar包</p>
-<p><strong>run.sh</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line"># 启动任务计划</span><br><span class="line">/usr/sbin/cron</span><br><span class="line"></span><br><span class="line"># 最后一行增加任务计划</span><br><span class="line">sed -i &apos;$a* * * * * root python3 /messagecenter/cron/voc_receipt.py&apos; /etc/crontab</span><br><span class="line"></span><br><span class="line"># 启动django项目</span><br><span class="line">cd /messagecenter/</span><br><span class="line">python3 manage.py runserver 0.0.0.0:8000</span><br></pre></td></tr></table></figure>
-
-<p>在Django项目中，有一个python脚本，需要每分钟执行一次！</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial main restricted</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-updates main restricted</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial universe</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-updates universe</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-updates multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-backports main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu xenial-security main restricted</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu xenial-security universe</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu xenial-security multiverse</span><br></pre></td></tr></table></figure>
-
-<p>生成镜像</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t messagecenter /opt/messagecenter</span><br></pre></td></tr></table></figure>
-
-<p>启动镜像</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -it -p 8000:8000 messagecenter</span><br></pre></td></tr></table></figure>
-
-<p>访问页面：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.0.162:8000</span><br></pre></td></tr></table></figure>
-
-<p>就可以访问Django的默认页面了！</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="../14/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../14/">14</a><span class="page-number current">15</span><a class="page-number" href="../16/">16</a><span class="space">&hellip;</span><a class="page-number" href="../28/">28</a><a class="extend next" rel="next" href="../16/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="../14/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../14/">14</a><span class="page-number current">15</span><a class="page-number" href="../16/">16</a><span class="space">&hellip;</span><a class="page-number" href="../29/">29</a><a class="extend next" rel="next" href="../16/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1845,7 +1845,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">279</span>
+                  <span class="site-state-item-count">282</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1858,7 +1858,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">87</span>
+                  <span class="site-state-item-count">89</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
