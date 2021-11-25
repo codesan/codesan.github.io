@@ -287,6 +287,577 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn285.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="285.html" itemprop="url">android中获取控件坐标的几种api区分</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-11-25T10:14:19+08:00">
+                2021-11-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>我们经常会看到以下几个方法:</p>
+<ul>
+<li><p>getGlobalVisibleRect()</p>
+</li>
+<li><p>getLocalVisibleRect()</p>
+</li>
+<li><p>getLocationOnScreen()</p>
+</li>
+<li><p>getLocationInWindow()</p>
+</li>
+</ul>
+<p>傻傻分不清?  今天我们简单介绍一下它们各自的作用</p>
+<h3 id="getGlobalVisibleRec"><a href="#getGlobalVisibleRec" class="headerlink" title="getGlobalVisibleRec"></a>getGlobalVisibleRec</h3><p>方法作用:</p>
+<p><strong>其一</strong>: 用于判断控件是否可见, 以屏幕为参考 如果可见返回true, 不可见返回false, 我们可以借助该方法检测控件是否被滑出屏幕外</p>
+<p><strong>其二</strong>: 用于获取控件可见区域的坐标, 这个坐标是相对于屏幕而言</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200518140750458.png" alt="在这里插入图片描述"></p>
+<p>坐标存放在了<code>Rect</code>对象中, 以参数的形式传入:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getGlobalVisibleRect(new Rect)</span><br></pre></td></tr></table></figure>
+
+<h3 id="getLocalVisibleRect"><a href="#getLocalVisibleRect" class="headerlink" title="getLocalVisibleRect"></a>getLocalVisibleRect</h3><p>这个方法和上面的<code>getGlobalVisibleRec</code>方法类似, 唯一区别是参考系不同, 这个方法参考系是控件本身</p>
+<p>以下是这两个方法的坐标打印:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/100911016491372.gif" alt="getRect"></p>
+<h3 id="getLocationOnScreen"><a href="#getLocationOnScreen" class="headerlink" title="getLocationOnScreen"></a>getLocationOnScreen</h3><p>获取控件相对于屏幕而言的坐标位置, 与可不可见无关</p>
+<h3 id="getLocationInWindow"><a href="#getLocationInWindow" class="headerlink" title="getLocationInWindow"></a>getLocationInWindow</h3><p>获取控件相对于父控件而言的坐标位置, 与可不可见无关</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/20200518144313585.png" alt="在这里插入图片描述"></p>
+<h3 id="坐标补充"><a href="#坐标补充" class="headerlink" title="坐标补充"></a>坐标补充</h3><p>我们在进行自定义控件绘制的时候, 总是容易被一些参数给绕的头晕脑涨, 什么<code>top right, left, bottom</code>, 四条边与屏幕的距离等等, 想想就觉得费劲, 再加上<code>Android</code>中坐标系和我们数学中的坐标系不一致 使得我们在进行计算的时候难免有点吃不消</p>
+<p>实际上对于一些规则的图形绘制, 比如矩形, 我们需要明白的一点, 那就是只需要两个点的坐标即可绘制出来, 也就是两个对角点</p>
+<p>那我们在进行图形绘制的时候, 将计算范围缩小, 焦点集中在两个对角坐标位置计算上即可</p>
+<p>这两个对角可以使左上角右下角, 也可以是左下角和右上角</p>
+<p>这样一想, 那么所谓的<code>left</code>和<code>top</code>实际就是左上角的<code>xy</code>坐标, 而<code>right</code>和 <code>bottom</code>就是右下角的坐标</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn284.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="284.html" itemprop="url">关于Android中adjustResize属性不生效的问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-11-22T10:14:19+08:00">
+                2021-11-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>写聊天布局的时候需要给<code>Activity</code>用上<code>adjustResize</code>属性来保证输入框不会被软键盘遮盖住</p>
+<p>如果该属性不生效, 那么一般情况是没有给布局添加<code>fitsSystemWindows</code>属性, 那么给布局根控件添加该属性即可:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">android:fitsSystemWindows=&quot;true&quot;</span><br></pre></td></tr></table></figure>
+
+<p>此时<code>adjustResize</code>属性生效, 但是新问题又出现了, 布局上方出现了一块间隔区域</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20211122135418218.png" alt="image-20211122135418218"></p>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>重写根控件的<code>onApplyWindowInsets</code>方法, 如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class ChatLayout @JvmOverloads constructor(</span><br><span class="line"></span><br><span class="line">    context: Context,</span><br><span class="line">    attrs: AttributeSet? = null,</span><br><span class="line">    defStyleAttr: Int = 0</span><br><span class="line">) : ConstraintLayout(context, attrs, defStyleAttr) &#123;</span><br><span class="line">		</span><br><span class="line">    override fun onApplyWindowInsets(insets: WindowInsets): WindowInsets &#123;</span><br><span class="line">        return super.onApplyWindowInsets(insets.replaceSystemWindowInsets(0, 0, 0,</span><br><span class="line">            insets.systemWindowInsetBottom</span><br><span class="line">        ));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>问题解决</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn283.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="283.html" itemprop="url">关于继承和接口的形象理解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-11-19T16:14:19+08:00">
+                2021-11-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>很多<code>Java</code>初学者对于继承和接口的作用区分总是很模糊, 如果不是因为回调需要接口, 估计能用继承实现的都用了继承</p>
+<p>继承和接口有很多相似的地方, 比如抽象实现</p>
+<p>但是它们的不同点呢 这个就得考虑到实际应用场景了, 脱离了业务研究 啥也不是</p>
+<p>今天我们只说一个形象比喻</p>
+<h3 id="继承是先天-接口是后天"><a href="#继承是先天-接口是后天" class="headerlink" title="继承是先天 接口是后天"></a>继承是先天 接口是后天</h3><p>何为先天, 一生下来就有, 不要也得要, 说的高端一点这叫天赋</p>
+<p>何为后天, 和父母无关 全靠自己</p>
+<p>比如 父母有个好嗓子, 你继承了这个优点, 不用努力就比别人强</p>
+<p>随着年龄的增长, 你发现干IT能促进植发行业的发展, 于是乎通过后天努力掌握了编程技能</p>
+<p>那么</p>
+<p><strong>好嗓子–继承而来–继承</strong></p>
+<p><strong>编程技能–后天获取–接口</strong></p>
+<p>似乎还是有点抽象 哈哈, 具体一点, 比如我们想让所有的子类都有相同的一个功能, 那我们可以使用继承</p>
+<p>如果我们想让其中一部分子类有某个功能, 而剩下一些没有, 则可以使用接口, 实现差异化处理</p>
+<p>也就是说接口的功能 可要可不要, 想要什么样的就接什么样的 比较自由 而继承的话全部子类必须都得有 没得选</p>
+<p><strong>后天可以弥补先天的不足, 接口可以弥补继承的不全面</strong></p>
+<p>不知道能不能理解</p>
+<p>无妨 , 编程这东西 就是编程来的  慢慢就都明白了, 以上也只是个人的小小想法罢了</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn282.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="282.html" itemprop="url">YouTube视频和字幕下载以及合并的工具推荐</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-10-26T16:14:19+08:00">
+                2021-10-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>最近有一个视频下载的需求, 需要将视频以及中英文字幕下载下来, 于是乎用到了一些工具, 有些使用体验还不错, 在此推荐给大家</p>
+<h3 id="视频下载"><a href="#视频下载" class="headerlink" title="视频下载"></a>视频下载</h3><p>以下以YouTube视频网站为例: </p>
+<p><a href="https://www.y2mate.com/" target="_blank" rel="noopener">YouTube视频或音频在线下载</a></p>
+<p><a href="https://www.jihosoft.cn/tubeget/" target="_blank" rel="noopener">YouTue视频下载软件</a> 免费用户每天可以下载5个不带字幕视频 格式转换和视频与字幕合并功需要付费能 支持<code>Windows</code>和<code>Mac</code>平台</p>
+<h3 id="字幕下载"><a href="#字幕下载" class="headerlink" title="字幕下载"></a>字幕下载</h3><p><a href="https://downsub.com/" target="_blank" rel="noopener">YouTube字幕在线下载</a> 支持多种语言和双语字幕</p>
+<h3 id="视频和字幕合并"><a href="#视频和字幕合并" class="headerlink" title="视频和字幕合并"></a>视频和字幕合并</h3><p>这个就得使用软件了, 免费的有:</p>
+<ul>
+<li>格式工厂</li>
+<li>诸如pr、剪映、比剪等剪辑工具</li>
+<li><a href="https://maruko.appinn.me/" target="_blank" rel="noopener">小丸工具箱</a> 目前只支持Windows平台</li>
+<li><a href="https://subler.org/" target="_blank" rel="noopener">Subler</a> 目前只支持Mac平台</li>
+<li><a href="https://url97.ctfile.com/f/21042697-518765173-9ada39" target="_blank" rel="noopener">tipard_video_converter_ultimate</a> 提供Mac下载 （访问密码：312306）</li>
+</ul>
+<p>如果非要在线合并的话, 推荐使用<a href="https://member.bilibili.com/studio/bs-editor" target="_blank" rel="noopener">B站的云剪辑</a></p>
+<p>其界面长这样:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20211026171444006.png" alt="image-20211026171444006"></p>
+<p>如果你刚好是UP主, 需要合并完视频后直接投稿, 可以使用这种方式, 挺方便的</p>
+<p>然而最后我选择了<code>tipard_video_converter_ultimate</code>这个软件处理字幕和视频的合并, 界面如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20211026170010642.png" alt="image-20211026170010642"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20211026171217226.png" alt="image-20211026171217226"></p>
+<p>这个软件不仅可以添加字幕 同时也可以移除字幕或者音频</p>
+<p>就是转换的速度不是很快, 导出的视频文件体积过大 两百多M的视频, 花了快十分钟 最后视频体积高达2个G  </p>
+<p>值得欣慰的是字幕合成的质量不错:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20211026175323771.png" alt="image-20211026175323771"></p>
+<p>我还尝试了使用B站云端剪辑合成, 没有对比就没有伤害:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20211026175441786.png" alt="image-20211026175441786"></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn281.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1333,696 +1904,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn275.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="275.html" itemprop="url">推荐一个谷歌浏览器下的护眼小插件</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-16T12:05:19+08:00">
-                2021-09-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>作为IT工作者, 长时间对着电脑屏幕, 眼睛实在是疲惫不堪, 即便我将电脑屏幕亮度调至非常低 也无济于事</p>
-<p>唯独 夜间模式能稍加缓解, 但是浏览器依旧是白花花一片 太过扎眼, 于是乎找了个暗黑小插件, 就此拯救了我的双眼</p>
-<p>话不多说 如下:</p>
-<h3 id="DARK-READER"><a href="#DARK-READER" class="headerlink" title="DARK READER"></a>DARK READER</h3><p>名为<code>DARK READER</code>的插件, 配置如下:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210917122822225.png" alt></p>
-<p>效果如下:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210917123155838.png" alt="image-20210917123155838"></p>
-<h3 id="插件下载"><a href="#插件下载" class="headerlink" title="插件下载"></a>插件下载</h3><p><a href="https://chrome.google.com/webstore/detail/dark-reader/eimadpbcbfnmbkopoojfekhnkhdbieeh" target="_blank" rel="noopener">谷歌官方商店下载</a></p>
-<p>考虑到大部分国内用户无法访问谷歌网站, 这里给大家推荐两个国内下载站点:</p>
-<ol>
-<li><p><a href="https://chrome.zzzmh.cn/" target="_blank" rel="noopener">极简插件</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210917141518519.png" alt="image-20210917141518519"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210917141441356.png" alt="image-20210917141441356"></p>
-</li>
-<li><p><a href="https://www.crxsoso.com/" target="_blank" rel="noopener">CRX搜搜</a></p>
-<p>不仅支持名称搜索, 还支持扩展地址搜索</p>
-<p>比如插件官方扩展地址：<code>https://chrome.google.com/webstore/detail/dhdgffkkebhmkfjojejmpbldmpobfkfo</code></p>
-<p><img src="https://cdn.jsdelivr.net/gh/youxiaohou/img/20210715161332.png" alt="img"></p>
-<p>根据名称关键字搜索下载:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/youxiaohou/img/20210715161537.png" alt="img"></p>
-</li>
-</ol>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
-<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
-<p>微信公众号二维码如下:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn274.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="274.html" itemprop="url">docker容器相互通信的实现</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-16T10:05:19+08:00">
-                2021-09-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p><code>docker</code>容器处在宿主内部的局域网络之中, 一般来说, 我们直接使用局域网<code>ip</code>即可访问, 但考虑到容器重启后<code>ip</code>可能会发生变化, 所以这种直接使用容器的<code>ip</code>的方案并不稳妥</p>
-<p>那如果使用公网<code>ip</code>, 映射访问的话, 似乎稳定一些, 但是也存在问题, 比如<code>docker</code>跨服迁移, 那么<code>ip</code>还得手动修改, 同时公网访问速度上肯定不如内网</p>
-<p>所以还得另寻他法</p>
-<p>事实上 <code>Docker</code>官方已经给我们提供了解决办法, 那就是使用<code>Bridge</code>桥接网络, 这样 我们可以直接使用容器名充当局域网<code>ip</code>进行容器间相互访问</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/1608824-20190920010803495-1744046885.png" alt="img"></p>
-<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><ol>
-<li><p><strong>创建bridge网络</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network create -d bridge 自定义网络名称</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>创建容器时指定<code>bridge</code>网络</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run -id --name=first --network 网络名 ubuntu:latest</span><br><span class="line"></span><br><span class="line">docker run -id --name=second --network 网络名 ubuntu:latest</span><br></pre></td></tr></table></figure>
-
-<p>这样两个容器就处在了同一个桥接网络下, 容器间自动link, 彼此可以相互访问</p>
-</li>
-<li><p><strong>访问测试</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 进入第一个容器</span><br><span class="line">docker exec -it first bash</span><br><span class="line"># 使用容器名ping</span><br><span class="line">ping second</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<h3 id="其他操作"><a href="#其他操作" class="headerlink" title="其他操作"></a>其他操作</h3><ol>
-<li><p><strong>如果要查看当前已经存在的桥接网络列表</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network ls</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<h3 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h3><p>除了方便容器间通信外, 结合<code>Nginx</code>还可以减少服务器端口开放数量, 消除不必要的安全隐患</p>
-<p>比如不使用桥接网络时, Nginx反向代理配置是这样的:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http&#123;</span><br><span class="line">upstream wordpress_sex&#123;</span><br><span class="line">server 服务器公网IP:7778;</span><br><span class="line">&#125;</span><br><span class="line">server&#123;</span><br><span class="line">        listen       80;</span><br><span class="line">    server_name sex.newban.cn;</span><br><span class="line">    location / &#123;</span><br><span class="line">            proxy_redirect off;</span><br><span class="line">            proxy_set_header Host $host;</span><br><span class="line">            proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">            proxy_pass http://wordpress_sex;</span><br><span class="line">            break;</span><br><span class="line">                 &#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>使用桥接网络后:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http&#123;</span><br><span class="line">upstream wordpress_sex&#123;</span><br><span class="line">server 容器名:80;</span><br><span class="line">&#125;</span><br><span class="line">server&#123;</span><br><span class="line">        listen       80;</span><br><span class="line">    server_name sex.newban.cn;</span><br><span class="line">    location / &#123;</span><br><span class="line">            proxy_redirect off;</span><br><span class="line">            proxy_set_header Host $host;</span><br><span class="line">            proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">            proxy_pass http://wordpress_sex;</span><br><span class="line">            break;</span><br><span class="line">                 &#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>无论是移植性和安全性都得到了大大的提升</p>
-<p><strong>但是有一点需要注意</strong>, <code>nginx</code>配置文件在<code>nginx</code>启动成功之前会检测<code>server</code>节点下的<code>host</code>地址是否可通, 如果存在无法接通的<code>host</code>, 则<code>nginx</code>无法启动,</p>
-<p>也就是说我们使用<code>server 容器名:80</code>这种配置 当我们的<code>docker</code>容器挂了或者停止运行时, 如果此时重启<code>nginx</code>则会启动失败, 这一点我们需要提前知晓, 避免到时重启时出了问题摸不着头脑</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
-<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
-<p>微信公众号二维码如下:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn273.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="273.html" itemprop="url">Linux中系统管理我们可能会使用到的指令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-14T14:05:19+08:00">
-                2021-09-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="1-systemctl"><a href="#1-systemctl" class="headerlink" title="1. systemctl"></a>1. systemctl</h3><p><code>systemctl</code>是 <code>Systemd</code>的主命令，用于管理系统。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 重启系统</span></span><br><span class="line">$ sudo systemctl reboot</span><br><span class="line"></span><br><span class="line"><span class="comment"># 关闭系统，切断电源</span></span><br><span class="line">$ sudo systemctl poweroff</span><br><span class="line"></span><br><span class="line"><span class="comment"># CPU停止工作</span></span><br><span class="line">$ sudo systemctl halt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 暂停系统</span></span><br><span class="line">$ sudo systemctl <span class="built_in">suspend</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 让系统进入冬眠状态</span></span><br><span class="line">$ sudo systemctl hibernate</span><br><span class="line"></span><br><span class="line"><span class="comment"># 让系统进入交互式休眠状态</span></span><br><span class="line">$ sudo systemctl hybrid-sleep</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动进入救援状态（单用户状态）</span></span><br><span class="line">$ sudo systemctl rescue</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-systemd-analyze"><a href="#2-systemd-analyze" class="headerlink" title="2. systemd-analyze"></a>2. systemd-analyze</h3><p><code>systemd-analyze</code>命令用于查看启动耗时。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看启动耗时</span></span><br><span class="line">$ systemd-analyze                                                                                       </span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看每个服务的启动耗时</span></span><br><span class="line">$ systemd-analyze blame</span><br><span class="line"></span><br><span class="line"><span class="comment"># 显示瀑布状的启动过程流</span></span><br><span class="line">$ systemd-analyze critical-chain</span><br><span class="line"></span><br><span class="line"><span class="comment"># 显示指定服务的启动流</span></span><br><span class="line">$ systemd-analyze critical-chain atd.service</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210914154541109.png" alt="image-20210914154541109"></p>
-<h3 id="3-hostnamectl"><a href="#3-hostnamectl" class="headerlink" title="3. hostnamectl"></a>3. hostnamectl</h3><p><code>hostnamectl</code>命令用于查看当前主机的信息。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 显示当前主机的信息</span></span><br><span class="line">$ hostnamectl</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置主机名。</span></span><br><span class="line">$ sudo hostnamectl <span class="built_in">set</span>-hostname rhel7</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210914145006176.png" alt></p>
-<h3 id="4-localectl"><a href="#4-localectl" class="headerlink" title="4. localectl"></a>4. localectl</h3><p><code>localectl</code>命令用于查看本地化设置。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看本地化设置</span></span><br><span class="line">$ localectl</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置本地化参数。</span></span><br><span class="line">$ sudo localectl <span class="built_in">set</span>-locale LANG=en_GB.utf8</span><br><span class="line">$ sudo localectl <span class="built_in">set</span>-keymap en_GB</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210914154511109.png" alt="image-20210914154511109"></p>
-<h3 id="5-timedatectl"><a href="#5-timedatectl" class="headerlink" title="5. timedatectl"></a>5. timedatectl</h3><p><code>timedatectl</code>命令用于查看当前时区设置。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看当前时区设置</span></span><br><span class="line">$ timedatectl</span><br><span class="line"></span><br><span class="line"><span class="comment"># 显示所有可用的时区</span></span><br><span class="line">$ timedatectl list-timezones                                                                                   </span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置当前时区</span></span><br><span class="line">$ sudo timedatectl <span class="built_in">set</span>-timezone America/New_York</span><br><span class="line">$ sudo timedatectl <span class="built_in">set</span>-time YYYY-MM-DD</span><br><span class="line">$ sudo timedatectl <span class="built_in">set</span>-time HH:MM:SS</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210914154411820.png" alt="image-20210914154411820"></p>
-<h3 id="6-loginctl"><a href="#6-loginctl" class="headerlink" title="6. loginctl"></a>6. loginctl</h3><p><code>loginctl</code>命令用于查看当前登录的用户。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 列出当前session</span></span><br><span class="line">$ loginctl list-sessions</span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出当前登录用户</span></span><br><span class="line">$ loginctl list-users</span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出显示指定用户的信息</span></span><br><span class="line">$ loginctl show-user</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
-<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
-<p>微信公众号二维码如下:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn272.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="272.html" itemprop="url">Linux中关于前台任务和后台任务的相关操作</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-14T10:05:19+08:00">
-                2021-09-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>以下概念以终端操作为前提</p>
-<ul>
-<li><strong>前台任务</strong>: 在前台执行的任务, 任务一旦执行则占用终端窗口, 同一窗口内 无法进行其他操作</li>
-<li><strong>后台任务</strong>: 在后台执行的任务, 任务执行不占用终端窗口, 同一窗口内 可一边执行任务 一边进行其他操作</li>
-</ul>
-<p>无论是前台任务还是后台任务, 终端一旦被关闭, 任务会立即终止</p>
-<h3 id="前台任务"><a href="#前台任务" class="headerlink" title="前台任务"></a>前台任务</h3><ol>
-<li><p><strong>终止前台任务</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ctrl+C</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>暂停前台任务</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ctrl+Z</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>查看当前暂停的任务和所有后台任务信息</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jobs -l</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>将前台任务切换成后台任务</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1.输入ctrl + z 暂停任务</span><br><span class="line">2.输入jobs查看任务号</span><br><span class="line">3.使用 bg %任务号 将该任务号放入后台</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>终端关闭 保持前台任务继续运行</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup xxxx</span><br></pre></td></tr></table></figure>
-
-<p><strong>nohup:</strong> 表示忽略<code>hup</code>信号, 终端关闭任务进程也不销毁</p>
-</li>
-</ol>
-<h3 id="后台任务"><a href="#后台任务" class="headerlink" title="后台任务"></a>后台任务</h3><ol>
-<li><p><strong>以后台方式启动任务, 命令末尾加<code>&amp;</code>即可</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">watch  -n 10 sh  test.sh  &amp;  #每10s在后台执行一次test.sh脚本</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>终止后台任务</strong></p>
-<p>方式一:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.输入jobs查看任务号</span><br><span class="line">2.kill %任务编号</span><br></pre></td></tr></table></figure>
-
-<p>方式二:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.使用ps指令查看任务进程pid</span><br><span class="line">2.kill pid</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>将后台任务切换成前台任务</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.输入jobs查看任务号</span><br><span class="line">2.fg %任务编号</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>终端关闭 保持后台任务继续运行</strong></p>
-<p>如果后台任务还未启动, 指令前面加<code>nohup</code>:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup watch  -n 10 sh  test.sh  &amp;</span><br></pre></td></tr></table></figure>
-
-<p>如果后台任务已经启动:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.输入jobs查看任务号</span><br><span class="line">2.使用 disown -h %任务号</span><br></pre></td></tr></table></figure>
-
-<p><code>disown</code>指令用于对<code>jobs</code>任务的移除移出操作, 常见参数有:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">disown -a //删除全部作业</span><br><span class="line">disown -r //删除正在运行的作业</span><br><span class="line">disown -h %任务号 //移出(非删除)指定作业, 同时忽略hup信号</span><br></pre></td></tr></table></figure>
-
-
-
-</li>
-</ol>
-<h3 id="实现后台任务的另一种方式"><a href="#实现后台任务的另一种方式" class="headerlink" title="实现后台任务的另一种方式"></a>实现后台任务的另一种方式</h3><p>除了使用<code>nuhup</code>+<code>&amp;</code>的方式使得任务在后台运行且不受终端关闭影响外, 还有一种方式那就是使用<code>systemd</code></p>
-<p>创建<code>systemd</code>服务步骤如下:</p>
-<ol>
-<li><p><strong>创建服务配置文件</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim xxx.service</span><br></pre></td></tr></table></figure>
-
-<p>将以下内容填入配置文件中:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=Foo</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart=/usr/sbin/foo-daemon</span><br><span class="line">Restart=always</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>Description</strong>: 表示服务描述</li>
-<li><strong>ExecStart</strong>: 表示需要执行的程序指令, 需要填入程序的完整路径</li>
-<li><strong>Restart</strong>: 表示是否自动重启, 可选参数有<code>no</code>、<code>always</code>、<code>on-success</code>、<code>on-failure</code>、<code>on-abnormal</code>、<code>on-abort</code>、<code>on-watchdog</code>等</li>
-<li><strong>WantedBy</strong>: 表示用户权限</li>
-</ul>
-<p>更多配置, 可参考<a href="https://www.freedesktop.org/software/systemd/man/systemd.service.html" target="_blank" rel="noopener">官方文档</a> 或者<a href="https://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html" target="_blank" rel="noopener">博客介绍</a></p>
-</li>
-<li><p><strong>将服务配置文件拷贝至<code>/lib/systemd/system/</code>目录下</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo cp xxx.service /lib/systemd/system/</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>启动服务</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl start xxx</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<h5 id="关于服务的其他操作指令"><a href="#关于服务的其他操作指令" class="headerlink" title="关于服务的其他操作指令"></a>关于服务的其他操作指令</h5><ol>
-<li><p><strong>停止服务</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl stop xxx</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>查看服务运行状态</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl status xxx</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>设置服务开机自启动</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl enable xxx</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>禁止服务开启自启动</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl disable xxx</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>服务重启</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl restart xxx</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>查看<code>systemd</code>的版本</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl --version</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>查看配置文件</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl cat xxx.service</span><br></pre></td></tr></table></figure>
-
-
-
-</li>
-</ol>
-<h3 id="systemd和nohup-amp-之间的对比"><a href="#systemd和nohup-amp-之间的对比" class="headerlink" title="systemd和nohup+&amp;之间的对比"></a><code>systemd</code>和<code>nohup+&amp;</code>之间的对比</h3><p><code>systemd</code>可以满足以下需求:</p>
-<ul>
-<li>方便分析问题的服务运行日志记录</li>
-<li>服务管理的日志</li>
-<li>异常退出时可以根据需要重新启动</li>
-</ul>
-<p>而<code>nohup</code> 只能记录服务运行时的输出和出错日志, 根据我们实际的需求进行选择即可</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
-<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
-<p>微信公众号二维码如下:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2073,7 +1954,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">282</span>
+                  <span class="site-state-item-count">286</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2086,7 +1967,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">89</span>
+                  <span class="site-state-item-count">90</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

@@ -287,6 +287,682 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../236.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../236.html" itemprop="url">为什么建议你使用枚举</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-07-28T11:14:19+08:00">
+                2021-07-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>枚举是 JDK 1.5 新增的数据类型，使用枚举我们可以很好的描述一些特定的业务场景，比如一年中的春、夏、秋、冬，还有每周的周一到周天，还有各种颜色，以及可以用它来描述一些状态信息，比如错误码等。</p>
+<p>枚举类型不止存在在 Java 语言中，在其它语言中也都能找到它的身影，例如 C# 和 Python 等，但我发现在实际的项目中使用枚举的人很少，所以本文就来聊一聊枚举的相关内容，好让朋友们对枚举有一个大概的印象，这样在编程时起码还能想到有“枚举”这样一个类型。</p>
+<p>本文的结构目录如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/v2-80ca1407a3ceabbf7e2be786b4c9bdcf_720w.jpg" alt="img"></p>
+<h2 id="枚举的-7-种使用方法"><a href="#枚举的-7-种使用方法" class="headerlink" title="枚举的 7 种使用方法"></a>枚举的 7 种使用方法</h2><p>很多人不使用枚举的一个重要的原因是对枚举不够熟悉，那么我们就先从枚举的 7 种使用方法说起。</p>
+<h3 id="用法一：常量"><a href="#用法一：常量" class="headerlink" title="用法一：常量"></a>用法一：常量</h3><p>在 JDK 1.5 之前，我们定义常量都是 <code>public static final...</code> ，但有了枚举，我们就可以把这些常量定义成一个枚举类了，实现代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public enum ColorEnum &#123;  </span><br><span class="line">  RED, GREEN, BLANK, YELLOW  </span><br><span class="line">&#125; </span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<h3 id="用法二：switch"><a href="#用法二：switch" class="headerlink" title="用法二：switch"></a>用法二：switch</h3><p>将枚举用在 switch 判断中，使得代码可读性更高了，实现代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">enum ColorEnum &#123;</span><br><span class="line">    GREEN, YELLOW, RED</span><br><span class="line">&#125;</span><br><span class="line">public class ColorTest &#123;</span><br><span class="line">    ColorEnum color = ColorEnum.RED;</span><br><span class="line"></span><br><span class="line">    public void change() &#123;</span><br><span class="line">        switch (color) &#123;</span><br><span class="line">            case RED:</span><br><span class="line">                color = ColorEnum.GREEN;</span><br><span class="line">                break;</span><br><span class="line">            case YELLOW:</span><br><span class="line">                color = ColorEnum.RED;</span><br><span class="line">                break;</span><br><span class="line">            case GREEN:</span><br><span class="line">                color = ColorEnum.YELLOW;</span><br><span class="line">                break;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<h3 id="用法三：枚举中增加方法"><a href="#用法三：枚举中增加方法" class="headerlink" title="用法三：枚举中增加方法"></a>用法三：枚举中增加方法</h3><p>我们可以在枚举中增加一些方法，让枚举具备更多的特性，实现代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        ErrorCodeEnum errorCode = ErrorCodeEnum.SUCCESS;</span><br><span class="line">        System.out.println(&quot;状态码：&quot; + errorCode.code() + </span><br><span class="line">                           &quot; 状态信息：&quot; + errorCode.msg());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum ErrorCodeEnum &#123;</span><br><span class="line">    SUCCESS(1000, &quot;success&quot;),</span><br><span class="line">    PARAM_ERROR(1001, &quot;parameter error&quot;),</span><br><span class="line">    SYS_ERROR(1003, &quot;system error&quot;),</span><br><span class="line">    NAMESPACE_NOT_FOUND(2001, &quot;namespace not found&quot;),</span><br><span class="line">    NODE_NOT_EXIST(3002, &quot;node not exist&quot;),</span><br><span class="line">    NODE_ALREADY_EXIST(3003, &quot;node already exist&quot;),</span><br><span class="line">    UNKNOWN_ERROR(9999, &quot;unknown error&quot;);</span><br><span class="line"></span><br><span class="line">    private int code;</span><br><span class="line">    private String msg;</span><br><span class="line"></span><br><span class="line">    ErrorCodeEnum(int code, String msg) &#123;</span><br><span class="line">        this.code = code;</span><br><span class="line">        this.msg = msg;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int code() &#123;</span><br><span class="line">        return code;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String msg() &#123;</span><br><span class="line">        return msg;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static ErrorCodeEnum getErrorCode(int code) &#123;</span><br><span class="line">        for (ErrorCodeEnum it : ErrorCodeEnum.values()) &#123;</span><br><span class="line">            if (it.code() == code) &#123;</span><br><span class="line">                return it;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return UNKNOWN_ERROR;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>以上程序的执行结果为：</p>
+<blockquote>
+<p>状态码：1000 状态信息：success</p>
+</blockquote>
+<h3 id="用法四：覆盖枚举方法"><a href="#用法四：覆盖枚举方法" class="headerlink" title="用法四：覆盖枚举方法"></a>用法四：覆盖枚举方法</h3><p>我们可以覆盖一些枚举中的方法用于实现自己的业务，比如我们可以覆盖 <code>toString()</code> 方法，实现代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        ColorEnum colorEnum = ColorEnum.RED;</span><br><span class="line">        System.out.println(colorEnum.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum ColorEnum &#123;</span><br><span class="line">    RED(&quot;红色&quot;, 1), GREEN(&quot;绿色&quot;, 2), BLANK(&quot;白色&quot;, 3), YELLOW(&quot;黄色&quot;, 4);</span><br><span class="line">    //  成员变量</span><br><span class="line">    private String name;</span><br><span class="line">    private int index;</span><br><span class="line"></span><br><span class="line">    //  构造方法</span><br><span class="line">    private ColorEnum(String name, int index) &#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">        this.index = index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //覆盖方法</span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return this.index + &quot;：&quot; + this.name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>以上程序的执行结果为：</p>
+<blockquote>
+<p>1：红色</p>
+</blockquote>
+<h3 id="用法五：实现接口"><a href="#用法五：实现接口" class="headerlink" title="用法五：实现接口"></a>用法五：实现接口</h3><p>枚举类可以用来实现接口，但不能用于继承类，因为枚举默认继承了 <code>java.lang.Enum</code> 类，在 Java 语言中允许实现多接口，但不能继承多个父类，实现代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        ColorEnum colorEnum = ColorEnum.RED;</span><br><span class="line">        colorEnum.print();</span><br><span class="line">        System.out.println(&quot;颜色：&quot; + colorEnum.getInfo());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface Behaviour &#123;</span><br><span class="line">    void print();</span><br><span class="line"></span><br><span class="line">    String getInfo();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum ColorEnum implements Behaviour &#123;</span><br><span class="line">    RED(&quot;红色&quot;, 1), GREEN(&quot;绿色&quot;, 2), BLANK(&quot;白色&quot;, 3), YELLOW(&quot;黄色&quot;, 4);</span><br><span class="line">    private String name;</span><br><span class="line">    private int index;</span><br><span class="line"></span><br><span class="line">    private ColorEnum(String name, int index) &#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">        this.index = index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void print() &#123;</span><br><span class="line">        System.out.println(this.index + &quot;：&quot; + this.name);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String getInfo() &#123;</span><br><span class="line">        return this.name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>以上程序的执行结果为：</p>
+<blockquote>
+<p>1：红色</p>
+<p>颜色：红色</p>
+</blockquote>
+<h3 id="用法六：在接口中组织枚举类"><a href="#用法六：在接口中组织枚举类" class="headerlink" title="用法六：在接口中组织枚举类"></a>用法六：在接口中组织枚举类</h3><p>我们可以在一个接口中创建多个枚举类，用它可以很好的实现“多态”，也就是说我们可以将拥有相同特性，但又有细微实现差别的枚举类聚集在一个接口中，实现代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        // 赋值第一个枚举类</span><br><span class="line">        ColorInterface colorEnum = ColorInterface.ColorEnum.RED;</span><br><span class="line">        System.out.println(colorEnum);</span><br><span class="line">        // 赋值第二个枚举类</span><br><span class="line">        colorEnum = ColorInterface.NewColorEnum.NEW_RED;</span><br><span class="line">        System.out.println(colorEnum);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface ColorInterface &#123;</span><br><span class="line">    enum ColorEnum implements ColorInterface &#123;</span><br><span class="line">        GREEN, YELLOW, RED</span><br><span class="line">    &#125;</span><br><span class="line">    enum NewColorEnum implements ColorInterface &#123;</span><br><span class="line">        NEW_GREEN, NEW_YELLOW, NEW_RED</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>以上程序的执行结果为：</p>
+<blockquote>
+<p>RED</p>
+<p>NEW_RED</p>
+</blockquote>
+<h3 id="用法七：使用枚举集合"><a href="#用法七：使用枚举集合" class="headerlink" title="用法七：使用枚举集合"></a>用法七：使用枚举集合</h3><p>在 Java 语言中和枚举类相关的，还有两个枚举集合类 <code>java.util.EnumSet</code> 和 <code>java.util.EnumMap</code>，使用它们可以实现更多的功能。</p>
+<p>使用 <code>EnumSet</code> 可以保证元素不重复，并且能获取指定范围内的元素，示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.EnumSet;</span><br><span class="line">import java.util.List;</span><br><span class="line"></span><br><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        List&lt;ColorEnum&gt; list = new ArrayList&lt;ColorEnum&gt;();</span><br><span class="line">        list.add(ColorEnum.RED);</span><br><span class="line">        list.add(ColorEnum.RED);  // 重复元素</span><br><span class="line">        list.add(ColorEnum.YELLOW);</span><br><span class="line">        list.add(ColorEnum.GREEN);</span><br><span class="line">        // 去掉重复数据</span><br><span class="line">        EnumSet&lt;ColorEnum&gt; enumSet = EnumSet.copyOf(list);</span><br><span class="line">        System.out.println(&quot;去重：&quot; + enumSet);</span><br><span class="line"></span><br><span class="line">        // 获取指定范围的枚举（获取所有的失败状态）</span><br><span class="line">        EnumSet&lt;ErrorCodeEnum&gt; errorCodeEnums = EnumSet.range(ErrorCodeEnum.ERROR, ErrorCodeEnum.UNKNOWN_ERROR);</span><br><span class="line">        System.out.println(&quot;所有失败状态：&quot; + errorCodeEnums);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum ColorEnum &#123;</span><br><span class="line">    RED(&quot;红色&quot;, 1), GREEN(&quot;绿色&quot;, 2), BLANK(&quot;白色&quot;, 3), YELLOW(&quot;黄色&quot;, 4);</span><br><span class="line">    private String name;</span><br><span class="line">    private int index;</span><br><span class="line"></span><br><span class="line">    private ColorEnum(String name, int index) &#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">        this.index = index;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum ErrorCodeEnum &#123;</span><br><span class="line">    SUCCESS(1000, &quot;success&quot;),</span><br><span class="line">    ERROR(2001, &quot;parameter error&quot;),</span><br><span class="line">    SYS_ERROR(2002, &quot;system error&quot;),</span><br><span class="line">    NAMESPACE_NOT_FOUND(2003, &quot;namespace not found&quot;),</span><br><span class="line">    NODE_NOT_EXIST(3002, &quot;node not exist&quot;),</span><br><span class="line">    NODE_ALREADY_EXIST(3003, &quot;node already exist&quot;),</span><br><span class="line">    UNKNOWN_ERROR(9999, &quot;unknown error&quot;);</span><br><span class="line"></span><br><span class="line">    private int code;</span><br><span class="line">    private String msg;</span><br><span class="line"></span><br><span class="line">    ErrorCodeEnum(int code, String msg) &#123;</span><br><span class="line">        this.code = code;</span><br><span class="line">        this.msg = msg;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int code() &#123;</span><br><span class="line">        return code;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String msg() &#123;</span><br><span class="line">        return msg;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>以上程序的执行结果为：</p>
+<blockquote>
+<p>去重：[RED, GREEN, YELLOW]</p>
+<p>所有失败状态：[ERROR, SYS_ERROR, NAMESPACE_NOT_FOUND, NODE_NOT_EXIST, NODE_ALREADY_EXIST, UNKNOWN_ERROR]</p>
+</blockquote>
+<p><code>EnumMap</code> 与 <code>HashMap</code> 类似，不过它是一个专门为枚举设计的 <code>Map</code> 集合，相比 <code>HashMap</code> 来说它的性能更高，因为它内部放弃使用链表和红黑树的结构，采用数组作为数据存储的结构。</p>
+<p><code>EnumMap</code> 基本使用示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">import java.util.EnumMap;</span><br><span class="line"></span><br><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        EnumMap&lt;ColorEnum, String&gt; enumMap = new EnumMap&lt;&gt;(ColorEnum.class);</span><br><span class="line">        enumMap.put(ColorEnum.RED, &quot;红色&quot;);</span><br><span class="line">        enumMap.put(ColorEnum.GREEN, &quot;绿色&quot;);</span><br><span class="line">        enumMap.put(ColorEnum.BLANK, &quot;白色&quot;);</span><br><span class="line">        enumMap.put(ColorEnum.YELLOW, &quot;黄色&quot;);</span><br><span class="line">        System.out.println(ColorEnum.RED + &quot;:&quot; + enumMap.get(ColorEnum.RED));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum ColorEnum &#123;</span><br><span class="line">    RED, GREEN, BLANK, YELLOW;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>以上程序的执行结果为：</p>
+<blockquote>
+<p>RED:红色</p>
+</blockquote>
+<h3 id="使用注意事项"><a href="#使用注意事项" class="headerlink" title="使用注意事项"></a>使用注意事项</h3><p>阿里《Java开发手册》对枚举的相关规定如下，我们在使用时需要稍微注意一下。</p>
+<blockquote>
+<p>【强制】所有的枚举类型字段必须要有注释，说明每个数据项的用途。</p>
+<p>【参考】枚举类名带上 Enum 后缀，枚举成员名称需要全大写，单词间用下划线隔开。说明：枚举其实就是特殊的常量类，且构造方法被默认强制是私有。正例：枚举名字为 ProcessStatusEnum 的成员名称：SUCCESS / UNKNOWN_REASON。</p>
+</blockquote>
+<h2 id="假如不使用枚举"><a href="#假如不使用枚举" class="headerlink" title="假如不使用枚举"></a>假如不使用枚举</h2><p>在枚举没有诞生之前，也就是 JDK 1.5 版本之前，我们通常会使用 <code>int</code> 常量来表示枚举，实现代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public static final int COLOR_RED = 1;</span><br><span class="line">public static final int COLOR_BLUE = 2;</span><br><span class="line">public static final int COLOR_GREEN = 3;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>但是使用 <code>int</code> 类型可能存在两个问题：</p>
+<p>第一， <code>int</code> 类型本身并不具备安全性，假如某个程序员在定义 <code>int</code> 时少些了一个 <code>final</code> 关键字，那么就会存在被其他人修改的风险，而反观枚举类，它“天然”就是一个常量类，不存在被修改的风险（原因详见下半部分）；</p>
+<p>第二，使用 <code>int</code> 类型的语义不够明确，比如我们在控制台打印时如果只输出 1…2…3 这样的数字，我们肯定不知道它代表的是什么含义。</p>
+<p><img src="https://user-gold-cdn.xitu.io/2020/6/28/172f889e786a4b0b?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="img"></p>
+<p>那有人就说了，那就使用常量字符呗，这总不会还不知道语义吧？实现示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public static final String COLOR_RED = &quot;RED&quot;;</span><br><span class="line">public static final String COLOR_BLUE = &quot;BLUE&quot;;</span><br><span class="line">public static final String COLOR_GREEN = &quot;GREEN&quot;;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>但是这样同样存在一个问题，有些初级程序员会不按套路出牌，他们可能会直接使用字符串的值进行比较，而不是直接使用枚举的字段，实现示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static final String COLOR_RED = &quot;RED&quot;;</span><br><span class="line">    public static final String COLOR_BLUE = &quot;BLUE&quot;;</span><br><span class="line">    public static final String COLOR_GREEN = &quot;GREEN&quot;;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        String color = &quot;BLUE&quot;;</span><br><span class="line">        if (&quot;BLUE&quot;.equals(color)) &#123;</span><br><span class="line">            System.out.println(&quot;蓝色&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>这样当我们修改了枚举中的值，那程序就凉凉了。</p>
+<h2 id="枚举使用场景"><a href="#枚举使用场景" class="headerlink" title="枚举使用场景"></a>枚举使用场景</h2><p>枚举的常见使用场景是单例，它的完整实现代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public class Singleton &#123;</span><br><span class="line">    // 枚举类型是线程安全的，并且只会装载一次</span><br><span class="line">    private enum SingletonEnum &#123;</span><br><span class="line">        INSTANCE;</span><br><span class="line">        // 声明单例对象</span><br><span class="line">        private final Singleton instance;</span><br><span class="line">        // 实例化</span><br><span class="line">        SingletonEnum() &#123;</span><br><span class="line">            instance = new Singleton();</span><br><span class="line">        &#125;</span><br><span class="line">        private Singleton getInstance() &#123;</span><br><span class="line">            return instance;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    // 获取实例（单例对象）</span><br><span class="line">    public static Singleton getInstance() &#123;</span><br><span class="line">        return SingletonEnum.INSTANCE.getInstance();</span><br><span class="line">    &#125;</span><br><span class="line">    private Singleton() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    // 类方法</span><br><span class="line">    public void sayHi() &#123;</span><br><span class="line">        System.out.println(&quot;Hi,Java.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class SingletonTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Singleton singleton = Singleton.getInstance();</span><br><span class="line">        singleton.sayHi();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>因为枚举只会在类加载时装载一次，所以它是线程安全的，这也是《Effective Java》作者极力推荐使用枚举来实现单例的主要原因。</p>
+<h2 id="知识扩展"><a href="#知识扩展" class="headerlink" title="知识扩展"></a>知识扩展</h2><h3 id="枚举为什么是线程安全的？"><a href="#枚举为什么是线程安全的？" class="headerlink" title="枚举为什么是线程安全的？"></a>枚举为什么是线程安全的？</h3><p>这一点要从枚举最终生成的字节码说起，首先我们先来定义一个简单的枚举类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public enum ColorEnumTest &#123;</span><br><span class="line">    RED, GREEN, BLANK, YELLOW;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>然后我们再将上面的那段代码编译为字节码，具体内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public final class ColorEnumTest extends java.lang.Enum&lt;ColorEnumTest&gt; &#123;</span><br><span class="line">  public static final ColorEnumTest RED;</span><br><span class="line">  public static final ColorEnumTest GREEN;</span><br><span class="line">  public static final ColorEnumTest BLANK;</span><br><span class="line">  public static final ColorEnumTest YELLOW;</span><br><span class="line">  public static ColorEnumTest[] values();</span><br><span class="line">  public static ColorEnumTest valueOf(java.lang.String);</span><br><span class="line">  static &#123;&#125;;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>从上述结果可以看出枚举类最终会被编译为被 <code>final</code> 修饰的普通类，它的所有属性也都会被 <code>static</code> 和 <code>final</code> 关键字修饰，所以枚举类在项目启动时就会被 JVM 加载并初始化，而这个执行过程是线程安全的，所以枚举类也是线程安全的类。</p>
+<blockquote>
+<p>小贴士：代码反编译的过程是先用 javac 命令将 java 代码编译字节码（.class），再使用 javap 命令查看编译的字节码。</p>
+</blockquote>
+<h3 id="枚举比较小技巧"><a href="#枚举比较小技巧" class="headerlink" title="枚举比较小技巧"></a>枚举比较小技巧</h3><p>我们在枚举比较时使用 == 就够了，因为枚举类是在程序加载时就创建了（它并不是 <code>new</code> 出来的），并且枚举类不允许在外部直接使用 <code>new</code> 关键字来创建枚举实例，所以我们在使用枚举类时本质上只有一个对象，因此在枚举比较时使用 == 就够了。</p>
+<p>并且我们在查看枚举的 <code>equlas()</code> 源码会发现，它的内部其实还是直接调用了 == 方法，源码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public final boolean equals(Object other) &#123;</span><br><span class="line">    return this==other;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文我们介绍了枚举类的 7 种使用方法：常量、switch、枚举中添加方法、覆盖枚举方法、实现接口、在接口中组织枚举类和使用枚举集合等，然后讲了如果不使用枚举类使用 <code>int</code> 类型和 <code>String</code> 类型存在的一些弊端：语义不够清晰、容易被修改、存在被误用的风险，所以我们在适合的环境下应该尽量使用枚举类。并且我们还讲了枚举类的使用场景——单例，以及枚举类为什么是安全的，最后我们讲了枚举比较的小技巧，希望本文对你有帮助。</p>
+<p><strong>本文转载自</strong>:<a href="https://juejin.cn/post/6844904200652980231" target="_blank" rel="noopener">https://juejin.cn/post/6844904200652980231</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../234.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../234.html" itemprop="url">Android开发者快速上手鸿蒙应用开发</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-07-28T10:14:19+08:00">
+                2021-07-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="Android和鸿蒙对比"><a href="#Android和鸿蒙对比" class="headerlink" title="Android和鸿蒙对比"></a>Android和鸿蒙对比</h4><p>组件</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/4d086e061d950a7ba9141cf42a128ddef2d3c92c.png" alt="img"></p>
+<p>触摸事件</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/3801213fb80e7bec6a5e07440eed563f99506bdd.png" alt="img"></p>
+<p>鸿蒙页面生命周期</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/267f9e2f07082838628466f7a65a46064e08f197.png" alt="img"></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../233.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../233.html" itemprop="url">如何将自定义库上传至jitpack仓库</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-07-27T13:14:19+08:00">
+                2021-07-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>最近<code>bintray</code>好像不能用了, 以前传的依赖包全都挂了, 目前正在进行库转移</p>
+<p>相比<code>bintray</code>而言 <code>jitpack</code>可以说是非常简单, 只需一个<code>github</code>就完全搞定了</p>
+<h4 id="快速上手"><a href="#快速上手" class="headerlink" title="快速上手"></a>快速上手</h4><p>首先 将代码推送至<code>github</code>, 然后进入<a href="https://jitpack.io/" target="_blank" rel="noopener">https://jitpack.io/</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727145153403.png" alt="image-20210727145153403"></p>
+<p>绿色表示 编译成功 红色表示编译失败, 编译成功后 就可以开始使用库啦</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727145906319.png" alt="image-20210727145906319"></p>
+<p>是不是非常简单</p>
+<p>由于大部分人习惯使用版本号的依赖形式, 因此 如果你想将<code>commitId</code>换成版本号, 那么只需在<code>github</code>上<code>push release</code>即可, 如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727150302447.png" alt="image-20210727150302447"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727150429243.png" alt="image-20210727150429243"></p>
+<p>创建成功后,回到<code>jitpack</code>主页刷新, 此时在<code>Release</code>一栏下出现相应的版本</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727150604728.png" alt="image-20210727150604728"></p>
+<p>我们发现<code>1.0.5</code>版本的<code>Log</code>一栏是红色, 我们可以点击进入查看编译日志 寻找编译失败原因</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727150827296.png" alt="image-20210727150827296"></p>
+<p>如果编译成功, 将会生成相应的<code>jar</code>包并存储在<code>jitpack</code>仓库中</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727151000773.png" alt="image-20210727151000773"></p>
+<p>此时我们就可以使用版本号形式的啦</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727151055721.png" alt="image-20210727151055721"></p>
+<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><ul>
+<li>对于<code>android</code> 必须是<code>Lib</code>库 而不是<code>APP</code></li>
+<li>由于<code>jitpack</code>会对整个项目库进行编译打包, 因此项目中避免出现多个库的情况, 如果是<code>android</code> 可以在<code>settings.gradle</code>里面进行注释屏蔽</li>
+</ul>
+<p>除了<code>github</code>之外,<code>jitpack</code>还支持以下仓库:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727153831851.png" alt="image-20210727153831851"></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../232.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../232.html" itemprop="url">关于android scheme跳转配置中pathPattern的使用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-03T10:14:19+08:00">
+                2021-06-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="Scheme协议在Android中使用场景"><a href="#Scheme协议在Android中使用场景" class="headerlink" title="Scheme协议在Android中使用场景"></a>Scheme协议在Android中使用场景</h4><ol>
+<li><p>H5页面和Native页面的交互</p>
+</li>
+<li><p>客户端获取push消息中后，点击消息跳转到APP内部页面</p>
+</li>
+<li><p>APP根据URL跳转到另外一个APP指定页面</p>
+</li>
+<li><p>外部浏览器唤醒App</p>
+</li>
+</ol>
+<h4 id="Scheme协议的使用"><a href="#Scheme协议的使用" class="headerlink" title="Scheme协议的使用"></a>Scheme协议的使用</h4><ol>
+<li><strong>场景一 外部浏览器唤醒app</strong></li>
+</ol>
+<p>以<code>app://test/good?goodsId=3</code>这个内链为例, 假设浏览器中点击该内链需要跳转到应用的指定Activity</p>
+<p>那么,首先在清单文件中对指定Activity进行intent过滤配置:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;activity</span><br><span class="line">          android:name=&quot;.ui.login.LoginActivity&quot;</span><br><span class="line">          android:screenOrientation=&quot;portrait&quot;&gt;</span><br><span class="line">          &lt;intent-filter&gt;</span><br><span class="line">          &lt;!--可以根据用户的数据类型，打开相应的Activity--&gt;</span><br><span class="line">              &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;</span><br><span class="line">              &lt;!--界面可以被隐式调用--&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;</span><br><span class="line">              &lt;!--界面可以通过浏览器的连接启动--&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; /&gt;</span><br><span class="line">              &lt;!--协议部分，主要是配置scheme和host--&gt;</span><br><span class="line">              &lt;data</span><br><span class="line">              		android:path=&quot;/good&quot;</span><br><span class="line">                  android:host=&quot;test&quot;</span><br><span class="line">                  android:scheme=&quot;app&quot; /&gt;</span><br><span class="line">          &lt;/intent-filter&gt;</span><br><span class="line">      &lt;/activity&gt;</span><br></pre></td></tr></table></figure>
+
+<p>然后在<code>Activity</code>的<code>onCreate</code>方法中进行参数的获取和逻辑的处理:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Uri data = getIntent().getData();</span><br><span class="line">String param = data.getQueryParameter(&quot;goodsId&quot;);//获取指定key下的参数</span><br></pre></td></tr></table></figure>
+
+<p>最后测试跳转即可</p>
+<ol start="2">
+<li><p><strong>场景二 应用内部H5交互(页面跳转)</strong></p>
+<p>还是以<code>app://test/good?goodsId=3</code>这个内链为例, 假设WebView中点击该内链需要跳转到应用的指定Activity</p>
+<p>首先还是在清单文件中配置,如上</p>
+<p>然后配置webview:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean &#123;</span><br><span class="line">startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))</span><br><span class="line">  return true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为webview属于开发者自定义, 因此内链跳转逻辑需要在<code>shouldOverrideUrlLoading</code>方法中自行处理</p>
+</li>
+<li><p><strong>场景三 应用内部H5交互(非页面跳转)</strong></p>
+<p>有时候需求不单单是页面的跳转, 可能还涉及到其他ui或者逻辑的交互, 比如跳转到支付宝失败后弹出弹窗等等, 这个时候,我们需要在<code>shouldOverrideUrlLoading</code>方法中进行不同scheme的处理:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean &#123;</span><br><span class="line">                 if (url.startsWith(&quot;alipay&quot;)) &#123;</span><br><span class="line">                        try &#123;</span><br><span class="line">                            startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))</span><br><span class="line">                        &#125; catch (e: Exception) &#123;</span><br><span class="line">                            e.printStackTrace()</span><br><span class="line">                            AlertDialog.Builder(requireContext())</span><br><span class="line">                                .setMessage(&quot;未检测到支付宝客户端，请安装后重试。&quot;)</span><br><span class="line">                                .setPositiveButton(&quot;&quot;) &#123; _, _ -&gt;</span><br><span class="line">                                    startActivity(</span><br><span class="line">                                        Intent(</span><br><span class="line">                                            Intent.ACTION_VIEW,</span><br><span class="line">                                            &quot;https://d.alipay.com&quot;.toUri()</span><br><span class="line">                                        )</span><br><span class="line">                                    )</span><br><span class="line">                                &#125;</span><br><span class="line">                                .setNegativeButton(&quot;取消&quot;, null).show()</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; </span><br><span class="line">                    return true</span><br><span class="line">                    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>场景四 应用内Activity之间的跳转</strong></p>
+<p>首先依然在清单文件中配置</p>
+<p>然后使用隐式跳转:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(&quot;`app://test/good?goodsId=3`&quot;)))</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h4 id="多个不同scheme跳转同一个页面"><a href="#多个不同scheme跳转同一个页面" class="headerlink" title="多个不同scheme跳转同一个页面"></a>多个不同scheme跳转同一个页面</h4><p>只需要在清单文件增加多个<code>data</code>标签即可:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;activity</span><br><span class="line">          android:name=&quot;.ui.login.LoginActivity&quot;</span><br><span class="line">          android:screenOrientation=&quot;portrait&quot;&gt;</span><br><span class="line">          &lt;intent-filter&gt;</span><br><span class="line">              &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; /&gt;</span><br><span class="line">					</span><br><span class="line">              &lt;data</span><br><span class="line">              		android:path=&quot;/good&quot;</span><br><span class="line">                  android:host=&quot;test&quot;</span><br><span class="line">                  android:scheme=&quot;app&quot; /&gt;</span><br><span class="line">                  </span><br><span class="line">					</span><br><span class="line">              &lt;data</span><br><span class="line">                  android:host=&quot;test2&quot;</span><br><span class="line">                  android:scheme=&quot;app&quot; /&gt;</span><br><span class="line">          &lt;/intent-filter&gt;</span><br><span class="line">      &lt;/activity&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="使用pathPattern匹配模式"><a href="#使用pathPattern匹配模式" class="headerlink" title="使用pathPattern匹配模式"></a>使用pathPattern匹配模式</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;data</span><br><span class="line">                   android:pathPattern=&quot;/.*&quot;</span><br><span class="line">                   android:host=&quot;test&quot;</span><br><span class="line">                   android:scheme=&quot;app&quot; /&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.表示匹配任意字符 *表示匹配0次或多次  遗憾的是pathPattern无法使用标准的正则表达式 只有* 和.可用</span><br></pre></td></tr></table></figure>
+
+<h4 id="关于sspPattern匹配模式"><a href="#关于sspPattern匹配模式" class="headerlink" title="关于sspPattern匹配模式"></a>关于sspPattern匹配模式</h4><p>我们使用内链的格式一般和<code>url</code>格式一致,比如<code>app://test</code>, 如果我们想使用自定义格式比如这种<code>app:test</code>, 那常规的方法则不奏效,此时<code>sspPattern</code>就可以派上用场</p>
+<p>我们在清单文件中如下配置即可:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;data</span><br><span class="line">                   android:ssp=&quot;test&quot;</span><br><span class="line">                   android:scheme=&quot;app&quot; /&gt;</span><br></pre></td></tr></table></figure>
+
+<p>同样该模式下对应三个属性:</p>
+<ul>
+<li>ssp :字面值匹配模式(PATTERN_LITERAL) 内部采用equals函数</li>
+<li>sspPrefix 前缀匹配模式(PATTERN_PREFIX) 内部采用startWith函数</li>
+<li>sspPattern 全局匹配模式(PATTERN_GLOB) glob规则是一种简化的模式，只支持“*”和“.”作为通配符 </li>
+</ul>
+<p>实际上类似于url格式的内链, 比如<code>app://test</code>也可以使用<code>ssp</code>进行匹配:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;data</span><br><span class="line">                    android:ssp=&quot;//test&quot;</span><br><span class="line">                    android:scheme=&quot;app&quot; /&gt;</span><br></pre></td></tr></table></figure>
+
+<p>不过一般我们不会这么做, 因为直接使用<code>host</code>属性更加简洁</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../231.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1143,737 +1819,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../225.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../225.html" itemprop="url">Git HEAD detached from XXX (git HEAD 游离) 解决办法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-08T14:14:19+08:00">
-                2021-03-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>通常我们在首次进行代码的拉取的时候容易出现HEAD游离状态, 也就是说当前操作不在任何一个现有分支上, 一般情况下我们在进行代码修改时需要先将对分支进行相应切换, 比如在<code>master</code>分支上进行开发, 那就<code>git checkout master</code>切换到<code>master</code>分支</p>
-<p>但是很多情况下我们容易忽视这个习惯, 导致代码提交时才发现处在游离分支上, 这个时候如果进行分支的强行切换意味着所做的代码修改全部付之一炬, 那我们该如何处理这种情况呢?</p>
-<p>事实上, <code>git</code>已经给我们提供了相应的智能提示, 在我们<code>push</code>代码时会警告提示我们:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Warning: you are leaving 1 commit behind, not connected to</span><br><span class="line">any of your branches:</span><br><span class="line"></span><br><span class="line">  84220ac update</span><br><span class="line"></span><br><span class="line">If you want to keep it by creating a new branch, this may be a good time</span><br><span class="line">to do so with:</span><br><span class="line"></span><br><span class="line"> git branch &lt;new-branch-name&gt; 84220ac</span><br><span class="line"></span><br><span class="line">Switched to branch &apos;master&apos;</span><br></pre></td></tr></table></figure>
-
-<p>这时我们只需要新开一个分支存储游离的内容, 然后再将两个分支进行合并即可</p>
-<h3 id="解决方案一"><a href="#解决方案一" class="headerlink" title="解决方案一"></a>解决方案一</h3><ol>
-<li><p>第一步 将游离部分代码放到一个临时分支</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch temp 84220ac</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>第二步 切换到开发主分支</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout master</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>第三步 将临时分支代码合并到开发主分支</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git merge temp</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>第四步 删除临时分支</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch -d temp</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<h3 id="解决方案二"><a href="#解决方案二" class="headerlink" title="解决方案二"></a>解决方案二</h3><p><strong>本方案适用于代码还未commit</strong></p>
-<ol>
-<li><p>第一步 将游离代码放置到暂存区域</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git stash</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>第二步 将暂存区域的代码pop出来到当前分支</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git pop</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-
-
-
-
-
-
-</li>
-</ol>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../224.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../224.html" itemprop="url">Windows平台使用QEMU搭建ARM+Linux开发环境</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-02T17:14:19+08:00">
-                2021-02-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>由于目前市面上很多模拟器诸如夜神,网易MUMU,基本上使用的是x86的架构,虽然运行ARM程序没有问题,但是如果想使用<code>gdb</code>对ARM程序进行调试的话,就显得力不从心了,各种问题层出不穷,</p>
-<p>当然调试x86程序是没有问题的，</p>
-<p>如果非要对ARM程序进行<code>gdb</code>调试的话，可以采用Android Studio原生的模拟器（原生ARM太卡），但是考虑到很多人并不是从事安卓开发，加上Studio中的模拟器本就基于QEMU,  那么为了方便，我们直接搭建QEMU的环境</p>
-<h2 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h2><ul>
-<li><p>Windows宿主平台</p>
-</li>
-<li><p>QEMU安装包（这里使用的是20201124的版本）：<a href="https://qemu.weilnetz.de/w64/" target="_blank" rel="noopener">https://qemu.weilnetz.de/w64/</a></p>
-</li>
-<li><p>树莓派系统镜像：<a href="http://downloads.raspberrypi.org/raspbian/images/raspbian-2020-02-14/" target="_blank" rel="noopener">http://downloads.raspberrypi.org/raspbian/images/raspbian-2020-02-14/</a></p>
-<blockquote>
-<p>树莓派是基于Debian的Linux系统</p>
-</blockquote>
-</li>
-</ul>
-<h2 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h2><p>QEMU下载安装完毕后,其安装目录会包含很多不同架构的执行文件,这里我们选择<code>qemu-system-arm.exe</code>,打开命令窗口:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-arm.exe -machine versatilepb -L  -m 128  -hda 2020-02-13-raspbian-buster.img</span><br></pre></td></tr></table></figure>
-
-<p><strong>相关指令选项介绍:</strong></p>
-<ul>
-<li><strong>-M</strong> :指定机器</li>
-<li><strong>-name</strong>：给虚拟系统起个名称</li>
-<li><strong>-cpu</strong>:指定cpu型号</li>
-<li><strong>-smp</strong> :指定cpu的个数 比如<code>-smp 2</code></li>
-<li><strong>-m</strong>: 指定内存大小单位MB</li>
-<li><strong>-vga</strong> :指定显卡 比如 <code>-vga vmware</code> </li>
-<li><strong>-hda</strong>: 指定硬盘镜像</li>
-<li><strong>-initrd</strong>: 指定 RAM磁盘镜像</li>
-<li><strong>-fda</strong> : 指定软盘镜像</li>
-<li><strong>-L</strong>:bios位置</li>
-<li><strong>-cdrom</strong>:光盘镜像</li>
-<li><strong>-no-reboot:</strong> 不重启退出 </li>
-<li><strong>-kernel</strong> :指定内核文件</li>
-<li><strong>-serial</strong> :设置串口 比如:<code>-serial stdio</code> 表示 重定向Guest 的串口到Host的标准输入输出 </li>
-<li><strong>-boot</strong> :启动模式 一共有三种 , 分别为<code>floppy(a), hard disk(c), CD-ROM(d)</code></li>
-</ul>
-<p>上面这条指令显然无法启动系统，因为还缺少了相应<code>kernel-qemu</code>文件和配置：</p>
-<p><strong>kernel-qemu下载</strong>：</p>
-<p><a href="https://github.com/dhruvvyas90/qemu-rpi-kernel" target="_blank" rel="noopener">GitHub - dhruvvyas90/qemu-rpi-kernel: Qemu kernel for emulating Rpi on QEMU</a></p>
-<p>我们选择里面的<code>versatile-pb-buster.dtb</code> 和<code>kernel-qemu-5.4.51-buster</code> 这两个文件进行下载，这是和系统版本一一对应的。下载后最好放在qemu的安装目录</p>
-<p>然后输入以下指令：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-arm -M versatilepb -cpu arm1176 -m <span class="number">256</span> -drive <span class="string">"file=系统镜像路径,if=none,index=0,media=disk,format=raw,id=disk0"</span> -device <span class="string">"virtio-blk-pci,drive=disk0,disable-modern=on,disable-legacy=off"</span> -net <span class="string">"user,hostfwd=tcp::5022-:22"</span> -dtb versatile-pb-buster.dtb -kernel kernel-qemu-<span class="number">5.4</span>.<span class="number">51</span>-buster -append <span class="string">"root=/dev/vda2 panic=1"</span> -no-reboot -net nic</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>注意：需要按照以上指令运行，否则有可能出现系统启动不起来的情况</p>
-<p><code>-net nic</code> 可开启网络 方便远程连接</p>
-<p><code>-net &quot;user,hostfwd=tcp::5022-:22&quot;</code>  表示设置端口映射</p>
-</blockquote>
-<p>系统安装完毕后，直接进入树莓派桌面，在弹出的设置窗口中可以更改系统语言为中文, 还可以设置系统密码</p>
-<p>至此<code>ARM+Linux</code>环境搭建完毕</p>
-<h2 id="准备开发"><a href="#准备开发" class="headerlink" title="准备开发"></a>准备开发</h2><p>接下来我们通过<code>ssh</code>连接树莓派终端,打开<code>cmd</code>命令窗口,输入:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh pi@127.0.0.1 -p 5022</span><br></pre></td></tr></table></figure>
-
-<p>回车后会提示输入密码,这里输入之前设置的系统密码</p>
-<p>此时就进入树莓派的<code>Linux</code>终端,为什么不直接使用<code>qemu</code>中的LX终端? 还不是因为模拟器延迟卡顿</p>
-<p>如果想往树莓派中传输文件,可以直接使用<code>ftp</code>工具,比如<code>FileZilla</code>或者 <code>SecureCRT</code> 选择<code>sftp</code>或者<code>ssh2</code>模式,其登陆参数如下:</p>
-<ul>
-<li><strong>主机</strong>:127.0.0.1</li>
-<li><strong>用户名</strong>:pi</li>
-<li><strong>端口</strong>:5022,</li>
-<li><strong>密码同上</strong></li>
-</ul>
-<h2 id="程序调试"><a href="#程序调试" class="headerlink" title="程序调试"></a>程序调试</h2><p>紧接着使用<code>gdb+gdbserver</code>对C程序进行调试</p>
-<p>首先利用<code>ftp</code>工具将已经编译好的可执行文件和GCC包下<code>arm-none-linux-gnueabi\libc\usr\bin</code>目录中的<code>gdbserver</code>传送到模拟器中</p>
-<p>然后执行以下命令:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gdbserver :22349 test</span><br></pre></td></tr></table></figure>
-
-<p>开始监听端口, 但是问题来了,该模拟器的<code>ip</code>不在局域网段上,导致宿主机连接不上, 如果你也出现同样的问题,可以采用端口映射的办法来替代,方法很简单,只需要在模拟器启动时多追加加上一行参数<code>hostfwd=tcp::22349-:22349</code>,具体启动指令修改如下:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-arm -M versatilepb -cpu arm1176 -m 256 -drive "file=2020-02-13-raspbian-buster.img,if=none,index=0,media=disk,format=raw,id=disk0" -device "virtio-blk-pci,drive=disk0,disable-modern=on,disable-legacy=off" -net "user,hostfwd=tcp::5022-:22,hostfwd=tcp::22349-:22349" -dtb versatile-pb-buster.dtb -kernel kernel-qemu-5.4.51-buster -append "root=/dev/vda2 panic=1" -no-reboot  -net nic</span><br></pre></td></tr></table></figure>
-
-<p>如此一来就可以在宿主<code>gdb</code>调试窗口中直接使用以下指令进行连接:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) target remote 127.0.0.1:22349</span><br></pre></td></tr></table></figure>
-
-<p>连接成功了,通过以上这种方式,我们只需要将模拟器启动使其后台运行,我们通过ssh进行登录连接,这样速度快了很多,而且相比一些安卓模拟器,QEMU占用系统资源也不高</p>
-<p>另外我们发现，还存在<strong>声卡缺失，</strong>同时运行有<strong>延迟卡顿</strong>现象，我们接下来对这两方面进行优化</p>
-<h2 id="小问题"><a href="#小问题" class="headerlink" title="小问题"></a>小问题</h2><p>如果是raw格式,可能会有些风险警告,可以通过<code>-drive format=raw</code>进行指定处理:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-arm.exe  -machine raspi2b -drive file=2020-02-13-raspbian-buster.img,format=raw,index=0,media=disk</span><br></pre></td></tr></table></figure>
-
-<h2 id="附加内容"><a href="#附加内容" class="headerlink" title="附加内容"></a>附加内容</h2><p><strong>查看cpu信息:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lscpu</span><br></pre></td></tr></table></figure>
-
-<p><strong>查看系统和内核版本:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -a</span><br></pre></td></tr></table></figure>
-
-<h3 id="镜像备份模式"><a href="#镜像备份模式" class="headerlink" title="镜像备份模式"></a>镜像备份模式</h3><p>随着我们对系统的频繁操作我们发现系统镜像文件在不断增大，此时想要回到原来的状态，只能重新下载镜像安装了，如果你不想遭受重新下载的痛苦，那么建议你使用备份镜像的模式进行系统的安装</p>
-<p>这时<code>qemu-img.exe</code>派上了用场，它不仅可以帮助你创建空镜像文件，而且还可以对已有的镜像文件进行格式转换，QEMU支持的镜像有以下：</p>
-<table>
-<thead>
-<tr>
-<th align="left">Image format</th>
-<th align="center">Argument for -f and -O options</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">VMDK (VMware)</td>
-<td align="center">vmdk</td>
-</tr>
-<tr>
-<td align="left">QCOW2 (KVM, Xen)</td>
-<td align="center">qcow2</td>
-</tr>
-<tr>
-<td align="left">VHD (Hyper-V)</td>
-<td align="center">vpc</td>
-</tr>
-<tr>
-<td align="left">VHDX (Hyper-V)</td>
-<td align="center">vhdx</td>
-</tr>
-<tr>
-<td align="left">RAW</td>
-<td align="center">raw</td>
-</tr>
-<tr>
-<td align="left">VDI (VirtualBox)</td>
-<td align="center">vdi</td>
-</tr>
-</tbody></table>
-<blockquote>
-<p> <code>qemu-img</code> 支持非常多种的文件格式，可以通过 <code>qemu-img -h</code> 查看.<br>其中 <code>raw</code> 和 <code>qcow2</code> 是比较常用的两种，</p>
-<p><code>raw</code> 是 <code>qemu-img</code> 命令默认的，<code>qcow2</code> 是 <code>qemu</code> 目前推荐的镜像格式，是功能最多的格式 </p>
-</blockquote>
-<p><strong>创建空镜像文件：</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-img create -f qcow2 test.qcow2 10G</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p><code>-f</code> 选项用于指定镜像的格式，</p>
-</li>
-<li><p><code>qcow2</code> 格式是 QEMU最常用的镜像格式，采用来写时复制技术来优化性能。</p>
-</li>
-<li><p><code>test.qcow2</code> 是镜像文件的名字，</p>
-</li>
-<li><p>10G是镜像文件最大值</p>
-</li>
-</ul>
-<p><strong>镜像转换:</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-img.exe  convert -f raw system.img -O vmdk  system.vmdk</span><br></pre></td></tr></table></figure>
-
-<p>表示将原始格式的镜像文件转换成<code>vmdk</code>格式</p>
-<p><strong>使用备份镜像的方式启动镜像示例：</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-x86_64 -m 2048 -enable-kvm test.qcow2 -cdrom Centos-Desktop-x86_64-20-1.iso</span><br></pre></td></tr></table></figure>
-
-<h2 id="附加镜像"><a href="#附加镜像" class="headerlink" title="附加镜像"></a>附加镜像</h2><ul>
-<li><p>openwrt:<a href="https://archive.openwrt.org/chaos_calmer/" target="_blank" rel="noopener">https://archive.openwrt.org/chaos_calmer/</a></p>
-</li>
-<li><p>Debian系统镜像：<a href="https://people.debian.org/~aurel32/qemu/" target="_blank" rel="noopener">https://people.debian.org/~aurel32/qemu/</a></p>
-</li>
-<li><p>谷歌安卓原生镜像：<a href="https://developers.google.cn/android/images" target="_blank" rel="noopener">https://developers.google.cn/android/images</a></p>
-</li>
-<li><p>树莓派x86镜像: <a href="https://www.raspberrypi.org/downloads/raspberry-pi-desktop/" target="_blank" rel="noopener">https://www.raspberrypi.org/downloads/raspberry-pi-desktop/</a> </p>
-</li>
-</ul>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../223.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../223.html" itemprop="url">使用Clang编译C程序在安卓设备中执行</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-01T16:39:19+08:00">
-                2021-02-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>由于<code>Android NDK</code>从r18开始就已经抛弃GCC,转而将Clang当作默认编译器，因此我们直接使用NDK工具包进行编译</p>
-</blockquote>
-<h2 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h2><ul>
-<li>安卓模拟器</li>
-<li><code>android-ndk-r19c</code></li>
-</ul>
-<h2 id="实验步骤"><a href="#实验步骤" class="headerlink" title="实验步骤"></a>实验步骤</h2><p> <strong>第一步 源码编写</strong></p>
-<p>新建<code>test.c</code>文件</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;  </span></span></span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello world!\n"</span>);  </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p> <strong>第二步 源码编译</strong></p>
-<p>在<code>android-ndk-r19c</code>目录下<code>toolchains</code>文件夹中的<code>llvm</code>文件夹即为<code>clang</code>编译工具包</p>
-<p>在<code>llvm</code>的子目录<code>bin</code>下存放这针对各个架构的clang编译器，由于模拟器是ARM架构，这里我们使用<code>armv7a-linux-androideabi23-clang</code></p>
-<p>在命令窗口执行如下指令：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">armv7a-linux-androideabi23-clang test.c -o test</span><br></pre></td></tr></table></figure>
-
-<p> 由于clang已经指定了Android23版本的SDK，这里无需要像GCC那样指定<code>-static</code>编译</p>
-<p><strong>第三步 将编译后的可执行文件传至安卓设备</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb push test /data/</span><br></pre></td></tr></table></figure>
-
-<p> <strong>第四步 执行文件</strong></p>
-<p>直接在控制台输入文件名即可执行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./test</span><br></pre></td></tr></table></figure>
-
-<p>如果提示权限拒绝,那么</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 test</span><br></pre></td></tr></table></figure>
-
-<h2 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h2><p><strong>如果C语言和汇编语言混合开发</strong>，同样也可使用clang编译：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">armv7a-linux-androideabi23-clang aaa.s test.c -o test</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../222.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../222.html" itemprop="url">xcode中三种编译器的区别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-01T15:39:19+08:00">
-                2021-02-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>在xcode中有三种编译器供我们选择，分别是GCC、LLVM GCC、LLVM compliler </p>
-</blockquote>
-<h2 id="三者区别"><a href="#三者区别" class="headerlink" title="三者区别"></a>三者区别</h2><ul>
-<li><strong>GCC</strong> ：是一套由 GNU 开发的编程语言编译器。Linux/Unix操作系统的标准编译器。编译前端和后端皆使用GCC</li>
-<li><strong>LLVM GCC</strong>：编译前端使用GCC，后端使用LLVM</li>
-<li><strong>LLVM compliler</strong> ：编译前端使用Clang，后端使用LLVM</li>
-</ul>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210201154646.png" alt></p>
-<h2 id="为什么存在三种编译器"><a href="#为什么存在三种编译器" class="headerlink" title="为什么存在三种编译器"></a>为什么存在三种编译器</h2><p>苹果公司最开始使用GCC编译器</p>
-<p>为了实现对 <strong>Objective-C</strong> 新特性的支持，苹果公司结合LLVM改进GCC，从而衍生出了一个GCC分支，也就是<strong>LLVM GCC</strong></p>
-<p>由于<strong>LLVM GCC</strong>的笨重和局限性,苹果公司从零开始开发了一套自己的编译前端系统<strong>Clang</strong>,配合<strong>LLVM</strong>,就有了<strong>LLVM GCC</strong></p>
-<h2 id="Clang的优势"><a href="#Clang的优势" class="headerlink" title="Clang的优势"></a>Clang的优势</h2><p>相比GCC而言:</p>
-<ul>
-<li>编译速度快,占用内存小</li>
-<li>模块化设计,易于扩展,易于IDE集成</li>
-<li>错误提示人性化</li>
-<li>产出小</li>
-</ul>
-<p>值得一提的是,<code>Android NDK</code>从<code>r18</code>开始就已经抛弃GCC,转而采用Clang编译,Clang未来可期</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1924,7 +1869,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">282</span>
+                  <span class="site-state-item-count">286</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1937,7 +1882,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">89</span>
+                  <span class="site-state-item-count">90</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
