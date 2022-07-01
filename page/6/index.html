@@ -287,7 +287,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../236.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../276.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -306,7 +306,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../236.html" itemprop="url">为什么建议你使用枚举</a></h1>
+                <a class="post-title-link" href="../../276.html" itemprop="url">记录一次504 Gateway Time-out的解决</a></h1>
         
 
         <div class="post-meta">
@@ -318,8 +318,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-07-28T11:14:19+08:00">
-                2021-07-28
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-18T11:05:19+08:00">
+                2021-09-18
               </time>
             
 
@@ -358,105 +358,34 @@
       
         
           
-            <p>枚举是 JDK 1.5 新增的数据类型，使用枚举我们可以很好的描述一些特定的业务场景，比如一年中的春、夏、秋、冬，还有每周的周一到周天，还有各种颜色，以及可以用它来描述一些状态信息，比如错误码等。</p>
-<p>枚举类型不止存在在 Java 语言中，在其它语言中也都能找到它的身影，例如 C# 和 Python 等，但我发现在实际的项目中使用枚举的人很少，所以本文就来聊一聊枚举的相关内容，好让朋友们对枚举有一个大概的印象，这样在编程时起码还能想到有“枚举”这样一个类型。</p>
-<p>本文的结构目录如下：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/v2-80ca1407a3ceabbf7e2be786b4c9bdcf_720w.jpg" alt="img"></p>
-<h2 id="枚举的-7-种使用方法"><a href="#枚举的-7-种使用方法" class="headerlink" title="枚举的 7 种使用方法"></a>枚举的 7 种使用方法</h2><p>很多人不使用枚举的一个重要的原因是对枚举不够熟悉，那么我们就先从枚举的 7 种使用方法说起。</p>
-<h3 id="用法一：常量"><a href="#用法一：常量" class="headerlink" title="用法一：常量"></a>用法一：常量</h3><p>在 JDK 1.5 之前，我们定义常量都是 <code>public static final...</code> ，但有了枚举，我们就可以把这些常量定义成一个枚举类了，实现代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public enum ColorEnum &#123;  </span><br><span class="line">  RED, GREEN, BLANK, YELLOW  </span><br><span class="line">&#125; </span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+            <h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>今早起来, 突然发现网站挂了, 直接报<code>504 Gateway Time-out</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210918111428739.png" alt="image-20210918111428739"></p>
+<h3 id="经过"><a href="#经过" class="headerlink" title="经过"></a>经过</h3><p>我立马联想是否是<code>docker</code>挂了或者数据库容器出了问题</p>
+<p>进入终端 使用<code>docker ps</code> 所有容器都在正常运行 没问题, 然后<code>docker logs --tail=10 mysql</code>数据库也没报错</p>
+<p>我怀疑是不是docker内部哪里卡住了, 于是<code>systemctl restart docker</code>立马重启<code>docker</code>, 然后重新访问网站 还是不行</p>
+<p>有点懵了, 到底哪里出了问题呢? 网上说是<code>Nginx</code>配置问题, 可是我<code>nginx</code>配置一直都没动过, 而且查看<code>nginx</code>容器日志也是正常, 难道是<code>docker</code>容器间通信不正常?</p>
+<p>紧接着我又进入<code>nginx</code>容器, 使用<code>nc -zv wordpress 80</code>指令进行容器间通信测试, 也是正常打通的</p>
+<p>这问题到底是出在哪了?</p>
+<p>难道真的只是超时?  我给的时间太短了不成? 于是乎 我干脆将<code>nginx</code>反向代理超时时间调大, 死马当活马医, 不试试怎么知道呢</p>
+<p>我将以下三行配置加入到代理块中:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">proxy_connect_timeout 300s;</span><br><span class="line">    proxy_send_timeout 300s;</span><br><span class="line">    proxy_read_timeout 300s;</span><br></pre></td></tr></table></figure>
 
-<h3 id="用法二：switch"><a href="#用法二：switch" class="headerlink" title="用法二：switch"></a>用法二：switch</h3><p>将枚举用在 switch 判断中，使得代码可读性更高了，实现代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">enum ColorEnum &#123;</span><br><span class="line">    GREEN, YELLOW, RED</span><br><span class="line">&#125;</span><br><span class="line">public class ColorTest &#123;</span><br><span class="line">    ColorEnum color = ColorEnum.RED;</span><br><span class="line"></span><br><span class="line">    public void change() &#123;</span><br><span class="line">        switch (color) &#123;</span><br><span class="line">            case RED:</span><br><span class="line">                color = ColorEnum.GREEN;</span><br><span class="line">                break;</span><br><span class="line">            case YELLOW:</span><br><span class="line">                color = ColorEnum.RED;</span><br><span class="line">                break;</span><br><span class="line">            case GREEN:</span><br><span class="line">                color = ColorEnum.YELLOW;</span><br><span class="line">                break;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+<p>具体配置如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">location /foo &#123;</span><br><span class="line">     proxy_pass http://xxx.xxx.xxx.xxx:8080/foo;</span><br><span class="line">     proxy_set_header Host $host;</span><br><span class="line">     proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">     </span><br><span class="line">     proxy_connect_timeout 300s;</span><br><span class="line">     proxy_send_timeout 300s;</span><br><span class="line">     proxy_read_timeout 300s;</span><br><span class="line">     break;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="用法三：枚举中增加方法"><a href="#用法三：枚举中增加方法" class="headerlink" title="用法三：枚举中增加方法"></a>用法三：枚举中增加方法</h3><p>我们可以在枚举中增加一些方法，让枚举具备更多的特性，实现代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        ErrorCodeEnum errorCode = ErrorCodeEnum.SUCCESS;</span><br><span class="line">        System.out.println(&quot;状态码：&quot; + errorCode.code() + </span><br><span class="line">                           &quot; 状态信息：&quot; + errorCode.msg());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum ErrorCodeEnum &#123;</span><br><span class="line">    SUCCESS(1000, &quot;success&quot;),</span><br><span class="line">    PARAM_ERROR(1001, &quot;parameter error&quot;),</span><br><span class="line">    SYS_ERROR(1003, &quot;system error&quot;),</span><br><span class="line">    NAMESPACE_NOT_FOUND(2001, &quot;namespace not found&quot;),</span><br><span class="line">    NODE_NOT_EXIST(3002, &quot;node not exist&quot;),</span><br><span class="line">    NODE_ALREADY_EXIST(3003, &quot;node already exist&quot;),</span><br><span class="line">    UNKNOWN_ERROR(9999, &quot;unknown error&quot;);</span><br><span class="line"></span><br><span class="line">    private int code;</span><br><span class="line">    private String msg;</span><br><span class="line"></span><br><span class="line">    ErrorCodeEnum(int code, String msg) &#123;</span><br><span class="line">        this.code = code;</span><br><span class="line">        this.msg = msg;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int code() &#123;</span><br><span class="line">        return code;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String msg() &#123;</span><br><span class="line">        return msg;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static ErrorCodeEnum getErrorCode(int code) &#123;</span><br><span class="line">        for (ErrorCodeEnum it : ErrorCodeEnum.values()) &#123;</span><br><span class="line">            if (it.code() == code) &#123;</span><br><span class="line">                return it;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return UNKNOWN_ERROR;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>以上程序的执行结果为：</p>
-<blockquote>
-<p>状态码：1000 状态信息：success</p>
-</blockquote>
-<h3 id="用法四：覆盖枚举方法"><a href="#用法四：覆盖枚举方法" class="headerlink" title="用法四：覆盖枚举方法"></a>用法四：覆盖枚举方法</h3><p>我们可以覆盖一些枚举中的方法用于实现自己的业务，比如我们可以覆盖 <code>toString()</code> 方法，实现代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        ColorEnum colorEnum = ColorEnum.RED;</span><br><span class="line">        System.out.println(colorEnum.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum ColorEnum &#123;</span><br><span class="line">    RED(&quot;红色&quot;, 1), GREEN(&quot;绿色&quot;, 2), BLANK(&quot;白色&quot;, 3), YELLOW(&quot;黄色&quot;, 4);</span><br><span class="line">    //  成员变量</span><br><span class="line">    private String name;</span><br><span class="line">    private int index;</span><br><span class="line"></span><br><span class="line">    //  构造方法</span><br><span class="line">    private ColorEnum(String name, int index) &#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">        this.index = index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //覆盖方法</span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return this.index + &quot;：&quot; + this.name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>以上程序的执行结果为：</p>
-<blockquote>
-<p>1：红色</p>
-</blockquote>
-<h3 id="用法五：实现接口"><a href="#用法五：实现接口" class="headerlink" title="用法五：实现接口"></a>用法五：实现接口</h3><p>枚举类可以用来实现接口，但不能用于继承类，因为枚举默认继承了 <code>java.lang.Enum</code> 类，在 Java 语言中允许实现多接口，但不能继承多个父类，实现代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        ColorEnum colorEnum = ColorEnum.RED;</span><br><span class="line">        colorEnum.print();</span><br><span class="line">        System.out.println(&quot;颜色：&quot; + colorEnum.getInfo());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface Behaviour &#123;</span><br><span class="line">    void print();</span><br><span class="line"></span><br><span class="line">    String getInfo();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum ColorEnum implements Behaviour &#123;</span><br><span class="line">    RED(&quot;红色&quot;, 1), GREEN(&quot;绿色&quot;, 2), BLANK(&quot;白色&quot;, 3), YELLOW(&quot;黄色&quot;, 4);</span><br><span class="line">    private String name;</span><br><span class="line">    private int index;</span><br><span class="line"></span><br><span class="line">    private ColorEnum(String name, int index) &#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">        this.index = index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void print() &#123;</span><br><span class="line">        System.out.println(this.index + &quot;：&quot; + this.name);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String getInfo() &#123;</span><br><span class="line">        return this.name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>以上程序的执行结果为：</p>
-<blockquote>
-<p>1：红色</p>
-<p>颜色：红色</p>
-</blockquote>
-<h3 id="用法六：在接口中组织枚举类"><a href="#用法六：在接口中组织枚举类" class="headerlink" title="用法六：在接口中组织枚举类"></a>用法六：在接口中组织枚举类</h3><p>我们可以在一个接口中创建多个枚举类，用它可以很好的实现“多态”，也就是说我们可以将拥有相同特性，但又有细微实现差别的枚举类聚集在一个接口中，实现代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        // 赋值第一个枚举类</span><br><span class="line">        ColorInterface colorEnum = ColorInterface.ColorEnum.RED;</span><br><span class="line">        System.out.println(colorEnum);</span><br><span class="line">        // 赋值第二个枚举类</span><br><span class="line">        colorEnum = ColorInterface.NewColorEnum.NEW_RED;</span><br><span class="line">        System.out.println(colorEnum);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface ColorInterface &#123;</span><br><span class="line">    enum ColorEnum implements ColorInterface &#123;</span><br><span class="line">        GREEN, YELLOW, RED</span><br><span class="line">    &#125;</span><br><span class="line">    enum NewColorEnum implements ColorInterface &#123;</span><br><span class="line">        NEW_GREEN, NEW_YELLOW, NEW_RED</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>以上程序的执行结果为：</p>
-<blockquote>
-<p>RED</p>
-<p>NEW_RED</p>
-</blockquote>
-<h3 id="用法七：使用枚举集合"><a href="#用法七：使用枚举集合" class="headerlink" title="用法七：使用枚举集合"></a>用法七：使用枚举集合</h3><p>在 Java 语言中和枚举类相关的，还有两个枚举集合类 <code>java.util.EnumSet</code> 和 <code>java.util.EnumMap</code>，使用它们可以实现更多的功能。</p>
-<p>使用 <code>EnumSet</code> 可以保证元素不重复，并且能获取指定范围内的元素，示例代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.EnumSet;</span><br><span class="line">import java.util.List;</span><br><span class="line"></span><br><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        List&lt;ColorEnum&gt; list = new ArrayList&lt;ColorEnum&gt;();</span><br><span class="line">        list.add(ColorEnum.RED);</span><br><span class="line">        list.add(ColorEnum.RED);  // 重复元素</span><br><span class="line">        list.add(ColorEnum.YELLOW);</span><br><span class="line">        list.add(ColorEnum.GREEN);</span><br><span class="line">        // 去掉重复数据</span><br><span class="line">        EnumSet&lt;ColorEnum&gt; enumSet = EnumSet.copyOf(list);</span><br><span class="line">        System.out.println(&quot;去重：&quot; + enumSet);</span><br><span class="line"></span><br><span class="line">        // 获取指定范围的枚举（获取所有的失败状态）</span><br><span class="line">        EnumSet&lt;ErrorCodeEnum&gt; errorCodeEnums = EnumSet.range(ErrorCodeEnum.ERROR, ErrorCodeEnum.UNKNOWN_ERROR);</span><br><span class="line">        System.out.println(&quot;所有失败状态：&quot; + errorCodeEnums);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum ColorEnum &#123;</span><br><span class="line">    RED(&quot;红色&quot;, 1), GREEN(&quot;绿色&quot;, 2), BLANK(&quot;白色&quot;, 3), YELLOW(&quot;黄色&quot;, 4);</span><br><span class="line">    private String name;</span><br><span class="line">    private int index;</span><br><span class="line"></span><br><span class="line">    private ColorEnum(String name, int index) &#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">        this.index = index;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum ErrorCodeEnum &#123;</span><br><span class="line">    SUCCESS(1000, &quot;success&quot;),</span><br><span class="line">    ERROR(2001, &quot;parameter error&quot;),</span><br><span class="line">    SYS_ERROR(2002, &quot;system error&quot;),</span><br><span class="line">    NAMESPACE_NOT_FOUND(2003, &quot;namespace not found&quot;),</span><br><span class="line">    NODE_NOT_EXIST(3002, &quot;node not exist&quot;),</span><br><span class="line">    NODE_ALREADY_EXIST(3003, &quot;node already exist&quot;),</span><br><span class="line">    UNKNOWN_ERROR(9999, &quot;unknown error&quot;);</span><br><span class="line"></span><br><span class="line">    private int code;</span><br><span class="line">    private String msg;</span><br><span class="line"></span><br><span class="line">    ErrorCodeEnum(int code, String msg) &#123;</span><br><span class="line">        this.code = code;</span><br><span class="line">        this.msg = msg;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int code() &#123;</span><br><span class="line">        return code;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String msg() &#123;</span><br><span class="line">        return msg;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>以上程序的执行结果为：</p>
-<blockquote>
-<p>去重：[RED, GREEN, YELLOW]</p>
-<p>所有失败状态：[ERROR, SYS_ERROR, NAMESPACE_NOT_FOUND, NODE_NOT_EXIST, NODE_ALREADY_EXIST, UNKNOWN_ERROR]</p>
-</blockquote>
-<p><code>EnumMap</code> 与 <code>HashMap</code> 类似，不过它是一个专门为枚举设计的 <code>Map</code> 集合，相比 <code>HashMap</code> 来说它的性能更高，因为它内部放弃使用链表和红黑树的结构，采用数组作为数据存储的结构。</p>
-<p><code>EnumMap</code> 基本使用示例如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">import java.util.EnumMap;</span><br><span class="line"></span><br><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        EnumMap&lt;ColorEnum, String&gt; enumMap = new EnumMap&lt;&gt;(ColorEnum.class);</span><br><span class="line">        enumMap.put(ColorEnum.RED, &quot;红色&quot;);</span><br><span class="line">        enumMap.put(ColorEnum.GREEN, &quot;绿色&quot;);</span><br><span class="line">        enumMap.put(ColorEnum.BLANK, &quot;白色&quot;);</span><br><span class="line">        enumMap.put(ColorEnum.YELLOW, &quot;黄色&quot;);</span><br><span class="line">        System.out.println(ColorEnum.RED + &quot;:&quot; + enumMap.get(ColorEnum.RED));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum ColorEnum &#123;</span><br><span class="line">    RED, GREEN, BLANK, YELLOW;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>以上程序的执行结果为：</p>
-<blockquote>
-<p>RED:红色</p>
-</blockquote>
-<h3 id="使用注意事项"><a href="#使用注意事项" class="headerlink" title="使用注意事项"></a>使用注意事项</h3><p>阿里《Java开发手册》对枚举的相关规定如下，我们在使用时需要稍微注意一下。</p>
-<blockquote>
-<p>【强制】所有的枚举类型字段必须要有注释，说明每个数据项的用途。</p>
-<p>【参考】枚举类名带上 Enum 后缀，枚举成员名称需要全大写，单词间用下划线隔开。说明：枚举其实就是特殊的常量类，且构造方法被默认强制是私有。正例：枚举名字为 ProcessStatusEnum 的成员名称：SUCCESS / UNKNOWN_REASON。</p>
-</blockquote>
-<h2 id="假如不使用枚举"><a href="#假如不使用枚举" class="headerlink" title="假如不使用枚举"></a>假如不使用枚举</h2><p>在枚举没有诞生之前，也就是 JDK 1.5 版本之前，我们通常会使用 <code>int</code> 常量来表示枚举，实现代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public static final int COLOR_RED = 1;</span><br><span class="line">public static final int COLOR_BLUE = 2;</span><br><span class="line">public static final int COLOR_GREEN = 3;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>但是使用 <code>int</code> 类型可能存在两个问题：</p>
-<p>第一， <code>int</code> 类型本身并不具备安全性，假如某个程序员在定义 <code>int</code> 时少些了一个 <code>final</code> 关键字，那么就会存在被其他人修改的风险，而反观枚举类，它“天然”就是一个常量类，不存在被修改的风险（原因详见下半部分）；</p>
-<p>第二，使用 <code>int</code> 类型的语义不够明确，比如我们在控制台打印时如果只输出 1…2…3 这样的数字，我们肯定不知道它代表的是什么含义。</p>
-<p><img src="https://user-gold-cdn.xitu.io/2020/6/28/172f889e786a4b0b?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="img"></p>
-<p>那有人就说了，那就使用常量字符呗，这总不会还不知道语义吧？实现示例代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public static final String COLOR_RED = &quot;RED&quot;;</span><br><span class="line">public static final String COLOR_BLUE = &quot;BLUE&quot;;</span><br><span class="line">public static final String COLOR_GREEN = &quot;GREEN&quot;;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>但是这样同样存在一个问题，有些初级程序员会不按套路出牌，他们可能会直接使用字符串的值进行比较，而不是直接使用枚举的字段，实现示例代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class EnumTest &#123;</span><br><span class="line">    public static final String COLOR_RED = &quot;RED&quot;;</span><br><span class="line">    public static final String COLOR_BLUE = &quot;BLUE&quot;;</span><br><span class="line">    public static final String COLOR_GREEN = &quot;GREEN&quot;;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        String color = &quot;BLUE&quot;;</span><br><span class="line">        if (&quot;BLUE&quot;.equals(color)) &#123;</span><br><span class="line">            System.out.println(&quot;蓝色&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>这样当我们修改了枚举中的值，那程序就凉凉了。</p>
-<h2 id="枚举使用场景"><a href="#枚举使用场景" class="headerlink" title="枚举使用场景"></a>枚举使用场景</h2><p>枚举的常见使用场景是单例，它的完整实现代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public class Singleton &#123;</span><br><span class="line">    // 枚举类型是线程安全的，并且只会装载一次</span><br><span class="line">    private enum SingletonEnum &#123;</span><br><span class="line">        INSTANCE;</span><br><span class="line">        // 声明单例对象</span><br><span class="line">        private final Singleton instance;</span><br><span class="line">        // 实例化</span><br><span class="line">        SingletonEnum() &#123;</span><br><span class="line">            instance = new Singleton();</span><br><span class="line">        &#125;</span><br><span class="line">        private Singleton getInstance() &#123;</span><br><span class="line">            return instance;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    // 获取实例（单例对象）</span><br><span class="line">    public static Singleton getInstance() &#123;</span><br><span class="line">        return SingletonEnum.INSTANCE.getInstance();</span><br><span class="line">    &#125;</span><br><span class="line">    private Singleton() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    // 类方法</span><br><span class="line">    public void sayHi() &#123;</span><br><span class="line">        System.out.println(&quot;Hi,Java.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class SingletonTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Singleton singleton = Singleton.getInstance();</span><br><span class="line">        singleton.sayHi();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>因为枚举只会在类加载时装载一次，所以它是线程安全的，这也是《Effective Java》作者极力推荐使用枚举来实现单例的主要原因。</p>
-<h2 id="知识扩展"><a href="#知识扩展" class="headerlink" title="知识扩展"></a>知识扩展</h2><h3 id="枚举为什么是线程安全的？"><a href="#枚举为什么是线程安全的？" class="headerlink" title="枚举为什么是线程安全的？"></a>枚举为什么是线程安全的？</h3><p>这一点要从枚举最终生成的字节码说起，首先我们先来定义一个简单的枚举类：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public enum ColorEnumTest &#123;</span><br><span class="line">    RED, GREEN, BLANK, YELLOW;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>然后我们再将上面的那段代码编译为字节码，具体内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public final class ColorEnumTest extends java.lang.Enum&lt;ColorEnumTest&gt; &#123;</span><br><span class="line">  public static final ColorEnumTest RED;</span><br><span class="line">  public static final ColorEnumTest GREEN;</span><br><span class="line">  public static final ColorEnumTest BLANK;</span><br><span class="line">  public static final ColorEnumTest YELLOW;</span><br><span class="line">  public static ColorEnumTest[] values();</span><br><span class="line">  public static ColorEnumTest valueOf(java.lang.String);</span><br><span class="line">  static &#123;&#125;;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<p>从上述结果可以看出枚举类最终会被编译为被 <code>final</code> 修饰的普通类，它的所有属性也都会被 <code>static</code> 和 <code>final</code> 关键字修饰，所以枚举类在项目启动时就会被 JVM 加载并初始化，而这个执行过程是线程安全的，所以枚举类也是线程安全的类。</p>
-<blockquote>
-<p>小贴士：代码反编译的过程是先用 javac 命令将 java 代码编译字节码（.class），再使用 javap 命令查看编译的字节码。</p>
-</blockquote>
-<h3 id="枚举比较小技巧"><a href="#枚举比较小技巧" class="headerlink" title="枚举比较小技巧"></a>枚举比较小技巧</h3><p>我们在枚举比较时使用 == 就够了，因为枚举类是在程序加载时就创建了（它并不是 <code>new</code> 出来的），并且枚举类不允许在外部直接使用 <code>new</code> 关键字来创建枚举实例，所以我们在使用枚举类时本质上只有一个对象，因此在枚举比较时使用 == 就够了。</p>
-<p>并且我们在查看枚举的 <code>equlas()</code> 源码会发现，它的内部其实还是直接调用了 == 方法，源码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public final boolean equals(Object other) &#123;</span><br><span class="line">    return this==other;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文我们介绍了枚举类的 7 种使用方法：常量、switch、枚举中添加方法、覆盖枚举方法、实现接口、在接口中组织枚举类和使用枚举集合等，然后讲了如果不使用枚举类使用 <code>int</code> 类型和 <code>String</code> 类型存在的一些弊端：语义不够清晰、容易被修改、存在被误用的风险，所以我们在适合的环境下应该尽量使用枚举类。并且我们还讲了枚举类的使用场景——单例，以及枚举类为什么是安全的，最后我们讲了枚举比较的小技巧，希望本文对你有帮助。</p>
-<p><strong>本文转载自</strong>:<a href="https://juejin.cn/post/6844904200652980231" target="_blank" rel="noopener">https://juejin.cn/post/6844904200652980231</a></p>
+<p>然后重启<code>nginx</code>, 这时访问网站 次数<code>504 Gateway Time-out</code>消失了, 换成了<code>Error establishing a database connection</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210918111216604.png" alt="image-20210918111216604"></p>
+<p>我靠, 原来还是数据库的问题</p>
+<h3 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h3><p>我开始回忆, 前段时间刚进行<code>docker</code>跨服务器迁移, 昨天旧服务器刚好到期停机, 今天就突然访问不上了, 难道我的程序此时访问的还是原来旧服务器的数据库</p>
+<p>对了 我的源码目录是直接从旧服务器拷贝过来的, 虽然<code>docker</code>容器是新建的, 但是因为存在旧目录 所以<code>docker run</code>配置的数据库参数全部无法重写, 也就是说程序配置文件中的数据库连接参数没有被重写</p>
+<p>恍然大悟, 立马进入源程序目录找到配置文件打开查看, 果真如此, 然后将其修改为新的</p>
+<p>此时重新访问, 网站正常显示</p>
+<h1 id><a href="#" class="headerlink" title></a></h1><p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
 <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
         
@@ -505,7 +434,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../234.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../275.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -524,7 +453,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../234.html" itemprop="url">Android开发者快速上手鸿蒙应用开发</a></h1>
+                <a class="post-title-link" href="../../275.html" itemprop="url">推荐一个谷歌浏览器下的护眼小插件</a></h1>
         
 
         <div class="post-meta">
@@ -536,8 +465,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-07-28T10:14:19+08:00">
-                2021-07-28
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-16T12:05:19+08:00">
+                2021-09-16
               </time>
             
 
@@ -576,15 +505,34 @@
       
         
           
-            <h4 id="Android和鸿蒙对比"><a href="#Android和鸿蒙对比" class="headerlink" title="Android和鸿蒙对比"></a>Android和鸿蒙对比</h4><p>组件</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/4d086e061d950a7ba9141cf42a128ddef2d3c92c.png" alt="img"></p>
-<p>触摸事件</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/3801213fb80e7bec6a5e07440eed563f99506bdd.png" alt="img"></p>
-<p>鸿蒙页面生命周期</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/267f9e2f07082838628466f7a65a46064e08f197.png" alt="img"></p>
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>作为IT工作者, 长时间对着电脑屏幕, 眼睛实在是疲惫不堪, 即便我将电脑屏幕亮度调至非常低 也无济于事</p>
+<p>唯独 夜间模式能稍加缓解, 但是浏览器依旧是白花花一片 太过扎眼, 于是乎找了个暗黑小插件, 就此拯救了我的双眼</p>
+<p>话不多说 如下:</p>
+<h3 id="DARK-READER"><a href="#DARK-READER" class="headerlink" title="DARK READER"></a>DARK READER</h3><p>名为<code>DARK READER</code>的插件, 配置如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210917122822225.png" alt></p>
+<p>效果如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210917123155838.png" alt="image-20210917123155838"></p>
+<h3 id="插件下载"><a href="#插件下载" class="headerlink" title="插件下载"></a>插件下载</h3><p><a href="https://chrome.google.com/webstore/detail/dark-reader/eimadpbcbfnmbkopoojfekhnkhdbieeh" target="_blank" rel="noopener">谷歌官方商店下载</a></p>
+<p>考虑到大部分国内用户无法访问谷歌网站, 这里给大家推荐两个国内下载站点:</p>
+<ol>
+<li><p><a href="https://chrome.zzzmh.cn/" target="_blank" rel="noopener">极简插件</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210917141518519.png" alt="image-20210917141518519"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210917141441356.png" alt="image-20210917141441356"></p>
+</li>
+<li><p><a href="https://www.crxsoso.com/" target="_blank" rel="noopener">CRX搜搜</a></p>
+<p>不仅支持名称搜索, 还支持扩展地址搜索</p>
+<p>比如插件官方扩展地址：<code>https://chrome.google.com/webstore/detail/dhdgffkkebhmkfjojejmpbldmpobfkfo</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/youxiaohou/img/20210715161332.png" alt="img"></p>
+<p>根据名称关键字搜索下载:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/youxiaohou/img/20210715161537.png" alt="img"></p>
+</li>
+</ol>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
 <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
         
@@ -633,7 +581,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../233.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../274.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -652,7 +600,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../233.html" itemprop="url">如何将自定义库上传至jitpack仓库</a></h1>
+                <a class="post-title-link" href="../../274.html" itemprop="url">docker容器相互通信的实现</a></h1>
         
 
         <div class="post-meta">
@@ -664,8 +612,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-07-27T13:14:19+08:00">
-                2021-07-27
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-16T10:05:19+08:00">
+                2021-09-16
               </time>
             
 
@@ -704,33 +652,47 @@
       
         
           
-            <h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>最近<code>bintray</code>好像不能用了, 以前传的依赖包全都挂了, 目前正在进行库转移</p>
-<p>相比<code>bintray</code>而言 <code>jitpack</code>可以说是非常简单, 只需一个<code>github</code>就完全搞定了</p>
-<h4 id="快速上手"><a href="#快速上手" class="headerlink" title="快速上手"></a>快速上手</h4><p>首先 将代码推送至<code>github</code>, 然后进入<a href="https://jitpack.io/" target="_blank" rel="noopener">https://jitpack.io/</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727145153403.png" alt="image-20210727145153403"></p>
-<p>绿色表示 编译成功 红色表示编译失败, 编译成功后 就可以开始使用库啦</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727145906319.png" alt="image-20210727145906319"></p>
-<p>是不是非常简单</p>
-<p>由于大部分人习惯使用版本号的依赖形式, 因此 如果你想将<code>commitId</code>换成版本号, 那么只需在<code>github</code>上<code>push release</code>即可, 如下:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727150302447.png" alt="image-20210727150302447"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727150429243.png" alt="image-20210727150429243"></p>
-<p>创建成功后,回到<code>jitpack</code>主页刷新, 此时在<code>Release</code>一栏下出现相应的版本</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727150604728.png" alt="image-20210727150604728"></p>
-<p>我们发现<code>1.0.5</code>版本的<code>Log</code>一栏是红色, 我们可以点击进入查看编译日志 寻找编译失败原因</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727150827296.png" alt="image-20210727150827296"></p>
-<p>如果编译成功, 将会生成相应的<code>jar</code>包并存储在<code>jitpack</code>仓库中</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727151000773.png" alt="image-20210727151000773"></p>
-<p>此时我们就可以使用版本号形式的啦</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727151055721.png" alt="image-20210727151055721"></p>
-<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><ul>
-<li>对于<code>android</code> 必须是<code>Lib</code>库 而不是<code>APP</code></li>
-<li>由于<code>jitpack</code>会对整个项目库进行编译打包, 因此项目中避免出现多个库的情况, 如果是<code>android</code> 可以在<code>settings.gradle</code>里面进行注释屏蔽</li>
-</ul>
-<p>除了<code>github</code>之外,<code>jitpack</code>还支持以下仓库:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-20210727153831851.png" alt="image-20210727153831851"></p>
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p><code>docker</code>容器处在宿主内部的局域网络之中, 一般来说, 我们直接使用局域网<code>ip</code>即可访问, 但考虑到容器重启后<code>ip</code>可能会发生变化, 所以这种直接使用容器的<code>ip</code>的方案并不稳妥</p>
+<p>那如果使用公网<code>ip</code>, 映射访问的话, 似乎稳定一些, 但是也存在问题, 比如<code>docker</code>跨服迁移, 那么<code>ip</code>还得手动修改, 同时公网访问速度上肯定不如内网</p>
+<p>所以还得另寻他法</p>
+<p>事实上 <code>Docker</code>官方已经给我们提供了解决办法, 那就是使用<code>Bridge</code>桥接网络, 这样 我们可以直接使用容器名充当局域网<code>ip</code>进行容器间相互访问</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/1608824-20190920010803495-1744046885.png" alt="img"></p>
+<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><ol>
+<li><p><strong>创建bridge网络</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network create -d bridge 自定义网络名称</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>创建容器时指定<code>bridge</code>网络</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run -id --name=first --network 网络名 ubuntu:latest</span><br><span class="line"></span><br><span class="line">docker run -id --name=second --network 网络名 ubuntu:latest</span><br></pre></td></tr></table></figure>
+
+<p>这样两个容器就处在了同一个桥接网络下, 容器间自动link, 彼此可以相互访问</p>
+</li>
+<li><p><strong>访问测试</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 进入第一个容器</span><br><span class="line">docker exec -it first bash</span><br><span class="line"># 使用容器名ping</span><br><span class="line">ping second</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="其他操作"><a href="#其他操作" class="headerlink" title="其他操作"></a>其他操作</h3><ol>
+<li><p><strong>如果要查看当前已经存在的桥接网络列表</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network ls</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h3><p>除了方便容器间通信外, 结合<code>Nginx</code>还可以减少服务器端口开放数量, 消除不必要的安全隐患</p>
+<p>比如不使用桥接网络时, Nginx反向代理配置是这样的:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http&#123;</span><br><span class="line">upstream wordpress_sex&#123;</span><br><span class="line">server 服务器公网IP:7778;</span><br><span class="line">&#125;</span><br><span class="line">server&#123;</span><br><span class="line">        listen       80;</span><br><span class="line">    server_name sex.newban.cn;</span><br><span class="line">    location / &#123;</span><br><span class="line">            proxy_redirect off;</span><br><span class="line">            proxy_set_header Host $host;</span><br><span class="line">            proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">            proxy_pass http://wordpress_sex;</span><br><span class="line">            break;</span><br><span class="line">                 &#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用桥接网络后:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http&#123;</span><br><span class="line">upstream wordpress_sex&#123;</span><br><span class="line">server 容器名:80;</span><br><span class="line">&#125;</span><br><span class="line">server&#123;</span><br><span class="line">        listen       80;</span><br><span class="line">    server_name sex.newban.cn;</span><br><span class="line">    location / &#123;</span><br><span class="line">            proxy_redirect off;</span><br><span class="line">            proxy_set_header Host $host;</span><br><span class="line">            proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">            proxy_pass http://wordpress_sex;</span><br><span class="line">            break;</span><br><span class="line">                 &#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>无论是移植性和安全性都得到了大大的提升</p>
+<p><strong>但是有一点需要注意</strong>, <code>nginx</code>配置文件在<code>nginx</code>启动成功之前会检测<code>server</code>节点下的<code>host</code>地址是否可通, 如果存在无法接通的<code>host</code>, 则<code>nginx</code>无法启动,</p>
+<p>也就是说我们使用<code>server 容器名:80</code>这种配置 当我们的<code>docker</code>容器挂了或者停止运行时, 如果此时重启<code>nginx</code>则会启动失败, 这一点我们需要提前知晓, 避免到时重启时出了问题摸不着头脑</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
 <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
         
@@ -779,7 +741,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../232.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../273.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -798,7 +760,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../232.html" itemprop="url">关于android scheme跳转配置中pathPattern的使用</a></h1>
+                <a class="post-title-link" href="../../273.html" itemprop="url">Linux中系统管理我们可能会使用到的指令</a></h1>
         
 
         <div class="post-meta">
@@ -810,8 +772,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-03T10:14:19+08:00">
-                2021-06-03
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-14T14:05:19+08:00">
+                2021-09-14
               </time>
             
 
@@ -850,667 +812,270 @@
       
         
           
-            <h4 id="Scheme协议在Android中使用场景"><a href="#Scheme协议在Android中使用场景" class="headerlink" title="Scheme协议在Android中使用场景"></a>Scheme协议在Android中使用场景</h4><ol>
-<li><p>H5页面和Native页面的交互</p>
-</li>
-<li><p>客户端获取push消息中后，点击消息跳转到APP内部页面</p>
-</li>
-<li><p>APP根据URL跳转到另外一个APP指定页面</p>
-</li>
-<li><p>外部浏览器唤醒App</p>
-</li>
-</ol>
-<h4 id="Scheme协议的使用"><a href="#Scheme协议的使用" class="headerlink" title="Scheme协议的使用"></a>Scheme协议的使用</h4><ol>
-<li><strong>场景一 外部浏览器唤醒app</strong></li>
-</ol>
-<p>以<code>app://test/good?goodsId=3</code>这个内链为例, 假设浏览器中点击该内链需要跳转到应用的指定Activity</p>
-<p>那么,首先在清单文件中对指定Activity进行intent过滤配置:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;activity</span><br><span class="line">          android:name=&quot;.ui.login.LoginActivity&quot;</span><br><span class="line">          android:screenOrientation=&quot;portrait&quot;&gt;</span><br><span class="line">          &lt;intent-filter&gt;</span><br><span class="line">          &lt;!--可以根据用户的数据类型，打开相应的Activity--&gt;</span><br><span class="line">              &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;</span><br><span class="line">              &lt;!--界面可以被隐式调用--&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;</span><br><span class="line">              &lt;!--界面可以通过浏览器的连接启动--&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; /&gt;</span><br><span class="line">              &lt;!--协议部分，主要是配置scheme和host--&gt;</span><br><span class="line">              &lt;data</span><br><span class="line">              		android:path=&quot;/good&quot;</span><br><span class="line">                  android:host=&quot;test&quot;</span><br><span class="line">                  android:scheme=&quot;app&quot; /&gt;</span><br><span class="line">          &lt;/intent-filter&gt;</span><br><span class="line">      &lt;/activity&gt;</span><br></pre></td></tr></table></figure>
+            <h3 id="1-systemctl"><a href="#1-systemctl" class="headerlink" title="1. systemctl"></a>1. systemctl</h3><p><code>systemctl</code>是 <code>Systemd</code>的主命令，用于管理系统。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 重启系统</span></span><br><span class="line">$ sudo systemctl reboot</span><br><span class="line"></span><br><span class="line"><span class="comment"># 关闭系统，切断电源</span></span><br><span class="line">$ sudo systemctl poweroff</span><br><span class="line"></span><br><span class="line"><span class="comment"># CPU停止工作</span></span><br><span class="line">$ sudo systemctl halt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 暂停系统</span></span><br><span class="line">$ sudo systemctl <span class="built_in">suspend</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 让系统进入冬眠状态</span></span><br><span class="line">$ sudo systemctl hibernate</span><br><span class="line"></span><br><span class="line"><span class="comment"># 让系统进入交互式休眠状态</span></span><br><span class="line">$ sudo systemctl hybrid-sleep</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动进入救援状态（单用户状态）</span></span><br><span class="line">$ sudo systemctl rescue</span><br></pre></td></tr></table></figure>
 
-<p>然后在<code>Activity</code>的<code>onCreate</code>方法中进行参数的获取和逻辑的处理:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Uri data = getIntent().getData();</span><br><span class="line">String param = data.getQueryParameter(&quot;goodsId&quot;);//获取指定key下的参数</span><br></pre></td></tr></table></figure>
+<h3 id="2-systemd-analyze"><a href="#2-systemd-analyze" class="headerlink" title="2. systemd-analyze"></a>2. systemd-analyze</h3><p><code>systemd-analyze</code>命令用于查看启动耗时。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看启动耗时</span></span><br><span class="line">$ systemd-analyze                                                                                       </span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看每个服务的启动耗时</span></span><br><span class="line">$ systemd-analyze blame</span><br><span class="line"></span><br><span class="line"><span class="comment"># 显示瀑布状的启动过程流</span></span><br><span class="line">$ systemd-analyze critical-chain</span><br><span class="line"></span><br><span class="line"><span class="comment"># 显示指定服务的启动流</span></span><br><span class="line">$ systemd-analyze critical-chain atd.service</span><br></pre></td></tr></table></figure>
 
-<p>最后测试跳转即可</p>
-<ol start="2">
-<li><p><strong>场景二 应用内部H5交互(页面跳转)</strong></p>
-<p>还是以<code>app://test/good?goodsId=3</code>这个内链为例, 假设WebView中点击该内链需要跳转到应用的指定Activity</p>
-<p>首先还是在清单文件中配置,如上</p>
-<p>然后配置webview:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean &#123;</span><br><span class="line">startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))</span><br><span class="line">  return true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210914154541109.png" alt="image-20210914154541109"></p>
+<h3 id="3-hostnamectl"><a href="#3-hostnamectl" class="headerlink" title="3. hostnamectl"></a>3. hostnamectl</h3><p><code>hostnamectl</code>命令用于查看当前主机的信息。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 显示当前主机的信息</span></span><br><span class="line">$ hostnamectl</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置主机名。</span></span><br><span class="line">$ sudo hostnamectl <span class="built_in">set</span>-hostname rhel7</span><br></pre></td></tr></table></figure>
 
-<p>因为webview属于开发者自定义, 因此内链跳转逻辑需要在<code>shouldOverrideUrlLoading</code>方法中自行处理</p>
-</li>
-<li><p><strong>场景三 应用内部H5交互(非页面跳转)</strong></p>
-<p>有时候需求不单单是页面的跳转, 可能还涉及到其他ui或者逻辑的交互, 比如跳转到支付宝失败后弹出弹窗等等, 这个时候,我们需要在<code>shouldOverrideUrlLoading</code>方法中进行不同scheme的处理:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean &#123;</span><br><span class="line">                 if (url.startsWith(&quot;alipay&quot;)) &#123;</span><br><span class="line">                        try &#123;</span><br><span class="line">                            startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))</span><br><span class="line">                        &#125; catch (e: Exception) &#123;</span><br><span class="line">                            e.printStackTrace()</span><br><span class="line">                            AlertDialog.Builder(requireContext())</span><br><span class="line">                                .setMessage(&quot;未检测到支付宝客户端，请安装后重试。&quot;)</span><br><span class="line">                                .setPositiveButton(&quot;&quot;) &#123; _, _ -&gt;</span><br><span class="line">                                    startActivity(</span><br><span class="line">                                        Intent(</span><br><span class="line">                                            Intent.ACTION_VIEW,</span><br><span class="line">                                            &quot;https://d.alipay.com&quot;.toUri()</span><br><span class="line">                                        )</span><br><span class="line">                                    )</span><br><span class="line">                                &#125;</span><br><span class="line">                                .setNegativeButton(&quot;取消&quot;, null).show()</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; </span><br><span class="line">                    return true</span><br><span class="line">                    &#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>场景四 应用内Activity之间的跳转</strong></p>
-<p>首先依然在清单文件中配置</p>
-<p>然后使用隐式跳转:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(&quot;`app://test/good?goodsId=3`&quot;)))</span><br></pre></td></tr></table></figure>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210914145006176.png" alt></p>
+<h3 id="4-localectl"><a href="#4-localectl" class="headerlink" title="4. localectl"></a>4. localectl</h3><p><code>localectl</code>命令用于查看本地化设置。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看本地化设置</span></span><br><span class="line">$ localectl</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置本地化参数。</span></span><br><span class="line">$ sudo localectl <span class="built_in">set</span>-locale LANG=en_GB.utf8</span><br><span class="line">$ sudo localectl <span class="built_in">set</span>-keymap en_GB</span><br></pre></td></tr></table></figure>
 
-</li>
-</ol>
-<h4 id="多个不同scheme跳转同一个页面"><a href="#多个不同scheme跳转同一个页面" class="headerlink" title="多个不同scheme跳转同一个页面"></a>多个不同scheme跳转同一个页面</h4><p>只需要在清单文件增加多个<code>data</code>标签即可:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;activity</span><br><span class="line">          android:name=&quot;.ui.login.LoginActivity&quot;</span><br><span class="line">          android:screenOrientation=&quot;portrait&quot;&gt;</span><br><span class="line">          &lt;intent-filter&gt;</span><br><span class="line">              &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; /&gt;</span><br><span class="line">					</span><br><span class="line">              &lt;data</span><br><span class="line">              		android:path=&quot;/good&quot;</span><br><span class="line">                  android:host=&quot;test&quot;</span><br><span class="line">                  android:scheme=&quot;app&quot; /&gt;</span><br><span class="line">                  </span><br><span class="line">					</span><br><span class="line">              &lt;data</span><br><span class="line">                  android:host=&quot;test2&quot;</span><br><span class="line">                  android:scheme=&quot;app&quot; /&gt;</span><br><span class="line">          &lt;/intent-filter&gt;</span><br><span class="line">      &lt;/activity&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210914154511109.png" alt="image-20210914154511109"></p>
+<h3 id="5-timedatectl"><a href="#5-timedatectl" class="headerlink" title="5. timedatectl"></a>5. timedatectl</h3><p><code>timedatectl</code>命令用于查看当前时区设置。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看当前时区设置</span></span><br><span class="line">$ timedatectl</span><br><span class="line"></span><br><span class="line"><span class="comment"># 显示所有可用的时区</span></span><br><span class="line">$ timedatectl list-timezones                                                                                   </span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置当前时区</span></span><br><span class="line">$ sudo timedatectl <span class="built_in">set</span>-timezone America/New_York</span><br><span class="line">$ sudo timedatectl <span class="built_in">set</span>-time YYYY-MM-DD</span><br><span class="line">$ sudo timedatectl <span class="built_in">set</span>-time HH:MM:SS</span><br></pre></td></tr></table></figure>
 
-<h4 id="使用pathPattern匹配模式"><a href="#使用pathPattern匹配模式" class="headerlink" title="使用pathPattern匹配模式"></a>使用pathPattern匹配模式</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;data</span><br><span class="line">                   android:pathPattern=&quot;/.*&quot;</span><br><span class="line">                   android:host=&quot;test&quot;</span><br><span class="line">                   android:scheme=&quot;app&quot; /&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210914154411820.png" alt="image-20210914154411820"></p>
+<h3 id="6-loginctl"><a href="#6-loginctl" class="headerlink" title="6. loginctl"></a>6. loginctl</h3><p><code>loginctl</code>命令用于查看当前登录的用户。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 列出当前session</span></span><br><span class="line">$ loginctl list-sessions</span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出当前登录用户</span></span><br><span class="line">$ loginctl list-users</span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出显示指定用户的信息</span></span><br><span class="line">$ loginctl show-user</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.表示匹配任意字符 *表示匹配0次或多次  遗憾的是pathPattern无法使用标准的正则表达式 只有* 和.可用</span><br></pre></td></tr></table></figure>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
-<h4 id="关于sspPattern匹配模式"><a href="#关于sspPattern匹配模式" class="headerlink" title="关于sspPattern匹配模式"></a>关于sspPattern匹配模式</h4><p>我们使用内链的格式一般和<code>url</code>格式一致,比如<code>app://test</code>, 如果我们想使用自定义格式比如这种<code>app:test</code>, 那常规的方法则不奏效,此时<code>sspPattern</code>就可以派上用场</p>
-<p>我们在清单文件中如下配置即可:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;data</span><br><span class="line">                   android:ssp=&quot;test&quot;</span><br><span class="line">                   android:scheme=&quot;app&quot; /&gt;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
 
-<p>同样该模式下对应三个属性:</p>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../272.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../272.html" itemprop="url">Linux中关于前台任务和后台任务的相关操作</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-14T10:05:19+08:00">
+                2021-09-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>以下概念以终端操作为前提</p>
 <ul>
-<li>ssp :字面值匹配模式(PATTERN_LITERAL) 内部采用equals函数</li>
-<li>sspPrefix 前缀匹配模式(PATTERN_PREFIX) 内部采用startWith函数</li>
-<li>sspPattern 全局匹配模式(PATTERN_GLOB) glob规则是一种简化的模式，只支持“*”和“.”作为通配符 </li>
+<li><strong>前台任务</strong>: 在前台执行的任务, 任务一旦执行则占用终端窗口, 同一窗口内 无法进行其他操作</li>
+<li><strong>后台任务</strong>: 在后台执行的任务, 任务执行不占用终端窗口, 同一窗口内 可一边执行任务 一边进行其他操作</li>
 </ul>
-<p>实际上类似于url格式的内链, 比如<code>app://test</code>也可以使用<code>ssp</code>进行匹配:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;data</span><br><span class="line">                    android:ssp=&quot;//test&quot;</span><br><span class="line">                    android:scheme=&quot;app&quot; /&gt;</span><br></pre></td></tr></table></figure>
-
-<p>不过一般我们不会这么做, 因为直接使用<code>host</code>属性更加简洁</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../231.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../231.html" itemprop="url">Mac平台下adb连接网易MuMu模拟器</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-26T17:14:19+08:00">
-                2021-05-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>第三方模拟器adb无法自动识别, 每个模拟器都有各自的端口占用</p>
-<p>在Mac平台下, 可以输入以下指令连接MuMu模拟器并调试</p>
-<h4 id="指令"><a href="#指令" class="headerlink" title="指令"></a>指令</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb connect 127.0.0.1:5555</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../230.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../230.html" itemprop="url">Linux下查看目录和文件大小以及隐藏文件</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-25T17:14:19+08:00">
-                2021-05-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="查看当前目录下的隐藏文件"><a href="#查看当前目录下的隐藏文件" class="headerlink" title="查看当前目录下的隐藏文件"></a>查看当前目录下的隐藏文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -a</span><br></pre></td></tr></table></figure>
-
-<h3 id="移动隐藏文件"><a href="#移动隐藏文件" class="headerlink" title="移动隐藏文件"></a>移动隐藏文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv xxx/.[^.]*</span><br></pre></td></tr></table></figure>
-
-<h4 id="查看目录和文件大小"><a href="#查看目录和文件大小" class="headerlink" title="查看目录和文件大小"></a>查看目录和文件大小</h4><ol>
-<li>以字节形式显示</li>
+<p>无论是前台任务还是后台任务, 终端一旦被关闭, 任务会立即终止</p>
+<h3 id="前台任务"><a href="#前台任务" class="headerlink" title="前台任务"></a>前台任务</h3><ol>
+<li><p><strong>终止前台任务</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ctrl+C</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>暂停前台任务</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ctrl+Z</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>查看当前暂停的任务和所有后台任务信息</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jobs -l</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>将前台任务切换成后台任务</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1.输入ctrl + z 暂停任务</span><br><span class="line">2.输入jobs查看任务号</span><br><span class="line">3.使用 bg %任务号 将该任务号放入后台</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>终端关闭 保持前台任务继续运行</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup xxxx</span><br></pre></td></tr></table></figure>
+
+<p><strong>nohup:</strong> 表示忽略<code>hup</code>信号, 终端关闭任务进程也不销毁</p>
+</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -ll</span><br></pre></td></tr></table></figure>
+<h3 id="后台任务"><a href="#后台任务" class="headerlink" title="后台任务"></a>后台任务</h3><ol>
+<li><p><strong>以后台方式启动任务, 命令末尾加<code>&amp;</code>即可</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">watch  -n 10 sh  test.sh  &amp;  #每10s在后台执行一次test.sh脚本</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>终止后台任务</strong></p>
+<p>方式一:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.输入jobs查看任务号</span><br><span class="line">2.kill %任务编号</span><br></pre></td></tr></table></figure>
 
-<ol start="2">
-<li>以KB MB等单位显示(推荐)</li>
+<p>方式二:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.使用ps指令查看任务进程pid</span><br><span class="line">2.kill pid</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>将后台任务切换成前台任务</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.输入jobs查看任务号</span><br><span class="line">2.fg %任务编号</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>终端关闭 保持后台任务继续运行</strong></p>
+<p>如果后台任务还未启动, 指令前面加<code>nohup</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup watch  -n 10 sh  test.sh  &amp;</span><br></pre></td></tr></table></figure>
+
+<p>如果后台任务已经启动:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.输入jobs查看任务号</span><br><span class="line">2.使用 disown -h %任务号</span><br></pre></td></tr></table></figure>
+
+<p><code>disown</code>指令用于对<code>jobs</code>任务的移除移出操作, 常见参数有:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">disown -a //删除全部作业</span><br><span class="line">disown -r //删除正在运行的作业</span><br><span class="line">disown -h %任务号 //移出(非删除)指定作业, 同时忽略hup信号</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -lh</span><br></pre></td></tr></table></figure>
+<h3 id="实现后台任务的另一种方式"><a href="#实现后台任务的另一种方式" class="headerlink" title="实现后台任务的另一种方式"></a>实现后台任务的另一种方式</h3><p>除了使用<code>nuhup</code>+<code>&amp;</code>的方式使得任务在后台运行且不受终端关闭影响外, 还有一种方式那就是使用<code>systemd</code></p>
+<p>创建<code>systemd</code>服务步骤如下:</p>
+<ol>
+<li><p><strong>创建服务配置文件</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim xxx.service</span><br></pre></td></tr></table></figure>
+
+<p>将以下内容填入配置文件中:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=Foo</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart=/usr/sbin/foo-daemon</span><br><span class="line">Restart=always</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure>
 
-<ol start="3">
-<li>遍历当前目录下所有子目录大小</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">du -h </span><br><span class="line"># 或指定层级遍历(*表示遍历所有子目录)</span><br><span class="line">du -h –max-depth=1 *</span><br><span class="line"># 或指定某个子目录下的层级</span><br><span class="line">du -h –max-depth=1 software/</span><br></pre></td></tr></table></figure>
-
-<ol start="4">
-<li>只查看当前目录总大小</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">du -sh</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../229.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../229.html" itemprop="url">Mac上通过homebrew安装adb</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-08T10:14:19+08:00">
-                2021-04-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p>Mac安装adb，如果电脑上没有装android studio 那么最简单的办法是用homebrew</p>
-<p>其中 homebrew是macOS的一个包管理工具</p>
-<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h4><p>1、安装homebrew</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby -e &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&quot;</span><br></pre></td></tr></table></figure>
-
-<p>2、安装adb</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew cask install android-platform-tools</span><br></pre></td></tr></table></figure>
-
-<p>3、运行adb</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb devices</span><br></pre></td></tr></table></figure>
-
-<h2 id="如果你有装Android-Studio-那么可以参考以下步骤"><a href="#如果你有装Android-Studio-那么可以参考以下步骤" class="headerlink" title="如果你有装Android Studio 那么可以参考以下步骤:"></a>如果你有装Android Studio 那么可以参考以下步骤:</h2><h3 id="1-安装IDE-（android-studio）"><a href="#1-安装IDE-（android-studio）" class="headerlink" title="1. 安装IDE （android studio）"></a>1. 安装IDE （android studio）</h3><p>安装后，确认自己的<code>adb</code>目录，一般目录在 <code>~/Library/Android/sdk/platform-tools</code>，<code>~</code>代表当前用户的根目录，如果不知道当前用户的根目录在终端上输入<code>echo $HOME</code>便可知晓。<br> 最简单的方法，就是按快捷键<code>command + shift + G</code> ，然后把<code>~/Library/Android/sdk/platform-tools</code>这个目录复制到输入框内，按回车便可打开文件夹位置</p>
-<h3 id="2-打开终端（应用程序——实用工具），运行："><a href="#2-打开终端（应用程序——实用工具），运行：" class="headerlink" title="2. 打开终端（应用程序——实用工具），运行："></a>2. 打开终端（应用程序——实用工具），运行：</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">sudo</span> <span class="selector-tag">vi</span> <span class="selector-class">.bash_profile</span></span><br></pre></td></tr></table></figure>
-
-<p>屏幕上会提示你输入密码（输入密码的时候不会有任何字符显示，输完之后按回车就是了）<br> 打开文件之后按<code>i</code>键进入插入模式（可理解为编辑模式），然后对该文件进行编辑</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$&#123;PATH&#125;</span>:你的platform-tools具体地址</span><br></pre></td></tr></table></figure>
-
-<p>我输入的是</p>
-<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export PATH=$&#123;PATH&#125;<span class="symbol">:~/Library/Android/sdk/platform-tools</span></span><br></pre></td></tr></table></figure>
-
-<p>当然这是比较默认的情况，如果你改了<code>Android</code>的目录就要根据<code>platform-tools</code>这个文件夹的实际目录去填写。<br> 编辑完成之后按 <code>esc</code> 键退出插入模式，之后按 <code>:wq</code>+ 回车保存退出，记得英文的冒号也是要输入的哦。</p>
-<h4 id="最关键的要输入生效命令"><a href="#最关键的要输入生效命令" class="headerlink" title="最关键的要输入生效命令"></a>最关键的要输入生效命令</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.bash_profile</span><br></pre></td></tr></table></figure>
-
-<p>之后在终端里试一下输入adb，如果显示出来是一大串文字而不是之前的 command not found就大功告成。</p>
-<h5 id="注意："><a href="#注意：" class="headerlink" title="注意："></a>注意：</h5><p>如果遇到关闭终端后再打开，又无法使用adb命令了，可以尝试以下办法<br> 在<code>~/.zshrc</code>文件最后，增加一行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.bash_profile</span><br></pre></td></tr></table></figure>
-
-<p>如果没有这个文件，可自己创建，运行命令<code>touch .zshrc</code>，运行命令<code>open .zshrc</code>打开编译。</p>
-<h3 id="3-下面附上常用的adb命令"><a href="#3-下面附上常用的adb命令" class="headerlink" title="3. 下面附上常用的adb命令"></a>3. 下面附上常用的adb命令</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 查看所有设备：</span></span><br><span class="line">adb devices</span><br><span class="line"><span class="comment">// 安装指定apk(路径可不用手写，直接把apk文件拖拽过来)：</span></span><br><span class="line">adb  install &lt;file&gt;</span><br><span class="line"><span class="comment">// 卸载指定包 ：</span></span><br><span class="line">adb uninstall &lt;<span class="keyword">package</span>&gt;</span><br><span class="line"><span class="comment">// 拷贝文件到设备上:</span></span><br><span class="line"> adb push &lt;local&gt; &lt;remote&gt;</span><br><span class="line"><span class="comment">// 从设备中拷贝文件：</span></span><br><span class="line"> adb pull &lt;remote&gt; [&lt;local&gt;]</span><br><span class="line"><span class="comment">// 查看命令帮助：</span></span><br><span class="line">adb help</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../228.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../228.html" itemprop="url">wordpress批量修改文章状态的方法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-02T10:14:19+08:00">
-                2021-04-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h4><p>手上有一个采集站点, 剩余3万的草稿, 原计划手动每日发布几十篇文章, 后来实在有些反人类, 干脆一次性全发布</p>
-<p>如果使用wordpress自带的批量操作, 文章太多容易卡顿超时, 还是直接操作数据库来的快, 但是修改数据库存在一定风险, 因此建议提前做好备份 </p>
-<h3 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h3><ol>
-<li>第一步 备份数据库</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -uroot -p 数据库名 &gt;数据库地址和名称</span><br></pre></td></tr></table></figure>
-
-<p>比如:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -uroot -p wordpress&gt;/logs/wordpress_bak.mql</span><br></pre></td></tr></table></figure>
-
-<p>回车后提示输入密码, 输入后即可备份</p>
-<ol start="2">
-<li>第二步 操作wordpress数据库</li>
-</ol>
-<p>进入mysql内部</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -p 密码</span><br></pre></td></tr></table></figure>
-
-<p>查看所有数据库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show datebase;</span><br></pre></td></tr></table></figure>
-
-<p>选择指定数据库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use wordpress;</span><br></pre></td></tr></table></figure>
-
-<p>查看<code>wordpress</code>表</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show tables;</span><br></pre></td></tr></table></figure>
-
-<p>查看<code>wp-posts</code>表字段</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">desc wp-posts;</span><br></pre></td></tr></table></figure>
-
-<p>最后修改<code>wp-posts</code>表中的<code>post_status</code>字段(关键)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UPDATE `wp_posts` SET `post_status` =&apos;publish&apos; WHERE (`post_status`=&apos;draft&apos;);</span><br></pre></td></tr></table></figure>
-
-<p>这里我是将所有的草稿改成已发布</p>
-<p>wordpress中的文章状态有以下几种:</p>
 <ul>
-<li>pending：待审</li>
-<li>draft：草稿</li>
-<li>auto-draft：自动保存的草稿</li>
-<li>inherit：修订版本</li>
-<li>trash：回收站</li>
-<li>publish：已发布</li>
-<li>future：定时</li>
-<li>private：私有</li>
+<li><strong>Description</strong>: 表示服务描述</li>
+<li><strong>ExecStart</strong>: 表示需要执行的程序指令, 需要填入程序的完整路径</li>
+<li><strong>Restart</strong>: 表示是否自动重启, 可选参数有<code>no</code>、<code>always</code>、<code>on-success</code>、<code>on-failure</code>、<code>on-abnormal</code>、<code>on-abort</code>、<code>on-watchdog</code>等</li>
+<li><strong>WantedBy</strong>: 表示用户权限</li>
 </ul>
-<p>如果你有其他需求, 比如想将所有待审的文章全部改成草稿, 那么只需修改相应的关键字就行,如:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UPDATE `wp_posts` SET `post_status` =&apos;draft&apos; WHERE (`post_status`=&apos;pending&apos;);</span><br></pre></td></tr></table></figure>
+<p>更多配置, 可参考<a href="https://www.freedesktop.org/software/systemd/man/systemd.service.html" target="_blank" rel="noopener">官方文档</a> 或者<a href="https://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html" target="_blank" rel="noopener">博客介绍</a></p>
+</li>
+<li><p><strong>将服务配置文件拷贝至<code>/lib/systemd/system/</code>目录下</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo cp xxx.service /lib/systemd/system/</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>启动服务</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl start xxx</span><br></pre></td></tr></table></figure>
 
-<p>或者 你只想修改某一时间段内的文章, 那么可以加上时间条件,如:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UPDATE `wp_posts` SET `post_status` =&apos;draft&apos; WHERE `post_status`=&apos;pending&apos; and `post_date` &gt;=&apos;2020-05-01 00:00:00&apos; and `post_date` &lt; &apos;2021-03-22 22:00:00:00&apos;;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h5 id="关于服务的其他操作指令"><a href="#关于服务的其他操作指令" class="headerlink" title="关于服务的其他操作指令"></a>关于服务的其他操作指令</h5><ol>
+<li><p><strong>停止服务</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl stop xxx</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>查看服务运行状态</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl status xxx</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>设置服务开机自启动</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl enable xxx</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>禁止服务开启自启动</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl disable xxx</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>服务重启</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl restart xxx</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>查看<code>systemd</code>的版本</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl --version</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>查看配置文件</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl cat xxx.service</span><br></pre></td></tr></table></figure>
 
+
+
+</li>
+</ol>
+<h3 id="systemd和nohup-amp-之间的对比"><a href="#systemd和nohup-amp-之间的对比" class="headerlink" title="systemd和nohup+&amp;之间的对比"></a><code>systemd</code>和<code>nohup+&amp;</code>之间的对比</h3><p><code>systemd</code>可以满足以下需求:</p>
+<ul>
+<li>方便分析问题的服务运行日志记录</li>
+<li>服务管理的日志</li>
+<li>异常退出时可以根据需要重新启动</li>
+</ul>
+<p>而<code>nohup</code> 只能记录服务运行时的输出和出错日志, 根据我们实际的需求进行选择即可</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
 <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
         
@@ -1559,7 +1124,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../227.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../271.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -1578,7 +1143,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../227.html" itemprop="url">Mac下 SSR无法正常使用Telegram问题及解决方法</a></h1>
+                <a class="post-title-link" href="../../271.html" itemprop="url">免费稳定的PHP虚拟主机</a></h1>
         
 
         <div class="post-meta">
@@ -1590,8 +1155,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-09T09:14:19+08:00">
-                2021-03-09
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-10T15:05:19+08:00">
+                2021-09-10
               </time>
             
 
@@ -1630,27 +1195,57 @@
       
         
           
-            <h4 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h4><p>最近在Mac上使用Telegram时，发现无法正常连接，无论是PAC还是全局均无效，在Google之后大多数答案都是Windows下的处理方法，并不适用。</p>
-<p>Mac 配置了 ShadowsocksX-NG，开启后，浏览器可正常访问 Google，但是 Telegram 一直显示 Connection…</p>
-<p>解决步骤如下：</p>
-<p>选择 Proxy 为 Socks5 模式，服务器地址填 127.0.0.1 端口填 1080 (端口号需要查看你自己的)</p>
-<h4 id="下面我会用几张图来说明"><a href="#下面我会用几张图来说明" class="headerlink" title="下面我会用几张图来说明"></a>下面我会用几张图来说明</h4><p>1、在SSR的高级设置里查看Socks5端口号</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image.png" alt></p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-1.png" alt="img"></p>
-<p>2、设置Telegram代理 (共3步)</p>
-<h4 id="第1步"><a href="#第1步" class="headerlink" title="第1步"></a>第1步</h4><p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-2.png" alt="img"></p>
-<h4 id="第2步"><a href="#第2步" class="headerlink" title="第2步"></a>第2步</h4><p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-3.png" alt="img"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-4.png" alt="img"></p>
-<h4 id="第3步"><a href="#第3步" class="headerlink" title="第3步"></a>第3步</h4><p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-5.png" alt="img"></p>
-<p>设置完后，发现代理前面有了一个勾，说明已经设置成功。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/lunanzb/luhui/img/image-6.png" alt="img"></p>
-<p>至此，就完成了所有设置，<strong>记得重启 Telegram</strong>，然后可以尽情在墙外漫游了</p>
-<p>如果mac使用的socksx的客户端可能没有高级设置以查看地址及端口号。</p>
-<p>此客户端一般是默认127.0.0.1，1080端口。</p>
-<p>另外给大家分享一个免费的mtproxy分享网站：<a href="https://mtproto.cc/" target="_blank" rel="noopener">mtproto.cc</a></p>
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>想验证网站项目是否可盈利, 如果购买服务器的话太贵, 怎么办, 那就用免费的吧</p>
+<p>国内基本上已经没有免费的虚拟主机可用了, 即便有也是套路你</p>
+<p>只好把目标转向国外服务器供应商, 先是找到一家日本的厂商<a href="https://www.xrea.com/" target="_blank" rel="noopener">XREA</a>, 主页长这样:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210910145415910.png" alt></p>
+<p>决定试试申请一个, <code>xrea</code>需要注册两个账户, 一个是<code>xrea</code>账户, 另一个是<code>value-admin</code>账户</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210910150342841.png" alt="image-20210910150342841"></p>
+<p>首先注册<code>value-admin</code>账户:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210910150514615.png" alt="image-20210910150514615"></p>
+<p>这一步 国内的邮箱无法注册, 谷歌邮箱可以  但是居然一直收不到验证码, 最后只好作罢</p>
+<h4 id="Awardspace"><a href="#Awardspace" class="headerlink" title="Awardspace"></a>Awardspace</h4><h5 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h5><p>随后有找了一家欧美的厂商<a href="https://www.awardspace.com/" target="_blank" rel="noopener">Awardspace</a>, 经过尝试, 发现可行, 主页长这样:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210910163000949.png" alt="image-20210910163000949"></p>
+<p>我直接使用第三方谷歌登录, 国内的小伙伴有可能需要搭个梯子才能访问哦</p>
+<p>登录成功后进入到控制台界面:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210910163254548.png" alt="image-20210910163254548"></p>
+<p>该有的功能全都有, 这个免费虚拟主机给我们提供了:</p>
+<ul>
+<li><strong>1G的储存空间</strong></li>
+<li><strong>每月5G的流量</strong></li>
+<li><strong>1个Mysql数据库</strong></li>
+<li><strong>可绑定一个顶级域名和三个子域名</strong></li>
+<li><strong>一个邮箱账户</strong></li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210910163214377.png" alt="image-20210910163214377"></p>
+<h5 id="安装或者上传应用"><a href="#安装或者上传应用" class="headerlink" title="安装或者上传应用"></a>安装或者上传应用</h5><p>各种博客程序一键安装:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210910163756104.png" alt="image-20210910163756104"></p>
+<p>或者上传已有的程序文件, 可以网站直接上传或者使用FTP上传, 如果使用FTP会提示你设置FTP密码:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210910164648342.png" alt="image-20210910164648342"></p>
+<p>我这里为了演示 直接一键安装的<code>JOOMLA</code>博客程序</p>
+<h5 id="域名绑定"><a href="#域名绑定" class="headerlink" title="域名绑定"></a>域名绑定</h5><p>如果你已经有自己的域名了, 可以直接绑定:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210910163953692.png" alt="image-20210910163953692"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210910164215330.png" alt="image-20210910164215330"></p>
+<p>然后在你的域名服务上, 进行域名解析, 可以直接使用A记录解析到<code>185.176.43.108</code>这个IP, 或者更改<code>DNS</code>记录为<code>ns5.awardspace.com,ns6.awardspace.com</code></p>
+<p>我这里直接用的是IP解析</p>
+<h5 id="访问主页"><a href="#访问主页" class="headerlink" title="访问主页"></a>访问主页</h5><p>最后浏览器输入绑定的域名进行测试, 我这边正常访问, 而且速度还不错:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210910164940227.png" alt="image-20210910164940227"></p>
+<h3 id="freehostia"><a href="#freehostia" class="headerlink" title="freehostia"></a>freehostia</h3><p>这个网站也提供免费的虚拟主机, 时长一年, 可以选择预制的PHP程序:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210910165958993.png" alt="image-20210910165958993"></p>
+<p><a href="https://www.freehostia.com/" target="_blank" rel="noopener">点击进入官网</a></p>
+<p><code>freehostia</code>给我们提供了:</p>
+<ul>
+<li><strong>250MB存储空间</strong></li>
+<li><strong>每月6G流量</strong></li>
+<li><strong>1个10MBMySQL</strong></li>
+<li><strong>3个邮箱账户</strong></li>
+</ul>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
 <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
         
@@ -1699,7 +1294,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../226.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../270.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -1718,7 +1313,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../226.html" itemprop="url">Could not resolve all dependencies for configuration app:debugRuntimeClasspath</a></h1>
+                <a class="post-title-link" href="../../270.html" itemprop="url">VPS虚拟化架构OpenVZ、KVM、Xen、Hyper-V的区别</a></h1>
         
 
         <div class="post-meta">
@@ -1730,8 +1325,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-09T09:14:19+08:00">
-                2021-03-09
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-10T12:25:19+08:00">
+                2021-09-10
               </time>
             
 
@@ -1770,20 +1365,509 @@
       
         
           
-            <h2 id="报错"><a href="#报错" class="headerlink" title="报错"></a>报错</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Could not resolve all dependencies for configuration &apos;:app:debugRuntimeClasspath&apos;.</span><br><span class="line">Could not create task &apos;:app:minifyReleaseWithR8&apos;.</span><br><span class="line">Cannot query the value of this provider because it has no value available</span><br></pre></td></tr></table></figure>
-
-<p>同时提示:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Warning:&lt;i&gt;&lt;b&gt;project &apos;:app&apos;: Unable to build kotlin-kapt plugin configuration&lt;/b&gt;</span><br><span class="line">Details: org.gradle.api.internal.tasks.DefaultTaskContainer$TaskCreationException: Could not create task &apos;:app:minifyReleaseWithR8&apos;.</span><br><span class="line">Caused by: org.gradle.api.internal.provider.MissingValueException: Cannot query the value of this provider because it has no value available.&lt;/i&gt;</span><br></pre></td></tr></table></figure>
-
-<p>同事那边代码正常编译运行, 我这边把代码拉下来后报错, 很大可能性是Studio环境问题</p>
-<p>百度试了很多方案均不奏效</p>
-<p>最后在<a href="https://stackoverflow.com/questions/64459937/could-not-create-task-appminifyreleasewithr8-cannot-query-the-value-of-this" target="_blank" rel="noopener">StackOverflow</a>上找到了答案:</p>
-<p><strong>是SDK版本和buildToolsVersion不一致导致的</strong></p>
-<p><strong>只需将buildToolsVersion版本改成本机已装SDK版本即可, 或者不改动代码 下载一个与之对应的SDK版本</strong></p>
-<p>问题解决</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+            <h4 id="1、OpenVZ"><a href="#1、OpenVZ" class="headerlink" title="1、OpenVZ"></a><strong>1、OpenVZ</strong></h4><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20210910120718.png" alt></p>
+<p>OpenVZ（简称OVZ）采用SWsoft的Virutozzo虚拟化服务器软件产品的内核，是基于Linux平台的操作系统级服务器虚拟化架构。这个架构直接调用宿主机（俗称：母机）中的内核，模拟生成出子服务器（俗称：VPS，小机），所以，它经过虚拟化后相对于母服务器，性能损失大概只有的1-3%。 当然OpenVZ可以超售，意思味着一台服务器总共16G内存，他可以开出配置为1G内存×17台或以上的子服务器。因为他的虚拟架构关系属于：不是你分配给客户多少资源，就扣除宿主机多少资源；而是客户用多少资源，就扣除宿主机多少资源，所以OpenVZ架构的VPS较为便宜。但由于存在超售因素，如果服务商毫无休止的超售会导致服务器的性能急剧下降。 OpenVZ另一个特点是，它是直接调用宿主机的内核，所以会导致部分软件无法使用，以及部分内核文件是无法修改。</p>
+<h4 id="2、KVM"><a href="#2、KVM" class="headerlink" title="2、KVM"></a><strong>2、KVM</strong></h4><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20210910120750.png" alt></p>
+<p>KVM是Linux下的全功能虚拟化架构，基于KVM架构的VPS，默认是没有系统的，可自己上传ISO或调用服务商自带的ISO手动安装系统或使用服务商提供的官方的KVM模板。这个非常适合热爱DIY自己VPS的客户。 由于KVM架构全功能虚拟化架构，甚至拥有独立的BIOS控制，所以对宿主机性能影响较大，所以基于KVM的VPS较贵，但KVM VPS相对其它架构的VPS较为自由。</p>
+<h4 id="3-Xen"><a href="#3-Xen" class="headerlink" title="3.Xen"></a><strong>3.Xen</strong></h4><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20210910121041.png" alt></p>
+<p>Xen 由剑桥大学开发，它是基于硬件的完全分割，物理上有多少的资源就只能分配多少资源，因此很难超售。可分为Xen-PV（半虚拟化），和Xen-HVM（全虚拟化）。 Xen是不能超售的，当宿主机只有16G内存以及100G硬盘时，当开Xen架构（任意一个虚拟化）的1G内存、25G硬盘的子机时，会直接占用宿主机1G内存，以及25G硬盘，所以Xen的性能，相比OpenVZ在超售的情况下要好。 Xen-PV：半虚拟化，所以它仅仅适用于linux系列VPS，但它的性能损失比较少，大概相对于宿主机的4%-8%左右。 Xen-HVM：全虚拟化，可以安装Windows或自由挂载ISO文件安装任意系统，由于是全虚拟化，所以性能损失较大，大概相对于宿主机性能损失8%-20%左右。</p>
+<h4 id="4-Hyper-V"><a href="#4-Hyper-V" class="headerlink" title="4.Hyper-V"></a><strong>4.Hyper-V</strong></h4><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20210910121019.png" alt></p>
+<p>Hyper-V是微软的一款虚拟化产品，大部分国内的VPS服务商使用这个架构（包括标准互联?），主要是因为其转为Windows定制，管理起来较为方便。目前的Hyper-V也支持Linux，只不过性能损失比较严重。 Hyper-V完美支持Windows系统，包括32位和64位。如果大家选购Hyper-V架构的VPS，强烈建议使用Windows。 Hyper-V目前不能超售内存，但可超售硬盘，硬盘是根据客户使用情况扣除。一般来说，宿主机的硬盘不会100%用完，这点不用担心。</p>
+<p><strong>总结：</strong></p>
+<p>总的来说，Xen和Hyper-V见的比较少，对于OpenVZ、KVM推荐选择KVM虚拟化。</p>
+<p><strong>本文为转载自</strong>:<a href="https://www.cnblogs.com/ydwzhang/p/10080380.html" target="_blank" rel="noopener">https://www.cnblogs.com/ydwzhang/p/10080380.html</a></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
 <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../269.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../269.html" itemprop="url">几款主流的虚拟机软件对比</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-10T11:25:19+08:00">
+                2021-09-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>说到虚拟机或者虚拟技术 容器技术, 大家可能会联想到一大堆软件, 诸如VMware、VirtualBox、Parallels 、Hyper-V、OpenVZ、Xen、KVM、Mutilpass、Docker等等</p>
+<p>今天我们选取几款比较大众化的虚拟机软件对比分析一下:</p>
+<table>
+<thead>
+<tr>
+<th>虚拟软件</th>
+<th>优势</th>
+<th>劣势</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>VMware</td>
+<td>跨平台 功能强大 易用性好</td>
+<td>收费 仅限 Intel 处理器</td>
+</tr>
+<tr>
+<td>Parallels Desktop</td>
+<td>功能丰富 和Mac融合性强, 无需重启即时切换</td>
+<td>收费 只支持Mac平台</td>
+</tr>
+<tr>
+<td>VirtualBox</td>
+<td>跨平台 开源免费</td>
+<td>资源占用相对较大</td>
+</tr>
+<tr>
+<td>Hyper-V</td>
+<td>硬虚拟化技术 性能强 稳定性好 部署简单</td>
+<td>只支持Windows平台, 不支持USB外设</td>
+</tr>
+</tbody></table>
+<h3 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h3><p>《<a href="http://code.newban.cn/270.html">VPS虚拟化架构OpenVZ、KVM、Xen、Hyper-V的区别</a>》</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../268.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../268.html" itemprop="url">一个强大的轻量级全文即时搜索工具meilisearch</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-10T10:25:19+08:00">
+                2021-09-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p><a href="https://github.com/meilisearch/MeiliSearch" target="_blank" rel="noopener">MeiliSearch</a> 是近两年开源的一个全文搜索引擎，采用Rust语言开发, 主要目标是在小数据规模下实现比 <a href="https://www.elastic.co/cn/elasticsearch/" target="_blank" rel="noopener">ElasticSearch</a> 更加快速和易用的搜索体验。设计目标针对数据在 500GB 左右的搜索需求，极快，单文件，超轻量</p>
+<p>目前已支持中文分词</p>
+<p><a href="https://github.com/meilisearch/MeiliSearch" target="_blank" rel="noopener">MeiliSearch</a> 支持的功能如下:</p>
+<ol>
+<li>开源</li>
+<li>用户量(开源搜索引擎第二名)</li>
+<li>中文分词</li>
+<li>同义词</li>
+<li>纠错</li>
+<li>高亮</li>
+<li>全文返回</li>
+<li>高级搜索</li>
+<li>停用词、停用字段</li>
+<li>加权、降权</li>
+<li>逻辑搜索</li>
+<li>唯一字段聚合</li>
+<li>分页</li>
+<li>重新索引</li>
+</ol>
+<p><a href="https://docs.meilisearch.com/" target="_blank" rel="noopener">中文文档</a></p>
+<h3 id="快速上手"><a href="#快速上手" class="headerlink" title="快速上手"></a>快速上手</h3><ol>
+<li><p>下载安装并运行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -L https://install.meilisearch.com | sh</span><br><span class="line">./meilisearch</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210910103712092.png" alt="image-20210910103712092"></p>
+<p>此时访问浏览器<code>http://localhost:7700/</code>长这样:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210910103853046.png" alt="image-20210910103853046"></p>
+<p>里面还没有数据, 接下来下载测试数据</p>
+</li>
+<li><p>下载测试数据</p>
+<p><a href="https://docs.meilisearch.com/movies.json" target="_blank" rel="noopener">movie.json</a></p>
+</li>
+<li><p>将测试数据导入至<code>meilisearch</code>数据库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl \</span><br><span class="line">  -X POST &apos;http://127.0.0.1:7700/indexes/movies/documents&apos; \</span><br><span class="line">  --data @movies.json</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>访问主页</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1:7700</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210910104053837.png" alt="image-20210910104053837"></p>
+</li>
+</ol>
+<p>搜索速度相当的快</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../267.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../267.html" itemprop="url">Git使用之如何修改commit注释</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-08T17:25:19+08:00">
+                2021-09-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>我们在开发的时候, 有时候可能会需要对历史<code>commit</code>进行注释的修改, 那么可以采用以下几种方法</p>
+<h3 id="详解"><a href="#详解" class="headerlink" title="详解"></a>详解</h3><p>分为以下三种情况:</p>
+<h5 id="1-修改最近一次commit"><a href="#1-修改最近一次commit" class="headerlink" title="1. 修改最近一次commit"></a>1. 修改最近一次<code>commit</code></h5><p>如果你只想修改最近一次<code>commit</code>的注释, 那么可以执行以下命令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit --amend</span><br></pre></td></tr></table></figure>
+
+<p>执行后会出现<code>vim</code>编辑窗口, 在里面修改注释然后保存退出即可</p>
+<h5 id="2-合并修改最近几次commit"><a href="#2-合并修改最近几次commit" class="headerlink" title="2. 合并修改最近几次commit"></a>2. 合并修改最近几次commit</h5><p>如果我们想对最近几次<code>commit</code>进行合并然后重新注释, 我们可以使用<code>reset --soft</code> 进行提交撤销操作, 比如撤销最近三次提交:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --soft HEAD^3</span><br></pre></td></tr></table></figure>
+
+<p>命令执行后, 前三次提交的内容将全部恢复到未提交状态, 此时我们可以添加注释重新提交</p>
+<h5 id="3-修改历史commit"><a href="#3-修改历史commit" class="headerlink" title="3. 修改历史commit"></a>3. 修改历史<code>commit</code></h5><p>如果需要修改的不是最近几次<code>commit</code>, 那么需要用到<code>rebase</code>指令,</p>
+<p>假设我们需要将以下第二个记录的注释进行修改:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">commit def5adef853da4cc05752bdb36577c127be71ba5</span><br><span class="line">Author: xxx</span><br><span class="line">Date:   Thu Dec 28 16:01:36 2017 +0800</span><br><span class="line"></span><br><span class="line">优化代码</span><br><span class="line"></span><br><span class="line">commit f36801544670e00b2f59a28e19017d2786c4085e</span><br><span class="line">Author: xxx</span><br><span class="line">Date:   Thu Dec 28 15:59:46 2017 +0800</span><br><span class="line"></span><br><span class="line">修复</span><br><span class="line"></span><br><span class="line">commit 00b2f59a28e19017d2786c4085e9a28e19017d278</span><br><span class="line">Author: xxx</span><br><span class="line">Date:   Thu Dec 28 16:59:46 2017 +0800</span><br><span class="line"></span><br><span class="line">修复bug</span><br><span class="line">(END)</span><br></pre></td></tr></table></figure>
+
+<p>那么我们执行以下命令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git rebase -i 00b2f59</span><br><span class="line"></span><br><span class="line">或者 </span><br><span class="line">git rebase -i HEAD~3</span><br></pre></td></tr></table></figure>
+
+<p>这里的<code>commit id</code>是需要进行修改<code>commit</code>的前一个, 命令执行后, 会自动打开<code>vim</code>文本编辑器:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">pick 00b2f59 修复bug</span><br><span class="line">pick f368015 修复</span><br><span class="line">pick def5ade 优化代码</span><br><span class="line"></span><br><span class="line"># Commands:</span><br><span class="line"># p, pick = use commit</span><br><span class="line"># r, reword = use commit, but edit the commit message</span><br><span class="line"># e, edit = use commit, but stop for amending</span><br><span class="line"># s, squash = use commit, but meld into previous commit</span><br><span class="line"># f, fixup = like &quot;squash&quot;, but discard this commit&apos;s log message</span><br><span class="line"># x, exec = run command (the rest of the line) using shell</span><br><span class="line"># d, drop = remove commit</span><br><span class="line">#</span><br><span class="line"># These lines can be re-ordered; they are executed from top to bottom.</span><br><span class="line">#</span><br><span class="line"># If you remove a line here THAT COMMIT WILL BE LOST.</span><br><span class="line">#</span><br><span class="line"># However, if you remove everything, the rebase will be aborted.</span><br><span class="line">#</span><br><span class="line"># Note that empty commits are commented out~</span><br></pre></td></tr></table></figure>
+
+<p>接下来, 我们需要对该内容进行修改, 首先我们需要来了解几个指令含义:</p>
+<ul>
+<li><strong>pick</strong>: 表示保留该<code>commit</code></li>
+<li><strong>reword</strong>: 表示修改该<code>commit</code>的注释</li>
+<li><strong>edit</strong>: 表示保留该commit  同时对代码内容进行修改</li>
+<li><strong>squash</strong>: 表示将该<code>commit</code>合并到上一个<code>commit</code> </li>
+<li><strong>fixup</strong>: 表示将该<code>commit</code>合并到上一个<code>commit</code> 同时丢弃该<code>commit</code>注释</li>
+<li><strong>exec</strong>: 执行<code>shell</code></li>
+<li><strong>drop</strong>: 删除该<code>commit</code></li>
+</ul>
+<p>这里我们使用<code>reword</code>指令进行合并, 内容修改如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">pick 00b2f59 修复bug</span><br><span class="line">reword f368015 修复</span><br><span class="line">pick def5ade 优化代码</span><br><span class="line"></span><br><span class="line"># Commands:</span><br><span class="line"># p, pick = use commit</span><br><span class="line"># r, reword = use commit, but edit the commit message</span><br><span class="line"># e, edit = use commit, but stop for amending</span><br><span class="line"># s, squash = use commit, but meld into previous commit</span><br><span class="line"># f, fixup = like &quot;squash&quot;, but discard this commit&apos;s log message</span><br><span class="line"># x, exec = run command (the rest of the line) using shell</span><br><span class="line"># d, drop = remove commit</span><br><span class="line">#</span><br><span class="line"># These lines can be re-ordered; they are executed from top to bottom.</span><br><span class="line">#</span><br><span class="line"># If you remove a line here THAT COMMIT WILL BE LOST.</span><br><span class="line">#</span><br><span class="line"># However, if you remove everything, the rebase will be aborted.</span><br><span class="line">#</span><br><span class="line"># Note that empty commits are commented out~</span><br></pre></td></tr></table></figure>
+
+<p>表示对<code>f368015</code>这个<code>commit</code>进行注释修改</p>
+<p><code>wq</code>内容保存后, 将进入到注释修改编辑页:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># This is a combination of 2 commits. </span><br><span class="line"></span><br><span class="line">修复</span><br><span class="line"># Please enter the commit message for your changes. Lines starting </span><br><span class="line"></span><br><span class="line"># with &apos;#&apos; will be ignored, and an empty message aborts the commit.</span><br></pre></td></tr></table></figure>
+
+<p>我们可以对注释进行修改,然后保存退出即可</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
         
@@ -1823,7 +1907,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="../5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../5/">5</a><span class="page-number current">6</span><a class="page-number" href="../7/">7</a><span class="space">&hellip;</span><a class="page-number" href="../29/">29</a><a class="extend next" rel="next" href="../7/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="../5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../5/">5</a><span class="page-number current">6</span><a class="page-number" href="../7/">7</a><span class="space">&hellip;</span><a class="page-number" href="../33/">33</a><a class="extend next" rel="next" href="../7/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1869,7 +1953,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">286</span>
+                  <span class="site-state-item-count">327</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1882,7 +1966,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">90</span>
+                  <span class="site-state-item-count">92</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
@@ -1926,7 +2010,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

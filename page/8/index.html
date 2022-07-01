@@ -287,7 +287,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../214.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../257.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -306,7 +306,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../214.html" itemprop="url">汇编语言之行x86_32汇编</a></h1>
+                <a class="post-title-link" href="../../257.html" itemprop="url">测试服务器端口是否打通的若干种方法</a></h1>
         
 
         <div class="post-meta">
@@ -318,8 +318,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-28T16:14:19+08:00">
-                2021-01-28
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-01T11:02:19+08:00">
+                2021-09-01
               </time>
             
 
@@ -358,23 +358,75 @@
       
         
           
-            <h2 id="两大汇编语法"><a href="#两大汇编语法" class="headerlink" title="两大汇编语法"></a>两大汇编语法</h2><p>两种语法主要是针对x86架构汇编而言，对于其他架构没有这么一个说法</p>
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>有时候我们会碰到服务端程序连接不上的情况, 要么是<code>ip</code>有问题 要么是端口有问题</p>
+<p><code>ip</code>我们可以使用<code>ping</code>的方式检测是否正常</p>
+<p>那么端口检测 可以通过以下几种方式检测:</p>
+<h3 id="1-使用ssh"><a href="#1-使用ssh" class="headerlink" title="1.使用ssh"></a>1.使用ssh</h3><p>我们知道 连接服务器环境直接使用<code>ssh</code>指令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh  用户名@ip -p 端口</span><br></pre></td></tr></table></figure>
+
+<p>示例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh  root@117.21.33.45 -p 22</span><br></pre></td></tr></table></figure>
+
+<p>那么我们可以利用<code>ssh</code>来测试 端口通与不通</p>
+<p>比如测试端口<code>5900</code>是否打通:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -v root@117.21.33.45 -p 5900 //-v表示打印连接日志</span><br></pre></td></tr></table></figure>
+
+<p>如果连接日志中出现<code>Connection established.</code>字样表示端口是通的, 否则不通</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901113602398.png" alt="image-20210901113602398"></p>
+<h3 id="2-使用wget"><a href="#2-使用wget" class="headerlink" title="2.使用wget"></a>2.使用wget</h3><p><code>wget</code>是<code>linux</code>下的下载工具，需要先安装.</p>
+<p>用法: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget ip:port</span><br></pre></td></tr></table></figure>
+
+<p>如果端口存在 则连接成功:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901114002996.png" alt="image-20210901114002996"></p>
+<p>否则 连接失败:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901114035402.png" alt="image-20210901114035402"></p>
+<h3 id="3-使用telnet"><a href="#3-使用telnet" class="headerlink" title="3.使用telnet"></a>3.使用telnet</h3><p><code>telnet</code>是<code>windows</code>平台自带指令，<code>windows</code>机器可以直接用 如果是<code>linux</code>机器，需要先安装<code>telnet</code>.</p>
+<p>用法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">telnet ip port</span><br></pre></td></tr></table></figure>
+
+<p>如果端口存在 则连接成功:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901114244225.png" alt="image-20210901114244225"></p>
+<p>否则连接失败:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901114304583.png" alt="image-20210901114304583"></p>
+<h3 id="4-使用nc"><a href="#4-使用nc" class="headerlink" title="4.使用nc"></a>4.使用nc</h3><p><code>nc</code>是<code>netcat</code>的简写 是一个非常强大的网络工具</p>
+<p>直接使用以下指令即可测试端口是否打通:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -zv 服务器ip 端口</span><br></pre></td></tr></table></figure>
+
+<p>nc的能力除此之外 它还可以:</p>
 <ul>
-<li>Intel型语法: Intel官方语法，在Windows平台原生环境中采用该语法</li>
-<li>AT&amp;T型 :非Intel官方语法，在Unix/Linux的GCC编译环境中采用该语法</li>
+<li>模拟服务端侦听指定端口</li>
+<li>模拟客户端对服务端进行连接</li>
+<li>机器之间传输文件</li>
+<li>机器之间网络测速 </li>
 </ul>
-<h2 id="原生环境搭建"><a href="#原生环境搭建" class="headerlink" title="原生环境搭建"></a>原生环境搭建</h2><ul>
-<li>windows系统</li>
-<li>RedAsm集成工具</li>
-</ul>
-<h2 id="指令和语法"><a href="#指令和语法" class="headerlink" title="指令和语法"></a>指令和语法</h2><p>在让我们看看 x86_64 平台提供了哪些寄存器给我们使用，</p>
-<ul>
-<li>16个通用寄存器，例如，rax，rbx，rcx，rdx等</li>
-<li>6个16位段寄存器，例如：cs，ds，等</li>
-</ul>
+<h5 id="模拟服务端和客户端"><a href="#模拟服务端和客户端" class="headerlink" title="模拟服务端和客户端"></a>模拟服务端和客户端</h5><p>我们在使用阿里云服务器的时候, 除了要在服务器给应用部署端口之外 还需要再阿里云后台安全组中开放端口映射 这样外网才能对服务器程序进行访问</p>
+<p>有时候 我们仅仅是需要测试安全组策略是否打通, 假设我们在安全组中配置外网<code>4001</code>端口映射到服务器<code>80</code>端口, 这个时候我们可以在服务端模拟一个<code>80</code>侦听端口:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -l 80</span><br></pre></td></tr></table></figure>
+
+<p>然后外网主机同样使用<code>nc</code>进行模拟访问:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -zv 服务器ip 4001</span><br></pre></td></tr></table></figure>
+
+<p>当然你想使用<code>telnet</code>模拟客户端也可以:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">telnet 服务器ip 4001</span><br></pre></td></tr></table></figure>
+
+<p>如果连接成功 表示端口策略打通 连接拒绝则不通 倘若连接超时 有可能服务端程序有问题 </p>
+<h3 id="5-使用traceroute"><a href="#5-使用traceroute" class="headerlink" title="5.使用traceroute"></a>5.使用<code>traceroute</code></h3><p><code>traceroute</code>可以用来探测主机和目标机的路由节点, 同样可以用来检测端口是否打通 </p>
+<p>用法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">traceroute -n ip -p 端口</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-使用nmap"><a href="#6-使用nmap" class="headerlink" title="6. 使用nmap"></a>6. 使用<code>nmap</code></h3><p><code>nmap</code>可以扫描机器端口</p>
+<p>用法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap ip -p 端口</span><br></pre></td></tr></table></figure>
+
+<p>以下状态表示扫描成功:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901121229352.png" alt="image-20210901121229352"></p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
 <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
         
@@ -423,7 +475,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../213.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../255.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -442,7 +494,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../213.html" itemprop="url">GCC工具链都包含哪些工具</a></h1>
+                <a class="post-title-link" href="../../255.html" itemprop="url">docker中安装ubuntu桌面环境</a></h1>
         
 
         <div class="post-meta">
@@ -454,8 +506,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T16:14:19+08:00">
-                2021-01-27
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-31T18:02:19+08:00">
+                2021-08-31
               </time>
             
 
@@ -494,1619 +546,1575 @@
       
         
           
-            <h2 id="GCC"><a href="#GCC" class="headerlink" title="GCC"></a>GCC</h2><p> GCC原名为GNU C语言编译器（GNU C Compiler），原本只能处理C语言。后来随着功能的扩展,支持的语言种类越来越多 ,故更名为<em>GCC</em>（GNU Compiler Collection，GNU编译器套件）</p>
-<p>因此 GCC既可以指代C编译器,也可以指代GNU编译套件</p>
-<p>其套件囊括了许多子工具:</p>
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>使用<code>docker</code>, 总会碰到需要桌面环境的时候, 这里介绍<code>docker</code>中安装<code>ubuntu</code>桌面环境的方法, 非常方便, 只需要一个浏览器就能访问</p>
+<h3 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h3><ol>
+<li><p>拉取镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull dorowu/ubuntu-desktop-lxde-vnc</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建并启动容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker run -id \</span><br><span class="line">-p 6080:80 \</span><br><span class="line">-p 8900:5900 \</span><br><span class="line">-e VNC_PASSWORD=1234 \</span><br><span class="line">--name=c_desktop \</span><br><span class="line">-h c_desktop \</span><br><span class="line">-v $PWD/dev/shm:/dev/shm \</span><br><span class="line">dorowu/ubuntu-desktop-lxde-vnc</span><br></pre></td></tr></table></figure>
+
+<p>参数说明:</p>
 <ul>
-<li><p>gcc: C 编译器</p>
-</li>
-<li><p>g++: C++ 编译器</p>
-</li>
-<li><p>cpp: C 预处理器</p>
-</li>
-<li><p>as: 汇编器</p>
-</li>
-<li><p>ld: 连接器</p>
-</li>
-<li><p>objcopy: 目标文件翻译器,用于从连接器输出中创建一个ROM 映像</p>
-</li>
-<li><p>objdump: 目标文件阅读器, 用于反汇编目标文件</p>
-</li>
-<li><p>make: make 工具</p>
-</li>
-<li><p>gdb: 源代码调试器</p>
-</li>
+<li><strong>-p 6080：80 将容器的80端口映射到主机的6080端口 用于浏览器访问</strong></li>
+<li><strong>-p 8900：5900 将容器的5900端口映射到主机的8900端口 用于vnc客户端访问</strong></li>
+<li><strong>-e VNC_PASSWORD=1234 设置远程登录密码</strong></li>
+<li><strong>-v $PWD/dev/shm:/dev/shm将主机中当前目录挂载到容器</strong></li>
+<li><strong>-h 设置容器的hostname</strong> </li>
+<li><strong>–name=c_desktop 给容器取个名称</strong></li>
+<li><strong>$PWD表示当前所在目录</strong></li>
 </ul>
-<h2 id="GCC工具链"><a href="#GCC工具链" class="headerlink" title="GCC工具链"></a>GCC工具链</h2><p>一个程序从代码编译到机器执行,中间需要经历很多步骤,比如从预编译,编译,到汇编和连接, 这一系列环环相扣过程中涉及到的GNU工具集,称之为GCC工具链</p>
-<p>在windows平台中,我们有许多的图形化IDE可以选择,一般编译工具链都集成进了软件内部,无需开发者关心,但是在Linux平台,基本以命令行的方式进行操作,那么对于开发者来说,需要了解每个工具的作用和具体使用方法</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../212.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../212.html" itemprop="url">汇编语言之GNU ARM</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-25T16:14:19+08:00">
-                2021-01-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="什么是GNU"><a href="#什么是GNU" class="headerlink" title="什么是GNU"></a>什么是GNU</h2><p>GNU最开始其实是一个<strong>操作系统</strong>,旨为打造一个开源免费自由的操作系统,目前操作系统还在完善中</p>
-<p><strong>GNU计划</strong>: 最初目标是创建一套完全自由的操作系统GNU 和相应的软件</p>
-<p><strong>GCC</strong> :（GNU Compiler Collection）GNU编译器套件,GNU提供的一整套的工具集,这套工具集中包含了汇编器,编译器和链接器,二进制转换,调试工具等</p>
-<p><strong>GCC优势</strong>:</p>
-<ul>
-<li>免费开源</li>
-<li>贴近系统底层,功能强大,灵活性高</li>
-<li>跨平台，方便<a href="http://code.newban.cn/201.html">交叉编译</a></li>
-</ul>
-<p><strong>GCC劣势</strong>:</p>
-<ul>
-<li>工具基本采用命令行方式,学习和使用门槛较高</li>
-</ul>
-<p>接下来我们要学习的就是GNU计划众多的产物之一<strong>GNU FOR ARM</strong></p>
-<h2 id="汇编器与指令集"><a href="#汇编器与指令集" class="headerlink" title="汇编器与指令集"></a>汇编器与指令集</h2><ol>
-<li><p><strong>什么是汇编器</strong></p>
-<p>将汇编语言翻译成机器码的工具</p>
-</li>
-<li><p><strong>什么是编译器</strong></p>
-<p>将高级语言翻译成机器语言或者汇编语言的工具</p>
-</li>
-<li><p><strong>汇编器和编译器的区别</strong></p>
-<p>汇编器的服务对象是汇编语言,编译器的服务对象是高级语言</p>
-</li>
-<li><p><strong>汇编器和汇编语法伪指令的关系</strong></p>
-<p>不同的CPU对应不同的指令集 ,不同的汇编器对应不同的伪指令集和汇编语法。</p>
-<p>每种汇编器都可以有自己的伪指令集和自己的语法</p>
 </li>
 </ol>
-<p>使用不同的汇编器汇编同一个cpu架构的汇编代码,所对应的指令绝对是一致的,但伪指令各有千秋</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">;使用ARM官方的汇编器</span><br><span class="line">  	AREA test, CODE</span><br><span class="line">	mov R3,#5</span><br><span class="line">    END		</span><br><span class="line">    </span><br><span class="line">;使用GNU的汇编器</span><br><span class="line">    .text    ;伪指令</span><br><span class="line">    mov R3,#5   ;传送指令皆为mov</span><br><span class="line">    .end</span><br></pre></td></tr></table></figure>
+<p>容器运行成功后, 接下来可以通过两种方式进入ubuntu桌面:</p>
+<h3 id="第一种-浏览器访问"><a href="#第一种-浏览器访问" class="headerlink" title="第一种 浏览器访问"></a>第一种 浏览器访问</h3><p>在浏览器地址栏输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://容器ip:6080</span><br></pre></td></tr></table></figure>
 
-<h2 id="常见的汇编器"><a href="#常见的汇编器" class="headerlink" title="常见的汇编器"></a>常见的汇编器</h2><ul>
-<li><strong>MASM汇编器</strong>:微软旗下专为<strong>x86架构</strong>打造的一款汇编器,支持8086汇编和win32汇编</li>
-<li><strong>GNU汇编器</strong> : 简称为<strong>GAS</strong>,是GNU旗下的一款免费开源跨平台汇编器其子集中包含了支持多种架构的汇编器,比如<code>GNU FOR ARM</code>就是单独面向ARM架构的汇编器,此外还有<code>GNU FOR X86</code>等</li>
-<li><strong><a href="https://www.nasm.us/pub/nasm/releasebuilds/2.14.03rc2/win64/" target="_blank" rel="noopener">NASM汇编器</a></strong>: 是一款面向<strong>x86架构</strong>的汇编器,支持8086汇编和win32汇编,同时可跨平台, 免费开源</li>
-<li><strong>ARMASM汇编器</strong>:ARM官方原生的汇编器,集成在了ADS工具上,适用于<strong>ARM架构</strong>,我们也一般称之为<strong>ADS汇编器</strong></li>
-</ul>
-<h2 id="两种ARM汇编器的各自用途"><a href="#两种ARM汇编器的各自用途" class="headerlink" title="两种ARM汇编器的各自用途"></a>两种ARM汇编器的各自用途</h2><ul>
-<li><strong>ARMASM汇编器</strong>:一般用于windows平台</li>
-<li><strong>GAS汇编器</strong>:支持windows平台和linux平台，方便跨平台<a href="http://code.newban.cn/201.html">交叉编译</a></li>
-</ul>
-<p>由于移动设备如<strong>安卓和iphone</strong>底层都是采用GNU的编译环境，我们如果要进行移动端的开发，那么势必需要掌握GNU ARM, 同时和ADS和KEIL收费工具相比,GUN工具全部免费,方便开发者进行使用</p>
-<blockquote>
-<p>如果你是从事android开发,有兴趣可以去翻NDK r17以下版本的库,里面用的编译工具就是GCC</p>
-</blockquote>
-<h2 id="GNU-ARM开发环境搭建"><a href="#GNU-ARM开发环境搭建" class="headerlink" title="GNU ARM开发环境搭建"></a>GNU ARM开发环境搭建</h2><p>我们需要准备以下两个工具:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901102900618.png" alt="image-20210901102900618"></p>
+<p>然后输入密码即可进入</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901103136185.png" alt="image-20210901103136185"></p>
+<h3 id="第二种-使用VNC客户端访问"><a href="#第二种-使用VNC客户端访问" class="headerlink" title="第二种 使用VNC客户端访问"></a>第二种 使用VNC客户端访问</h3><p>地址栏输入目标<code>ip</code>和端口, 注意这里端口是8900而不是6080</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901145352885.png" alt="image-20210901145352885"></p>
+<p>输入密码登录后长这样:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901145321808.png" alt="image-20210901145321808"></p>
+<p>另外 如果你主机端使用的是<code>mac</code>平台, 还可以直接使用其自带的屏幕共享工具充当<code>VNC</code>工具使</p>
+<p>全局搜索<code>Screen Sharing</code> :</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901105353641.png" alt="image-20210901105353641"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901145607320.png" alt="image-20210901145607320"></p>
+<p>输入密码登录后界面:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901145708985.png" alt="image-20210901145708985"></p>
+<p>相比使用<code>vnc</code>客户端, <code>Mac</code>自带的工具虽然方便 但是流畅度会弱一些</p>
+<h3 id="特别注意"><a href="#特别注意" class="headerlink" title="特别注意"></a>特别注意</h3><p><code>vnc</code>连接端口默认是<code>5900</code>我们在外网映射的时候不建议直接使用<code>5900</code>端口映射, 可能会出现连接不上的情况, 本文采用的是<code>8900</code></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../254.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../254.html" itemprop="url">linux中安装vscode实现在线IDE远程开发</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-31T18:02:19+08:00">
+                2021-08-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>一台服务器, 一个浏览器 就能实现远程随时随地开发, 无论是在公司 家里 出差 甚至在地铁使用手机</p>
+<p>接下来介绍两种在线IDE的实现方式:</p>
+<h3 id="第一种-使用docker模式"><a href="#第一种-使用docker模式" class="headerlink" title="第一种 使用docker模式"></a>第一种 使用docker模式</h3><p>首先服务端需要安装Docker环境, 然后拉取相关镜像, 步骤如下:</p>
 <ol>
-<li><strong>GCC编译套件</strong></li>
-<li><strong>安卓模拟器</strong></li>
-</ol>
-<p>GCC编译套件根据cpu架构和操作系统的不同,又分为了很多子类:</p>
-<ul>
-<li><strong>纯ARM裸机</strong>: 对应<code>arm-none-eabi</code>工具包</li>
-<li><strong>ARM架构+Linux操作系统</strong>:对应<code>arm-none-linux-eabi</code>工具包</li>
-</ul>
-<p>由于接下来我们选择在安卓模拟器上进行开发学习,因此我们选择<code>arm-none-linux-eabi</code>这套工具来进行代码的编译</p>
-<p><a href="http://code.newban.cn/202.html">工具下载</a></p>
-<p><a href="http://code.newban.cn/215.html">GCC工具的具体使用</a></p>
-<h2 id="伪指令和伪操作"><a href="#伪指令和伪操作" class="headerlink" title="伪指令和伪操作"></a>伪指令和伪操作</h2><ol>
-<li><p>注释</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@我是注释</span><br></pre></td></tr></table></figure>
+<li><p>拉取镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull codercom/code-server</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>段的声明</p>
-<ul>
-<li><p>代码段</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.text</span><br><span class="line">	@代码</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>数据段</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.data</span><br><span class="line">	@代码</span><br></pre></td></tr></table></figure>
+<li><p>创建并启动容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">docker run -id \</span><br><span class="line">-u root \</span><br><span class="line">-p 4001:4000 \</span><br><span class="line">-p 8443:8080 \</span><br><span class="line">--name=code_server \</span><br><span class="line">-e PASSWORD=1234 \</span><br><span class="line">-h code_server \</span><br><span class="line">-v $PWD/coder:/home/coder \</span><br><span class="line">codercom/code-server</span><br></pre></td></tr></table></figure>
 
-
-</li>
+<p>参数说明:</p>
+<ul>
+<li><strong>-u root 表示启用root用户权限 这一步很关键 不然很多文件无法操作</strong></li>
+<li><strong>-p 8443：8080 将容器的8080端口映射到主机的8443端口 用于浏览器访问</strong></li>
+<li><strong>-p 4001:4000  将容器的4000端口映射到主机的4001端口 用于开发过程中代码修改后实时更新查看</strong></li>
+<li><strong>-e PASSWORD=1234 设置远程登录密码</strong></li>
+<li><strong>-v  $PWD/coder:/home/coder将主机中当前目录挂载到容器</strong></li>
+<li><strong>-h 设置容器的hostname</strong> </li>
+<li><strong>–name=code_server 给容器取个名称</strong></li>
+<li><strong>$PWD表示当前所在目录</strong></li>
 </ul>
 </li>
 </ol>
+<p>容器成功启动后, 直接在浏览器地址栏输入服务端ip和<code>8443</code>端口即可进入<code>ide</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://ip:8443</span><br></pre></td></tr></table></figure>
+
+<p>输入密码后:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901153731968.png" alt="image-20210901153731968"></p>
+<h5 id="远程登录密码修改"><a href="#远程登录密码修改" class="headerlink" title="远程登录密码修改"></a>远程登录密码修改</h5><p><code>code-server</code>中有一个配置文件<code>config.yaml</code>里面存储着登录密码 端口等相关信息:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">bind-addr: 127.0.0.1:8080</span><br><span class="line">auth: password</span><br><span class="line">password: 1234</span><br><span class="line">cert: false</span><br></pre></td></tr></table></figure>
+
+<p>该配置文件路径为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/root/.config/code-server/config.yaml</span><br></pre></td></tr></table></figure>
+
+<p>直接对该文件进行修改即可</p>
+<p>为了方便随时修改配置文件, 我们在启动容器的时候可以对容器配置文件进行挂载:</p>
+<p>首先将配置文件拷贝至宿主机中:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker cp code_server:/root/.config/code-server/config.yaml $PWD/config</span><br></pre></td></tr></table></figure>
+
+<p>然后创建并启动容器:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">docker run -id \</span><br><span class="line">-u root \</span><br><span class="line">-p 4001:4000 \</span><br><span class="line">-p 8443:8080 \</span><br><span class="line">--name=code_server \</span><br><span class="line">-e PASSWORD=1234 \</span><br><span class="line">-h code_server \</span><br><span class="line">-v $PWD/config/config.yaml:/root/.config/code-server/config.yaml \</span><br><span class="line">-v $PWD/coder:/home/coder \</span><br><span class="line">codercom/code-server</span><br></pre></td></tr></table></figure>
+
+<p>这样 直接在宿主机中修改配置文件就可以了</p>
+<h3 id="第二种-使用第三方服务"><a href="#第二种-使用第三方服务" class="headerlink" title="第二种 使用第三方服务"></a>第二种 使用第三方服务</h3><p>第一种方式相对来说比较吃系统资源, 除此之外我们还可以使用第三方的在线IDE服务, 比如使用<code>coding.net</code>提供的<code>CloudStudio</code>工作空间</p>
+<p>其实就是在线<code>vscode</code>, 长这样:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901165231064.png" alt="image-20210901165231064"></p>
+<p><code>CloudStudio</code>提供了多种环境预设模板, 非常方便, 省下了安装环境的时间</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901165820056.png" alt="image-20210901165820056"></p>
+<p>而且还支持预览调试:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/run-react-preview.png" alt="预览窗口"></p>
+<p><code>coding.net</code>提供两种服务器环境:</p>
 <ul>
-<li><p>自定义一个段</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.section .pangshu @定义一个名为.panghsu的段</span><br></pre></td></tr></table></figure>
+<li><strong>一种是官方免费的服务器</strong>: 每天4个小时的使用时间 机器性能还不错 使劲造</li>
+<li><strong>一种的使用自己的服务器</strong>: 没有时间限制</li>
+</ul>
+<p>看个人需求了, 如果临时测试用的话 用免费的就行, 如果开发重心转移到远程的话 建议还是使用自己的服务器:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901170414332.png" alt="image-20210901170414332"></p>
+<p>可以通过<code>ssh</code>或者用户名密码的方式连接我们自己的服务器:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901170155859.png" alt="image-20210901170155859"></p>
+<p>相比第一种<code>Docker</code>自建<code>IDE</code>, 从体验和便捷度上来说完胜</p>
+<p>而且IDE本身程序是托管于<code>coding.net</code>, 不占用我们服务器资源, 对于小型服务器的用户而言, 优先考虑采用<code>CloudStudio</code></p>
+<p>唯一让人感觉坑爹的是<code>coding.net</code>改版太频繁, 没过几周估计你连入口都找不到</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
 
 
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../253.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../253.html" itemprop="url">给Multipass容器安装桌面环境</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-31T17:02:19+08:00">
+                2021-08-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p><code>linux</code>环境下的桌面程序多达十几种, 比较流行的有<code>Unity</code>、<code>Gnome3</code>、<code>kde</code>、<code>mate</code>、<code>xfce</code>、<code>lxde</code></p>
+<p>我们来看看它们分别都长什么样:</p>
+<p><strong>Unity:</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/841693-20180305010017582-310753998.png" alt="img"></p>
+<p><strong>Gnome2:</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/841693-20180305005834169-1731748738.png" alt="img"></p>
+<p><strong>Gnome3:</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/841693-20180305005812083-619129357.png" alt="img"></p>
+<p><strong>KDE:</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/841693-20180305010144808-1350683214.png" alt="img"></p>
+<p><strong>mate:</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/111835zdvcddj8pmd7wp87.jpg" alt="ubuntu_mate_1510"></p>
+<p><strong>xfce:</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/841693-20180305010336904-1794804327.png" alt="img"></p>
+<p><strong>lxde:</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/841693-20180305010502862-1164967659.png" alt="img"></p>
+<p>不过上面这前四个体量都不小, 对于寄生于主机的小容器系统而言, 我希望找一个轻量简洁满足正常功能的桌面即可</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/841693-20180305010638218-1272553780.png" alt="img"></p>
+<p>于是在<code>lxde</code>和<code>xfec</code>之中进行选择 最后我选择了<code>xfec</code></p>
+<h3 id="xfec安装步骤"><a href="#xfec安装步骤" class="headerlink" title="xfec安装步骤"></a><code>xfec</code>安装步骤</h3><ol>
+<li><p>更新源</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装<code>Xfce</code>桌面程序</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install xfce4</span><br></pre></td></tr></table></figure>
 
 
 </li>
-</ul>
+</ol>
+<p>   安装过程中会让你选择显示管理器, 选择<code>gdm3</code>即可</p>
+<p>   <img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210831172358907.png" alt="image-20210831172358907"></p>
 <ol start="3">
-<li><p>函数或者标签的声明</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fun:  @在GNU环境中标签后面需要加冒号,而原生环境则不用</span><br><span class="line">	mov R0,#4</span><br><span class="line">	bx lr</span><br></pre></td></tr></table></figure>
+<li><p>安装<code>VNCServer</code> 用于远程桌面连接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install tightvncserver</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>数据的声明</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.byte @定义单字节数据，例如：.byte 0x14；</span><br><span class="line">.short @定义双字节数据，例如：.short 0x1000；</span><br><span class="line">.long @定义四字节数据，例如：.long 0x10001000；</span><br><span class="line">.quad @定义8字节，如：.quad 0x1234567890abcd；</span><br><span class="line">.float @定义浮点数，如：.float 0f-314159265358979323846264338327/95028841971.693993751E-40 @ -pi</span><br><span class="line"></span><br><span class="line">@字符串定义</span><br><span class="line">.string “abcd”, “efgh”, “hello!”</span><br><span class="line">.asciz “qwer”, “sun”, “world!”</span><br><span class="line">.ascii “welcome/0”</span><br><span class="line">@需要注意的是：.ascii伪操作定义的字符串需要自行添加结尾字符’/0’。</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>数据的批量定义</p>
-<ul>
-<li><p>格式如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.rept @重复次数</span><br><span class="line">  @数据定义代码</span><br><span class="line">.endr @结束重复定义</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>示例</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.rept 3</span><br><span class="line">.byte 0x23</span><br><span class="line">.endr</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>关于align</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">.global _start</span><br><span class="line">_start:</span><br><span class="line">    mov r0, #0x12</span><br><span class="line">	</span><br><span class="line">    .byte 0x12</span><br><span class="line">    .byte 0x34</span><br><span class="line"></span><br><span class="line">    ;.align 后跟为0，1，2或者不跟参数时都当作是4字节对齐</span><br><span class="line">.align </span><br><span class="line">    .byte 0x56</span><br><span class="line"></span><br><span class="line">    ; 2^3次方，8字节对齐</span><br><span class="line">.align 3</span><br><span class="line">    .word 0x1</span><br><span class="line">	</span><br><span class="line">    ; 2^5次访，32字节对齐</span><br><span class="line">.align 5</span><br><span class="line">    .word 0x2	</span><br><span class="line">	</span><br><span class="line">    ; 填充0x12345678，直到16字节对齐</span><br><span class="line">.balignl 16,0x12345678	</span><br><span class="line"></span><br><span class="line">    ;字符串</span><br><span class="line">    .ascii &quot;abc123&quot;</span><br><span class="line">	</span><br><span class="line">.align	</span><br><span class="line">    ;.ascii和.asciz的区别是，.asciz会在字符串后自动添加结束符\0. </span><br><span class="line">    .asciz &quot;def456&quot;</span><br><span class="line"></span><br><span class="line">    mov r0, #0xab</span><br><span class="line">	</span><br><span class="line">    ;.balign[wl] align, fill_value, max_padding</span><br><span class="line">.align</span><br><span class="line">    ; .balign 后跟的align参数必须为2的次方，否则会报错，按字节填充， fill_value要为字节</span><br><span class="line">.balign 8, 0x12</span><br><span class="line"></span><br><span class="line">    ; .balignw 按2字节填充</span><br><span class="line">.balignw 8, 0x3456	</span><br><span class="line"></span><br><span class="line">    ; .balignl 按4字节填充</span><br><span class="line">.balignl 8, 0xabcdef01</span><br></pre></td></tr></table></figure>
+<li><p>启动vnc服务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vncserver</span><br></pre></td></tr></table></figure>
 
-<p>反汇编后的结果：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">00000000</span> &lt;_start&gt;:</span><br><span class="line">   <span class="number">0</span>:	e3a00012 	mov	r0, #<span class="number">18</span></span><br><span class="line">   <span class="number">4</span>:	<span class="number">3412</span>      	.<span class="keyword">short</span>	<span class="number">0x3412</span>              <span class="comment">// .byte 0x12 和 .byte 0x34</span></span><br><span class="line">   <span class="number">6</span>:	<span class="number">0000</span>      	.<span class="keyword">short</span>	<span class="number">0x0000</span>              <span class="comment">// .align 引起的填充</span></span><br><span class="line">   <span class="number">8</span>:	<span class="number">00000056</span> 	andeq	r0, r0, r6, asr r0  <span class="comment">// .byte 0x56</span></span><br><span class="line">   c:	e1a00000 	nop			; (mov r0, r0)  <span class="comment">// .align 3 8字节对齐</span></span><br><span class="line">  <span class="number">10</span>:	<span class="number">00000001</span> 	.word	<span class="number">0x00000001</span>          <span class="comment">// .word 0x1</span></span><br><span class="line">  <span class="number">14</span>:	e1a00000 	nop			; (mov r0, r0)  <span class="comment">// .align 5 ,32字节对齐</span></span><br><span class="line">  <span class="number">18</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">1</span>c:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">20</span>:	<span class="number">00000002</span> 	.word	<span class="number">0x00000002</span>          <span class="comment">// .word 0x2	</span></span><br><span class="line">  <span class="number">24</span>:	<span class="number">12345678</span> 	.word	<span class="number">0x12345678</span>          <span class="comment">// .balignl 16,0x12345678,填充0x12345678，直到16字节对齐</span></span><br><span class="line">  <span class="number">28</span>:	<span class="number">12345678</span> 	.word	<span class="number">0x12345678</span></span><br><span class="line">  <span class="number">2</span>c:	<span class="number">12345678</span> 	.word	<span class="number">0x12345678</span></span><br><span class="line">  <span class="number">30</span>:	<span class="number">31636261</span> 	.word	<span class="number">0x31636261</span>          <span class="comment">// .ascii "abc123"</span></span><br><span class="line">  <span class="number">34</span>:	<span class="number">3332</span>      	.<span class="keyword">short</span>	<span class="number">0x3332</span></span><br><span class="line">  <span class="number">36</span>:	<span class="number">0000</span>      	.<span class="keyword">short</span>	<span class="number">0x0000</span></span><br><span class="line">  <span class="number">38</span>:	<span class="number">34666564</span> 	.word	<span class="number">0x34666564</span>          <span class="comment">// .asciz "def456"</span></span><br><span class="line">  <span class="number">3</span>c:	<span class="number">3635</span>      	.<span class="keyword">short</span>	<span class="number">0x3635</span></span><br><span class="line">  <span class="number">3</span>e:	<span class="number">00</span>          	.byte	<span class="number">0x00</span></span><br><span class="line">  <span class="number">3f</span>:	e3a000ab 	mov	r0, #<span class="number">171</span>	; <span class="number">0xab</span>      <span class="comment">// mov r0, #0xab, 这里就不对齐了</span></span><br><span class="line">  <span class="number">43</span>:	<span class="number">00</span>          	.byte	<span class="number">0x00</span></span><br><span class="line">  <span class="number">44</span>:	<span class="number">12121212</span> 	.word	<span class="number">0x12121212</span>          <span class="comment">// .balign 8, 0x12</span></span><br><span class="line">  <span class="number">48</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">4</span>c:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">50</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">54</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">58</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">5</span>c:	e1a00000 	nop			; (mov r0, r0)</span><br></pre></td></tr></table></figure>
+<p>提示我们输入访问密码:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901175901616.png" alt="image-20210901175901616"></p>
+<p>这里的密码用于接下来的远程登录用</p>
+</li>
+</ol>
+<h3 id="开始远程访问"><a href="#开始远程访问" class="headerlink" title="开始远程访问"></a>开始远程访问</h3><h5 id="第一种-vnc客户端访问模式"><a href="#第一种-vnc客户端访问模式" class="headerlink" title="第一种 vnc客户端访问模式"></a>第一种 <code>vnc</code>客户端访问模式</h5><p><code>Mac</code>平台可直接执行以下指令安装:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install Caskroom/cask/vnc-viewer</span><br></pre></td></tr></table></figure>
+
+<p>或者下载安装包:</p>
+<p><a href="https://url97.ctfile.com/f/21042697-511264719-a281de" target="_blank" rel="noopener">点击下载</a>（访问密码：312306）</p>
+<p>安装<code>vnc</code>客户端后在地址栏输入目标<code>ip</code>和端口, 端口默认为<code>5901</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901180352068.png" alt="image-20210901180352068"></p>
+<p>输入密码登录后发现只有灰屏幕:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901180441212.png" alt="image-20210901180441212"></p>
+<p>接下来我们需要配置一下<code>vncserver</code>的环境:</p>
+<ol>
+<li><p>首先关闭<code>vncserver</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vncserver -kill :1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改前对配置文件进行备份</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp ~/.vnc/xstartup ~/.vnc/xstartup.bak</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改配置文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim ~/.vnc/xstartup</span><br></pre></td></tr></table></figure>
+
+<p>内容替换为如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">xrdb $HOME/.Xresources</span><br><span class="line">startxfce4 &amp;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改配置文件权限</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x ~/.vnc/xstartup</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重新启动<code>vnc</code>服务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vncserver</span><br></pre></td></tr></table></figure>
 
 </li>
 </ol>
-<h2 id="指令和伪指令的区别"><a href="#指令和伪指令的区别" class="headerlink" title="指令和伪指令的区别"></a>指令和伪指令的区别</h2><ul>
-<li><p><strong>指令</strong>: 有与之对应的机器码,能被cpu所识别,和编译器无关</p>
+<p>最后重新连接远程桌面, 如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210901181507448.png" alt="image-20210901181507448"></p>
+<h5 id="第二种-浏览器访问模式"><a href="#第二种-浏览器访问模式" class="headerlink" title="第二种 浏览器访问模式"></a>第二种 浏览器访问模式</h5><p>具体参考:</p>
+<p>《<a href="http://code.newban.cn/260.html">如何使用Web浏览器访问Ubuntu环境下的vnc桌面</a>》</p>
+<h3 id="指令补充"><a href="#指令补充" class="headerlink" title="指令补充"></a>指令补充</h3><ol>
+<li><p>如果你需要设置<code>vncserver</code>开机自启动:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start vncserver@:1.service &amp;&amp; systemctl enable vncserver@:1.service</span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>伪指令</strong>:没有与之对应的机器码,无法被cpu识别,只能被编译器识别,不同编译器伪指令不一样</p>
-<p>不同的CPU对应不同的指令集；不同的汇编器对应不同的语法和伪指令集 </p>
+<li><p>你想查看<code>vnserver</code>服务是否开启:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">systemctl status vncserver@:.service</span><br><span class="line"></span><br><span class="line">或者</span><br><span class="line">systemctl is-enabled vncserver@.service</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>你想重启<code>vncserver</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart vncserver@:1.service</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>你想设置<code>vnc</code>分辨率:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vncserver -geometry 1280x1024</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>你想修改<code>vncserver</code>登录密码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vncpasswd</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+</li>
+</ol>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../252.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../252.html" itemprop="url">在Mac平台上使用Multipass安装Ubuntu虚拟机</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-31T10:02:19+08:00">
+                2021-08-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>最近需要在<code>Ubuntu</code>系统上安装应用进行测试, 无奈手头上只有一台<code>mac</code>电脑, 怎么办呢</p>
+<p>如果使用第三方诸如<code>Vmware</code>虚拟机软件是在太费劲了</p>
+<p>好在<code>Ubuntu</code>官方给咱建议了一款虚拟机软件<code>Multipass</code>, 相比<code>Vmware</code>更加轻量, 只需一行命令快速创建Ubuntu容器</p>
+<p>注意了 <code>Multipass</code>目前只支持创建<code>Ubuntu</code>容器, 但是除了<code>Mac</code>平台外, <code>Multipass</code>还可以在<code>Windows</code>和<code>Linux</code>平台上使用</p>
+<p>本文直介绍<code>Mac</code>平台的用法, 其他的可以参考<a href="https://multipass.run/" target="_blank" rel="noopener">官网</a></p>
+<h2 id="开始使用"><a href="#开始使用" class="headerlink" title="开始使用"></a>开始使用</h2><h3 id="1-Multipass安装"><a href="#1-Multipass安装" class="headerlink" title="1.Multipass安装"></a>1.<code>Multipass</code>安装</h3><p>首先需要安装<code>Multipass</code>工具</p>
+<p><a href="https://url97.ctfile.com/f/21042697-510890551-fbedfb" target="_blank" rel="noopener">下载地址</a>（访问密码：312306）</p>
+<p>如果电脑装了<code>brew</code>可以直接命令行下载安装:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew cask install multipass</span><br></pre></td></tr></table></figure>
+
+<p>下载安装成功后, 执行以下命令可以查看当前软件版本:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">multipass --version</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-创建Ubuntu容器"><a href="#2-创建Ubuntu容器" class="headerlink" title="2.创建Ubuntu容器"></a>2.创建Ubuntu容器</h3><p>可以通过以下指令查看可供下载的Ubuntu镜像:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">multipass find</span><br></pre></td></tr></table></figure>
+
+<p>下载最新版的<code>Ubuntu</code>镜像并运行:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">multipass launch --name ubuntu</span><br></pre></td></tr></table></figure>
+
+<p>命令执行后将自动下载并后台运行</p>
+<p>如果你想自定义配置创建可以参考如下方式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">multipass launch -n vm01 -c 4 -m 4G -d 40G</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>-n, –name: 名称</li>
+<li>-c, –cpus: cpu核心数, 默认: 1</li>
+<li>-m, –mem: 内存大小, 默认: 1G</li>
+<li>-d, –disk: 硬盘大小, 默认: 5G</li>
+</ul>
+<h3 id="3-操作容器"><a href="#3-操作容器" class="headerlink" title="3.操作容器"></a>3.操作容器</h3><ol>
+<li><p><strong>进入容器</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 如果对应实例没有运行的话，会主动运行对应实例</span><br><span class="line">multipass shell 容器名称</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210831150818963.png" alt="image-20210831150818963"></p>
+<p>此时便进入到了<code>Ubuntu</code>环境中, 在此可以执行相关的<code>linux</code>指令</p>
+<p>如果你不想进入容器直接执行<code>linux</code>指令, 可以使用<code>multipass exec</code>指令, 比如我想在容器中创建一个名为ABC文件夹:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">multipass exec 容器名 mkdir ABC</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>查看容器信息</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">multipass info 容器名</span><br></pre></td></tr></table></figure>
+
+<p>显示结果:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">State:          Running</span><br><span class="line">IPv4:           192.168.64.2</span><br><span class="line">Release:        Ubuntu 20.04.3 LTS</span><br><span class="line">Image hash:     97bb9f79af52 (Ubuntu 20.04 LTS)</span><br><span class="line">Load:           0.00 0.00 0.00</span><br><span class="line">Disk usage:     1.3G out of 4.7G</span><br><span class="line">Memory usage:   136.0M out of 981.3M</span><br><span class="line">Mounts:         --</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>主机和容器数据交互</strong></p>
+<p>第一种 使用挂载数据卷的方式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">multipass mount $HOME 容器名</span><br><span class="line"></span><br><span class="line"># 或者指定容器目录</span><br><span class="line">multipass mount $HOME 容器名:目录名</span><br></pre></td></tr></table></figure>
+
+<p>如果要卸载数据卷:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">multipass umount 容器名</span><br></pre></td></tr></table></figure>
+
+<p>第二种 <code>transfer</code> 进行文件复制传输</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">multipass transfer 主机文件 容器名:容器目录</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>容器配置自动化</strong></p>
+<p>为了保持开发环境和线上环境一致性 同时节省部署时间 <code>multipass</code>给我们提供了<code>--cloud-init</code>选项进行容器启动初始化配置:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">multipass launch --name ubuntu --cloud-init config.yaml</span><br></pre></td></tr></table></figure>
+
+<p>上面 <code>config.yaml</code> 则是容器的初始化配置文件，内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#cloud-config</span><br><span class="line"></span><br><span class="line">runcmd:</span><br><span class="line">  - curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -</span><br><span class="line">  - sudo apt-get install -y nodejs</span><br></pre></td></tr></table></figure>
+
+<p><code>runcmd</code> 可以指定容器 <strong>首次启动</strong> 时运行的命令，上面表示首次启动自动下载安装 Node.js </p>
+</li>
+</ol>
+<h3 id="容器管理"><a href="#容器管理" class="headerlink" title="容器管理"></a>容器管理</h3><ol>
+<li><p>查看所有创建的容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">multipass list</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动和停止运行容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 停止ubuntu和ubuntu1</span><br><span class="line">multipass stop ubuntu ubuntu1</span><br><span class="line"># 启动ubuntu</span><br><span class="line">multipass start ubuntu</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对 所有容器统一操作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 启动所有容器</span><br><span class="line">multipass start --all</span><br><span class="line"># 停止所有容器</span><br><span class="line">multipass stop --all</span><br><span class="line"># 所有容器放入回收站</span><br><span class="line">multipass delete --all</span><br><span class="line"># 彻底删除所有容器</span><br><span class="line">multipass delete --purge --all</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>整体操作来看, 感觉和<code>docker</code>很像, 如果你只需要一个<code>ubuntu</code>系统, 那么选择<code>Multipass</code>还是很方便的, 节省大量的时间</p>
+<p><code>multipass</code>和<code>docker</code>区别:</p>
+<p><code>docker</code>比<code>multipass</code>更加轻量一些, <code>multipass</code>更倾向于独立虚拟机, 分配独立的<code>cpu</code>和内存, 而<code>docker</code>容器是共享宿主<code>cpu</code>和内存</p>
+<p>如果你要跑比较消耗资源的程序, 建议使用<code>docker</code>, 可以充分使用宿主的性能, <code>multipass</code>需要预算分配程序需要的硬件资源, 分多了不仅浪费而且还影响宿主性能, 分少了也没法动态调整只能新开示例</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../250.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../250.html" itemprop="url">js数组的增删改查总结</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-23T16:02:19+08:00">
+                2021-08-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>但估计很多小伙伴初学正则时已经被其奇形怪状的字符给劝退了, 今天我们来将其解剖一下</p>
+<h3 id="增"><a href="#增" class="headerlink" title="增"></a>增</h3><p><strong>第一种 基于<code>splice</code>封装的扩展函数:</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//首部插入单个元素</span></span><br><span class="line"><span class="built_in">Array</span>.prototype.addFirst = <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.splice(<span class="number">0</span>, <span class="number">0</span>, e);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//尾部插入单个元素</span></span><br><span class="line"><span class="built_in">Array</span>.prototype.addLast = <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.splice(<span class="keyword">this</span>.length, <span class="number">0</span>, e);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//指定角标位置插入单个元素</span></span><br><span class="line"><span class="built_in">Array</span>.prototype.addByIndex = <span class="function"><span class="keyword">function</span> (<span class="params">i,e</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.splice(i,<span class="number">0</span>,e);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>第二种 使用JS自带的函数 :</strong></p>
+<p>分别有<code>push</code> <code>unshift</code> <code>concat</code>和<code>splice</code>四个函数</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//在尾部插入</span></span><br><span class="line"><span class="keyword">var</span> arr = [];</span><br><span class="line"><span class="keyword">var</span> len = arr.push(<span class="number">1</span>); <span class="comment">//插入一个元素</span></span><br><span class="line"><span class="keyword">var</span> len = arr.push(<span class="number">2</span>,<span class="number">3</span>);<span class="comment">//连续插入多个元素</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//在头部插入</span></span><br><span class="line"><span class="keyword">var</span> len = arr.unshift(<span class="number">0</span>);</span><br><span class="line"><span class="keyword">var</span> len = arr.unshift(<span class="number">-2</span>,<span class="number">-1</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//在尾部插入</span></span><br><span class="line"><span class="keyword">var</span> newArr = arr.concat(<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>);<span class="comment">//返回一个新的数组对象</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//在头部插入多个元素</span></span><br><span class="line">arr.splice(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0.2</span>,<span class="number">0.4</span>,<span class="number">0.6</span>,<span class="number">0.8</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="删"><a href="#删" class="headerlink" title="删"></a>删</h3><p><strong>第一种 基于<code>splice</code>封装的扩展函数:</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.remove = <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.splice(<span class="keyword">this</span>.indexOf(e), <span class="number">1</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>第二种 使用JS自带函数</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//使用 pop</span></span><br><span class="line"><span class="keyword">var</span> item = arr.pop(); <span class="comment">//删除最后一个元素并返回该项</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//使用 shift</span></span><br><span class="line"><span class="keyword">var</span> item = arr.shift(); <span class="comment">//删除第一个元素并返回该项</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//使用slice裁剪函数</span></span><br><span class="line"><span class="keyword">var</span> arr2 = arr.slice(<span class="number">2</span>,<span class="number">6</span>);<span class="comment">//取出角标2至6的元素 组成一个新元素</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//使用delete 该方法删除掉数组中的元素后，会把该下标出的值置为undefined,数组的长度不会变</span></span><br><span class="line"><span class="keyword">var</span> arr = [<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="string">'c'</span>,<span class="string">'d'</span>]; </span><br><span class="line"><span class="keyword">delete</span> arr[<span class="number">1</span>]; </span><br><span class="line"><span class="comment">//结果为:["a", undefined × 1, "c", "d"]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="改"><a href="#改" class="headerlink" title="改"></a>改</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.replace = <span class="function"><span class="keyword">function</span> (<span class="params">origin, target</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.splice(<span class="keyword">this</span>.indexOf(origin), <span class="number">1</span>,target);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 或者使用循环</span></span><br><span class="line"><span class="built_in">Array</span>.prototype.replace = <span class="function"><span class="keyword">function</span> (<span class="params">origin, target</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.map(<span class="function">(<span class="params">value</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (value == origin) &#123;</span><br><span class="line">      <span class="keyword">return</span> target;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      value;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="查"><a href="#查" class="headerlink" title="查"></a>查</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> index = arr.indexOf(<span class="string">"A"</span>);<span class="comment">//查找元素A在数组中的位置 返回-1表示不存在该元素</span></span><br></pre></td></tr></table></figure>
+
+<p>关于查找部分, 更多方法详见:《<a href="https://code.newban.cn/247.html">原生JS中判断数组中是否包含某个元素的若干种方法</a>》</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../251.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../251.html" itemprop="url">跨服务器数据迁移</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-23T16:02:19+08:00">
+                2021-08-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>最近有台云服务器到期, 续费太贵, 打算换一台便宜的, 之前服务器上使用docker部署了几个网站, 涉及到数据和程序迁移的问题, 在此做个记录</p>
+<h3 id="持久化数据迁移"><a href="#持久化数据迁移" class="headerlink" title="持久化数据迁移"></a>持久化数据迁移</h3><p>首先使用<code>scp</code>指令进行数据卷的迁移, 也就是跨服务器数据拷贝</p>
+<p>假设两台机器IP分别为：</p>
+<ul>
+<li><p>服务器A: 114.238.161.75，</p>
+</li>
+<li><p>服务器B: 143.224.34.73。</p>
 </li>
 </ul>
-<p>例子:ARM原生编译器和GNU FOR ARM</p>
-<h2 id="两种汇编器语法对比一览表"><a href="#两种汇编器语法对比一览表" class="headerlink" title="两种汇编器语法对比一览表"></a>两种汇编器语法对比一览表</h2><table>
+<p>比如我在A服务器上操作，需要将B服务器上<code>/home/lk/</code>目录下所有的文件全部复制到本地的<code>/root</code>目录下，命令为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r  root@143.224.34.73:/home/lk /root</span><br></pre></td></tr></table></figure>
+
+<p>具体过程为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@XX ~]# scp -r root@43.224.34.73:/home/lk /root</span><br><span class="line">root@43.224.34.73&apos;s password: </span><br><span class="line">k2.sql                                                     100%    0     0.0KB/s   00:00    </span><br><span class="line">k.zip                                                      100%  176     0.2KB/s   00:00    </span><br><span class="line">.bash_history                                              100%   32     0.0KB/s   00:00    </span><br><span class="line">.bash_logout                                               100%   18     0.0KB/s   00:00    </span><br><span class="line">.bashrc                                                    100%  231     0.2KB/s   00:00    </span><br><span class="line">k3.sql                                                     100%    0     0.0KB/s   00:00    </span><br><span class="line">.bash_profile                                              100%  193     0.2KB/s   00:00    </span><br><span class="line">[root@XX ~]# ls</span><br></pre></td></tr></table></figure>
+
+<p>或者在A服务器上将<code>/root/lk</code>目录下所有的文件传输到B的<code>/home/lk/cpfile</code>目录下，命令为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r /root/lk root@143.224.34.73:/home/lk/cpfile</span><br></pre></td></tr></table></figure>
+
+<p>具体过称为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@XX lk]# scp -r /root/lk root@43.224.34.73:/home/lk/cpfile</span><br><span class="line">root@43.224.34.73&apos;s password: </span><br><span class="line">k2.sql                                                     100%    0     0.0KB/s   00:00    </span><br><span class="line">k3.sql                                                     100%    0     0.0KB/s   00:00    </span><br><span class="line">.bash_profile                                              100%  193     0.2KB/s   00:00    </span><br><span class="line">.bash_logout                                               100%   18     0.0KB/s   00:00    </span><br><span class="line">.bash_history                                              100%   32     0.0KB/s   00:00    </span><br><span class="line">k.zip                                                      100%  176     0.2KB/s   00:00    </span><br><span class="line">.bashrc                                                    100%  231     0.2KB/s   00:00    </span><br><span class="line">[root@XX lk]#</span><br></pre></td></tr></table></figure>
+
+<p>此外 加上<code>-p</code>参数还可以保留原文件的修改时间，访问权限:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r  -p root@143.224.34.73:/home/lk /root</span><br></pre></td></tr></table></figure>
+
+<h5 id="scp后台运行"><a href="#scp后台运行" class="headerlink" title="scp后台运行"></a>scp后台运行</h5><ol>
+<li><p>方式一 使用<code>nohup</code>, 同时尾部加<code>&amp;</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup scp -r  -p root@143.224.34.73:/home/lk /root &amp;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong>nohup</strong>: 表示忽略<code>hup</code>信号, 终端关闭任务进程也不销毁</p>
+</li>
+<li><p><strong>&amp;</strong>: 表示后台运行</p>
+</li>
+</ul>
+</li>
+<li><p>方式二 使用<code>bg</code>+<code>disown</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1.输入ctrl + z 暂停任务</span><br><span class="line">2.输入jobs查看任务号</span><br><span class="line">3.使用 bg %任务号 将该任务号放入后台</span><br><span class="line">4.使用 disown -h %任务号 使后台任务忽略hup信号</span><br></pre></td></tr></table></figure>
+
+<p>如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/image-20210913143619200.png" alt="image-20210913143619200"></p>
+<p><strong>注</strong>: 执行<code>disown</code>后, 任务被移出<code>jobs</code>, 使用<code>jobs</code>指令已经无法查看该任务, 可以使用<code>ps</code>进程查看指令判断任务是否已经结束:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -aux</span><br></pre></td></tr></table></figure>
+
+
+
+
+</li>
+</ol>
+<h3 id="Docker容器迁移"><a href="#Docker容器迁移" class="headerlink" title="Docker容器迁移"></a>Docker容器迁移</h3><ol>
+<li><p>首先 需要将容器保存为镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker commit 容器名称 镜像名称</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后 将保存的镜像进行压缩</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker save -o xxx.tar 镜像名称</span><br><span class="line"></span><br><span class="line">//如果多个镜像同时打包</span><br><span class="line">docker save [images] [images] &gt; [name.tar]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>scp</code>指令将压缩包传至新服务器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r xxx.tar root@143.224.34.73:/home/lk/cpfile</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在新服务器中进行镜像恢复(新服务器需要先安装Docker)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker load &lt; xxx.tar</span><br><span class="line">或</span><br><span class="line">docker load -i xxx.tar</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后创建并运行容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name 容器名 -p 12309:80 -d 镜像名</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="数据库迁移"><a href="#数据库迁移" class="headerlink" title="数据库迁移"></a>数据库迁移</h3><p>详情查看《<a href="https://code.newban.cn/131.html">mysql使用命令导入和导出sql文件</a>》</p>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><p><code>docker</code>容器在创建时配置的挂载目录, 如果宿主中挂载的目录不存在则自动创建并写入默认数据, 如果目录已经存在则使用已存在的目录和数据</p>
+<p>也就是说我们在进行容器迁移重新运行时, 不用担心原先目录下的数据会被覆盖重写 </p>
+<p>但是有一点需要注意的是, 原先目录中的配置文件如果包含原服务器中的<code>ip</code>配置, 需要手动修改</p>
+<p>比如我们迁移一个<code>wordpress</code>, 在新服务器中使用以下参数进行启动:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">docker run -id \</span><br><span class="line">--name=wordpress_sex \</span><br><span class="line">-p 7778:80 \</span><br><span class="line">-h wordpress_sex \</span><br><span class="line">-v /root/wordpress/sex_www:/var/www/html \</span><br><span class="line">-e WORDPRESS_DB_HOST=119.33.15.174:3306 \</span><br><span class="line">-e WORDPRESS_DB_USESR=root \</span><br><span class="line">-e WORDPRESS_DB_PASSWORD=123456 \</span><br><span class="line">-e WORDPRESS_DB_NAME=wordpress_sex \</span><br><span class="line">-d wordpress:latest</span><br></pre></td></tr></table></figure>
+
+<p>由于源文件目录和文件未被覆盖重写, 那么上面数据库相关的配置参数不起作用, 我们需要手动进如源文件目录, 对<code>wp-config.php</code>中数据库配置进行修改, 否则无法访问</p>
+<h5 id="数据库内网访问保证访问速度"><a href="#数据库内网访问保证访问速度" class="headerlink" title="数据库内网访问保证访问速度"></a>数据库内网访问保证访问速度</h5><p>一般来说 我们最好避免直接使用公网<code>ip</code>访问数据库, 而是使用<code>Docker</code>内部桥接网络的方式以容器名替代<code>ip</code>的方式进行访问, 这样既能减少迁移的风险, 又能加快数据的读取 </p>
+<p>网站的访问流畅度和数据库的访问速度有非常大的关系, 经测试, 使用桥接网络访问数据库的速度远快于使用公网映射访问  </p>
+<p>大部分人刚开始会将网站的访问速度归结于服务器硬件配置、带宽、程序语言甚至是数据库的数据量太大和<code>sql</code>查询语句不合理上, 殊不知 数据库的访问速度也是重中之重</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../249.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../249.html" itemprop="url">快速掌握正则表达式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-18T16:02:19+08:00">
+                2021-08-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>正则是一把利器, 用好了编程事半功倍</p>
+<p>但估计很多小伙伴初学正则时已经被其奇形怪状的字符给劝退了, 今天我们来将其解剖一下</p>
+<h3 id="三个部分"><a href="#三个部分" class="headerlink" title="三个部分"></a>三个部分</h3><p>正则主要包含三个部分:</p>
+<ul>
+<li><strong>小括号() :</strong> 表示分组</li>
+<li><strong>中括号[] :</strong> 表示需要匹配的单个字符 以及表示区间范围或者随机样本</li>
+<li><strong>大括号{}:</strong> 表示重复出现的次数</li>
+</ul>
+<p><strong>比如:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a&#123;3&#125;b&#123;2&#125;</span><br><span class="line"></span><br><span class="line">或者</span><br><span class="line">[a]&#123;3&#125;[b]&#123;2&#125;</span><br></pre></td></tr></table></figure>
+
+<p>表示字符<code>a</code>重复出现3次 字符<code>b</code>重复出现2次</p>
+<p>可匹配以下字符串:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aaabb</span><br></pre></td></tr></table></figure>
+
+<p>如果我想将字符<code>a</code>和字符<code>b</code>分离, 可以使用小括号分组功能, 比如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(a&#123;3&#125;)(b&#123;2&#125;)</span><br><span class="line"></span><br><span class="line">或者</span><br><span class="line">([a]&#123;3&#125;)([b]&#123;2&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>那么<code>$1</code>表示取出第一组内容<code>aaa</code>, <code>$2</code>取出第二组内容<code>bb</code></p>
+<p>在匹配单个字符的时候, 中括号写与不写都一样, 中括号主要的作用在于区间匹配和样本匹配:</p>
+<p><strong>区间匹配:</strong></p>
+<p>使用字符<code>-</code>表示区间</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[a-z] //表示匹配小写a到z的26个英文字母 但凡出现26个字母中的任何一个 都匹配成功</span><br><span class="line"></span><br><span class="line">[a-zA-Z0-9] //表示匹配大小写26个字母加上0到9十个数字中的任何一个</span><br></pre></td></tr></table></figure>
+
+<p><strong>样本匹配:</strong></p>
+<p>提供一个有限个数的字符的样本, 然后在样本中随机匹配</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[abcd] //表示匹配abcd这四个英文字母中任意一个</span><br></pre></td></tr></table></figure>
+
+<p><strong>举例:</strong></p>
+<p>假如我写了一个正则表达式如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[ab][cd]</span><br></pre></td></tr></table></figure>
+
+<p>那么它将匹配到四个:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ac</span><br><span class="line">ad</span><br><span class="line">bc</span><br><span class="line">bd</span><br></pre></td></tr></table></figure>
+
+<p>是不是感觉像排列组合, 没错</p>
+<p>在样本匹配模式下, <strong>中括号中的内容相当于取或</strong>, 在正则中取或有一个专门的符号, 用<code>|</code>表示</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[ab] 匹配a或b </span><br><span class="line">a|b  匹配a或b</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">那么:</span><br><span class="line">[ab][cd]  也可以写成 (a|b)(c|d)</span><br></pre></td></tr></table></figure>
+
+<p>至此, 正则最核心的功能我们就学完了</p>
+<h3 id="扩展部分"><a href="#扩展部分" class="headerlink" title="扩展部分"></a>扩展部分</h3><p><strong>关于出现次数:</strong></p>
+<ul>
+<li><p>字符<code>?</code>: 表示重复出现零次或一次</p>
+</li>
+<li><p>字符<code>*</code>: 表示出现零次或多次</p>
+</li>
+<li><p>字符<code>+</code>: 表示出现一次或多次</p>
+</li>
+</ul>
+<p>示例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a?b   //可以匹配b 和ab</span><br><span class="line">a*b   //可以匹配b 或者a....b </span><br><span class="line">a+b   //可以匹配ab 或者a....b</span><br></pre></td></tr></table></figure>
+
+<p>如果放中括号中:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[a?]   //可以匹配a或者?</span><br><span class="line">[a*]   //可以匹配a或者*</span><br><span class="line">[a+]   //可以匹配a或者+</span><br></pre></td></tr></table></figure>
+
+<p>也就是说一旦放到中括号中, 这三个字符将失去表示次数的含义, 成为一个普通的匹配字符</p>
+<p><strong>关于匹配内容:</strong></p>
+<ul>
+<li>字符<code>.</code>: 表示匹配除了回车和换行外的任意字符</li>
+<li>字符<code>^</code>: 表示限定开头内容</li>
+<li>字符<code>$</code>: 表示限定结束内容</li>
+</ul>
+<p>我们挨个举例说明:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#123;3&#125;b  //表示任意字符出现三次然后再出现b</span><br></pre></td></tr></table></figure>
+
+<p>可以匹配到以下内容:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">aaab</span><br><span class="line">xxxb</span><br><span class="line">yyyb</span><br><span class="line">kjfb</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>如果我加个<code>^</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">^1.&#123;3&#125;b //表示需要匹配的内容必须以1开头</span><br></pre></td></tr></table></figure>
+
+<p>假如我有两个字符串变量:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String data1=&quot;1aaab&quot;; //匹配成功</span><br><span class="line">String data2=&quot;gg1aaab&quot;; //匹配失败</span><br></pre></td></tr></table></figure>
+
+<p>如果我去掉这个<code>^</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1.&#123;3&#125;b</span><br></pre></td></tr></table></figure>
+
+<p>那么:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String data1=&quot;1aaab&quot;; //匹配成功</span><br><span class="line">String data2=&quot;gg1aaab&quot;; //匹配成功</span><br></pre></td></tr></table></figure>
+
+<p>也就是说<code>^</code>这个限定符, 是针对整个字符串进行匹配, 需要整体满足条件, 而不加限定符, 则可以进行局部匹配</p>
+<p><code>$</code>和<code>^</code>同理:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#123;3&#125;b$  //表示需要匹配的内容必须以b结尾</span><br></pre></td></tr></table></figure>
+
+<p>如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String data1=&quot;aaab&quot;; //匹配成功</span><br><span class="line">String data2=&quot;aaabg&quot;; //匹配失败</span><br></pre></td></tr></table></figure>
+
+<p>注意: 如果字符<code>^</code>放到中括号中则表示取反</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[^a] //表示除了字符a外任意字符都行</span><br></pre></td></tr></table></figure>
+
+<p>学到这, 基本上可以实现大部分的正则匹配了</p>
+<h3 id="升级"><a href="#升级" class="headerlink" title="升级"></a>升级</h3><p>为了方便开发, 正则提供了常用字符的简易写法, 也可以称之为<strong>别名</strong></p>
+<p>比如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[0-9] 可以使用 \d 代替</span><br><span class="line"></span><br><span class="line">[a-zA-Z_0-9] 可以使用 \w 代替</span><br><span class="line"></span><br><span class="line">[\t\n\x0B\f\r] 可以使用 \s 代替</span><br></pre></td></tr></table></figure>
+
+<p>如果要取反, 那么直接将小写变成大写:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">\D 表示 [^0-9]</span><br><span class="line"></span><br><span class="line">\W 表示 [^a-zA-Z_0-9] </span><br><span class="line"></span><br><span class="line">\S 表示 [^\t\n\x0B\f\r]</span><br></pre></td></tr></table></figure>
+
+<p>现在 我们再来看几个常用的正则表达式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//手机号正则匹配</span><br><span class="line">^1[34578][0-9]&#123;9&#125;$</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//年月日正则匹配</span><br><span class="line">^\d&#123;4&#125;-\d&#123;2&#125;-\d&#123;2&#125;$</span><br></pre></td></tr></table></figure>
+
+<p>是不是感觉和蔼可亲多了呢</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../247.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../247.html" itemprop="url">原生JS中判断数组中是否包含某个元素的若干种方法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-18T15:02:19+08:00">
+                2021-08-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="第一种-使用indexOf方法"><a href="#第一种-使用indexOf方法" class="headerlink" title="第一种 使用indexOf方法"></a>第一种 使用<code>indexOf</code>方法</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = [<span class="string">"A"</span>, <span class="string">"B"</span>, <span class="string">"C"</span>, <span class="string">"D"</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> index = arr.indexOf(<span class="string">"A"</span>);</span><br><span class="line"><span class="comment">//如果返回-1 则表示不存在</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="第二种-使用find方法"><a href="#第二种-使用find方法" class="headerlink" title="第二种 使用find方法"></a>第二种 使用<code>find</code>方法</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = [<span class="string">"A"</span>, <span class="string">"B"</span>, <span class="string">"C"</span>, <span class="string">"D"</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> element = arr.find(<span class="function"><span class="keyword">function</span>(<span class="params">value</span>)</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> value == <span class="string">"A"</span>;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">//如果没有找到返回undefined 否则返回符合条件的元素</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="第三种-使用findIndex方法"><a href="#第三种-使用findIndex方法" class="headerlink" title="第三种 使用findIndex方法"></a>第三种 使用<code>findIndex</code>方法</h3><p>和<code>find</code>方法类似, 只不过返回值不一样</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = [<span class="string">"A"</span>, <span class="string">"B"</span>, <span class="string">"C"</span>, <span class="string">"D"</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> index = arr.find(<span class="function"><span class="keyword">function</span>(<span class="params">value</span>)</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> value == <span class="string">"A"</span>;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">//如果没有找到返回-1 否则返回符合条件元素的角标</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="第四种-使用for循环"><a href="#第四种-使用for循环" class="headerlink" title="第四种 使用for循环"></a>第四种 使用<code>for</code>循环</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = [<span class="string">"A"</span>, <span class="string">"B"</span>, <span class="string">"C"</span>, <span class="string">"D"</span>];</span><br><span class="line"></span><br><span class="line">arr.forEach(<span class="function"><span class="params">e</span>=&gt;</span>&#123;</span><br><span class="line">  	<span class="keyword">if</span>(e==<span class="string">"A"</span>)&#123;</span><br><span class="line">      <span class="comment">//找到元素</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="第五种-使用includes方法"><a href="#第五种-使用includes方法" class="headerlink" title="第五种 使用includes方法"></a>第五种 使用<code>includes</code>方法</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = [<span class="string">"A"</span>, <span class="string">"B"</span>, <span class="string">"C"</span>, <span class="string">"D"</span>];</span><br><span class="line"></span><br><span class="line">arr.includes(<span class="string">"A"</span>);</span><br><span class="line"><span class="comment">//返回true表示存在 否则返回false</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="第六种-使用some方法"><a href="#第六种-使用some方法" class="headerlink" title="第六种 使用some方法"></a>第六种 使用<code>some</code>方法</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = [<span class="string">"A"</span>, <span class="string">"B"</span>, <span class="string">"C"</span>, <span class="string">"D"</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> index = arr.some(<span class="function"><span class="keyword">function</span>(<span class="params">value</span>)</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> value == <span class="string">"A"</span>;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">//返回true表示存在 否则返回false</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="第七中-使用filter方法"><a href="#第七中-使用filter方法" class="headerlink" title="第七中 使用filter方法"></a>第七中 使用<code>filter</code>方法</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = [<span class="string">"A"</span>, <span class="string">"B"</span>, <span class="string">"C"</span>, <span class="string">"D"</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> newArr = arr.filter(<span class="function"><span class="keyword">function</span>(<span class="params">value</span>)</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> value == <span class="string">"A"</span>;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">//返回一个新数组, 如果新数组有数据 表示存在</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="第八中-自定义扩展方法"><a href="#第八中-自定义扩展方法" class="headerlink" title="第八中 自定义扩展方法"></a>第八中 自定义扩展方法</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Array</span>.prototype.has = <span class="function"><span class="keyword">function</span> (<span class="params"> target</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>.includes(target);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../248.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../248.html" itemprop="url">JS使用正则从文本中提取所有的url</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-18T15:02:19+08:00">
+                2021-08-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><p>有一段文本如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">我是文本</span><br><span class="line">![](https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fn.sinaimg.cn%2Ftranslate%2F620%2Fw910h510%2F20180429%2FfvFl-fzrwiaz1256884.jpg&amp;refer=http%3A%2F%2Fn.sinaimg.cn&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1631068659&amp;t=f21770640c21b19d6236c33ac13f77c3)</span><br><span class="line"></span><br><span class="line">[点击下载](http:it.newban.cn)</span><br><span class="line"></span><br><span class="line">![](https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210106181201.png)</span><br></pre></td></tr></table></figure>
+
+<p>需要将里面所有的非图片<code>url</code>提取出来并替换</p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><ol>
+<li><code>url</code>提取代码如下:</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">let</span> allReg = <span class="keyword">new</span> <span class="built_in">RegExp</span>(<span class="string">"[^!]\\[.*\\]\\((http.+)\\)"</span>, <span class="string">"g"</span>);</span><br><span class="line"></span><br><span class="line">   <span class="keyword">let</span> result;</span><br><span class="line">  <span class="keyword">let</span> allArr = [];</span><br><span class="line">  <span class="keyword">while</span> ((result = urlReg.exec(data)) != <span class="literal">null</span>) &#123;</span><br><span class="line">    getShortUrl(result[<span class="number">1</span>], (value) =&gt; &#123;</span><br><span class="line">   </span><br><span class="line">      allArr.push(value)</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"><span class="comment">// allArr里面装着所有匹配到的url</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><code>url</code>替换;</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//比如将所有的链接替换成A</span></span><br><span class="line">allArr.forEach(<span class="function"><span class="params">e</span>=&gt;</span>&#123;</span><br><span class="line">  data.replace(e,<span class="string">"A"</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="RegExp对象介绍"><a href="#RegExp对象介绍" class="headerlink" title="RegExp对象介绍"></a>RegExp对象介绍</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> reg=<span class="keyword">new</span> <span class="built_in">RegExp</span>(<span class="string">"[^!]\\[.*\\]\\((http.+)\\)"</span>,<span class="string">"g"</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">//或者简写成</span></span><br><span class="line"><span class="keyword">let</span> reg=<span class="regexp">/[^!]\\[.*\\]\\((http.+)\\)/g</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="参数"><a href="#参数" class="headerlink" title="参数:"></a>参数:</h4><p>第一个参数填入正则表达式, 第二个参数填入正则修饰符,其中<code>g</code>表示全局匹配</p>
+<h5 id="正则表达式修饰符"><a href="#正则表达式修饰符" class="headerlink" title="正则表达式修饰符:"></a>正则表达式修饰符:</h5><table>
 <thead>
 <tr>
-<th>GNU ARM汇编</th>
-<th>ADS ARM汇编</th>
+<th align="center">修饰符</th>
+<th align="center">描述</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>“@”或“/<em>…</em>/”</td>
-<td>“;”</td>
+<td align="center">i</td>
+<td align="center">执行对大小写不敏感的匹配。</td>
 </tr>
 <tr>
-<td>.include</td>
-<td>GET</td>
+<td align="center">g</td>
+<td align="center">执行全局匹配（查找所有匹配而非在找到第一个匹配后停止）。</td>
 </tr>
 <tr>
-<td>.equ</td>
-<td>EQU</td>
-</tr>
-<tr>
-<td>.global</td>
-<td>EXPORT</td>
-</tr>
-<tr>
-<td>.extern</td>
-<td>IMPORT</td>
-</tr>
-<tr>
-<td>.long</td>
-<td>DCD</td>
-</tr>
-<tr>
-<td>.end</td>
-<td>END</td>
-</tr>
-<tr>
-<td>entry:</td>
-<td>ENTRY</td>
-</tr>
-<tr>
-<td>.text</td>
-<td>AREA Init,CODE,READONLY</td>
-</tr>
-<tr>
-<td>.data</td>
-<td>AREA Block,DATA,READWRITE</td>
-</tr>
-<tr>
-<td>.macro</td>
-<td>MACRO</td>
-</tr>
-<tr>
-<td>.endm</td>
-<td>MEND</td>
+<td align="center">m</td>
+<td align="center">执行多行匹配。</td>
 </tr>
 </tbody></table>
-<h2 id="汇编语言和C语言交互"><a href="#汇编语言和C语言交互" class="headerlink" title="汇编语言和C语言交互"></a>汇编语言和C语言交互</h2><h4 id="1-引入其他源文件函数"><a href="#1-引入其他源文件函数" class="headerlink" title="1.引入其他源文件函数"></a>1.引入其他源文件函数</h4><p>使用<code>import</code>或者<code>extern</code>伪指令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">;使用import伪指令</span><br><span class="line">AREA code, CODE</span><br><span class="line">import fun1         ;导入其他源文件中名为fun1的函数</span><br><span class="line">END</span><br><span class="line"></span><br><span class="line">;使用extern伪指令</span><br><span class="line">AREA code, CODE</span><br><span class="line">extern fun1       </span><br><span class="line">END</span><br></pre></td></tr></table></figure>
+<h4 id="常用方法"><a href="#常用方法" class="headerlink" title="常用方法:"></a>常用方法:</h4><p><strong>使用<code>String</code>对象的<code>match</code>方法匹配多个</strong>:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> arr=data.match(reg);</span><br><span class="line"><span class="comment">//返回一个装有匹配到内容的数组</span></span><br></pre></td></tr></table></figure>
 
-<p><strong>两者区别:</strong></p>
-<ul>
-<li><code>import</code>:不管当前文件是否使用该引入的函数,该标签都会加入当前文件符号表,即为静态引用</li>
-<li><code>extern</code>:只有当前文件使用了该函数,才会将此标签加入符号表,即为动态引用</li>
-</ul>
-<h4 id="2-导出当前源文件中函数供其他文件访问"><a href="#2-导出当前源文件中函数供其他文件访问" class="headerlink" title="2.导出当前源文件中函数供其他文件访问"></a>2.导出当前源文件中函数供其他文件访问</h4><p>使用<code>export</code>或者<code>global</code>伪指令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">;使用import伪指令</span><br><span class="line">AREA code, CODE</span><br><span class="line">export fun         ;导出fun函数供其他源文件使用</span><br><span class="line"></span><br><span class="line">fun </span><br><span class="line">	mov R0,#4</span><br><span class="line">	bx lr</span><br><span class="line">END</span><br></pre></td></tr></table></figure>
+<p><strong><code>exec</code>方法 用于匹配单个:</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> reg=<span class="keyword">new</span> <span class="built_in">RegExp</span>(<span class="string">"[^!]\\[.*\\]\\((http.+)\\)"</span>)</span><br><span class="line"><span class="keyword">let</span> element=reg.exec(<span class="string">"http:xxxxx"</span>)</span><br><span class="line"><span class="comment">//返回第一个匹配到的内容</span></span><br></pre></td></tr></table></figure>
 
-<h4 id="3-外链汇编之C语言调汇编函数"><a href="#3-外链汇编之C语言调汇编函数" class="headerlink" title="3.外链汇编之C语言调汇编函数"></a>3.外链汇编之C语言调汇编函数</h4><p>第一步,在汇编原文件中将函数暴露出来给供外部调用,使用<code>export</code>或者<code>global</code>伪指令:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">AREA code, CODE</span><br><span class="line">export arm_strcpy  ;或者使用global</span><br><span class="line"></span><br><span class="line">arm_strcpy</span><br><span class="line">loop </span><br><span class="line">	ldrb R4,[R0],#1 ;如果使用ldr 那么将偏移值改成4</span><br><span class="line">	cmp R4,#0</span><br><span class="line">	beq over</span><br><span class="line">	strb R4,[R1],#1</span><br><span class="line">	b loop</span><br><span class="line">over	</span><br><span class="line">END</span><br></pre></td></tr></table></figure>
+<p>在不加第二个参数<code>g</code>的前提下, 重复执行exec方法, 始终返回第一个</p>
+<p>如果加了<code>g</code> ,重复执行相当于遍历, 如下:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> reg=<span class="keyword">new</span> <span class="built_in">RegExp</span>(<span class="string">"[^!]\\[.*\\]\\((http.+)\\)"</span>,<span class="string">"g"</span>)</span><br><span class="line"><span class="keyword">let</span> element=reg.exec(<span class="string">"http:xxxxx"</span>)</span><br><span class="line"><span class="comment">//返回第一个</span></span><br><span class="line"><span class="keyword">let</span> element2=reg.exec(<span class="string">"http:xxxxx"</span>)</span><br><span class="line"><span class="comment">//返回第二个</span></span><br></pre></td></tr></table></figure>
 
-<p>第二步,在C文件中引用汇编中的函数,C文件中只能使用<code>extern</code>伪指令:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">extern arm_strcpy(char *src,char*des);</span><br><span class="line"></span><br><span class="line">int main2()&#123;</span><br><span class="line">	char *a=&quot;hello pangshu&quot;;</span><br><span class="line">	char b[64];</span><br><span class="line">	arm_strcpy(a,b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong><code>test</code>方法, 检查是否有符合匹配的存在:</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> reg=<span class="keyword">new</span> <span class="built_in">RegExp</span>(<span class="string">"[^!]\\[.*\\]\\((http.+)\\)"</span>,<span class="string">"g"</span>)</span><br><span class="line"><span class="keyword">let</span> isHas=reg.test(<span class="string">"http:xxx"</span>)<span class="comment">//如果匹配上了返回ture 否则false</span></span><br></pre></td></tr></table></figure>
 
-<h4 id="4-外链汇编之汇编调c语言函数"><a href="#4-外链汇编之汇编调c语言函数" class="headerlink" title="4.外链汇编之汇编调c语言函数"></a>4.外链汇编之汇编调c语言函数</h4><p>第一步,在C文件中编写好函数</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">c_sum</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> a+b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong><code>String</code>对象的search方法也可以检查是否有符合匹配的存在</strong>:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> index=data.search(reg);</span><br><span class="line"><span class="comment">//index为-1表示没有匹配上 否则 匹配成功</span></span><br></pre></td></tr></table></figure>
 
-<p>第二步, 在汇编文件中引入函数,使用<code>import</code>或者<code>extern</code>伪指令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AREA code, CODE</span><br><span class="line">import c_sum  </span><br><span class="line"></span><br><span class="line">mov R0,#1 ;第一个参数</span><br><span class="line">mov R1,#2 ;第二个参数</span><br><span class="line"></span><br><span class="line">END</span><br></pre></td></tr></table></figure>
+<h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><ol>
+<li><p>从<code>url</code>中提取子域名</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> url = <span class="string">"http://xxx.domain.com"</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="regexp">/[^.]+/</span>.exec(url)[<span class="number">0</span>].substr(<span class="number">7</span>)); <span class="comment">// logs "xxx"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>从一个单词中分离出<code>Unicode</code> 字符</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> text = <span class="string">"Образец text на русском языке"</span>;</span><br><span class="line"><span class="keyword">let</span> regex = <span class="regexp">/[\u0400-\u04FF]+/g</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> match = regex.exec(text);</span><br><span class="line"><span class="built_in">console</span>.log(match[<span class="number">1</span>]);  <span class="comment">// prints "Образец"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> match2 = regex.exec(text);</span><br><span class="line"><span class="built_in">console</span>.log(match2[<span class="number">1</span>]);  <span class="comment">// prints "на" [did not print "text"]</span></span><br></pre></td></tr></table></figure>
 
-<p>第三步, 使用BL指令调用函数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AREA code, CODE</span><br><span class="line">import c_sum  </span><br><span class="line"></span><br><span class="line">mov R0,#1 ;第一个参数</span><br><span class="line">mov R1,#2 ;第二个参数</span><br><span class="line">BL c_sum</span><br><span class="line">END</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>在ARM中函数参数使用R0~R3这三个寄存器来进行传递,最多传递4个参数,超过4个参数使用栈进行处理,函数返回值通过R0进行传递</p>
-</blockquote>
-<h4 id="5-内嵌汇编"><a href="#5-内嵌汇编" class="headerlink" title="5.内嵌汇编"></a>5.内嵌汇编</h4><p>GNU内嵌汇编,格式如下:</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main2</span><span class="params">()</span></span>&#123;</span><br><span class="line">	__asm__(           <span class="comment">//大括号改成中括号</span></span><br><span class="line">	<span class="string">"mov R5,#0x00000005\n"</span>   <span class="comment">//汇编指令需要使用引号包裹，多条语句之间使用回车换行符进行分隔</span></span><br><span class="line">	<span class="string">"mov R6,#0x00000005"</span></span><br><span class="line">	);  <span class="comment">//需要以分号结尾</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h2 id="学习工具"><a href="#学习工具" class="headerlink" title="学习工具"></a>学习工具</h2><ul>
-<li>在线ARM汇编编辑器:<a href="https://azm.azerialabs.com/" target="_blank" rel="noopener">https://azm.azerialabs.com/</a></li>
-</ul>
+</li>
+</ol>
+<p>使用前建议使用正则<a href="https://c.runoob.com/front-end/854" target="_blank" rel="noopener">表达式测试工具</a>验证正则表达式是否可行</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
 <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../211.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../211.html" itemprop="url">视频帧率和码率对视频质量和文件大小的影响</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-24T16:14:19+08:00">
-                2021-01-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>我们从<strong>画面流畅度</strong>,<strong>画面清晰度</strong>,和<strong>视频文件体积</strong>三个方面进行分析:</p>
-<h2 id="帧率-FPS"><a href="#帧率-FPS" class="headerlink" title="帧率(FPS)"></a>帧率(FPS)</h2><p><strong>指每秒显示图像的张数</strong></p>
-<p>比如30帧,表示每秒显示30张图像</p>
-<p><strong>帧率越大,画面越流畅,帧率越小,画面越卡顿</strong>,如果低到1帧/秒,那么就相当于一个幻灯片了</p>
-<p><strong>帧率不会影响到画面的清晰度,只会影响画面的流畅度和文件的体积</strong>,帧率越大,视频对应的体积越大</p>
-<h2 id="分辨率-resolution"><a href="#分辨率-resolution" class="headerlink" title="分辨率(resolution)"></a>分辨率(resolution)</h2><p><strong>指像素点分布密度</strong></p>
-<p>比如24寸的显示器,设置1920x1080的分辨率,那就是横向由1920个像素点构成,纵向由1080个像素点构成,也就是说在屏幕尺寸固定的情况下,<strong>分辨率越高,画面越清晰细腻,反之,画面越模糊</strong></p>
-<p><strong>分辨率不会影响画面的流畅度,只会影响画面的清晰度和文件的体积</strong>,分辨率越大,视频体积越大</p>
-<h2 id="码率-Bitrate"><a href="#码率-Bitrate" class="headerlink" title="码率(Bitrate)"></a>码率(Bitrate)</h2><p><strong>指每秒传输的数据位数</strong>,单位kbps 即千位每秒 ,这里的位指的是二进制位</p>
-<p>基本的算法是:</p>
-<ul>
-<li><p>每秒传输的数据量=码率/8 </p>
-</li>
-<li><p>视频文件体积=码率/8x视频时长(s) =每秒传输的数据量*视频时长(s)</p>
-</li>
-</ul>
-<p>比如500Kbps,也就是每秒传输62K大小的数据, 假如按照帧率30fps进行计算,那么每张图片大小约为2kb大小</p>
-<p>也就是说视频时长和固定的情况下,<strong>码率越高,文件体积越大,同时视频显示的有效像素越多</strong>,视频更加接近原始分辨率,反之,码率越低,文件体积越小,但是视频能显示的有效像素就越少,原本1080p的分辨率,每帧图像至少需要占用20k的数据量,但是码率过低每帧只能分配2K的量,此时像素点显示不全,就会造成视频模糊不清晰</p>
-<p>因此,码率若是过低,再高的分辨率都拯救不了画质,反而会适得其反, </p>
-<p>事实上,低码率环境下,低分辨率画面要比高分辨率画面更加清晰</p>
-<p><strong>码率不会影响画面的流畅度,但是会影响画面的清晰度和文件的体积</strong></p>
-<h2 id="我们的需求"><a href="#我们的需求" class="headerlink" title="我们的需求"></a>我们的需求</h2><p>我们一般<strong>追求高清流畅的画质,同时文件体积尽可能小</strong>,那么该如何找到帧率 码率和分辨率三者的平衡点呢?</p>
-<p>首先在我们录制视频的时候,<strong>屏幕的分辨率一般是固定的</strong>,随着不同的电脑分辨率也不同(当然你要手动调整也行)</p>
-<p>其次,为了保证视频的流畅度我们一般将<strong>帧率设置在25fps</strong>以上</p>
-<p>那么我们想减小视频的体积的话,只能从码率入手了, 找到一个画质能接受,体积小的平衡点</p>
-<p>比如1980x1080的分辨率,我使用500kbps左右的码率,差不多可以接受,OBS在录制时默认也是在这个码率内来回波动</p>
-<p>以下是常见分辨率和码率之间平衡参考表:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210124171800.png" alt></p>
-<p><strong>举例</strong>:如果要想百分百还原1080p HQ的画质,至少需要5.76Mkpbs码率的支撑,如果是直播的话需要至少9M的宽带才能稳定传输对应的数据量,否则画面卡顿</p>
-<p>直播中,在分辨率和网速一定的情况下,我们会适当降低码率,牺牲部分清晰度的来保证视频的流畅性</p>
-<p>如果网速不行又希望画面还清晰流畅,那么就降低拍摄的分辨率,同时降低数据传输量也就是码率值,当然分辨率降低之后所谓的视频清晰度也只是相对的,凡事总有取舍</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../210.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../210.html" itemprop="url">关于mysql崩溃之error establishing a database connection</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-22T16:14:19+08:00">
-                2021-01-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>最近在进行网站检查的时候突然发现我的一个子网站挂了,提示<code>error establishing a database connection</code>, 如果是网站刚建立那好解决,80%的概率是数据连接参数不正确,或者是数据库端口没有开放</p>
-<p>但是我这个网站运行很长一段时间了,之前一直好好的,突然之间就挂了, 而且这个数据库我使用的是<code>docker</code>进行维护,同时,在同一个<code>mysql</code>容器中我放置了好几个网站的数据,其他网站运行却是正常的</p>
-<p>而且我通过第三方连接数据库的工具可以正常连接到被挂网站的数据库</p>
-<p>通过以上情况可以排除以下原因:</p>
-<ul>
-<li><code>mysql</code>容器没有问题</li>
-<li>数据库端口和连接参数也没问题(已经检查过配置文件,没有被外部篡改过)</li>
-<li>网站程序正常运行</li>
-</ul>
-<p>这种情况下该如何处理呢? 当然是找日志了</p>
-<p>第一步:查看主程序日志,没问题</p>
-<p>第二步:查看<code>mysql</code>容器日志,发现问题</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker logs --tail=50 mysql</span><br></pre></td></tr></table></figure>
-
-<p><code>Table &#39;./wordpress_wai/wp_options&#39; is marked as crashed and should be repaired when using LOCK TABLES</code></p>
-<p><strong>数据库没有问题,但是表有问题</strong></p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p><strong>对表进行修复即可：</strong></p>
-<p>首先登录mysql选择指定的数据库,然后执行以下命令:</p>
-<ol>
-<li><p>执行修复指令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">repair table wp_option</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>检查表的状态</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">check table wp_option</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<p>修复前最好先备份数据库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -uroot -p密码 数据库名 &gt;xxxxx.sql</span><br></pre></td></tr></table></figure>
-
-<p>如果表损坏比较严重,可能无法备份数据库</p>
-<p>如果你不知道如何查看<code>mysql</code>日志,那么直接运行备份数据库指令,也能帮你检查数据库是否存在问题</p>
-<p>修复完成后无需重启mysql容器, 直接刷新网址即可正常访问</p>
-<h3 id="2021年9月1日补充"><a href="#2021年9月1日补充" class="headerlink" title="2021年9月1日补充"></a>2021年9月1日补充</h3><p>突然数据库又崩了, 网站同样提示<code>error establishing a database connection</code></p>
-<p>我查看<code>docker</code>日志 报如下错误:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Database page corruption on disk or a failed file read of page [page id: space=0, page number=5]. You may have to recover from a backup</span><br></pre></td></tr></table></figure>
-
-<p>此时<code>mysql</code>容器已经进不去了, 百度了一下说是数据库受损 要在<code>my.cnf</code>配置文件中添加<code>innodb_force_recovery=1</code></p>
-<p>可是我在<code>conf</code>目录下并没有找到<code>my.cnf</code>文件 不知道是被谁给删了 难道被入侵了</p>
-<p>只好新建一个配置文件看看可不可行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim my.cnf</span><br></pre></td></tr></table></figure>
-
-<p>然后将以下内容拷贝进去:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">pid-file        = /var/run/mysqld/mysqld.pid</span><br><span class="line">socket          = /var/run/mysqld/mysqld.sock</span><br><span class="line">datadir         = /var/lib/mysql</span><br><span class="line">secure-file-priv= NULL</span><br><span class="line"># Disabling symbolic-links is recommended to prevent assorted security risks</span><br><span class="line">symbolic-links=0</span><br><span class="line"></span><br><span class="line"># Custom config should go here</span><br><span class="line">!includedir /etc/mysql/conf.d/</span><br></pre></td></tr></table></figure>
-
-<p><code>wq</code>保存退出 然后重启<code>mysql</code>容器, 重新访问网站 还是不行</p>
-<p>紧接着我在配置文件末尾添加了<code>innodb_force_recovery=1</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">pid-file        = /var/run/mysqld/mysqld.pid</span><br><span class="line">socket          = /var/run/mysqld/mysqld.sock</span><br><span class="line">datadir         = /var/lib/mysql</span><br><span class="line">secure-file-priv= NULL</span><br><span class="line"># Disabling symbolic-links is recommended to prevent assorted security risks</span><br><span class="line">symbolic-links=0</span><br><span class="line"></span><br><span class="line"># Custom config should go here</span><br><span class="line">!includedir /etc/mysql/conf.d/</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">innodb_force_recovery=1</span><br></pre></td></tr></table></figure>
-
-<p>保存重启后, 网站正常访问, 问题解决</p>
-<p>但是mysql容器日志一直提示:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[ERROR] [MY-012803] [InnoDB] innodb_force_recovery is on. We do not allow database modifications by the user. Shut down mysqld and edit my.cnf to set innodb_force_recovery=0</span><br></pre></td></tr></table></figure>
-
-<p>于是我把<code>innodb_force_recovery</code>值设为0 网站没问题 暂且就这样</p>
-<h4 id="关于innodb-force-recovery参数"><a href="#关于innodb-force-recovery参数" class="headerlink" title="关于innodb_force_recovery参数"></a>关于innodb_force_recovery参数</h4><ul>
-<li>Mode 1当遇到损坏页时，不使 MySQL 崩溃</li>
-<li>Mode 2不运行后台操作</li>
-<li>Mode 3不会尝试回滚事务</li>
-<li>Mode 4不计算统计数据或应用存储/缓冲的变化</li>
-<li>Mode 5在启动过程中不查看撤消日志</li>
-<li>Mode 6在启动时不从重做日志（ib_logfiles）前滚</li>
-</ul>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../217.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../217.html" itemprop="url">GCC调试工具GDB的常用指令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-20T16:14:19+08:00">
-                2021-01-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="常用指令"><a href="#常用指令" class="headerlink" title="常用指令"></a>常用指令</h2><ol>
-<li><p>进入调试模式</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdb 可执行文件</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>如果忘了指定调试文件可以使用<code>file</code>指令指定</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) file 文件名</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>quit</code>指令退出调试模式 可简写为q</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) q</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>start</code>指令开始调试  停在第一行代码处 </p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) start</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>step</code>指令进行单步执行 可简写为<code>s</code></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) s   <span class="comment">#会进入函数内部</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>next</code>执行进行单步执行 可简写为<code>n</code> </p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) n  <span class="comment">#不会进入函数内部</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>汇编级别单步执行(上面<code>n</code>和<code>s</code>为c语言级别单步指令)</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) ni <span class="comment">#不进入函数内部</span></span><br><span class="line">(gdb) si <span class="comment">#会进入函数内部</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>list</code>指令列出所有源代码 可简写为<code>l</code></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) l</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>break</code>指令设置断点位置 可简写为<code>b</code></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(gdb) b main <span class="comment">#在main函数处打断点</span></span><br><span class="line">(gdb) b 10 <span class="comment">#在第十行位置打断点</span></span><br><span class="line">(gdb) b <span class="built_in">test</span>:10 <span class="comment">#在test文件的第十行位置打断点 </span></span><br><span class="line">(gdb) b 0x3400a <span class="comment">#在0x3400a内存位置打断点</span></span><br><span class="line">(gdb) b 10 <span class="keyword">if</span> i==3 <span class="comment">#设置条件断点 i等于3时在第十行位置打断点 适用于循环</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>delete+断点编号</code>指令删除断点 可简写为<code>d</code></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) delete 3 <span class="comment">#删除编号为3的断点  清除时GDB不会给出任何提示</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>clear+断点行号</code>指令清除断点</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) clear 3 <span class="comment">#清除第三行的断点  清除时GDB会给出提示</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>disable/enable + 断点编号</code> 指令冻结或启动断点</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">disable</span> 3,4 <span class="comment">#冻结编号为3和4的断点 多个断点使用逗号分隔</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>info break</code>指令查看断点的情况</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) info <span class="built_in">break</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>tbreak</code> 指令设置临时断点</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) tbreak 行号/函数名 <span class="comment">#设置临时断点，到达后被自动删除</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>awatch/watch + 变量</code> 设置变量读写观察点</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) awatch/watch a <span class="comment">#当变量a被读出或写入时程序被暂停 </span></span><br><span class="line">(gdb) rwatch a <span class="comment">#当变量a被读出时程序被暂停</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>continue</code>指令运行到断点处 可简写为<code>c</code></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) c</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>print</code>指令打印变量的值 可简写为p</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) p a <span class="comment">#打印变量a的值</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用x指令打印指定内存地址数据</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) x /6cb 0x804835c <span class="comment">#打印地址0x804835c起始的内存内容，连续6个字节，以字符格式输出。</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>run</code>指令运行整个程序 可简写为<code>r</code></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) r  <span class="comment">#如果此前没有下过断点，则执行完整个程序；如果有断点，则程序暂停在第一个可用断点处</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 call 指令直接运行某个函数</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) call fun <span class="comment">#在当前位置执行函数fun</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>display</code> 指令设置需要跟踪的变量</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) display a <span class="comment">#跟踪变量a 每次断点到该处就显示该变量的值</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>info display</code> 显示当前所有跟踪的情况</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) info display</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>undisplay+编号</code> 指令取消对变量的跟踪</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) undisplay 3 <span class="comment">#取消对编号为3的跟踪事件</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>set+ 变量</code> 指令改变变量的值</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) <span class="built_in">set</span> i=3 <span class="comment">#临时设置变量i的值为3</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>set</code>  指令设置运行时参数</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) <span class="built_in">set</span> i=3 <span class="comment">#临时这只变量i的值为3</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>show</code>  指令查看运行时参数</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) show i</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>finish</code> 指令函数结束</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) finish</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>help</code>指令查看指令使用说明</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) <span class="built_in">help</span> <span class="built_in">print</span> <span class="comment">#查看print指令的解释说明</span></span><br><span class="line">(gdb) <span class="built_in">help</span> <span class="comment">#查看所有指令</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用<code>info reg</code>指令查看寄存器状态</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb)  info reg</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>info stack</code>指令查看堆栈状态</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) info stack</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>运行shell指令</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(gdb) shell ls   <span class="comment">#运行shell指令ls。</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>其他指令</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">(gdb)  path <span class="comment">#可设定程序的运行路径。 </span></span><br><span class="line">(gdb)  show paths <span class="comment">#查看程序的运行路径。</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">(gdb) 　<span class="built_in">cd</span>　　  <span class="comment">#相当于shell的cd命令。 </span></span><br><span class="line"></span><br><span class="line">(gdb) 　<span class="built_in">pwd</span>　　<span class="comment">#显示当前的所在目录</span></span><br></pre></td></tr></table></figure>
-
-
-
-</li>
-</ol>
-<ol start="32">
-<li>使用<code>回车</code>重复上一条指令</li>
-</ol>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../208.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../208.html" itemprop="url">视频教程录制计划</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-17T16:14:19+08:00">
-                2021-01-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="技术视频"><a href="#技术视频" class="headerlink" title="技术视频"></a>技术视频</h2><ol>
-<li><p><strong>《Android进阶之逆向安全反编译视频教程-胖薯出品》</strong></p>
-<ul>
-<li>录制时间 2020年11月6日</li>
-<li>部分视频观看:<a href="https://www.bilibili.com/video/BV1QZ4y1V7zy/" target="_blank" rel="noopener">点击跳转</a></li>
-</ul>
-</li>
-<li><p><strong>《Smali语言从入门到精通视频教程-胖薯出品》</strong></p>
-<ul>
-<li>录制时间 2020年11月6日</li>
-<li>部分视频观看:<a href="https://www.bilibili.com/video/BV1Vf4y1q7gh/" target="_blank" rel="noopener">点击跳转</a></li>
-</ul>
-</li>
-<li><p><strong>《程序员进阶之三大架构汇编语言入门视频教程-胖薯出品》</strong></p>
-<ul>
-<li>录制时间 2020年12月14日</li>
-<li>部分视频观看:<a href="https://www.bilibili.com/video/BV1CK411u76E/" target="_blank" rel="noopener">点击跳转</a></li>
-</ul>
-</li>
-<li><p><strong>《ARM汇编进阶之ARM64汇编视频教程-胖薯出品》</strong></p>
-<ul>
-<li>录制时间 </li>
-<li>部分视频观看:</li>
-</ul>
-</li>
-<li><p><strong>《MIPS汇编进阶之MIPS64汇编视频教程-胖薯出品》</strong></p>
-<ul>
-<li>录制时间 </li>
-<li>部分视频观看:</li>
-</ul>
-</li>
-<li><p><strong>《X86汇编进阶之Win32汇编视频教程-胖薯出品》</strong></p>
-<ul>
-<li>录制时间 </li>
-<li>部分视频观看:</li>
-</ul>
-</li>
-<li><p><strong>《X86汇编进阶之Win64汇编视频教程-胖薯出品》</strong></p>
-<ul>
-<li>录制时间 </li>
-<li>部分视频观看:</li>
-</ul>
-</li>
-<li><p><strong>《lua语言从入门到实战视频教程-胖薯出品》</strong></p>
-<ul>
-<li>录制时间 </li>
-<li>部分视频观看:</li>
-</ul>
-</li>
-<li><p><strong>《硬件开发入门视频教程-胖薯出品》</strong></p>
-<ul>
-<li>录制时间 </li>
-<li>部分视频观看:</li>
-</ul>
-</li>
-<li><p><strong>《从0到1打造一门属于自己的编程语言视频教程-胖薯出品》</strong></p>
-<ul>
-<li>录制时间 </li>
-<li>部分视频观看:</li>
-</ul>
-</li>
-<li><p><strong>《从0到1开发一款操作系统视频教程-胖薯出品》</strong></p>
-<ul>
-<li>录制时间 </li>
-<li>部分视频观看:</li>
-</ul>
-</li>
-<li><p><strong>《音乐制作之视唱练耳视频教程-胖薯出品》</strong></p>
-<ul>
-<li>录制时间 </li>
-<li>部分视频观看:</li>
-</ul>
-</li>
-<li><p><strong>《虚幻游戏开发从0到1视频教程-胖薯出品》</strong></p>
-<ul>
-<li>录制时间 </li>
-<li>部分视频观看:</li>
-</ul>
-</li>
-<li><p><strong>《音频插件开发视频教程-胖薯出品》</strong></p>
-<ul>
-<li>录制时间 </li>
-<li>部分视频观看:</li>
-</ul>
-</li>
-<li><p><strong>《SO库的反编译视频教程-胖薯出品》</strong></p>
-<ul>
-<li>录制时间 </li>
-<li>部分视频观看:</li>
-</ul>
-</li>
-<li><p><strong>《360和腾讯加固的原理和脱壳视频教程-胖薯出品》</strong></p>
-<ul>
-<li>录制时间 </li>
-<li>部分视频观看:</li>
-</ul>
-</li>
-</ol>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../209.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../209.html" itemprop="url">从0到1打造一门属于自己的编程语言(一)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-17T16:14:19+08:00">
-                2021-01-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>学习编程语言的开发,目的不是为了造轮子,而是为了了解程序语言的本质和原理,方便我们日常的开发</p>
-<p>学习此课程前需要提前掌握以下知识:</p>
-<ul>
-<li>了解汇编语言</li>
-<li>熟悉至少一门高级编程语言</li>
-</ul>
-<h2 id="编程语言的来源"><a href="#编程语言的来源" class="headerlink" title="编程语言的来源"></a>编程语言的来源</h2><p>我们如果想要和外国人交流,那么我们必须学会外语, 或者让外国人学咱们的语言</p>
-<p>我们如果想要指挥计算机,那么我们必须学会计算机语言,让计算机学咱们的语言不太可能,至少现在不行! </p>
-<p>很多人都认为我们平常使用的编程语言比如C语言 Java语言等就是计算机语言,这种说法不太严谨, 因为计算机压根不认识编程语言,它只认识二进制码, 也就是说 二进制码才是计算机真正的语言</p>
-<p>那我们要指挥计算机岂不是得学<strong>二进制码(机器码)</strong>,在编程语言发明之前,确实是如此</p>
-<p><strong>科技的进步来源于懒惰</strong></p>
-<p>人类势必不会甘愿长期忍受机器码的摧残, 为了摆脱效率低下的编码,于是乎,聪明的人类发明了编程语言,比如汇编, 相比机器码汇编显然要舒服的多, 但是随着时间的推移,人们发现汇编语言存在非常严重的弊端, 最突出的一点就是不同cpu架构需要制定一套不同指令集,通俗一点就是不同cpu对应着不同的一套汇编语言,这就导致了无法跨平台</p>
-<p>有人会问,为什么当时大家不使用同一种cpu呢, 历史不能预知未来的发展,每个时代都有各自的商业竞争</p>
-<p><strong>新技术的出现往往是因为问题的长期累积</strong></p>
-<p>于是乎,跨平台语言C语言问世了, 但是C语言知识语言跨平台,但是其编写的程序并不跨平台</p>
-<p>于是乎,可以程序跨平台的Java语言问世了</p>
-<p>……..</p>
-<p>从这段历史,我们不难发现:</p>
-<p><strong>编程语言只是一个方便人类与计算机交流的工具</strong></p>
-<p>只是工具,仅此而已</p>
-<p>我们现在花大量时间和精力所学所用的都是别人制作出来的工具</p>
-<p>当我们因熟练掌握几门编程语言而洋洋得意时,是否有想过,我们只是一个工具的熟练运用者</p>
-<p>我并不是说学语言很low, 毕竟编程语言的门槛也不低,需要花大量时间和精力才能有效掌握,我只是想说,一旦你明白了语言的创造过程, 那就等于你掌握了现在市面上所有的编程语言, 所有的语言,原理都是一样的,只不过语法和关键字不同,仅此而已</p>
-<p>也就是说,我们需要去了解工具的生产过程</p>
-<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><p>如果你去网上搜相关编程语言制作的视频或资料, 基本上都是词法分析,语法分析,语义分析等等, 让人一头雾水, 直接劝退</p>
-<p>试想一下,在若干年前编程语言还没有问世的时候,有词法语法语义符号token等等这一些个含义么? 完全没有!</p>
-<p>这些理论都是前人经验总结而成, 经验固然很好,能少走弯路,但是对于初学者来讲极其不友好</p>
-<p>只有从初学者的角度出发,才能更平滑地学习到原本复杂的知识</p>
-<p>因此抛开这些专业术语吧,从0开始出发</p>
-<h2 id="起步"><a href="#起步" class="headerlink" title="起步"></a>起步</h2><p>假如现在编程语言还未问世,你现在要自创一门语言方便人类开发, 你会怎么做?</p>
-<p> 比如我想让计算机帮忙算个数,计算1+1</p>
-<p>原本使用机器码可能得这样写:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">4F 9B 55 7C 2D 3A  ;实际过程中我们一般使用十六进制进行表示,cpu执行的时候执行的是对应的二进制</span><br></pre></td></tr></table></figure>
-
-<p>此时,我可能会考虑用一句话来代替这个计算1加1的功能,比如</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">加:1+1   ;这是不是好理解多了</span><br></pre></td></tr></table></figure>
-
-<p>问题来了, 如果将我这句话转成机器码呢? 也就是说,我们需要将这句话翻译成机器码, 那怎么翻译呢? 是不是得需要一个翻译工具呀</p>
-<p>于是乎,我们与此同时需要想办法整一个翻译工具, 由于我设计的这句话是敲在计算机上的,而不是写在纸上的, 如果是写在纸上的,兴许我们可以造一台机器将我写的内容转印成机器码,然后机器码敲入计算机:cry:… 这种愚蠢的做法, 简直就是科技的倒退</p>
-<p>既然是直接敲在计算机中,那我们的翻译工具必然也是一个能被cpu执行的程序, 那我们需要先编写翻译工具这个程序的机器码</p>
-<p>理论上是这么个逻辑</p>
-<p>我们需要一边指定语法规则,一边编写和优化的翻译程序,因为我们的需求不单单是让计算机做加法运算</p>
-<blockquote>
-<p>这个能把我们指定的语言翻译成机器码的翻译工具，就是当今所说的编译器，后文皆以编译器替代</p>
-</blockquote>
-<h2 id="编译器该如何写"><a href="#编译器该如何写" class="headerlink" title="编译器该如何写"></a>编译器该如何写</h2><p>由于源代码都是存放在文件中，按照我们的正常思维，最先想到的是将这个文件中的内容读取出来，然后从头到尾进行匹配判断，根据不同的关键字判断不同的功能，然后用与之对应的机器码进行替换</p>
-<p>cpu在进行文件读取的时候，本质上读取的是二进制，那我们编写的中文或者英文和二进制数据的一一对应关系就涉及到编码格式问题，常见的编码格式有：</p>
-<ul>
-<li>ASCII码 (只识别英文)</li>
-<li>GBK （识别英文和中文）</li>
-<li>UTF-8 （识别各个国家的语言）</li>
-<li>…</li>
-</ul>
-<p>假如我们接下来要使用UTF-8进行编码，那么我们需要指定一张表，也就是二进制码和功能之间的一一对应关系，比如算术运算中<code>加</code>这个关键字：编译器从文本中连续读取两个字节二进制数据然后查表，如果对应上了加法功能，那么继续往后读取需要进行运算的内容，读到结束标记的时候，然后将之前所读取的二进制转化成与之对应功能的机器码，以此类推，这个结束标记也是由我们来定，我们可以使用分号、回车换行或者其它特殊的符号作为一行语句的结束</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../207.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../207.html" itemprop="url">硬件开发之个人PCB电路板制作</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-07T16:14:19+08:00">
-                2021-01-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h2><h4 id="第一步-画电路原理图"><a href="#第一步-画电路原理图" class="headerlink" title="第一步 画电路原理图"></a>第一步 画电路原理图</h4><ol>
-<li><p>工具</p>
-<p><strong>Altium Designer 19</strong>: 中文官网：<a href="https://www.altium.com.cn/products/downloads" target="_blank" rel="noopener">https://www.altium.com.cn/products/downloads</a> </p>
-</li>
-</ol>
-<h4 id="第二步-联系PCB厂家"><a href="#第二步-联系PCB厂家" class="headerlink" title="第二步 联系PCB厂家"></a>第二步 联系PCB厂家</h4><ol>
-<li>廉价厂家推荐<ul>
-<li><a href="https://www.jlc.com/" target="_blank" rel="noopener">嘉立创</a> :10x10cm的板子5张 只需5块钱</li>
-<li><a href="https://www.jiepei.com" target="_blank" rel="noopener">捷配</a>  :10x10cm的板子5张 19块钱</li>
-</ul>
-</li>
-</ol>
-<h4 id="第三步-电子元器件采购"><a href="#第三步-电子元器件采购" class="headerlink" title="第三步 电子元器件采购"></a>第三步 电子元器件采购</h4><h4 id="第四步-电子元器件焊接"><a href="#第四步-电子元器件焊接" class="headerlink" title="第四步 电子元器件焊接"></a>第四步 电子元器件焊接</h4><h4 id="第四步-电路板测试"><a href="#第四步-电路板测试" class="headerlink" title="第四步 电路板测试"></a>第四步 电路板测试</h4><p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../206.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../206.html" itemprop="url">硬件开发之基础知识(-)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-06T16:14:19+08:00">
-                2021-01-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>随着智能家居的兴起,5G时代的到来, 智能硬件扮演者越来越关键的角色, 对于老百姓的我们而言,占据先机最好的办法的就是了解并掌握它, 因为知识是公平的</p>
-<h2 id="基础物理知识"><a href="#基础物理知识" class="headerlink" title="基础物理知识"></a>基础物理知识</h2><p>这些我们在学生时代都学过,现在需要把它们都重新拾起来</p>
-<h4 id="1-电压"><a href="#1-电压" class="headerlink" title="1. 电压"></a>1. 电压</h4><p>可以理解为电子移动的动力,压力即是动力,单位:V</p>
-<h4 id="2-电流"><a href="#2-电流" class="headerlink" title="2. 电流"></a>2. 电流</h4><p> 电荷的定向流动 ,犹如水流</p>
-<p>流动的电才能将电灯点亮</p>
-<p>单位:A</p>
-<h4 id="3-电的产生"><a href="#3-电的产生" class="headerlink" title="3.电的产生"></a>3.电的产生</h4><p>产生电的方式有很多种,摩擦生电,电解质生电,一般我们日常使用的电,是通过发电机发电,它的原理是:</p>
-<p> 闭合电路的一部分导体在磁场里做切割磁感线的运动时，导体中就会产生电流</p>
-<p>材料:</p>
-<pre><code>1. 磁铁
- 2. 线圈</code></pre><p>自制发电机:<a href="https://v.163.com/static/1/VYUIDVSRG.html" target="_blank" rel="noopener">https://v.163.com/static/1/VYUIDVSRG.html</a></p>
-<h2 id="电子元器件"><a href="#电子元器件" class="headerlink" title="电子元器件"></a>电子元器件</h2><p>分类:</p>
-<ul>
-<li>元件:工厂在加工时没改变原材料分子成分的产品可称为元件。元件属于不需要能源的器件。它包括：电阻、电容、电感等</li>
-<li>器件:工厂在生产加工时改变了原材料分子结构的产品称为器件。器件需要消耗能源,它包括双极性晶体三极管 场效应晶体管 可控硅 等</li>
-</ul>
-<h4 id="常见电子元器件"><a href="#常见电子元器件" class="headerlink" title="常见电子元器件"></a>常见电子元器件</h4><ol>
-<li>电阻</li>
-<li>电容</li>
-<li>二极管</li>
-<li>三极管</li>
-<li>继电器</li>
-<li>电容器</li>
-<li>电位器</li>
-<li>传感器</li>
-<li></li>
-</ol>
-<h3 id="电流的的流向判断"><a href="#电流的的流向判断" class="headerlink" title="电流的的流向判断"></a>电流的的流向判断</h3><p><strong>第一步</strong>:判断是否有一条电路直接将正负极向连,如果有则短路,没有则进入第二步</p>
-<p><strong>第二步</strong>:在电流分叉路口,判断是否有一条电路没有连接任何元器件,如果有则走这条路,其他路不通, 如果都连接了器件,那么都有电流通过</p>
-<h2 id="串联和并联电路"><a href="#串联和并联电路" class="headerlink" title="串联和并联电路"></a>串联和并联电路</h2><p> 1.串联电路的特点：<br>（1）电流：文字表达：串联电路中各处电流都相等.<br>公式表达：I=I1=I2=I3=……=In<br>（2）电压：文字表达：串联电路中的总电压等于各部分电路电压之和.<br>公式表达：U=U1+U2+U3+……+Un<br>（3）电阻：文字表达：串联电路中的总电阻等于各部分电路的电阻之和.<br>公式表达：R=R1+R2+R3+……+Rn<br>（4）分压定律：文字表达：串联电路中各部分电路两端电压与其电阻成正比.<br>公式表达：U1/R1=U2/R2=U3/R3=.=Un/Rn<br>另种表达：U1：U2：U3：…：Un= R1：R2：R3：…：Rn<br>特例：U1/U2=R1/R2<br>2.并联电路的特点：<br>（1）电流：文字表达：并联电路中总电流等于各支路中的电流之和.<br>公式表达：I=I1+I2+I3+……+In<br>（2）电压：文字表达：并联电路中各支路两端的电压都相等.<br>公式表达：U=U1=U2=U3=……=Un<br>（3）电阻：文字表达：并联电路总电阻的倒数等于各支路电阻倒数之和.<br>公式表达：1/R=1/R1+1/R2+1/R3+……+1/Rn<br>（4）分流定律：文字表达：并联电路中,流过各支路的电流与其电阻成反比.<br>公式表达：I1R1=I2R2=I3R3= …=InRn<br>特例：I1/I2=R2/R1 </p>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>在串联电路中</p>
-<ul>
-<li>电阻越大,截取的电压越大</li>
-</ul>
-<p>在并联电路中</p>
-<ul>
-<li>电阻越大, 截取的电流越小</li>
-<li>分支电路越多,总电流越大</li>
-</ul>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
         
@@ -2146,7 +2154,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="../7/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../7/">7</a><span class="page-number current">8</span><a class="page-number" href="../9/">9</a><span class="space">&hellip;</span><a class="page-number" href="../29/">29</a><a class="extend next" rel="next" href="../9/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="../7/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../7/">7</a><span class="page-number current">8</span><a class="page-number" href="../9/">9</a><span class="space">&hellip;</span><a class="page-number" href="../33/">33</a><a class="extend next" rel="next" href="../9/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2192,7 +2200,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">286</span>
+                  <span class="site-state-item-count">327</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2205,7 +2213,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">90</span>
+                  <span class="site-state-item-count">92</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
@@ -2249,7 +2257,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
