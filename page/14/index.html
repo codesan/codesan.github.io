@@ -287,173 +287,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../201.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../201.html" itemprop="url">android设备上如何运行C语言原生程序</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-03T16:14:19+08:00">
-                2021-01-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>咱们知道android设备可以直接运行apk应用,或者使用<code>dalvikvm</code>指令运行dex文件中的程序, 但是这两者本质上使用的语言都是java或者smali, 如果需要执行C语言程序,需要借助NDK编译成so库, 有没有不使用NDK而直接编译c原生程序然后在安卓设备中运行的方式呢?</p>
-<h2 id="交叉编译"><a href="#交叉编译" class="headerlink" title="交叉编译"></a>交叉编译</h2><p>C语言是一门跨平台的语言,<strong>语言跨平台,但是程序不跨平台</strong>, 也就是说在windows平台下编译的程序只能在windows平台上执行,linux亦是如此, 为什么会出现这种情况呢? 除了操作系统导致的文件格式不一致之外,本质上是因为不同平台cpu使用的架构不一致导致, 目前主流的三大cpu架构<strong>x86,ARM,MIPS</strong>,每个架构都对应着属于自己的一套汇编指令集, 我们编写的程序,最终都会解码成汇编指令被cpu所指行,那么在windows平台上进行本机编译的C语言代码,会根据当前平台的cpu架构和操作系统生成只能在当前平台运行的程序</p>
-<p>如果我想在windows平台编译出能在linux系统或者在ARM 设备中运行的程序, 那该怎么办呢?, 这个时候我们就要使用交叉编译工具, 那这种编译的模式就不叫本机编译了,而叫做交叉编译</p>
-<h2 id="为什么需要交叉编译"><a href="#为什么需要交叉编译" class="headerlink" title="为什么需要交叉编译"></a>为什么需要交叉编译</h2><p>原因:</p>
-<ul>
-<li>你正在编译一款linux应用,但你手上只有一台windows电脑,这个时候交叉编译能帮上大忙</li>
-<li>目标设备环境不允许,比如单片机, 内存和性能无法支持程序的编译</li>
-</ul>
-<h2 id="交叉编译工具"><a href="#交叉编译工具" class="headerlink" title="交叉编译工具"></a>交叉编译工具</h2><p>交叉编译工具链的命名规则为：<strong>arch [-vendor] [-os] [-(gnu)eabi]</strong></p>
-<ul>
-<li><strong>arch</strong> – 体系架构，如ARM，MIPS</li>
-<li><strong>vendor</strong> – 工具链提供商</li>
-<li><strong>os</strong> – 目标操作系统</li>
-<li><strong>eabi</strong> – 嵌入式应用二进制接口（Embedded Application Binary Interface）</li>
-</ul>
-<p>根据对操作系统的支持与否，<strong>ARM GCC可分为支持和不支持操作系统</strong>，如</p>
-<ul>
-<li><strong>arm-none-eabi</strong>：这个是没有操作系统的,适用于ARM架构裸机,工具链提供商未知,嵌入式应用二进制接口,这个工具不支持那些跟操作系统关系密切的函数，比如fork(2)。他使用的是newlib这个专用于嵌入式系统的C库。</li>
-<li><strong>arm-none-linux-eabi</strong>：用于Linux的，ARM架构,使用Glibc</li>
-</ul>
-<blockquote>
-<p>如果是裸机编译,由于没有操作系统进行文件识别翻译,因此编译出来的大部分是面向cpu内核的机器码文件</p>
-<p>单片机编译后的文件就是如此</p>
-</blockquote>
-<h2 id="回到主题"><a href="#回到主题" class="headerlink" title="回到主题"></a>回到主题</h2><p>我需要用C语言编写一个能在安卓设备上运行的程序, 首先安卓设备大多采用的是ARM架构cpu, 系统采用的是linux系统, 如果我们想在安卓设备中进行本机编译的话,实现起来比较困难, 那么咱们可以借助交叉编译工具,实现在windows平台上编译出能够在ARM+Linux平台上的可执行程序</p>
-<p>这里我们使用 <code>arm-none-linux-gnueabi-gcc</code> 这款交叉编译工具</p>
-<p>工具下载:</p>
-<p><a href="http://code.newban.cn/202.html">各个平台arm-none-linux-gnueabi交叉编译工具下载</a></p>
-<p>或者</p>
-<p><a href="https://sourcery.mentor.com/public/gnu_toolchain/arm-none-linux-gnueabi/arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2" target="_blank" rel="noopener">linux平台arm-none-linux-gnueabi工具直链下载</a></p>
-<h4 id="第一步-源码编写"><a href="#第一步-源码编写" class="headerlink" title="第一步 源码编写"></a>第一步 源码编写</h4><p>新建<code>test.c</code>文件</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;  </span></span></span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello world!\n"</span>);  </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="第二步-源码编译"><a href="#第二步-源码编译" class="headerlink" title="第二步 源码编译"></a>第二步 源码编译</h4><p>在命令窗口执行bin包下的<code>arm-none-linux-gnueabi-gcc</code>指令</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arm-none-linux-gnueabi-gcc test.c -o test -<span class="keyword">static</span></span><br></pre></td></tr></table></figure>
-
-<p> 因为Android 的 Linux 内核没有标准IO库函数，因此我们采用静态编译的方式进行编译 末尾<code>-static</code>必须要有</p>
-<h4 id="第三步-将编译后的可执行文件传至安卓设备"><a href="#第三步-将编译后的可执行文件传至安卓设备" class="headerlink" title="第三步 将编译后的可执行文件传至安卓设备"></a>第三步 将编译后的可执行文件传至安卓设备</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb push test /data/</span><br></pre></td></tr></table></figure>
-
-<h4 id="第四步-执行文件"><a href="#第四步-执行文件" class="headerlink" title="第四步 执行文件"></a>第四步 执行文件</h4><p>直接在控制台输入文件名即可执行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./test</span><br></pre></td></tr></table></figure>
-
-<p>如果提示权限拒绝,那么</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 test</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../202.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3736,6 +3569,140 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../190.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../190.html" itemprop="url">8086汇编语言之dos打印hello world</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-13T14:14:19+08:00">
+                2020-12-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">assume cs:code,ds:data,ss:stack</span><br><span class="line"></span><br><span class="line">;数据段 代码段可直接获取数据段中数据, 相当于高级语言中的局部变量</span><br><span class="line">stack segment</span><br><span class="line">	db 20 dup(0) ;定义数据相当于是定义了段地址</span><br><span class="line">stack ends</span><br><span class="line"></span><br><span class="line">;数据段 代码段可直接获取数据段中数据, 相当于高级语言中的全局变量</span><br><span class="line">data segment</span><br><span class="line">	db 20 dup(0) ;定义数据相当于是定义了段地址</span><br><span class="line">	db &apos;hello world!$&apos; ;$ 表示结尾标记</span><br><span class="line">	</span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line">code segment	</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">start:	</span><br><span class="line">		;设置ds和ss</span><br><span class="line">		mov ax,data</span><br><span class="line">		mov ds,ax</span><br><span class="line">		mov ax stack</span><br><span class="line">		mov ss,ax</span><br><span class="line">		</span><br><span class="line">		;业务逻辑代码</span><br><span class="line">		mov dx,14h</span><br><span class="line">		mov ah 9h ;9h表示调用显存 从dx总读取偏移地址对应的数据</span><br><span class="line">		int 21h</span><br><span class="line">		</span><br><span class="line">		;退出程序</span><br><span class="line">		mov ah 4ch </span><br><span class="line">		int 21h</span><br><span class="line">code ends</span><br><span class="line">end start ;标记名称可自定义</span><br></pre></td></tr></table></figure>
+
+<p><strong>使用数据别名优化代码</strong></p>
+<p>第一种:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">assume cs:code,ds:data,ss:stack</span><br><span class="line"></span><br><span class="line">;数据段 代码段可直接获取数据段中数据, 相当于高级语言中的局部变量</span><br><span class="line">stack segment</span><br><span class="line">	db 20 dup(0) ;定义数据相当于是定义了段地址</span><br><span class="line">stack ends</span><br><span class="line"></span><br><span class="line">;数据段 代码段可直接获取数据段中数据, 相当于高级语言中的全局变量</span><br><span class="line">data segment</span><br><span class="line">	db 20 dup(0) ;定义数据相当于是定义了段地址</span><br><span class="line">	str: db &apos;hello world!$&apos; ;$ 表示结尾标记 str:表示指向该数据的地址</span><br><span class="line">	</span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line">code segment	</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">start:	</span><br><span class="line">		;设置ds和ss</span><br><span class="line">		mov ax,data</span><br><span class="line">		mov ds,ax</span><br><span class="line">		mov ax stack</span><br><span class="line">		mov ss,ax</span><br><span class="line">		</span><br><span class="line">		;业务逻辑代码</span><br><span class="line">		mov dx,str</span><br><span class="line">		mov ah,9h ;9h表示调用显存 从dx总读取偏移地址对应的数据</span><br><span class="line">		int 21h</span><br><span class="line">		</span><br><span class="line">		;退出程序</span><br><span class="line">		mov ah 4ch </span><br><span class="line">		int 21h</span><br><span class="line">code ends</span><br><span class="line">end start ;标记名称可自定义</span><br></pre></td></tr></table></figure>
+
+<p>第二种:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">assume cs:code,ds:data,ss:stack</span><br><span class="line"></span><br><span class="line">;数据段 代码段可直接获取数据段中数据, 相当于高级语言中的局部变量</span><br><span class="line">stack segment</span><br><span class="line">	db 20 dup(0) ;定义数据相当于是定义了段地址</span><br><span class="line">stack ends</span><br><span class="line"></span><br><span class="line">;数据段 代码段可直接获取数据段中数据, 相当于高级语言中的全局变量</span><br><span class="line">data segment</span><br><span class="line">	db 20 dup(0) ;定义数据相当于是定义了段地址</span><br><span class="line">	str db &apos;hello world!$&apos; ;$ 表示结尾标记</span><br><span class="line">	</span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line">code segment	</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">start:	</span><br><span class="line">		;设置ds和ss</span><br><span class="line">		mov ax,data</span><br><span class="line">		mov ds,ax</span><br><span class="line">		mov ax,stack</span><br><span class="line">		mov ss,ax</span><br><span class="line">		</span><br><span class="line">		;业务逻辑代码</span><br><span class="line">		mov dx,offset str;获取别名对应数据的偏移地址</span><br><span class="line">		mov ah, 9h ;9h表示调用显存 从dx总读取偏移地址对应的数据</span><br><span class="line">		int 21h</span><br><span class="line">		</span><br><span class="line">		;退出程序</span><br><span class="line">		mov ah, 4ch </span><br><span class="line">		int 21h</span><br><span class="line">code ends</span><br><span class="line">end start ;标记名称可自定义</span><br></pre></td></tr></table></figure>
+
+<p>知识点:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">第一种 方案使用str:</span><br><span class="line">str: db &apos;hello world!$&apos; ; str:表示指向该数据的地址</span><br><span class="line">;业务逻辑代码</span><br><span class="line">mov dx, str</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">第二种 方案使用offset</span><br><span class="line">str db &apos;hello world!$&apos; ;$ 表示结尾标记 str表示指向该数据的内容</span><br><span class="line">;业务逻辑代码</span><br><span class="line">mov dx,offset str;获取别名对应数据的偏移地址 如果直接使用str表示将hello world!中的h赋值给dx</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -3786,7 +3753,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">333</span>
+                  <span class="site-state-item-count">332</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

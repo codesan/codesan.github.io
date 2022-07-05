@@ -287,147 +287,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../140.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../140.html" itemprop="url">SpringBoot开发之采用RestTemplate进行第三方网络请求</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-19T19:55:32+08:00">
-                2020-10-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>在Spring-Boot开发中，RestTemplate同样提供了对外访问的接口API，这里主要介绍Get和Post方法的使用。Get请求提供了两种方式的接口getForObject 和 getForEntity，getForEntity提供如下三种方法的实现。</p>
-</blockquote>
-<h3 id="Get请求之——getForEntity-Stringurl-Class-responseType-Object…urlVariables"><a href="#Get请求之——getForEntity-Stringurl-Class-responseType-Object…urlVariables" class="headerlink" title="Get请求之——getForEntity(Stringurl,Class responseType,Object…urlVariables)"></a><strong>Get请求之——getForEntity(Stringurl,Class responseType,Object…urlVariables)</strong></h3><p>该方法提供了三个参数，其中url为请求的地址，responseType为请求响应body的包装类型，urlVariables为url中的参数绑定，该方法的参考调用如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// http://USER-SERVICE/user?name=&#123;name)</span><br><span class="line">RestTemplate restTemplate=new RestTemplate();</span><br><span class="line">Map&lt;String,String&gt; params=new HashMap&lt;&gt;();</span><br><span class="line">params.put(&quot;name&quot;,&quot;dada&quot;);  //</span><br><span class="line">ResponseEntity&lt;String&gt; responseEntity=restTemplate.getForEntity(&quot;http://USERSERVICE/user?name=&#123;name&#125;&quot;,String.class,params);</span><br></pre></td></tr></table></figure>
-
-<h3 id="Get请求之——getForEntity-URI-url-Class-responseType"><a href="#Get请求之——getForEntity-URI-url-Class-responseType" class="headerlink" title="Get请求之——getForEntity(URI url,Class responseType)"></a><strong>Get请求之——getForEntity(URI url,Class responseType)</strong></h3><p>该方法使用URI对象来替代之前的url和urlVariables参数来指定访问地址和参数绑定。URI是JDK <a href="https://link.zhihu.com/?target=http%3A//java.net" target="_blank" rel="noopener">http://java.net</a>包下的一个类，表示一个统一资源标识符(Uniform Resource Identifier)引用。参考如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">RestTemplate restTemplate=new RestTemplate();</span><br><span class="line">UriComponents uriComponents=UriComponentsBuilder.fromUriString(&quot;http://USER-SERVICE/user?name=&#123;name&#125;&quot;)</span><br><span class="line">    .build()</span><br><span class="line">    .expand(&quot;dodo&quot;)</span><br><span class="line">    .encode();</span><br><span class="line">URI uri=uriComponents.toUri();</span><br><span class="line">ResponseEntity&lt;String&gt; responseEntity=restTemplate.getForEntity(uri,String.class).getBody();</span><br></pre></td></tr></table></figure>
-
-<h3 id="Get请求之——getForObject"><a href="#Get请求之——getForObject" class="headerlink" title="Get请求之——getForObject"></a><strong>Get请求之——getForObject</strong></h3><p>getForObject方法可以理解为对getForEntity的进一步封装，它通过HttpMessageConverterExtractor对HTTP的请求响应体body内容进行对象转换，实现请求直接返回包装好的对象内容。getForObject方法有如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">getForObject(String url,Class responseType,Object...urlVariables)</span><br><span class="line">getForObject(String url,Class responseType,Map urlVariables)</span><br><span class="line">getForObject(URI url,Class responseType)</span><br></pre></td></tr></table></figure>
-
-<h3 id="Post-请求"><a href="#Post-请求" class="headerlink" title="Post 请求"></a><strong>Post 请求</strong></h3><p>Post请求提供有三种方法，postForEntity、postForObject和postForLocation。其中每种方法都存在三种方法，postForEntity方法使用如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">RestTemplate restTemplate=new RestTemplate();</span><br><span class="line">User user=newUser(&quot;didi&quot;,30);</span><br><span class="line">ResponseEntity&lt;String&gt; responseEntity=restTemplate.postForEntity(&quot;http://USER-SERVICE/user&quot;,user,String.class); //提交的body内容为user对象，请求的返回的body类型为String</span><br><span class="line">String body=responseEntity.getBody();</span><br></pre></td></tr></table></figure>
-
-<p>postForEntity存在如下三种方法的重载</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">postForEntity(String url,Object request,Class responseType,Object... uriVariables)</span><br><span class="line">postForEntity(String url,Object request,Class responseType,Map uriVariables)</span><br><span class="line">postForEntity(URI url,Object request，Class responseType)</span><br></pre></td></tr></table></figure>
-
-<p>postForEntity中的其它参数和getForEntity的参数大体相同在此不做介绍。</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../141.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -950,6 +809,145 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../133.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../133.html" itemprop="url">Linux系统查看时区以及时区修改</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-12T16:14:19+08:00">
+                2020-10-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><code>wp-config.php</code>里加入下面代码:</p>
+<h4 id="这里以Ubuntu系统为例"><a href="#这里以Ubuntu系统为例" class="headerlink" title="这里以Ubuntu系统为例"></a>这里以Ubuntu系统为例</h4><p><strong>查看时区:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date -R</span><br></pre></td></tr></table></figure>
+
+<p><strong>修改时区为东八区</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">timedatectl set-timezone Asia/Shanghai</span><br></pre></td></tr></table></figure>
+
+<h5 id="老版本系统以上修改时区指令可能不生效-需要采用以下办法"><a href="#老版本系统以上修改时区指令可能不生效-需要采用以下办法" class="headerlink" title="老版本系统以上修改时区指令可能不生效, 需要采用以下办法"></a>老版本系统以上修改时区指令可能不生效, 需要采用以下办法</h5><p><strong>1.运行tzselect</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:/# tzselect</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201012105429.png" alt></p>
+<p><strong>在这里我们选择亚洲 Asia，确认之后选择中国（China)，最后选择北京(Beijing)</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201012105446.png" alt>**</p>
+<p><strong>2.复制文件到/etc目录下</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:/# cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime</span><br></pre></td></tr></table></figure>
+
+<p><strong>3.再次查看时间date -R，已经修改为北京时间</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201012105502.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../134.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1180,145 +1178,6 @@
 
 <p>问题解决</p>
 <h3 id><a href="#" class="headerlink" title></a></h3><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../133.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../133.html" itemprop="url">Linux系统查看时区以及时区修改</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-12T16:14:19+08:00">
-                2020-10-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><code>wp-config.php</code>里加入下面代码:</p>
-<h4 id="这里以Ubuntu系统为例"><a href="#这里以Ubuntu系统为例" class="headerlink" title="这里以Ubuntu系统为例"></a>这里以Ubuntu系统为例</h4><p><strong>查看时区:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date -R</span><br></pre></td></tr></table></figure>
-
-<p><strong>修改时区为东八区</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">timedatectl set-timezone Asia/Shanghai</span><br></pre></td></tr></table></figure>
-
-<h5 id="老版本系统以上修改时区指令可能不生效-需要采用以下办法"><a href="#老版本系统以上修改时区指令可能不生效-需要采用以下办法" class="headerlink" title="老版本系统以上修改时区指令可能不生效, 需要采用以下办法"></a>老版本系统以上修改时区指令可能不生效, 需要采用以下办法</h5><p><strong>1.运行tzselect</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:/# tzselect</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201012105429.png" alt></p>
-<p><strong>在这里我们选择亚洲 Asia，确认之后选择中国（China)，最后选择北京(Beijing)</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201012105446.png" alt>**</p>
-<p><strong>2.复制文件到/etc目录下</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:/# cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime</span><br></pre></td></tr></table></figure>
-
-<p><strong>3.再次查看时间date -R，已经修改为北京时间</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201012105502.png" alt></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1766,6 +1625,176 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../131.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../131.html" itemprop="url">mysql使用命令导入和导出sql文件</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-30T16:14:19+08:00">
+                2020-09-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="window下"><a href="#window下" class="headerlink" title="window下"></a>window下</h3><p><strong>1.导出整个数据库，首先打开要导出的目录</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -u 用户名 -p 数据库名 &gt; 导出的文件名</span><br><span class="line"></span><br><span class="line">mysqldump -u dbuser -p dbname &gt; dbname.sql 下一行需要输入密码</span><br><span class="line"></span><br><span class="line">mysqldump -uroot -proot [dbname]&gt; english.sql 在本行直接输入密码</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.导出一个表</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -u 用户名 -p 数据库名 表名&gt; 导出的文件名</span><br><span class="line"></span><br><span class="line">mysqldump -u dbuser -p dbname users&gt; dbname_users.sql</span><br></pre></td></tr></table></figure>
+
+<p><strong>3.导出一个数据库结构</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -u dbuser -p -d --add-drop-table dbname &gt;d:/dbname_db.sql</span><br><span class="line"></span><br><span class="line">-d 没有数据 --add-drop-table 在每个create语句之前增加一个drop table</span><br></pre></td></tr></table></figure>
+
+<p><strong>4.导入数据库</strong></p>
+<p>常用source 命令</p>
+<p>进入mysql数据库控制台，如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p</span><br><span class="line"></span><br><span class="line">mysql&gt;use 数据库</span><br></pre></td></tr></table></figure>
+
+<p>然后使用source命令，后面参数为脚本文件(如这里用到的.sql)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;source d:/dbname.sql</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="linux下"><a href="#linux下" class="headerlink" title="linux下"></a>linux下</h3><p><strong>一、导出数据库用mysqldump命令（注意mysql的安装路径，即此命令的路径）：</strong></p>
+<p>1、导出数据和表结构：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -u用户名 -p密码 数据库名 &gt; 数据库名.sql</span><br><span class="line"></span><br><span class="line">\#/usr/local/mysql/bin/  mysqldump -uroot -p abc &gt; abc.sql</span><br></pre></td></tr></table></figure>
+
+<p>敲回车后会提示输入密码</p>
+<p>2、只导出表结构</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -u用户名 -p密码 -d 数据库名 &gt; 数据库名.sql</span><br><span class="line"></span><br><span class="line">\#/usr/local/mysql/bin/  mysqldump -uroot -p -d abc &gt; abc.sql</span><br><span class="line"></span><br><span class="line">注：/usr/local/mysql/bin/ ---&gt; mysql的data目录</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>二、导入数据库</strong></p>
+<p>1、首先建空数据库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;create database abc;</span><br></pre></td></tr></table></figure>
+
+<p>2、导入数据库</p>
+<p>方法一：</p>
+<p>（1）选择数据库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;use abc;</span><br></pre></td></tr></table></figure>
+
+<p>（2）设置数据库编码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;set names utf8;</span><br></pre></td></tr></table></figure>
+
+<p>（3）导入数据（注意sql文件的路径）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;source /home/abc/abc.sql;</span><br></pre></td></tr></table></figure>
+
+<p>方法二：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql -u用户名 -p密码 数据库名 &lt; 数据库名.sql</span><br><span class="line"></span><br><span class="line">\#mysql -uabc_f -p abc &lt; abc.sql</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -1816,7 +1845,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">333</span>
+                  <span class="site-state-item-count">332</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

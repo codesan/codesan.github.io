@@ -287,190 +287,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../232.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../232.html" itemprop="url">关于android scheme跳转配置中pathPattern的使用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-03T10:14:19+08:00">
-                2021-06-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="Scheme协议在Android中使用场景"><a href="#Scheme协议在Android中使用场景" class="headerlink" title="Scheme协议在Android中使用场景"></a>Scheme协议在Android中使用场景</h4><ol>
-<li><p>H5页面和Native页面的交互</p>
-</li>
-<li><p>客户端获取push消息中后，点击消息跳转到APP内部页面</p>
-</li>
-<li><p>APP根据URL跳转到另外一个APP指定页面</p>
-</li>
-<li><p>外部浏览器唤醒App</p>
-</li>
-</ol>
-<h4 id="Scheme协议的使用"><a href="#Scheme协议的使用" class="headerlink" title="Scheme协议的使用"></a>Scheme协议的使用</h4><ol>
-<li><strong>场景一 外部浏览器唤醒app</strong></li>
-</ol>
-<p>以<code>app://test/good?goodsId=3</code>这个内链为例, 假设浏览器中点击该内链需要跳转到应用的指定Activity</p>
-<p>那么,首先在清单文件中对指定Activity进行intent过滤配置:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;activity</span><br><span class="line">          android:name=&quot;.ui.login.LoginActivity&quot;</span><br><span class="line">          android:screenOrientation=&quot;portrait&quot;&gt;</span><br><span class="line">          &lt;intent-filter&gt;</span><br><span class="line">          &lt;!--可以根据用户的数据类型，打开相应的Activity--&gt;</span><br><span class="line">              &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;</span><br><span class="line">              &lt;!--界面可以被隐式调用--&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;</span><br><span class="line">              &lt;!--界面可以通过浏览器的连接启动--&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; /&gt;</span><br><span class="line">              &lt;!--协议部分，主要是配置scheme和host--&gt;</span><br><span class="line">              &lt;data</span><br><span class="line">              		android:path=&quot;/good&quot;</span><br><span class="line">                  android:host=&quot;test&quot;</span><br><span class="line">                  android:scheme=&quot;app&quot; /&gt;</span><br><span class="line">          &lt;/intent-filter&gt;</span><br><span class="line">      &lt;/activity&gt;</span><br></pre></td></tr></table></figure>
-
-<p>然后在<code>Activity</code>的<code>onCreate</code>方法中进行参数的获取和逻辑的处理:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Uri data = getIntent().getData();</span><br><span class="line">String param = data.getQueryParameter(&quot;goodsId&quot;);//获取指定key下的参数</span><br></pre></td></tr></table></figure>
-
-<p>最后测试跳转即可</p>
-<ol start="2">
-<li><p><strong>场景二 应用内部H5交互(页面跳转)</strong></p>
-<p>还是以<code>app://test/good?goodsId=3</code>这个内链为例, 假设WebView中点击该内链需要跳转到应用的指定Activity</p>
-<p>首先还是在清单文件中配置,如上</p>
-<p>然后配置webview:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean &#123;</span><br><span class="line">startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))</span><br><span class="line">  return true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>因为webview属于开发者自定义, 因此内链跳转逻辑需要在<code>shouldOverrideUrlLoading</code>方法中自行处理</p>
-</li>
-<li><p><strong>场景三 应用内部H5交互(非页面跳转)</strong></p>
-<p>有时候需求不单单是页面的跳转, 可能还涉及到其他ui或者逻辑的交互, 比如跳转到支付宝失败后弹出弹窗等等, 这个时候,我们需要在<code>shouldOverrideUrlLoading</code>方法中进行不同scheme的处理:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean &#123;</span><br><span class="line">                 if (url.startsWith(&quot;alipay&quot;)) &#123;</span><br><span class="line">                        try &#123;</span><br><span class="line">                            startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))</span><br><span class="line">                        &#125; catch (e: Exception) &#123;</span><br><span class="line">                            e.printStackTrace()</span><br><span class="line">                            AlertDialog.Builder(requireContext())</span><br><span class="line">                                .setMessage(&quot;未检测到支付宝客户端，请安装后重试。&quot;)</span><br><span class="line">                                .setPositiveButton(&quot;&quot;) &#123; _, _ -&gt;</span><br><span class="line">                                    startActivity(</span><br><span class="line">                                        Intent(</span><br><span class="line">                                            Intent.ACTION_VIEW,</span><br><span class="line">                                            &quot;https://d.alipay.com&quot;.toUri()</span><br><span class="line">                                        )</span><br><span class="line">                                    )</span><br><span class="line">                                &#125;</span><br><span class="line">                                .setNegativeButton(&quot;取消&quot;, null).show()</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; </span><br><span class="line">                    return true</span><br><span class="line">                    &#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>场景四 应用内Activity之间的跳转</strong></p>
-<p>首先依然在清单文件中配置</p>
-<p>然后使用隐式跳转:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(&quot;`app://test/good?goodsId=3`&quot;)))</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<h4 id="多个不同scheme跳转同一个页面"><a href="#多个不同scheme跳转同一个页面" class="headerlink" title="多个不同scheme跳转同一个页面"></a>多个不同scheme跳转同一个页面</h4><p>只需要在清单文件增加多个<code>data</code>标签即可:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;activity</span><br><span class="line">          android:name=&quot;.ui.login.LoginActivity&quot;</span><br><span class="line">          android:screenOrientation=&quot;portrait&quot;&gt;</span><br><span class="line">          &lt;intent-filter&gt;</span><br><span class="line">              &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; /&gt;</span><br><span class="line">					</span><br><span class="line">              &lt;data</span><br><span class="line">              		android:path=&quot;/good&quot;</span><br><span class="line">                  android:host=&quot;test&quot;</span><br><span class="line">                  android:scheme=&quot;app&quot; /&gt;</span><br><span class="line">                  </span><br><span class="line">					</span><br><span class="line">              &lt;data</span><br><span class="line">                  android:host=&quot;test2&quot;</span><br><span class="line">                  android:scheme=&quot;app&quot; /&gt;</span><br><span class="line">          &lt;/intent-filter&gt;</span><br><span class="line">      &lt;/activity&gt;</span><br></pre></td></tr></table></figure>
-
-<h4 id="使用pathPattern匹配模式"><a href="#使用pathPattern匹配模式" class="headerlink" title="使用pathPattern匹配模式"></a>使用pathPattern匹配模式</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;data</span><br><span class="line">                   android:pathPattern=&quot;/.*&quot;</span><br><span class="line">                   android:host=&quot;test&quot;</span><br><span class="line">                   android:scheme=&quot;app&quot; /&gt;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.表示匹配任意字符 *表示匹配0次或多次  遗憾的是pathPattern无法使用标准的正则表达式 只有* 和.可用</span><br></pre></td></tr></table></figure>
-
-<h4 id="关于sspPattern匹配模式"><a href="#关于sspPattern匹配模式" class="headerlink" title="关于sspPattern匹配模式"></a>关于sspPattern匹配模式</h4><p>我们使用内链的格式一般和<code>url</code>格式一致,比如<code>app://test</code>, 如果我们想使用自定义格式比如这种<code>app:test</code>, 那常规的方法则不奏效,此时<code>sspPattern</code>就可以派上用场</p>
-<p>我们在清单文件中如下配置即可:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;data</span><br><span class="line">                   android:ssp=&quot;test&quot;</span><br><span class="line">                   android:scheme=&quot;app&quot; /&gt;</span><br></pre></td></tr></table></figure>
-
-<p>同样该模式下对应三个属性:</p>
-<ul>
-<li>ssp :字面值匹配模式(PATTERN_LITERAL) 内部采用equals函数</li>
-<li>sspPrefix 前缀匹配模式(PATTERN_PREFIX) 内部采用startWith函数</li>
-<li>sspPattern 全局匹配模式(PATTERN_GLOB) glob规则是一种简化的模式，只支持“*”和“.”作为通配符 </li>
-</ul>
-<p>实际上类似于url格式的内链, 比如<code>app://test</code>也可以使用<code>ssp</code>进行匹配:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;data</span><br><span class="line">                    android:ssp=&quot;//test&quot;</span><br><span class="line">                    android:scheme=&quot;app&quot; /&gt;</span><br></pre></td></tr></table></figure>
-
-<p>不过一般我们不会这么做, 因为直接使用<code>host</code>属性更加简洁</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../231.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1067,6 +883,139 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../226.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../226.html" itemprop="url">Could not resolve all dependencies for configuration app:debugRuntimeClasspath</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-09T09:14:19+08:00">
+                2021-03-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="报错"><a href="#报错" class="headerlink" title="报错"></a>报错</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Could not resolve all dependencies for configuration &apos;:app:debugRuntimeClasspath&apos;.</span><br><span class="line">Could not create task &apos;:app:minifyReleaseWithR8&apos;.</span><br><span class="line">Cannot query the value of this provider because it has no value available</span><br></pre></td></tr></table></figure>
+
+<p>同时提示:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Warning:&lt;i&gt;&lt;b&gt;project &apos;:app&apos;: Unable to build kotlin-kapt plugin configuration&lt;/b&gt;</span><br><span class="line">Details: org.gradle.api.internal.tasks.DefaultTaskContainer$TaskCreationException: Could not create task &apos;:app:minifyReleaseWithR8&apos;.</span><br><span class="line">Caused by: org.gradle.api.internal.provider.MissingValueException: Cannot query the value of this provider because it has no value available.&lt;/i&gt;</span><br></pre></td></tr></table></figure>
+
+<p>同事那边代码正常编译运行, 我这边把代码拉下来后报错, 很大可能性是Studio环境问题</p>
+<p>百度试了很多方案均不奏效</p>
+<p>最后在<a href="https://stackoverflow.com/questions/64459937/could-not-create-task-appminifyreleasewithr8-cannot-query-the-value-of-this" target="_blank" rel="noopener">StackOverflow</a>上找到了答案:</p>
+<p><strong>是SDK版本和buildToolsVersion不一致导致的</strong></p>
+<p><strong>只需将buildToolsVersion版本改成本机已装SDK版本即可, 或者不改动代码 下载一个与之对应的SDK版本</strong></p>
+<p>问题解决</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../227.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1156,139 +1105,6 @@
 <p>如果mac使用的socksx的客户端可能没有高级设置以查看地址及端口号。</p>
 <p>此客户端一般是默认127.0.0.1，1080端口。</p>
 <p>另外给大家分享一个免费的mtproxy分享网站：<a href="https://mtproto.cc/" target="_blank" rel="noopener">mtproto.cc</a></p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../226.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../226.html" itemprop="url">Could not resolve all dependencies for configuration app:debugRuntimeClasspath</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-09T09:14:19+08:00">
-                2021-03-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="报错"><a href="#报错" class="headerlink" title="报错"></a>报错</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Could not resolve all dependencies for configuration &apos;:app:debugRuntimeClasspath&apos;.</span><br><span class="line">Could not create task &apos;:app:minifyReleaseWithR8&apos;.</span><br><span class="line">Cannot query the value of this provider because it has no value available</span><br></pre></td></tr></table></figure>
-
-<p>同时提示:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Warning:&lt;i&gt;&lt;b&gt;project &apos;:app&apos;: Unable to build kotlin-kapt plugin configuration&lt;/b&gt;</span><br><span class="line">Details: org.gradle.api.internal.tasks.DefaultTaskContainer$TaskCreationException: Could not create task &apos;:app:minifyReleaseWithR8&apos;.</span><br><span class="line">Caused by: org.gradle.api.internal.provider.MissingValueException: Cannot query the value of this provider because it has no value available.&lt;/i&gt;</span><br></pre></td></tr></table></figure>
-
-<p>同事那边代码正常编译运行, 我这边把代码拉下来后报错, 很大可能性是Studio环境问题</p>
-<p>百度试了很多方案均不奏效</p>
-<p>最后在<a href="https://stackoverflow.com/questions/64459937/could-not-create-task-appminifyreleasewithr8-cannot-query-the-value-of-this" target="_blank" rel="noopener">StackOverflow</a>上找到了答案:</p>
-<p><strong>是SDK版本和buildToolsVersion不一致导致的</strong></p>
-<p><strong>只需将buildToolsVersion版本改成本机已装SDK版本即可, 或者不改动代码 下载一个与之对应的SDK版本</strong></p>
-<p>问题解决</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
 <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
@@ -1916,6 +1732,148 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../222.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../222.html" itemprop="url">xcode中三种编译器的区别</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-01T15:39:19+08:00">
+                2021-02-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>在xcode中有三种编译器供我们选择，分别是GCC、LLVM GCC、LLVM compliler </p>
+</blockquote>
+<h2 id="三者区别"><a href="#三者区别" class="headerlink" title="三者区别"></a>三者区别</h2><ul>
+<li><strong>GCC</strong> ：是一套由 GNU 开发的编程语言编译器。Linux/Unix操作系统的标准编译器。编译前端和后端皆使用GCC</li>
+<li><strong>LLVM GCC</strong>：编译前端使用GCC，后端使用LLVM</li>
+<li><strong>LLVM compliler</strong> ：编译前端使用Clang，后端使用LLVM</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210201154646.png" alt></p>
+<h2 id="为什么存在三种编译器"><a href="#为什么存在三种编译器" class="headerlink" title="为什么存在三种编译器"></a>为什么存在三种编译器</h2><p>苹果公司最开始使用GCC编译器</p>
+<p>为了实现对 <strong>Objective-C</strong> 新特性的支持，苹果公司结合LLVM改进GCC，从而衍生出了一个GCC分支，也就是<strong>LLVM GCC</strong></p>
+<p>由于<strong>LLVM GCC</strong>的笨重和局限性,苹果公司从零开始开发了一套自己的编译前端系统<strong>Clang</strong>,配合<strong>LLVM</strong>,就有了<strong>LLVM GCC</strong></p>
+<h2 id="Clang的优势"><a href="#Clang的优势" class="headerlink" title="Clang的优势"></a>Clang的优势</h2><p>相比GCC而言:</p>
+<ul>
+<li>编译速度快,占用内存小</li>
+<li>模块化设计,易于扩展,易于IDE集成</li>
+<li>错误提示人性化</li>
+<li>产出小</li>
+</ul>
+<p>值得一提的是,<code>Android NDK</code>从<code>r18</code>开始就已经抛弃GCC,转而采用Clang编译,Clang未来可期</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -1966,7 +1924,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">333</span>
+                  <span class="site-state-item-count">332</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

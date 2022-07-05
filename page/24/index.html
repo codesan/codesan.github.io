@@ -287,157 +287,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../43.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../43.html" itemprop="url">向谷歌搜索引擎主动推送网页的教程 Google Indexing API 接口实现</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-08T11:04:25+08:00">
-                2020-09-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/jHXAmlIOfwsvtep-20200908110823361.jpg" alt></p>
-<p>谷歌搜索引擎作为全球第一的搜索引擎早就支持了站长主动推送的功能，只不过不是面向普通用户的可视化界面，而是通过编程API接口实现的，有很多站长并不是专业的开发者，但由于谷歌需要验证网站所有权，所以我不能直接做一个可视化界面让站长自己填写自己的秘钥，所以只能对谷歌的接口进行二次封装，以降低使用的难度。</p>
-<p>源码项目地址：<a href="https://github.com/NeilRen/GoogleIndexing" target="_blank" rel="noopener">https://github.com/NeilRen/GoogleIndexing</a></p>
-<h2 id="环境要求"><a href="#环境要求" class="headerlink" title="环境要求"></a>环境要求</h2><p>首先，我是以Java为平台进行的封装，JDK版本为1.8，其他程序可能需要中间层才能打通，还不如自己实现，其他编程语言的同学我也没有办法，这个世界上编程语言太多了。</p>
-<p>其次，谷歌的Google Indexing API接口在中国大陆无法访问，所以程序需要运行在可以访问谷歌的网络环境中。</p>
-<h2 id="前提条件"><a href="#前提条件" class="headerlink" title="前提条件"></a>前提条件</h2><p>首先，你需要一个谷歌账号。你的项目是Java的，并且JDK为1.8以上。</p>
-<h2 id="创建-Google-API-项目"><a href="#创建-Google-API-项目" class="headerlink" title="创建 Google API 项目"></a>创建 Google API 项目</h2><p>然后在向 Indexing API 发送请求之前，您需要告知 Google 您的客户端并激活对 Indexing API 的访问权限。谷歌为我们提供了一个<a href="https://console.developers.google.com/start/api?id=indexing.googleapis.com&credential=client_key" target="_blank" rel="noopener">设置向导</a>，设置向导会引导您在 Google API 控制台中创建项目、启用 Indexing API 以及创建凭据。</p>
-<p>首先先跟着向导创建一个项目</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/M2ptE4nOaW6Z3qg.png" alt="Google Indexing API 设置向导"></p>
-<p>然后转到凭据，添加凭据</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20200310210556-20200908110850707.png" alt="Google Indexing API 添加凭证"></p>
-<p>添加的凭据选择Indexing API、网页服务器(例如 node.js、Tomecat)，选择应用数据，点击“我需要哪些凭据？”到下一页</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20200310210605-20200908110904033.png" alt="Google Indexing API 为项目添加凭证"></p>
-<p>创建一个服务账号，名称可以自己起一个名字，秘钥类型选择JSON，点击继续</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20200310210613-20200908110918941.png" alt="Google Indexing API 创建服务账号"></p>
-<p>选择创建无角色账号即可</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20200310210621-20200908110933400.png" alt="Google Indexing API 创建无角色账号"></p>
-<p>这时就会自动下载一个json文件，这个就是我们的私钥，要保存好</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20200310210628-20200908110944503.png" alt="Google Indexing API 秘钥"></p>
-<h2 id="在-Search-Console-中验证网站所有权"><a href="#在-Search-Console-中验证网站所有权" class="headerlink" title="在 Search Console 中验证网站所有权"></a>在 Search Console 中验证网站所有权</h2><p>我们还需要到 <a href="https://www.google.com/webmasters/tools/home" target="_blank" rel="noopener">Search Console</a> 添加我们的网站，验证所有权，验证成功以后，注意我们要去<a href="https://www.google.com/webmasters/verification/home?pli=1" target="_blank" rel="noopener">旧版的控制台</a>，不要去新版的控制台！然后添加所有者</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20200310210643-20200908110957641.png" alt="Google 旧版控制台">]</p>
-<p>所有者的邮箱填写我们上一步获得的私钥JSON文件中的邮箱地址。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20200310210636-20200908111008115.png" alt="Google Indexing API 秘钥JSON"><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20200310210654-20200908111018700.png" alt="Google 添加网站所有者"></p>
-<h2 id="在自己的项目中安装依赖"><a href="#在自己的项目中安装依赖" class="headerlink" title="在自己的项目中安装依赖"></a>在自己的项目中安装依赖</h2><p>如果您使用Apache Maven来管理Java项目，只需在项目的<code>pom.xml</code>文件加入相应的依赖项即可。您只需在<code>pom.xml</code>中声明以下依赖：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;net.renfei&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;googleindexing&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;1.0.0&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-
-<p>编写代码调用服务，在实例化GoogleIndexing的时候，需要传一个String参数，这个参数是私钥JSON文件所在的文件地址：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSON;</span><br><span class="line">import com.google.api.services.indexing.v3.model.UrlNotificationMetadata;</span><br><span class="line">import net.renfei.googleindexing.GoogleIndexing;</span><br><span class="line">import net.renfei.googleindexing.entity.UrlNotification;</span><br><span class="line">import net.renfei.googleindexing.entity.UrlNotificationType;</span><br><span class="line"></span><br><span class="line">public class Demo &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            GoogleIndexing googleIndexing = new GoogleIndexing(&quot;/Users/renfei/Google/Ren-Fei-5a8df7c2b912.json&quot;);</span><br><span class="line">            UrlNotification urlNotification = new UrlNotification();</span><br><span class="line">            urlNotification.setUrl(&quot;https://www.renfei.net&quot;);</span><br><span class="line">            urlNotification.setType(UrlNotificationType.URL_UPDATED);</span><br><span class="line">            UrlNotificationMetadata urlNotificationMetadata = googleIndexing.publish(urlNotification);</span><br><span class="line">            System.out.printf(JSON.toJSONString(urlNotificationMetadata));</span><br><span class="line">        &#125; catch (Exception ex) &#123;</span><br><span class="line">            ex.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../32.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1805,6 +1654,156 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../18.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../18.html" itemprop="url">关于linux指令sed的使用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-01T18:59:05+08:00">
+                2020-09-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>sed -i</strong> 主要作用就是操作文本 如下:</p>
+<p><strong>去掉 “行首” 带“@”的首字母@</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;s/^@//&apos; file</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>特定字符串的行前插入新行</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;/特定字符串/i 新行字符串&apos; file</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>特定字符串的行后插入新行</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;/特定字符串/a 新行字符串&apos; file</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>特定字符串的删除</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;/字符串/d&apos; file</span><br></pre></td></tr></table></figure>
+
+<p><strong>提示: 以上斜杠可以换成~ 一样实现相同功能</strong></p>
+<h4 id="问题场景："><a href="#问题场景：" class="headerlink" title="问题场景："></a>问题场景：</h4><p>在mac上，使用sed命令把当前目录的test.sql文件内容中的a替换为b，使用命令：sed -i “s/a/b/g” test.sql</p>
+<p>遇到报错：sed: 1: “grep …”: extra characters at the end of g command</p>
+<p><strong>解决：</strong></p>
+<p>在mac中使用sed命令在-i参数后面需要带一对双引号””，正确格式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &quot;&quot; &quot;s/a/b/g&quot; test.sql</span><br></pre></td></tr></table></figure>
+
+<p><strong>原因</strong></p>
+<p>sed -i 后面的双引号中可写任意字符串或者为空，含义是用于生成源文件的备份文件的文件名。比如上面的例子：sed -i “_tmp” “s/a/b/g” test.sql，在替换test.sql的同时，还会生成test.sql_tmp的备份文件</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -1855,7 +1854,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">333</span>
+                  <span class="site-state-item-count">332</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

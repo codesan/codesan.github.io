@@ -287,154 +287,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../49.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../49.html" itemprop="url">H5通过scheme跳转指定Activity的几种方式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-20T11:30:21+08:00">
-                2020-05-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="http://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/u=3857517106,2525057362&fm=26&gp=0.jpg" alt></p>
-<h3 id="如果是App内部WebView点击跳转指定Activity"><a href="#如果是App内部WebView点击跳转指定Activity" class="headerlink" title="如果是App内部WebView点击跳转指定Activity"></a>如果是App内部WebView点击跳转指定Activity</h3><h4 id="第一种-在清单文件配置intent-filter"><a href="#第一种-在清单文件配置intent-filter" class="headerlink" title="第一种 在清单文件配置intent-filter"></a>第一种 在清单文件配置intent-filter</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;intent-filter&gt;</span><br><span class="line">    &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;</span><br><span class="line">    &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;</span><br><span class="line">    &lt;data</span><br><span class="line">        android:host=&quot;personal_page_info&quot;</span><br><span class="line">        android:scheme=&quot;$&#123;app_scheme&#125;&quot; /&gt;</span><br><span class="line">&lt;/intent-filter&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>WebView设置:</strong></p>
-<pre><code>mWebView.setWebViewClient(new WebViewClient() {
-@Override
-public void onPageStarted(WebView view, String url, Bitmap favicon) {
-
-}
-@Override
-public boolean shouldOverrideUrlLoading(WebView view, String httpurl) {
-    if (httpurl.startsWith(&quot;app:&quot;)) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(httpurl));
-        startActivity(intent);
-    }
-    return false;
-}
-});</code></pre><p><strong>如果还需要传值的话, 在Activity中进行数据解析:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if (intent.dataString.orEmpty().isNotEmpty()) &#123;</span><br><span class="line">       mUserId = intent.dataString.orEmpty().parseValue(&quot;userid&quot;, 0)</span><br><span class="line">   &#125; else &#123;</span><br><span class="line">       ActivityLauncher.bind(this)</span><br><span class="line">   &#125;</span><br><span class="line">   if (mUserId == 0) finish()</span><br></pre></td></tr></table></figure>
-
-<h4 id="第二种-不配置intent-filter的方式"><a href="#第二种-不配置intent-filter的方式" class="headerlink" title="第二种 不配置intent-filter的方式"></a>第二种 不配置intent-filter的方式</h4><p>只需在WebView的shouldOverrideUrlLoading方法中进行内链解析处理即可:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">  @Override</span><br><span class="line">public boolean shouldOverrideUrlLoading(WebView view, String httpurl) &#123;</span><br><span class="line">    if (httpurl.startsWith(&quot;app://jump_activity&quot;)) &#123;</span><br><span class="line">        Intent intent = new Intent(context, XXXActivity.class));</span><br><span class="line">        startActivity(intent);</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="如果是外部浏览器页面点击跳转指定Activity"><a href="#如果是外部浏览器页面点击跳转指定Activity" class="headerlink" title="如果是外部浏览器页面点击跳转指定Activity"></a>如果是外部浏览器页面点击跳转指定Activity</h3><p>只需在清单文件中对指定Acticity做intent-filter配置即可</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;intent-filter&gt;</span><br><span class="line">    &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;</span><br><span class="line">    &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;</span><br><span class="line">    &lt;data</span><br><span class="line">        android:host=&quot;personal_page_info&quot;</span><br><span class="line">        android:scheme=&quot;$&#123;app_scheme&#125;&quot; /&gt;</span><br><span class="line">&lt;/intent-filter&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../50.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2259,6 +2111,164 @@ public boolean shouldOverrideUrlLoading(WebView view, String httpurl) {
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../47.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../47.html" itemprop="url">Android 中使用WebViewJavaScriptBridge进行H5和原生的交互</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-14T18:17:37+08:00">
+                2020-05-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="http://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/fdfs.jpg" alt></p>
+<h3 id="1-概述"><a href="#1-概述" class="headerlink" title="1.  概述"></a>1.  概述</h3><blockquote>
+<p>当我们采用H5与Native原生结合开发，使用H5去开发一些功能的时候，肯定会涉及到Android与Js互相调用的问题，通常有两种实现方式，</p>
+</blockquote>
+<p><strong>第一种</strong> 使用原生的addJavascriptInterface()来解决</p>
+<p><strong>第二种</strong> 使用第三方框架WebViewJavascriptBridge   这也是我今天要分享的部分</p>
+<h3 id="2-为什么要使用WsebViewJavascriptBridge"><a href="#2-为什么要使用WsebViewJavascriptBridge" class="headerlink" title="2.为什么要使用WsebViewJavascriptBridge"></a>2.为什么要使用WsebViewJavascriptBridge</h3><p>对于安卓开发有一段时间的人来说，知道安卓4.4以前谷歌的webview存在安全漏洞，网站可以通过js注入就可以随便拿到客户端的重要信息，甚至轻而易举的调用本地代码进行流氓行为，谷歌后来发现有此漏洞后，增加了防御措施，如果要是js调用本地代码，开发者必须在代码中申明<code>JavascriptInterface</code>，</p>
+<p> 列如在4.0之前我们要使得webView加载js只需如下代码：   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mWebView.addJavascriptInterface(new JsToJava(), &quot;myjsfunction&quot;);</span><br></pre></td></tr></table></figure>
+
+<p>4.4之后调用需要在调用方法加入加入@JavascriptInterface注解，如果代码无此申明，那么也就无法使得js生效，也就是说这样就可以避免恶意网页利用js对安卓客户端的窃取和攻击。</p>
+<p>但是即使这样，我们很多时候需要在js记载本地代码的时候，要做一些判断和限制，或者有可能也会做些过滤和对用户友好提示，因此JavascriptInterface也就无法满足我们的需求了，特此有大神就写出了WebViewJavascriptBridge框架。</p>
+<h3 id="3-开始使用"><a href="#3-开始使用" class="headerlink" title="3.开始使用"></a>3.开始使用</h3><h5 id="第一步-Android-Studio-导包"><a href="#第一步-Android-Studio-导包" class="headerlink" title="第一步.Android Studio 导包"></a>第一步.Android Studio 导包</h5><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">repositories &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    maven &#123; url <span class="string">"https://jitpack.io"</span> &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    compile <span class="string">'com.github.lzyzsd:jsbridge:1.0.4'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="第二步-在布局文件中添加"><a href="#第二步-在布局文件中添加" class="headerlink" title="第二步.在布局文件中添加"></a>第二步.在布局文件中添加</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;com.github.lzyzsd.jsbridge.BridgeWebView</span><br><span class="line">    android:id=&quot;@+id/wv_web_view&quot;</span><br><span class="line">    android:layout_width=&quot;match_parent&quot;</span><br><span class="line">    android:layout_height=&quot;match_parent&quot; /&gt;</span><br></pre></td></tr></table></figure>
+
+<h5 id="第三步-代码中添加交互方法"><a href="#第三步-代码中添加交互方法" class="headerlink" title="第三步.代码中添加交互方法"></a>第三步.代码中添加交互方法</h5><p><strong>H5调android方法</strong></p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//android端代码</span></span><br><span class="line">mWebView.registerHandler(<span class="string">"test"</span>, <span class="keyword">new</span> BridgeHandler() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public <span class="keyword">void</span> handler(<span class="built_in">String</span> data, CallBackFunction <span class="function"><span class="keyword">function</span>) </span>&#123;</span><br><span class="line">           <span class="function"><span class="keyword">function</span>.<span class="title">onCallBack</span>(<span class="params"><span class="string">"指定Handler收到Web发来的数据，回传数据给你"</span></span>);</span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">//<span class="title">H5</span>端代码</span></span><br><span class="line"><span class="function"><span class="title">function</span> <span class="title">test</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">           <span class="comment">//调用本地java方法</span></span><br><span class="line">           <span class="comment">//第一个参数是 调用java的函数名字 第二个参数是要传递的数据 第三个参数js在被回调后具体执行方法，responseData为java层回传数据</span></span><br><span class="line">           <span class="keyword">var</span> data=<span class="string">'发送消息给java代码指定接收'</span>;</span><br><span class="line">           <span class="built_in">window</span>.WebViewJavascriptBridge.callHandler(</span><br><span class="line">               <span class="string">'test'</span></span><br><span class="line">               ,data</span><br><span class="line">               , <span class="function"><span class="keyword">function</span>(<span class="params">responseData</span>) </span>&#123;</span><br><span class="line">                   bridgeLog(<span class="string">'来自Java的回传数据： '</span> + responseData);</span><br><span class="line">               &#125;</span><br><span class="line">           );</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+
+<p>或者</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//android端代码 </span></span><br><span class="line">mWebView.setDefaultHandler(<span class="keyword">new</span> BridgeHandler() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public <span class="keyword">void</span> handler(<span class="built_in">String</span> data, CallBackFunction <span class="function"><span class="keyword">function</span>) </span>&#123;</span><br><span class="line">                <span class="function"><span class="keyword">function</span>.<span class="title">onCallBack</span>(<span class="params"><span class="string">"指定Handler收到Web发来的数据，回传数据给你"</span></span>);</span></span><br><span class="line"><span class="function">            &#125;</span></span><br><span class="line"><span class="function">        &#125;);</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">//<span class="title">H5</span>端代码</span></span><br><span class="line"><span class="function"><span class="title">function</span> <span class="title">test</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">           <span class="comment">//发送消息给java代码</span></span><br><span class="line">           <span class="keyword">var</span> data = <span class="string">'发送消息给java代码全局接收'</span>;</span><br><span class="line"></span><br><span class="line">           <span class="built_in">window</span>.WebViewJavascriptBridge.send(</span><br><span class="line">               data</span><br><span class="line">               , <span class="function"><span class="keyword">function</span>(<span class="params">responseData</span>) </span>&#123;</span><br><span class="line">                  bridgeLog(<span class="string">'来自Java的回传数据： '</span> +responseData);</span><br><span class="line">               &#125;</span><br><span class="line">           );</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上两种方式 一个是指定调具体协定好的方法,一个是全局调用</p>
+<p><strong>android调H5</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//android端代码 </span></span><br><span class="line">mWebView.send(<span class="string">"发送数据给web默认接收"</span>,<span class="keyword">new</span> CallBackFunction()&#123;</span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCallBack</span><span class="params">(String data)</span> </span>&#123;</span><br><span class="line">                        Log.e(TAG, <span class="string">"来自web的回传数据："</span> + data);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//H5端代码 </span></span><br><span class="line"><span class="comment">//注册回调函数，第一次连接时调用 初始化函数</span></span><br><span class="line">connectWebViewJavascriptBridge(function(bridge) &#123;</span><br><span class="line">           bridge.init(function(message, responseCallback) &#123;</span><br><span class="line">               bridgeLog(<span class="string">'默认接收收到来自Java数据： '</span> + message);</span><br><span class="line">               <span class="keyword">var</span> responseData = <span class="string">'默认接收收到来自Java的数据，回传数据给你'</span>;</span><br><span class="line">               responseCallback(responseData);</span><br><span class="line">           &#125;);</span><br><span class="line"></span><br><span class="line">          </span><br><span class="line">       &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>或者</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//android端代码 </span></span><br><span class="line">mWebView.callHandler(<span class="string">"test"</span>,<span class="string">"发送数据给web指定接收"</span>,<span class="keyword">new</span> CallBackFunction()&#123;</span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCallBack</span><span class="params">(String data)</span> </span>&#123;</span><br><span class="line">                        Log.e(TAG, <span class="string">"来自web的回传数据："</span> + data);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line"><span class="comment">//H5端代码 </span></span><br><span class="line">   connectWebViewJavascriptBridge(function(bridge) &#123;</span><br><span class="line">          bridge.registerHandler(<span class="string">"test"</span>, function(data, responseCallback) &#123;</span><br><span class="line">               bridgeLog(<span class="string">'指定接收收到来自Java数据： '</span> + data);</span><br><span class="line">               <span class="keyword">var</span> responseData = <span class="string">'指定接收收到来自Java的数据，回传数据给你'</span>;</span><br><span class="line">               responseCallback(responseData);</span><br><span class="line">           &#125;);</span><br><span class="line">       &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>同样 两种方式一个是不指定方法,另一个是指定具体方法</p>
+<p> <strong>到此为止还无法交互,还需要配置setWebViewClient</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mWebView.setWebViewClient(new BridgeWebViewClient(mWebView));</span><br></pre></td></tr></table></figure>
+
+<p>这步非常关键,如果不配置 测试点击压根就不响应,如果你需要自定义WebViewClient,必须实现对应构造方法,而且重写的方法必须调用父类方法,如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">private class MyWebViewClient extends BridgeWebViewClient &#123;</span><br><span class="line">	//必须</span><br><span class="line">    public MyWebViewClient(BridgeWebView webView) &#123;</span><br><span class="line">        super(webView);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) &#123;</span><br><span class="line">        super.onReceivedError(view, request, error);//这个不能省略</span><br><span class="line">        // 避免出现默认的错误界面</span><br><span class="line">        view.loadUrl(&quot;about:blank&quot;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>到此为止,配置完毕,H5和Android就可以互相调用了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2309,7 +2319,7 @@ public boolean shouldOverrideUrlLoading(WebView view, String httpurl) {
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">333</span>
+                  <span class="site-state-item-count">332</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

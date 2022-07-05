@@ -287,186 +287,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../58.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../58.html" itemprop="url">Activity跳转之scheme跳转法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-19T17:47:50+08:00">
-                2019-12-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>Activity的跳转可以说是非常简单的了、从一个页面跳转至另一个页面，我们最常用的也就是下面这种：</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="keyword">this</span>, xxx.class);</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
-
-<p><strong>当然还有我们的隐式跳转，为Intent指定一个<code>action</code>即可</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="string">"this is an action"</span>);</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
-
-<p><strong>这篇文章上面提到的两个都不讲,这里来说使用scheme协议来进行页面跳转</strong></p>
-<ul>
-<li><a href="https://developer.android.google.cn/guide/topics/manifest/data-element.html" target="_blank" rel="noopener">manifest / data 配置</a></li>
-<li>如果需要让我们的Activity能被其他应用或者网页所打开，需要在<code>AndroidManifest</code>中进行配置（浏览网页的时候点击一些广告可以进对应的app大概就是这个原理）</li>
-</ul>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&lt;activity android:name=<span class="string">".TestOneActivity"</span>&gt;</span><br><span class="line">    &lt;intent-filter&gt;</span><br><span class="line">        &lt;action android:name=<span class="string">"android.intent.action.VIEW"</span> /&gt;</span><br><span class="line">        &lt;category android:name=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span><br><span class="line">        &lt;category android:name=<span class="string">"android.intent.category.BROWSABLE"</span> /&gt;</span><br><span class="line">        &lt;!--配置scheme--&gt;</span><br><span class="line">        &lt;data</span><br><span class="line">            android:scheme=<span class="string">"azhon.scheme"</span> /&gt;</span><br><span class="line">    &lt;/intent-filter&gt;</span><br><span class="line">&lt;/activity&gt;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>如上代码我们只是简单的配置了一个<code>android:scheme</code>属性，那要打开这个Activity也是so easy的</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">startActivity(<span class="keyword">new</span> Intent(Intent.ACTION_VIEW,                        Uri.parse(<span class="string">"azhon.scheme://"</span>)));</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>当然&lt; data/&gt;中还可以配置更多的属性（截取自官方中文文档，可以点击上面的manifest / data 配置）</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;data android:scheme=<span class="string">"string"</span></span><br><span class="line">      android:host=<span class="string">"string"</span></span><br><span class="line">      android:port=<span class="string">"string"</span></span><br><span class="line">      android:path=<span class="string">"string"</span></span><br><span class="line">      android:pathPattern=<span class="string">"string"</span></span><br><span class="line">      android:pathPrefix=<span class="string">"string"</span></span><br><span class="line">      android:mimeType=<span class="string">"string"</span> /&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong><em>scheme 路径的规则</em></strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;scheme&gt; :<span class="comment">// &lt;host&gt; : &lt;port&gt; [&lt;path&gt;|&lt;pathPrefix&gt;|&lt;pathPattern&gt;]</span></span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>scheme开头 :// 主机名 : 端口号 / [路径/参数] 路径后面拼接参数也是可以的下面会用到。<br>这个地址和我们经常使用的网页地址差不多是一样滴<br>eg:<a href="https://loaclhost:8080/index.jsp" target="_blank" rel="noopener">https://loaclhost:8080/index.jsp</a></p>
-</blockquote>
-<p><strong>在网页中打开我们对应的页面</strong></p>
-<ul>
-<li>我们修改Manifest中Activity的配置在多加点料,我这里创建了两个页面</li>
-</ul>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">activity android:name=<span class="string">".TestOneActivity"</span>&gt;</span><br><span class="line">    &lt;intent-filter&gt;</span><br><span class="line">        &lt;action android:name=<span class="string">"android.intent.action.VIEW"</span> /&gt;</span><br><span class="line">        &lt;category android:name=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span><br><span class="line">        &lt;category android:name=<span class="string">"android.intent.category.BROWSABLE"</span> /&gt;</span><br><span class="line">        &lt;data</span><br><span class="line">            android:host=<span class="string">"azhon"</span></span><br><span class="line">            android:port=<span class="string">"1011"</span></span><br><span class="line">            android:scheme=<span class="string">"azhon.scheme"</span> /&gt;</span><br><span class="line">    &lt;/intent-filter&gt;</span><br><span class="line">&lt;/activity&gt;</span><br><span class="line"> </span><br><span class="line">&lt;activity android:name=<span class="string">".TestTwoActivity"</span>&gt;</span><br><span class="line">    &lt;intent-filter&gt;</span><br><span class="line">        &lt;action android:name=<span class="string">"android.intent.action.VIEW"</span> /&gt;</span><br><span class="line">        &lt;category android:name=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span><br><span class="line">        &lt;category android:name=<span class="string">"android.intent.category.BROWSABLE"</span> /&gt;</span><br><span class="line">        &lt;data</span><br><span class="line">            android:host=<span class="string">"azhon"</span></span><br><span class="line">            android:port=<span class="string">"1012"</span></span><br><span class="line">            android:scheme=<span class="string">"azhon.scheme"</span> /&gt;</span><br><span class="line">    &lt;/intent-filter&gt;</span><br><span class="line">&lt;/activity&gt;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>在主页面布局添加一个WebView控件，并让它加载<code>assets</code>文件夹中的html文件</li>
-<li>布局文件代码：</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">WebView</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:id</span>=<span class="string">"@+id/web"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_marginTop</span>=<span class="string">"20dp"</span> /</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>assets文件夹中的Html代码：</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"azhon.scheme://azhon:1011/我是路径?user=958460248&amp;psd=123456"</span>&gt;</span>跳转至TestOneActivity<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"azhon.scheme://azhon:1012/i am path?toId=25&amp;tmId=888"</span>&gt;</span>跳转至TestTwoActivity<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>效果图：<br><img src="http://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20191219175153.png" alt></p>
-<blockquote>
-<p>在网页中只需要使用一个超链接便可以轻松的跳转至我们的app，是不是很开心。<br>当你将这个html文件使用手机的浏览器查看时，点击也是一样可以跳转进app的<br>跳转页面的时候还可以通过 ?key=value&amp;key1=value2 键值对的方式往地址后面拼接参数</p>
-</blockquote>
-<ul>
-<li>在跳转过去的页面接收传递过来的参数</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = getIntent();</span><br><span class="line">Uri uri = intent.getData();</span><br><span class="line"> </span><br><span class="line"><span class="keyword">assert</span> uri != <span class="keyword">null</span>;</span><br><span class="line">sb.append(<span class="string">"scheme: "</span>).append(intent.getScheme()).append(<span class="string">"&lt;p&gt;"</span>);</span><br><span class="line">sb.append(<span class="string">"host: "</span>).append(uri.getHost()).append(<span class="string">"&lt;p&gt;"</span>);</span><br><span class="line">sb.append(<span class="string">"port: "</span>).append(uri.getPort()).append(<span class="string">"&lt;p&gt;"</span>);</span><br><span class="line">sb.append(<span class="string">"path: "</span>).append(uri.getPath()).append(<span class="string">"&lt;p&gt;"</span>);</span><br><span class="line">sb.append(<span class="string">"params: "</span>).append(uri.getQuery()).append(<span class="string">"&lt;p&gt;"</span>);</span><br><span class="line"> </span><br><span class="line"><span class="comment">//获取跳转过来携带所有参数的 键名</span></span><br><span class="line">Set&lt;String&gt; names = uri.getQueryParameterNames();</span><br><span class="line">Iterator&lt;String&gt; iterator = names.iterator();</span><br><span class="line"><span class="keyword">while</span> (iterator.hasNext()) &#123;</span><br><span class="line">    String key = iterator.next();</span><br><span class="line">    sb.append(key).append(<span class="string">": "</span>).append(uri.getQueryParameter(key)).append(<span class="string">"&lt;p&gt;"</span>);</span><br><span class="line">&#125;</span><br><span class="line">tv.setText(Html.fromHtml(sb.toString()));</span><br></pre></td></tr></table></figure>
-
-<p><strong>有了这种跳转方式 你只要知道其他app的scheme你就可以随意的跳过去了想想都刺激，比如下面代码打开微信和QQ程序。</strong></p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href="weixin://"&gt;打开微信&lt;/a&gt;&lt;p&gt;  </span><br><span class="line">&lt;a href="mqqzone://"&gt;打开QQ&lt;/a&gt;</span><br></pre></td></tr></table></figure>
-
-<p>效果图：<br><img src="http://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20191219175213.png" alt></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../61.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1939,6 +1759,228 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../98.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../98.html" itemprop="url">Source Insight快捷键大全</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-06T18:34:25+08:00">
+                2019-12-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Source-Insight快捷键大全"><a href="#Source-Insight快捷键大全" class="headerlink" title="Source Insight快捷键大全"></a>Source Insight快捷键大全</h2><p>退出程序 : Alt+F4</p>
+<p>重画屏幕 : Ctrl+Alt+Space</p>
+<p>完成语法 : Ctrl+E</p>
+<p>复制一行 : Ctrl+K</p>
+<p>恰好复制该位置右边的该行的字符 : Ctrl+Shift+K</p>
+<p>复制到剪贴板 : Ctrl+Del</p>
+<p>剪切一行 : Ctrl+U</p>
+<p>剪切该位置右边的该行的字符 : Ctrl+;</p>
+<p>剪切到剪贴板 : Ctrl+Shift+X</p>
+<p>剪切一个字 : Ctrl+,</p>
+<p>左边缩进 : F9</p>
+<p>右边缩进 : F10</p>
+<p>插入一行 : Ctrl+I</p>
+<p>插入新行 : Ctrl+Enter</p>
+<p>加入一行 : Ctrl+J</p>
+<p>从剪切板粘贴 : Ctrl+Ins</p>
+<p>粘贴一行 : Ctrl+P</p>
+<p>重复上一个动作 : Ctrl+Y</p>
+<p>重新编号 : Ctrl+R</p>
+<p>重复输入 : Ctrl+</p>
+<p>替换 : Ctrl+H</p>
+<p>智能重命名 : Ctrl+’</p>
+<p>关闭文件 : Ctrl+W</p>
+<p>关闭所有文件 : Ctrl+Shift+W</p>
+<p>新建 : Ctrl+N</p>
+<p>转到下一个文件 : Ctrl+Shift+N</p>
+<p>打开 : Ctrl+O</p>
+<p>重新装载文件 : Ctrl+Shift+O</p>
+<p>另存为 : Ctrl+Shift+S</p>
+<p>显示文件状态 : Shift+F10</p>
+<p>激活语法窗口 : Alt+L</p>
+<p>回到该行的开始 : Home</p>
+<p>回到选择的开始 : Ctrl+Alt+[</p>
+<p>到块的下面 : Ctrl+Shift+]</p>
+<p>到块的上面 : Ctrl+Shift+[</p>
+<p>书签 : Ctrl+M</p>
+<p>到文件底部 : Ctrl+End, Ctrl+(KeyPad) End</p>
+<p>到窗口底部 : (KeyPad) End (小键盘的END)</p>
+<p>到一行的尾部 : End</p>
+<p>到选择部分的尾部 : Ctrl+Alt+]</p>
+<p>到下一个函数 : 小键盘 +</p>
+<p>上一个函数 : 小键盘 -</p>
+<p>后退 : Alt+,, Thumb 1 Click</p>
+<p>后退到索引 : Alt+M</p>
+<p>向前 : Alt+., Thumb 2 Click</p>
+<p>转到行 : F5, Ctrl+G</p>
+<p>转到下一个修改 : Alt+(KeyPad) +</p>
+<p>转到下一个链接 : Shift+F9, Ctrl+Shift+L</p>
+<p>回到前一个修改 : Alt+(KeyPad) -</p>
+<p>跳到连接(就是语法串口列表的地方) : Ctrl+L</p>
+<p>跳到匹配 : Alt+]</p>
+<p>下一页 : PgDn, (KeyPad) PgDn</p>
+<p>上一页 : PgUp, (KeyPad) PgUp</p>
+<p>向上滚动半屏 : Ctrl+PgDn, Ctrl+(KeyPad) PgDn, (KeyPad) *</p>
+<p>向下滚动半屏 : Ctrl+PgUp, Ctrl+(KeyPad) PgUp, (KeyPad) /</p>
+<p>左滚 : Alt+Left</p>
+<p>向上滚动一行 : Alt+Down</p>
+<p>向下滚动一行 : Alt+Up</p>
+<p>右滚 : Alt+Right</p>
+<p>选择一块 : Ctrl+-</p>
+<p>选择当前位置的左边一个字符 : Shift+Left</p>
+<p>选择当前位置右边一个字符 : Shift+Right</p>
+<p>选择一行 : Shift+F6</p>
+<p>从当前行其开始向下选择 : Shift+Down</p>
+<p>从当前行其开始向上选择 : Shift+Up</p>
+<p>选择上页 : Shift+PgDn, Shift+(KeyPad) PgDn</p>
+<p>选择下页 : Shift+PgUp, Shift+(KeyPad) PgUp</p>
+<p>选择句子(直到遇到一个 . 为止) : Shift+F7, Ctrl+.</p>
+<p>从当前位置选择到文件结束 : Ctrl+Shift+End</p>
+<p>从当前位置选择到行结束 : Shift+End</p>
+<p>从当前位置选择到行的开始 : Shift+Home</p>
+<p>从当前位置选择到文件顶部 : Ctrl+Shift+Home</p>
+<p>选择一个单词 : Shift+F5</p>
+<p>选择左边单词 : Ctrl+Shift+Left</p>
+<p>选择右边单词 : Ctrl+Shift+Right</p>
+<p>到文件顶部 : Ctrl+Home, Ctrl+(KeyPad) Home</p>
+<p>到窗口顶部 : (KeyPad) Home</p>
+<p>到单词左边(也就是到一个单词的开始) : Ctrl+Left</p>
+<p>到单词右边(到该单词的结束) : Ctrl+Right</p>
+<p>排列语法窗口(有三种排列方式分别按1,2,3次) : Alt+F7</p>
+<p>移除文件 : Alt+Shift+R</p>
+<p>同步文件 : Alt+Shift+S</p>
+<p>增量搜索(当用Ctrl + F 搜索,然后按F12就会转到下一个匹配) : F12</p>
+<p>替换文件 : Ctrl+Shift+H</p>
+<p>向后搜索 : F3</p>
+<p>在多个文件中搜索 : Ctrl+Shift+F</p>
+<p>向前搜索 : F4</p>
+<p>搜索选择的(比如选择了一个单词,shift+F4将搜索下一个) : Shift+F4</p>
+<p>搜索 : Ctrl+F</p>
+<p>浏览本地语法(弹出该文件语法列表窗口,如果你光标放到一个变量/函数等,那么列出本文件该变量/函数等的信息) : F8</p>
+<p>浏览工程语法 : F7, Alt+G</p>
+<p>跳到基本类型(即跳到原型) : Alt+0</p>
+<p>跳到定义出(也就是声明) : Ctrl+=, Ctrl+L Click (select), Ctrl+Double L Click</p>
+<p>检查引用 : Ctrl+/</p>
+<p>语法信息(弹出该语法的信息) : Alt+/, Ctrl+R Click (select)</p>
+<p>高亮当前单词 : Shift+F8</p>
+<p>语法窗口(隐藏/显示语法窗口) : Alt+F8</p>
+<p>关闭窗口 : Alt+F6, Ctrl+F4</p>
+<p>最后一个窗口 : Ctrl+Tab, Ctrl+Shift+Tab</p>
+<p><strong>本帖附件</strong></p>
+<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -1989,7 +2031,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">333</span>
+                  <span class="site-state-item-count">332</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
