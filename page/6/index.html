@@ -11,7 +11,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="theme-color" content="#222">
-
+<meta name="referrer" content="never">
 
 
 
@@ -287,6 +287,158 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../285.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../285.html" itemprop="url">android中获取控件坐标的几种api区分</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-11-25T10:14:19+08:00">
+                2021-11-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>我们经常会看到以下几个方法:</p>
+<ul>
+<li><p>getGlobalVisibleRect()</p>
+</li>
+<li><p>getLocalVisibleRect()</p>
+</li>
+<li><p>getLocationOnScreen()</p>
+</li>
+<li><p>getLocationInWindow()</p>
+</li>
+</ul>
+<p>傻傻分不清?  今天我们简单介绍一下它们各自的作用</p>
+<h3 id="getGlobalVisibleRec"><a href="#getGlobalVisibleRec" class="headerlink" title="getGlobalVisibleRec"></a>getGlobalVisibleRec</h3><p>方法作用:</p>
+<p><strong>其一</strong>: 用于判断控件是否可见, 以屏幕为参考 如果可见返回true, 不可见返回false, 我们可以借助该方法检测控件是否被滑出屏幕外</p>
+<p><strong>其二</strong>: 用于获取控件可见区域的坐标, 这个坐标是相对于屏幕而言</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200518140750458.png" alt="在这里插入图片描述"></p>
+<p>坐标存放在了<code>Rect</code>对象中, 以参数的形式传入:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getGlobalVisibleRect(new Rect)</span><br></pre></td></tr></table></figure>
+
+<h3 id="getLocalVisibleRect"><a href="#getLocalVisibleRect" class="headerlink" title="getLocalVisibleRect"></a>getLocalVisibleRect</h3><p>这个方法和上面的<code>getGlobalVisibleRec</code>方法类似, 唯一区别是参考系不同, 这个方法参考系是控件本身</p>
+<p>以下是这两个方法的坐标打印:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/100911016491372.gif" alt="getRect"></p>
+<h3 id="getLocationOnScreen"><a href="#getLocationOnScreen" class="headerlink" title="getLocationOnScreen"></a>getLocationOnScreen</h3><p>获取控件相对于屏幕而言的坐标位置, 与可不可见无关</p>
+<h3 id="getLocationInWindow"><a href="#getLocationInWindow" class="headerlink" title="getLocationInWindow"></a>getLocationInWindow</h3><p>获取控件相对于父控件而言的坐标位置, 与可不可见无关</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200518144313585.png" alt="在这里插入图片描述"></p>
+<h3 id="坐标补充"><a href="#坐标补充" class="headerlink" title="坐标补充"></a>坐标补充</h3><p>我们在进行自定义控件绘制的时候, 总是容易被一些参数给绕的头晕脑涨, 什么<code>top right, left, bottom</code>, 四条边与屏幕的距离等等, 想想就觉得费劲, 再加上<code>Android</code>中坐标系和我们数学中的坐标系不一致 使得我们在进行计算的时候难免有点吃不消</p>
+<p>实际上对于一些规则的图形绘制, 比如矩形, 我们需要明白的一点, 那就是只需要两个点的坐标即可绘制出来, 也就是两个对角点</p>
+<p>那我们在进行图形绘制的时候, 将计算范围缩小, 焦点集中在两个对角坐标位置计算上即可</p>
+<p>这两个对角可以使左上角右下角, 也可以是左下角和右上角</p>
+<p>这样一想, 那么所谓的<code>left</code>和<code>top</code>实际就是左上角的<code>xy</code>坐标, 而<code>right</code>和 <code>bottom</code>就是右下角的坐标</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../284.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -369,7 +521,7 @@
 
 <p>问题解决</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -508,7 +660,7 @@
 <p>不知道能不能理解</p>
 <p>无妨 , 编程这东西 就是编程来的  慢慢就都明白了, 以上也只是个人的小小想法罢了</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -658,7 +810,7 @@
 <p>我还尝试了使用B站云端剪辑合成, 没有对比就没有伤害:</p>
 <p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20211026175441786.png" alt="image-20211026175441786"></p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -788,7 +940,7 @@
 <h3 id="工具下载地址"><a href="#工具下载地址" class="headerlink" title="工具下载地址"></a>工具下载地址</h3><p><a href="https://url97.ctfile.com/f/21042697-518378723-46d038" target="_blank" rel="noopener">点击下载</a></p>
 <p>（访问密码：312306）</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -924,7 +1076,7 @@
 </li>
 </ol>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -1072,7 +1224,7 @@
 </ul>
 <p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210930101639592.png" alt="image-20210930101639592"></p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -1422,7 +1574,7 @@
 </li>
 </ol>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -1580,7 +1732,7 @@
 </li>
 </ol>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1727,154 +1879,7 @@
 <p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
 <p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
 <p>微信公众号二维码如下:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
-<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../275.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../275.html" itemprop="url">推荐一个谷歌浏览器下的护眼小插件</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-16T12:05:19+08:00">
-                2021-09-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>作为IT工作者, 长时间对着电脑屏幕, 眼睛实在是疲惫不堪, 即便我将电脑屏幕亮度调至非常低 也无济于事</p>
-<p>唯独 夜间模式能稍加缓解, 但是浏览器依旧是白花花一片 太过扎眼, 于是乎找了个暗黑小插件, 就此拯救了我的双眼</p>
-<p>话不多说 如下:</p>
-<h3 id="DARK-READER"><a href="#DARK-READER" class="headerlink" title="DARK READER"></a>DARK READER</h3><p>名为<code>DARK READER</code>的插件, 配置如下:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210917122822225.png" alt></p>
-<p>效果如下:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210917123155838.png" alt="image-20210917123155838"></p>
-<h3 id="插件下载"><a href="#插件下载" class="headerlink" title="插件下载"></a>插件下载</h3><p><a href="https://chrome.google.com/webstore/detail/dark-reader/eimadpbcbfnmbkopoojfekhnkhdbieeh" target="_blank" rel="noopener">谷歌官方商店下载</a></p>
-<p>考虑到大部分国内用户无法访问谷歌网站, 这里给大家推荐两个国内下载站点:</p>
-<ol>
-<li><p><a href="https://chrome.zzzmh.cn/" target="_blank" rel="noopener">极简插件</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210917141518519.png" alt="image-20210917141518519"></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210917141441356.png" alt="image-20210917141441356"></p>
-</li>
-<li><p><a href="https://www.crxsoso.com/" target="_blank" rel="noopener">CRX搜搜</a></p>
-<p>不仅支持名称搜索, 还支持扩展地址搜索</p>
-<p>比如插件官方扩展地址：<code>https://chrome.google.com/webstore/detail/dhdgffkkebhmkfjojejmpbldmpobfkfo</code></p>
-<p><img src="https://cdn.jsdelivr.net/gh/youxiaohou/img/20210715161332.png" alt="img"></p>
-<p>根据名称关键字搜索下载:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/youxiaohou/img/20210715161537.png" alt="img"></p>
-</li>
-</ol>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
-<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
-<p>微信公众号二维码如下:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
 <p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -1961,7 +1966,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">335</span>
+                  <span class="site-state-item-count">336</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

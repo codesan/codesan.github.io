@@ -11,7 +11,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="theme-color" content="#222">
-
+<meta name="referrer" content="never">
 
 
 
@@ -287,6 +287,161 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../91.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../91.html" itemprop="url">kotlin中 data class 到底是个什么鬼</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-16T16:48:33+08:00">
+                2019-12-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>data class就是一个类中只包含一些数据字段，类似于vo,pojo,java bean。一般而言，我们在Java中定义了这个数据类之后要重写一下toString，equals等方法。要生成get,set方法。</p>
+<p>然而在Kotlin中这些都不在需要自己手动去敲了，编译器在背后默默给我们生成了如下的东西：</p>
+<ul>
+<li>equals()/hashCode()</li>
+<li>toString()方法</li>
+<li>componentN()方法</li>
+<li>copy()方法</li>
+</ul>
+<h4 id="如何申明一个简单的数据类？-有一下几点要求："><a href="#如何申明一个简单的数据类？-有一下几点要求：" class="headerlink" title="如何申明一个简单的数据类？ 有一下几点要求："></a>如何申明一个简单的数据类？ 有一下几点要求：</h4><ul>
+<li>主构造函数必须要至少有一个参数</li>
+<li>主构造函数中的所有参数必须被标记为val或者var</li>
+<li>数据类不能有以下修饰符：abstract，inner,open,sealed</li>
+<li>data class只能实现接口（Kotlin1.1以前的规则），现在也可以继承其它类</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data class User(var id: Int, var name: String)</span><br></pre></td></tr></table></figure>
+
+<p>就这么一行代码，你已然拥有了一个数据类</p>
+<p>主构造函数中的所有参数必须被标记为var或者val，var就表示可读写，val就表示只读，这就相当于表明了数据字段的访问权限</p>
+<h4 id="componentN-方法是干嘛用的"><a href="#componentN-方法是干嘛用的" class="headerlink" title="componentN()方法是干嘛用的?"></a>componentN()方法是干嘛用的?</h4><p>在主构造函数中有多少个参数，就会依次生成对应的component1,component2,component3……这些函数返回的就是对应字段的值</p>
+<p>componentN函数是用来实现解构申明的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">data class User(var id: Int,var name:String) </span><br><span class="line">fun main(args: Array&lt;String&gt;) &#123;</span><br><span class="line">    var user: User = User(123, &quot;liuliqianxiao&quot;)</span><br><span class="line">    var (id,name) = user//多重赋值</span><br><span class="line">    print(&quot;$id,$name&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>拿上面的例子来说，给id赋值，其实调用的是user.component1()，给name赋值其实调用的是component2()函数。</p>
+<p>有了这个解构申明，想在一个函数中返回多个结果，就可以申明一个简单的数据类来返回了，然后取值也很方便。</p>
+<h4 id="copy函数"><a href="#copy函数" class="headerlink" title="copy函数"></a>copy函数</h4><p>默认生成的copy函数就是用现在的数据字段生成了一个新的对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fun copy(id: Int = this.id,name: String = this.name) = User(id,name)</span><br></pre></td></tr></table></figure>
+
+<p>如果只想改变其中的某些字段，就可以在调用copy的时候采用命名参数的方法进行调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">fun main(args: Array&lt;String&gt;) &#123;</span><br><span class="line">    var user: User = User(123, &quot;liuliqianxiao&quot;)</span><br><span class="line">    var other: User = user.copy(name = &quot;mdzz&quot;)//只想改变名字</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../88.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -359,7 +514,7 @@
         
           
             <h3 id="一-选择排序介绍"><a href="#一-选择排序介绍" class="headerlink" title="一.选择排序介绍"></a>一.选择排序介绍</h3><p>选出最小的一个数与第一个位置的数交换</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/7789414-5893f3ff1b915c38.gif" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/7789414-5893f3ff1b915c38.gif" alt></p>
 <h3 id="二-选择排序原理分析"><a href="#二-选择排序原理分析" class="headerlink" title="二.选择排序原理分析"></a>二.选择排序原理分析</h3><p>第1趟比较：拿第1个元素依次和它后面的每个元素进行比较，如果第1个元素大于后面某个元素，交换它们，经过第1趟比较，数组中最小的元素被选出，它被排在第一位</p>
 <p>第2趟比较：拿第2个元素依次和它后面的每个元素进行比较，如果第2个元素大于后面某个元素，交换它们，经过第2趟比较，数组中第2小的元素被选出，它被排在第二位</p>
 <p>……</p>
@@ -374,7 +529,7 @@
 <p>稳定性：选择排序是不稳定的排序算法，因为无法保证值相等的元素的相对位置不变，例如 [3, 4, 3, 1, 5]这个数组，第一次交换，第一个3和1交换位置，此时原来两个3的相对位置发生了变化。</p>
 <p><strong>本帖附件</strong></p>
 <p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -507,7 +662,7 @@
 <li><p>应用层:  为应用程序提供了网络服务，应用层协议最著名的就是<strong>HTTP, FTP了</strong>, 还有一个重要的DNS </p>
 <h3 id="二、TCP和UDP的区别"><a href="#二、TCP和UDP的区别" class="headerlink" title="二、TCP和UDP的区别"></a>二、TCP和UDP的区别</h3></li>
 </ul>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/1600629-20190325093559181-511608101.jpg" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/1600629-20190325093559181-511608101.jpg" alt></p>
 <h3 id="三-TCP的三次握手"><a href="#三-TCP的三次握手" class="headerlink" title="三 TCP的三次握手"></a>三 TCP的三次握手</h3><ul>
 <li><strong>第一次握手：</strong>建立连接</li>
 <li><strong>第二次握手</strong>：响应连接</li>
@@ -515,7 +670,7 @@
 </ul>
 <p><strong>本帖附件</strong></p>
 <p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -737,7 +892,7 @@
 <p>最后一个窗口 : Ctrl+Tab, Ctrl+Shift+Tab</p>
 <p><strong>本帖附件</strong></p>
 <p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -862,14 +1017,14 @@
 <li><p><strong>核心级线程设计模型</strong>:</p>
 <p>由操作系统内核实现, 特点是: 速度快  <em>windows系统采用的是这种设计模型</em></p>
 <p>可以比喻为用自己的大脑控制自己十根手指头</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/%E5%9B%BE%E7%89%871.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/%E5%9B%BE%E7%89%871.png" alt></p>
 </li>
 <li><p><strong>用户级线程设计模型</strong>:</p>
 <p>操作系统核外实现的线程模式, 特点是: 线程调度在核外 速度不如核内 <em>Linux系统采用的是这种</em></p>
 </li>
 </ul>
 <p>​        可以比喻为自己的十根手指头需要借助外力才能动</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/%E5%9B%BE%E7%89%872.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/%E5%9B%BE%E7%89%872.png" alt></p>
 <h2 id="Linux系统下有真正意义的多线程么"><a href="#Linux系统下有真正意义的多线程么" class="headerlink" title="Linux系统下有真正意义的多线程么?"></a>Linux系统下有真正意义的多线程么?</h2><p>由上面Linux采用的线程设计模型可知,Linux系统并没有真正意义上的多线程</p>
 <p>因此, Linux系统里处理多线程不如Windows强悍</p>
 <h2 id="Linux系统的两个线程库"><a href="#Linux系统的两个线程库" class="headerlink" title="Linux系统的两个线程库"></a>Linux系统的两个线程库</h2><ul>
@@ -891,7 +1046,7 @@
 <p>谐音: 权健服后空 (懂?)</p>
 <p><strong>本帖附件</strong></p>
 <p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1014,43 +1169,43 @@
           
             <p>我们都知道布局文件的加载是在Activity的onCreate()方法中,使用setContentView进行加载</p>
 <p>这个方法是个重载方法</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191206162608.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206162608.png" alt></p>
 <p><strong>它们无一例外都是使用的getWindow()进行加载</strong></p>
 <p><strong>那么window是在什么时候创建的呢?</strong> </p>
 <p><strong>我们知道Acitivity的生命周期是从onCreate开始的, 其实在它之前还有一个方法已经被执行了, 那就是attach方法</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191206162844.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206162844.png" alt></p>
 <p><strong>PolicyManager创建了一个新的Window对象</strong></p>
 <p><strong>接下来</strong></p>
 <p><strong>我们进入到PolicyManager类中</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191206163344.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206163344.png" alt></p>
 <p><strong>IPolicy是个接口</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191206163509.png" alt></p>
-<p><strong>我们需要找到它的实现类,通过寻找发现Pollicy.java实现了IPolicy接口</strong><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191206163925.png" alt></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191206164013.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206163509.png" alt></p>
+<p><strong>我们需要找到它的实现类,通过寻找发现Pollicy.java实现了IPolicy接口</strong><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206163925.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206164013.png" alt></p>
 <p><strong>实现代码如下:</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191206164105.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206164105.png" alt></p>
 <p><strong>直接创建了一个PhoneWindow对象,</strong></p>
 <p><strong>那么意味着 每创建一个Activity都会创建一个PhoneWindow对象</strong></p>
 <p><strong>那么PhoneWindow与Window到底是什么关系呢?</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191206164400.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206164400.png" alt></p>
 <p><strong>PhoneWindow是Window的子类</strong></p>
 <p><strong>那么到此为止, 我们知道了其实Activity中的setContentView实际上是PhoneWindow在处理</strong></p>
 <p><strong>我们找到PhoneWindow.java能发现其对应的方法</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191206164818.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206164818.png" alt></p>
 <p><strong>这里面的是三个重载方法咱们一个一个来分析</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191206165008.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206165008.png" alt></p>
 <p><strong>首先第一个</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191206165609.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191206165609.png" alt></p>
 <p><strong>咱们平常开发时在xml中写的布局并不是根结点, 而是contentParent的子view</strong></p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><h4 id="它们之间的关系可以大致理解为"><a href="#它们之间的关系可以大致理解为" class="headerlink" title="它们之间的关系可以大致理解为:"></a>它们之间的关系可以大致理解为:</h4><p><strong>Activity</strong>: 相当于一栋房子</p>
 <p><strong>Window</strong>: 相当于房子里的一扇窗户</p>
 <p><strong>View</strong>: 相当于窗户上的一朵窗花</p>
 <h4 id="它们三个的创建顺序为"><a href="#它们三个的创建顺序为" class="headerlink" title="它们三个的创建顺序为:"></a>它们三个的创建顺序为:</h4><p><strong>Activity—&gt;Window—&gt;View</strong></p>
 <p>具体时序图如下:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/Android%E7%9A%84Activity%E5%90%AF%E5%8A%A8%E6%97%B6%E5%BA%8F%E5%9B%BE.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/Android%E7%9A%84Activity%E5%90%AF%E5%8A%A8%E6%97%B6%E5%BA%8F%E5%9B%BE.png" alt></p>
 <p><strong>本帖附件</strong></p>
 <p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1174,11 +1329,11 @@
             <p>我们知道Android系统的启动是从Init.c开始</p>
 <p>那么Android应用的启动过程是从哪里开始呢?</p>
 <p>下面是具体的时序图参考:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/Android%E5%BA%94%E7%94%A8%E5%90%AF%E5%8A%A8%E6%97%B6%E5%BA%8F%E5%9B%BE.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/Android%E5%BA%94%E7%94%A8%E5%90%AF%E5%8A%A8%E6%97%B6%E5%BA%8F%E5%9B%BE.png" alt></p>
 <p>从Launcher.java开始 由于虚拟机的特性每个应用都会独占一个进程,ActivityThead是应用启动的标志</p>
 <p><strong>本帖附件</strong></p>
 <p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1313,12 +1468,12 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">delete s</span><br></pre></td></tr></table></figure>
 
 <p><strong>在构造函数中分配的堆内存空间需要在析构函数中进行释放</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191205191346.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191205191346.png" alt></p>
 <p><strong>带参构造函数变量重名问题 使用关键字this解决</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191205192532.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191205192532.png" alt></p>
 <p><strong>本帖附件</strong></p>
 <p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1463,7 +1618,7 @@
 
 <h4 id="12-home界面显示-这时Android系统启动完毕-进入到待机画面"><a href="#12-home界面显示-这时Android系统启动完毕-进入到待机画面" class="headerlink" title="12.home界面显示, 这时Android系统启动完毕. 进入到待机画面."></a>12.home界面显示, 这时Android系统启动完毕. 进入到待机画面.</h4><p><strong>本帖附件</strong></p>
 <p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1584,10 +1739,10 @@
       
         
           
-            <h3 id="第一步-创建新工程"><a href="#第一步-创建新工程" class="headerlink" title="第一步 创建新工程"></a>第一步 创建新工程</h3><p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191205131720.png" alt></p>
+            <h3 id="第一步-创建新工程"><a href="#第一步-创建新工程" class="headerlink" title="第一步 创建新工程"></a>第一步 创建新工程</h3><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191205131720.png" alt></p>
 <p><strong>选择默认配置即可</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191205131930.png" alt></p>
-<h3 id="第二步-加载源码文件"><a href="#第二步-加载源码文件" class="headerlink" title="第二步 加载源码文件"></a>第二步 加载源码文件</h3><p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191205132148.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191205131930.png" alt></p>
+<h3 id="第二步-加载源码文件"><a href="#第二步-加载源码文件" class="headerlink" title="第二步 加载源码文件"></a>第二步 加载源码文件</h3><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191205132148.png" alt></p>
 <p><strong>这里有三个Add选项</strong></p>
 <ul>
 <li>Add : 添加指定文件</li>
@@ -1596,10 +1751,10 @@
 </ul>
 <p><strong>源码加载完成后关闭该窗口</strong></p>
 <p><img src="C:%5CUsers%5Csongjian%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20191205133308509.png" alt="image-20191205133308509"></p>
-<h3 id="第三步-熟悉主界面和源码搜索"><a href="#第三步-熟悉主界面和源码搜索" class="headerlink" title="第三步 熟悉主界面和源码搜索"></a>第三步 熟悉主界面和源码搜索</h3><p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191205131410.png" alt></p>
-<h3 id="第四步-更改字体大小"><a href="#第四步-更改字体大小" class="headerlink" title="第四步 更改字体大小"></a>第四步 更改字体大小</h3><h5 id="面板字体设置"><a href="#面板字体设置" class="headerlink" title="面板字体设置"></a>面板字体设置</h5><p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191205133619.png" alt></p>
+<h3 id="第三步-熟悉主界面和源码搜索"><a href="#第三步-熟悉主界面和源码搜索" class="headerlink" title="第三步 熟悉主界面和源码搜索"></a>第三步 熟悉主界面和源码搜索</h3><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191205131410.png" alt></p>
+<h3 id="第四步-更改字体大小"><a href="#第四步-更改字体大小" class="headerlink" title="第四步 更改字体大小"></a>第四步 更改字体大小</h3><h5 id="面板字体设置"><a href="#面板字体设置" class="headerlink" title="面板字体设置"></a>面板字体设置</h5><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191205133619.png" alt></p>
 <p><strong>代码显示窗口字体设置</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191205134323.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191205134323.png" alt></p>
 <h3 id="常用快捷键介绍"><a href="#常用快捷键介绍" class="headerlink" title="常用快捷键介绍"></a>常用快捷键介绍</h3><p>各工具栏命令如下：</p>
 <p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/70-20210816102637149.png" alt="img">对应的文件菜单的功能</p>
 <p>New（快捷键ctrl+N）     新建一个文件</p>
@@ -1640,174 +1795,7 @@
 <p>帮助功能</p>
 <p><strong>本帖附件</strong></p>
 <p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../71.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../71.html" itemprop="url">Android系统架构简介</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-05T12:05:34+08:00">
-                2019-12-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Android系统架构师安卓系统的体系机构，Android的系统架构和其他操作系统一样，采用了分层的架构，共分为4层，从高到低分别是Android应用层，Android应用架构层，Android系统运行层和Linux内核层。</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/1141244-20190603163616072-1939226625.png" alt></p>
-<p><strong>1. 应用程序</strong></p>
-<p>顶层中有所有的Android应用程序，包括通讯录、浏览器等，你写的应用程序也被安装在这层；所有的的应用程序都是使用Java语言编写的。</p>
-<p><strong>2.  应用框架层</strong></p>
-<p>这一层主要提供构建应用程序是可能用到的各种API，Android自带的一些核心应用就是使用这些API完成的，开发者也可以通过使用API来构建自己的应用程序</p>
-<p>活动管理者（Activity Manager）：控制应用程序生命周期和活动栈的所有方面</p>
-<p>内容提供器（Content Providers）：允许程序之间发布和分享数据。</p>
-<p>资源管理器（Resource Manager）：提供对非代码嵌入资源的访问，如字符串、颜色设置和用户界面布局。</p>
-<p>通知管理器（Notification Manager）：允许应用程序显示对话框或者通知给用户</p>
-<p>视图系统（View System）：一个可拓展的视图集合，用于创建应用程序用户界面</p>
-<p><strong>3. 系统运行库层</strong></p>
-<p>1） 程序库</p>
-<p>Android包含一些C/C++库，这些库能被Android系统中不同的组件使用。他们通过Android应用程序框架为开发者提供服务，以下是一些核心库：</p>
-<ul>
-<li>系统C库（libc）:一个从BSD继承来的标准C系统函数库，他是专门为基于embedded linux的设备定制的媒体库（Media Framework）：基于Packet Video opencore; 该库支持多种常用的音频、视频格式回放和录制，同时支持静态图像文件。编码格式包括 MPEG4。H264、MP3、AAC、AMR、JPG、PNG。</li>
-<li>Surface Manager：对显示子系统的管理，并且为多个应用程序提供了2D和3D图层的无缝融合。</li>
-<li>SGL：底层的2D图形引擎</li>
-<li>3D libraries：基于OpenFLES1.0 APLs实现，该库可以使用硬件3D加速或者使用高度优化3D软加速</li>
-<li>FreeType：位图（bitmap）和矢量（vector）字体显示</li>
-<li>SQLite：一个对于所有应用程序可用，功能强劲的轻型关系型数据库引擎。</li>
-</ul>
-<p>2） Android运行库</p>
-<p>Android包括了一个核心库，该核心库提供了Java编程语言核心库的大多数功能。</p>
-<p>每一个Android应用程序都在它自己的进程中运行，都拥有一个独立的Dalvik虚拟机实例。Dalvik被设计成一个设备可以同时高效地运行多个虚拟系统。Dalvik虚拟机执行（.dex）的Dalvik可执行文件，该个税文件针对小内存使用做了优化。同时虚拟机是基于寄存器的，所有的类都经由java编译器编译，然后通过SDK中的”dx”工具转化成 .dex格式由虚拟机执行</p>
-<p>Dalvik虚拟机依赖于linux内核的一些功能，比如线程机制和底层内存管理机制。</p>
-<p><strong>4. Linux内核层</strong></p>
-<p>Android系统基于Linux2.6内核，这一层为Android设备各种硬件提供了底层驱动，如显示驱动，音频驱动，照相机驱动，蓝牙驱动，WIFI驱动，电源管理等</p>
-<p><strong>区别DVM与JVM</strong></p>
-<ol>
-<li>首要差别</li>
-</ol>
-<p>1Dalvik：基于寄存器，编译和运行都会更快些</p>
-<p>JVM：基于栈，编译和运行都会慢一些</p>
-<ol start="2">
-<li>字节码的区别</li>
-</ol>
-<p>Dalvik：执行.dex格式的字节码，是对.class文件进行压缩后产生的，文件变小</p>
-<p>JVM：执行.class格式的字节码</p>
-<ol start="3">
-<li>运行环境的区别</li>
-</ol>
-<p>Dalvik： 一个应用启动都运行一个单独的虚拟机运行在一个单独的进程中</p>
-<p>JVM：只能运行一个实例，也就是所有应用都运行在同一个JVM中</p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1894,7 +1882,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">335</span>
+                  <span class="site-state-item-count">336</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
