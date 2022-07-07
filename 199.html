@@ -89,15 +89,15 @@
 <meta property="og:site_name" content="乱码三千 – 分享实用IT技术">
 <meta property="og:description" content="段所占空间大小和特点以8086为例,假如声明一个段,不论是数据段,栈段还是代码段, 一旦段里面有内容,那么会从一个新的段地址开始开辟空间,如果代码进行了分段处理,那么就会形成16字节对齐的现象 123456789101112131415161718192021assume ds:data;场景一data segment	;如果没有内容,则不开辟空间, 被编译器忽略	data ends;场景二dat">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201225164204.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201224143113.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201224143454.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png">
-<meta property="og:updated_time" content="2021-03-08T03:48:49.049Z">
+<meta property="og:image" content="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201225164204.png">
+<meta property="og:image" content="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201224143113.png">
+<meta property="og:image" content="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201224143454.png">
+<meta property="og:image" content="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png">
+<meta property="og:updated_time" content="2022-07-07T06:33:29.362Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="x86汇编语言之段空间大小的对齐">
 <meta name="twitter:description" content="段所占空间大小和特点以8086为例,假如声明一个段,不论是数据段,栈段还是代码段, 一旦段里面有内容,那么会从一个新的段地址开始开辟空间,如果代码进行了分段处理,那么就会形成16字节对齐的现象 123456789101112131415161718192021assume ds:data;场景一data segment	;如果没有内容,则不开辟空间, 被编译器忽略	data ends;场景二dat">
-<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201225164204.png">
+<meta name="twitter:image" content="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201225164204.png">
 
 
 
@@ -379,7 +379,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">data segment</span><br><span class="line">	db &apos;hello&apos;</span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line">start:</span><br><span class="line">    call print</span><br><span class="line">    mov ax,2000H</span><br><span class="line">    </span><br><span class="line">print: </span><br><span class="line">    mov bx,3000H</span><br><span class="line">    mov cx,4000H    </span><br><span class="line">    ret</span><br><span class="line"></span><br><span class="line">          </span><br><span class="line"> end start</span><br></pre></td></tr></table></figure>
 
 <p>内存分布如下:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201225164204.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201225164204.png" alt></p>
 <p>我们发现data段并没有独占16个字节空间,而是让数据从一个新的16字节地址开始存入,段的作用是让数据在内存中的排列按照一定的布局进行排列,方便我们进行计算读取, 但是使用段的话明显会占用更多的内存空间</p>
 <h3 id="各个段之间内存排列分布"><a href="#各个段之间内存排列分布" class="headerlink" title="各个段之间内存排列分布"></a>各个段之间内存排列分布</h3><p>数据段,栈段,代码段 他们在内存中开辟的空间是根据代码由上到下依次分布的:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">assume ds:data,cs:code,ss:stack</span><br><span class="line"></span><br><span class="line">data segment</span><br><span class="line">	dw 66FF</span><br><span class="line">data ends</span><br><span class="line">;假如数据段的段地址是2000H 那么栈段的段地址为2001H, 代码段的段地址为:2002H 依次排列</span><br><span class="line"></span><br><span class="line">stack segment</span><br><span class="line">	dw 77FF</span><br><span class="line">stack ends</span><br><span class="line"></span><br><span class="line">code segment</span><br><span class="line">		mov ax,data</span><br><span class="line">		mov ds,ax</span><br><span class="line">		</span><br><span class="line">		mov ax,stack</span><br><span class="line">		mov ss,ax</span><br><span class="line">		</span><br><span class="line">code ends</span><br><span class="line"></span><br><span class="line">;数据段---&gt;栈段---&gt;代码段</span><br></pre></td></tr></table></figure>
@@ -399,16 +399,16 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">assume cs:code,ds:data</span><br><span class="line">                         </span><br><span class="line"> mov ax,3000H  ;占用三个字节空间</span><br><span class="line"> </span><br><span class="line"> data segment                 </span><br><span class="line"> 	age dw &apos;hello&apos;     </span><br><span class="line"> data ends</span><br></pre></td></tr></table></figure>
 
 <p>内存分布如下:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201224143113.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201224143113.png" alt></p>
 <p>咱们会发现数据段,并不是从0100:0003开始开辟16个字节的空间,而是新起一个段地址从0101:0000开始开辟, 也就是说<strong>一个段占用独立的一个栈地址</strong></p>
 <p>假如把段去掉:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">assume cs:code,ds:data</span><br><span class="line">                         </span><br><span class="line"> mov ax,3000H  ;占用三个字节空间</span><br><span class="line">              </span><br><span class="line"> age dw &apos;hello&apos;</span><br></pre></td></tr></table></figure>
 
 <p>则内存分布如下:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201224143454.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201224143454.png" alt></p>
 <p>那么代码会依次连续进行累加填充</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
       
@@ -548,7 +548,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">332</span>
+                  <span class="site-state-item-count">335</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -561,7 +561,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">95</span>
+                  <span class="site-state-item-count">96</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

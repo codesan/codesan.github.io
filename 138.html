@@ -89,12 +89,12 @@
 <meta property="og:site_name" content="乱码三千 – 分享实用IT技术">
 <meta property="og:description" content="替换Boolean, Color, Integer, int[], String and String[]类型的简单资源1.替换系统框架（Android Framwork）资源替换系统框架资源（对所有app 起作用）需要实现 IXposedHookZygoteInit接口的 initZygote 方法，并在该方法中调用Resources.setSystemWideReplacement(...)">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png">
-<meta property="og:updated_time" content="2021-03-08T03:48:49.039Z">
+<meta property="og:image" content="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png">
+<meta property="og:updated_time" content="2022-07-07T06:33:29.375Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Xposed进阶之app资源替换">
 <meta name="twitter:description" content="替换Boolean, Color, Integer, int[], String and String[]类型的简单资源1.替换系统框架（Android Framwork）资源替换系统框架资源（对所有app 起作用）需要实现 IXposedHookZygoteInit接口的 initZygote 方法，并在该方法中调用Resources.setSystemWideReplacement(...)">
-<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png">
+<meta name="twitter:image" content="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png">
 
 
 
@@ -394,7 +394,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> de.robv.android.xposed.mods.tutorial;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.graphics.Color;</span><br><span class="line"><span class="keyword">import</span> android.webkit.WebView.FindListener;</span><br><span class="line"><span class="keyword">import</span> android.widget.TextView;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.IXposedHookLoadPackage;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.XC_MethodHook;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.XC_MethodHook.MethodHookParam;</span><br><span class="line"><span class="keyword">import</span> de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> de.robv.android.xposed.XposedHelpers.findAndHookMethod;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Tutorial6</span> <span class="keyword">implements</span> <span class="title">IXposedHookLoadPackage</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleLoadPackage</span><span class="params">(LoadPackageParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(!param.packageName.equals(<span class="string">"com.android.systemui"</span>))</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">         findAndHookMethod(<span class="string">"com.android.systemui.statusbar.policy.Clock"</span>,param.classLoader, <span class="string">"updateClock"</span>, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    <span class="comment">// this will be called before the clock was updated by the original method</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    TextView tv = (TextView) param.thisObject;<span class="comment">//获取调用该方法类的对象</span></span><br><span class="line">                    String text = tv.getText().toString();</span><br><span class="line">                    tv.setText(text + <span class="string">" :)"</span>);</span><br><span class="line">                    tv.setTextColor(Color.RED);</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p><strong>搭建本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
       
@@ -534,7 +534,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">332</span>
+                  <span class="site-state-item-count">335</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -547,7 +547,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">95</span>
+                  <span class="site-state-item-count">96</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

@@ -287,6 +287,471 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../11.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../11.html" itemprop="url">python requests库添加自定义cookies的方法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-14T22:08:27+08:00">
+                2020-09-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>一般的情况使用requests.Session()方法就可以解决cookies问题，但是在途中添加cookie遇到了一些问题。</p>
+<h3 id="第一种："><a href="#第一种：" class="headerlink" title="第一种："></a>第一种：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">session = requests.Session()</span><br><span class="line">session.cookies[&apos;cookie&apos;] = &apos;cookie-value&apos;12</span><br></pre></td></tr></table></figure>
+
+<p>功能：可以添加cookie，不会清除原cookie<br>缺点：不能设置path，domain等参数</p>
+<h3 id="第二种："><a href="#第二种：" class="headerlink" title="第二种："></a>第二种：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">session = requests.Session()</span><br><span class="line">session.cookies.set(&apos;cookie-name&apos;, &apos;cookie-value&apos;, path=&apos;/&apos;, domain=&apos;.abc.com&apos;)12</span><br></pre></td></tr></table></figure>
+
+<p>功能：设置path、domain等参数。<br>缺点：清楚原来的cookies</p>
+<h3 id="第三种："><a href="#第三种：" class="headerlink" title="第三种："></a>第三种：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">session = requests.Session()</span><br><span class="line">requests.utils.add_dict_to_cookiejar(session.cookies, cookie_dict)12</span><br></pre></td></tr></table></figure>
+
+<p>功能：可以添加cookie，不会清除原cookie<br>缺点：不能设置path，domain等参数</p>
+<h3 id="第四种："><a href="#第四种：" class="headerlink" title="第四种："></a>第四种：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">session = requests.Session()</span><br><span class="line">c = requests.cookies.RequestsCookieJar()</span><br><span class="line">c.set(&apos;cookie-name&apos;, &apos;cookie-value&apos;, path=&apos;/&apos;, domain=&apos;.abc.com&apos;)</span><br><span class="line">session.cookies.update(c)1234</span><br></pre></td></tr></table></figure>
+
+<p>功能：既能添加cookies，还能添加path，domain等参数。</p>
+<h3 id="cookie的path和domain属性"><a href="#cookie的path和domain属性" class="headerlink" title="cookie的path和domain属性"></a>cookie的path和domain属性</h3><ol>
+<li>domain表示的是cookie所在的域，默认为请求的地址，如网址为<a href="http://www.test.com/test/test.aspx，那么domain默认为www.test.com。而跨域访问，如域A为t1.test.com，域B为t2.test.com，那么在域A生产一个令域A和域B都能访问的cookie就要将该cookie的domain设置为.test.com；如果要在域A生产一个令域A不能访问而域B能访问的cookie就要将该cookie的domain设置为t2.test.com。" target="_blank" rel="noopener">www.test.com/test/test.aspx，那么domain默认为www.test.com。而跨域访问，如域A为t1.test.com，域B为t2.test.com，那么在域A生产一个令域A和域B都能访问的cookie就要将该cookie的domain设置为.test.com；如果要在域A生产一个令域A不能访问而域B能访问的cookie就要将该cookie的domain设置为t2.test.com。</a></li>
+<li>path表示cookie所在的目录，asp.net默认为/，就是根目录。在同一个服务器上有目录如下：/test/,/test/cd/,/test/dd/，现设一个cookie1的path为/test/，cookie2的path为/test/cd/，那么test下的所有页面都可以访问到cookie1，而/test/和/test/dd/的子页面不能访问cookie2。这是因为cookie能让其path路径下的页面访问。</li>
+<li>浏览器会将domain和path都相同的cookie保存在一个文件里，cookie间用*隔开。</li>
+<li>含值键值对的cookie：以前一直用的是nam=value单键值对的cookie，一说到含多个子键值对的就蒙了。现在总算弄清楚了。含多个子键值对的cookie格式是name=key1=value1&amp;key2=value2。可以理解为单键值对的值保存一个自定义的多键值字符串，其中的键值对分割符为&amp;，当然可以自定义一个分隔符，但用asp.net获取时是以&amp;为分割符。</li>
+</ol>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../12.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../12.html" itemprop="url">如何检测获取到的代理ip是否为高匿ip</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-14T14:04:38+08:00">
+                2020-09-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h2><p>通过第三方接口检测</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">url = &quot;http://httpbin.org/ip&quot;  # 如果返回的ip里面有本机ip,则证明不是匿名代理</span><br><span class="line">url = &quot;http://httpbin.org/get?show_env=1&quot;  # &quot;origin&quot;对应的value如果是你的本机ip,则不是匿名代理</span><br></pre></td></tr></table></figure>
+
+<p>示例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 访问http://httpbin.org/ip 返回</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;origin&quot;: &quot;117.136.0.213&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>和</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"># 访问http://httpbin.org/get?show_env=1 返回</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;args&quot;: &#123;</span><br><span class="line">    &quot;show_env&quot;: &quot;1&quot;</span><br><span class="line">  &#125;, </span><br><span class="line">  &quot;headers&quot;: &#123;</span><br><span class="line">    &quot;Accept&quot;: &quot;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8&quot;, </span><br><span class="line">    &quot;Accept-Encoding&quot;: &quot;gzip, deflate&quot;, </span><br><span class="line">    &quot;Accept-Language&quot;: &quot;zh-CN,zh;q=0.9&quot;, </span><br><span class="line">    &quot;Alexatoolbar-Alx-Ns-Ph&quot;: &quot;AlexaToolbar/alx-4.0.3&quot;, </span><br><span class="line">    &quot;Host&quot;: &quot;httpbin.org&quot;, </span><br><span class="line">    &quot;Upgrade-Insecure-Requests&quot;: &quot;1&quot;, </span><br><span class="line">    &quot;User-Agent&quot;: &quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36&quot;, </span><br><span class="line">    &quot;X-Amzn-Trace-Id&quot;: &quot;Root=1-5f5ebcfe-2047fe040ea2d1e594e5b6e0&quot;, </span><br><span class="line">    &quot;X-Forwarded-For&quot;: &quot;117.136.0.213&quot;, </span><br><span class="line">    &quot;X-Forwarded-Port&quot;: &quot;80&quot;, </span><br><span class="line">    &quot;X-Forwarded-Proto&quot;: &quot;http&quot;</span><br><span class="line">  &#125;, </span><br><span class="line">  &quot;origin&quot;: &quot;117.136.0.213&quot;, </span><br><span class="line">  &quot;url&quot;: &quot;http://httpbin.org/get?show_env=1&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>附上网站源码:<a href="https://github.com/postmanlabs/httpbin" target="_blank" rel="noopener">https://github.com/postmanlabs/httpbin</a></p>
+<h2 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h2><p>利用某些禁止代理访问的网站进行代理访问测试,比如<a href="http://book.kongfz.com/175804/1038155437/" target="_blank" rel="noopener"><strong>孔夫子旧书网</strong></a></p>
+<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤:"></a>步骤:</h4><p>第一步 先对孔夫子进行高频访问(不使用代理), 直到无法访问为止(说明本机ip已经被禁止)</p>
+<p>第二步 换成代理进行访问 如果可以正常访问 则为高匿代理 </p>
+<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">import time</span><br><span class="line">from threading import Thread</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def get_gao_ni_ip(ip, file_save):</span><br><span class="line">    url = &quot;http://book.kongfz.com/175804/1038155437/&quot;</span><br><span class="line">    headers = &#123;</span><br><span class="line">        &apos;Cookie&apos;: &apos;PHPSESSID=0d12c303a92043f13a3cc2c329e444f36b44ef71; shoppingCartSessionId=74c831996eb9a1009d79244d7d915040; kfz_uuid=f53edd56-8938-48af-a447-9a07bde47ffa; reciever_area=1006000000; Hm_lvt_bca7840de7b518b3c5e6c6d73ca2662c=1552367977; Hm_lvt_33be6c04e0febc7531a1315c9594b136=1552367977; kfz_trace=f53edd56-8938-48af-a447-9a07bde47ffa|10072231|834871367e51d410|-; acw_tc=65c86a0a15523697386136416e812159c1e7ce1072aea90b9eb27c93ee05cc; BIGipServerpool_nxtqzj=527099402.24615.0000; Hm_lpvt_bca7840de7b518b3c5e6c6d73ca2662c=1552371456; Hm_lpvt_33be6c04e0febc7531a1315c9594b136=1552371456&apos;,</span><br><span class="line">        &apos;User-Agent&apos;: &apos;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36&apos;</span><br><span class="line">    &#125;</span><br><span class="line">    proxies = &#123;</span><br><span class="line">        &quot;http&quot;: &quot;http://&quot; + ip,</span><br><span class="line">    &#125;</span><br><span class="line">    try:</span><br><span class="line">        resp = requests.get(url=url, headers=headers, proxies=proxies, timeout=2)</span><br><span class="line">        # print(resp.text)</span><br><span class="line">        if &quot;胡适传论，上&quot; \</span><br><span class="line">           &quot;下。_胡明_孔夫子旧书网&quot; in resp.text:</span><br><span class="line">            print(&quot;ip可用&quot;,ip)</span><br><span class="line">            file_save.write(ip + &apos;\n&apos;)</span><br><span class="line">        else:</span><br><span class="line">            print(&quot;errer&quot;)</span><br><span class="line">    except:</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    start_time = time.time()</span><br><span class="line">    # 储存可用的ip地址</span><br><span class="line">    file_save = open(r&apos;D:\&apos;)</span><br><span class="line"></span><br><span class="line">    with open(r&apos;D:\&apos;, &apos;r&apos;,</span><br><span class="line">              encoding=&apos;utf-8&apos;) as file_ips:</span><br><span class="line">        ips_list = file_ips.readlines()</span><br><span class="line"></span><br><span class="line">    thread_list = []</span><br><span class="line">    total_num = 0</span><br><span class="line">    for ip_one in set(ips_list):</span><br><span class="line">        # 前面携带http的</span><br><span class="line">        ip = ip_one.strip()</span><br><span class="line">        # 直接ip+port的</span><br><span class="line">        thred_ip = Thread(target=get_gao_ni_ip, args=[ip, file_save])</span><br><span class="line">        thread_list.append(thred_ip)</span><br><span class="line">        thred_ip.start()</span><br><span class="line">        total_num += 1</span><br><span class="line">        print(total_num, total_num)</span><br><span class="line">        # 为了是电脑CPU不至于很卡</span><br><span class="line">        time.sleep(0.005)</span><br><span class="line">    for i in thread_list:</span><br><span class="line">        i.join()</span><br><span class="line">    file_save.close()</span><br><span class="line">    end_time = time.time()</span><br><span class="line">    print((end_time - start_time), &apos;秒&apos;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="方法三"><a href="#方法三" class="headerlink" title="方法三"></a>方法三</h2><p> 利用百度搜索关键字 IP，出来的网站的结果，进行爬取，然后利用自己电脑本机ip和request请求响应回来的代理ip进行比较，如果不一样，说明请求的代理IP就是高匿的。</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../13.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../13.html" itemprop="url">全球免费代理获取接口api</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-14T14:01:34+08:00">
+                2020-09-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="免费代理IP库"><a href="#免费代理IP库" class="headerlink" title="免费代理IP库"></a>免费代理IP库</h1><h3 id="警告"><a href="#警告" class="headerlink" title="警告"></a>警告</h3><p>代理IP采集于网络，仅供个人学习使用。请勿用于非法途径，违者后果自负！</p>
+<h3 id="获取一个验证通过的代理IP"><a href="#获取一个验证通过的代理IP" class="headerlink" title="获取一个验证通过的代理IP"></a>获取一个验证通过的代理IP</h3><ul>
+<li>URL: <a href="https://ip.jiangxianli.com/api/proxy_ip" target="_blank" rel="noopener">https://ip.jiangxianli.com/api/proxy_ip</a></li>
+<li>响应数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;code&quot;:0,</span><br><span class="line">    &quot;msg&quot;:&quot;成功&quot;,</span><br><span class="line">    &quot;data&quot;:&#123;</span><br><span class="line">        &quot;unique_id&quot;:&quot;ad0611edba534fd2c39a36d77e383cfb&quot;,</span><br><span class="line">        &quot;ip&quot;:&quot;118.193.107.80&quot;,</span><br><span class="line">        &quot;port&quot;:&quot;80&quot;,</span><br><span class="line">        &quot;ip_address&quot;:&quot;北京市 北京市&quot;,</span><br><span class="line">        &quot;anonymity&quot;:0,</span><br><span class="line">        &quot;protocol&quot;:&quot;http&quot;,</span><br><span class="line">        &quot;isp&quot;:&quot;电信&quot;,</span><br><span class="line">        &quot;speed&quot;:375,</span><br><span class="line">        &quot;validated_at&quot;:&quot;2017-12-25 14:38:25&quot;,</span><br><span class="line">        &quot;created_at&quot;:&quot;2017-12-25 14:38:25&quot;,</span><br><span class="line">        &quot;updated_at&quot;:&quot;2017-12-25 14:38:25&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="获取代理IP列表"><a href="#获取代理IP列表" class="headerlink" title="获取代理IP列表"></a>获取代理IP列表</h3><ul>
+<li>URL: <a href="https://ip.jiangxianli.com/api/proxy_ips" target="_blank" rel="noopener">https://ip.jiangxianli.com/api/proxy_ips</a></li>
+<li>请求参数</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>数据类型</th>
+<th>必传</th>
+<th>说明</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>page</td>
+<td>int</td>
+<td>N</td>
+<td>第几页</td>
+<td>1</td>
+</tr>
+<tr>
+<td>country</td>
+<td>string</td>
+<td>N</td>
+<td>所属国</td>
+<td>中国,美国</td>
+</tr>
+<tr>
+<td>isp</td>
+<td>string</td>
+<td>N</td>
+<td>ISP</td>
+<td>电信,阿里云</td>
+</tr>
+<tr>
+<td>order_by</td>
+<td>string</td>
+<td>N</td>
+<td>排序字段</td>
+<td>speed:响应速度,validated_at:最新校验时间 created_at:存活时间</td>
+</tr>
+<tr>
+<td>order_rule</td>
+<td>string</td>
+<td>N</td>
+<td>排序方向</td>
+<td>DESC:降序 ASC:升序</td>
+</tr>
+</tbody></table>
+<ul>
+<li>响应数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;code&quot;:0,</span><br><span class="line">    &quot;msg&quot;:&quot;成功&quot;,</span><br><span class="line">    &quot;data&quot;:&#123;</span><br><span class="line">        &quot;current_page&quot;:1,</span><br><span class="line">        &quot;data&quot;:[</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;unique_id&quot;:&quot;dd2aa4a97ab900ad5c7b679e445d9cde&quot;,</span><br><span class="line">                &quot;ip&quot;:&quot;119.167.153.50&quot;,</span><br><span class="line">                &quot;port&quot;:&quot;8118&quot;,</span><br><span class="line">                &quot;ip_address&quot;:&quot;山东省 青岛市&quot;,</span><br><span class="line">                &quot;anonymity&quot;:0,</span><br><span class="line">                &quot;protocol&quot;:&quot;http&quot;,</span><br><span class="line">                &quot;isp&quot;:&quot;联通&quot;,</span><br><span class="line">                &quot;speed&quot;:46,</span><br><span class="line">                &quot;validated_at&quot;:&quot;2017-12-25 15:11:05&quot;,</span><br><span class="line">                &quot;created_at&quot;:&quot;2017-12-25 15:11:05&quot;,</span><br><span class="line">                &quot;updated_at&quot;:&quot;2017-12-25 15:11:05&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;unique_id&quot;:&quot;7468e4ee73bf2be35b36221231ab02d5&quot;,</span><br><span class="line">                &quot;ip&quot;:&quot;119.5.0.42&quot;,</span><br><span class="line">                &quot;port&quot;:&quot;22&quot;,</span><br><span class="line">                &quot;ip_address&quot;:&quot;四川省 南充市&quot;,</span><br><span class="line">                &quot;anonymity&quot;:0,</span><br><span class="line">                &quot;protocol&quot;:&quot;http&quot;,</span><br><span class="line">                &quot;isp&quot;:&quot;联通&quot;,</span><br><span class="line">                &quot;speed&quot;:127,</span><br><span class="line">                &quot;validated_at&quot;:&quot;2017-12-25 15:10:04&quot;,</span><br><span class="line">                &quot;created_at&quot;:&quot;2017-12-25 14:38:14&quot;,</span><br><span class="line">                &quot;updated_at&quot;:&quot;2017-12-25 15:10:04&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        ],</span><br><span class="line">        &quot;last_page&quot;:1,</span><br><span class="line">        &quot;per_page&quot;:15,</span><br><span class="line">        &quot;to&quot;:8,</span><br><span class="line">        &quot;total&quot;:8</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="访问频率限制"><a href="#访问频率限制" class="headerlink" title="访问频率限制"></a>访问频率限制</h2><p>请注意访问频率以及防止无效页的数据获取。多次违规操作访问将被限制IP访问。如需解除IP请在修正操作后，ISSUE中申请解除限制。</p>
+<p>详情参见:<a href="https://github.com/jiangxianli/ProxyIpLib" target="_blank" rel="noopener">https://github.com/jiangxianli/ProxyIpLib</a></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../14.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -359,11 +824,11 @@
         
           
             <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p> proxyfire是一个强大的在线代理收集和分类工具。它支持http、socks4、socks5、隧道和ssl代理验证。它可以将代理分为socks代理、超级匿名代理、一般匿名代理、透明代理、网关代理。它具有强大的论坛吸收功能、搜索引擎吸收功能、代理扫描功能。并对代理的查询国家、代理重复、智能删除代理水印、代理无序等功能进行了研究。默认设置可用于每天获取数千个新的代理列表 </p>
-<h2 id="截图"><a href="#截图" class="headerlink" title="截图"></a>截图</h2><p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200914134850.png" alt></p>
+<h2 id="截图"><a href="#截图" class="headerlink" title="截图"></a>截图</h2><p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200914134850.png" alt></p>
 <p><strong>本帖附件</strong></p>
 <p><a href="https://545c.com/file/21042697-461309310" target="_blank" rel="noopener">点击下载</a></p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -499,7 +964,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">if(!empty($_SERVER[&apos;HTTP_VIA&apos;]))  //使用了代理</span><br><span class="line">&#123;</span><br><span class="line">  if(!isset($_SERVER[&apos;HTTP_X_FORWARDED_FOR&apos;]))</span><br><span class="line">  &#123;</span><br><span class="line">    //Anonymous Proxies  普通匿名代理服务器</span><br><span class="line"></span><br><span class="line">​    //代理IP地址为 $_SERVER[&apos;REMOTE_ADDR&apos;]</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line">  else</span><br><span class="line">  &#123;</span><br><span class="line">    //Transparent Proxies 透明代理服务器</span><br><span class="line">    //代理IP地址为 $_SERVER[&apos;REMOTE_ADDR&apos;]</span><br><span class="line">    //真实ip地址为 $_SERVER[&apos;HTTP_X_FORWARDED_FOR&apos;]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">else  //没有代理或者是高匿名代理</span><br><span class="line">&#123;</span><br><span class="line">  //真实ip地址为 $_SERVER[&apos;REMOTE_ADDR&apos;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -621,7 +1086,7 @@
         
           
             <p><strong>mysqldump备份</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/u=63179589,2229917185&fm=173&app=25&f=JPEG.jpeg" alt="img"></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/u=63179589,2229917185&fm=173&app=25&f=JPEG.jpeg" alt="img"></p>
 <h2 id="1、备份命令"><a href="#1、备份命令" class="headerlink" title="1、备份命令"></a>1、备份命令</h2><p>格式：mysqldump -h主机名 -P端口 -u用户名 -p密码 –database 数据库名 &gt; 文件名.sql</p>
 <p>例如：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -h 192.168.1.100 -p 3306 -uroot -ppassword --database cmdb &gt; /data/backup/cmdb.sql</span><br></pre></td></tr></table></figure>
@@ -652,7 +1117,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqldump --no-data –databases db1 db2 cmdb &gt; /data/backup/structure.sql</span><br></pre></td></tr></table></figure>
 
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -776,7 +1241,7 @@
             <p>由于 MySQLdb 模块还不支持 Python3.x，所以 Python3.x 如果想连接MySQL需要安装 pymysql 模块。</p>
 <p>pymysql 模块可以通过 pip 安装。但如果你使用的是 pycharm IDE，则可以使用 project python 安装第三方模块。</p>
 <p>[<strong>File</strong>] &gt;&gt; [<strong>settings</strong>] &gt;&gt; [<strong>Project: python</strong>] &gt;&gt; [<strong>Project Interpreter</strong>] &gt;&gt; [<strong>Install按钮</strong>]</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/875028-20161002000403750-123452875.png" alt="img"></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/875028-20161002000403750-123452875.png" alt="img"></p>
 <p>由于Python统一了数据库连接的接口，所以 pymysql 和 MySQLdb 在使用方式上是类似的：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">#创建数据库连接</span><br><span class="line">pymysql.Connect()参数说明</span><br><span class="line">host(str):      MySQL服务器地址</span><br><span class="line">port(int):      MySQL服务器端口号</span><br><span class="line">user(str):      用户名</span><br><span class="line">passwd(str):    密码</span><br><span class="line">db(str):        数据库名称</span><br><span class="line">charset(str):   连接编码，存在中文的时候，连接需要添加charset=&apos;utf8&apos;，否则中文显示乱码。</span><br><span class="line"></span><br><span class="line">connection对象支持的方法</span><br><span class="line">cursor()        使用该连接创建并返回游标</span><br><span class="line">commit()        提交当前事务，不然无法保存新建或者修改的数据</span><br><span class="line">rollback()      回滚当前事务</span><br><span class="line">close()         关闭连接</span><br><span class="line"></span><br><span class="line">cursor对象支持的方法</span><br><span class="line">execute(op)     执行SQL，并返回受影响行数</span><br><span class="line">fetchone()      取得结果集的下一行</span><br><span class="line">fetchmany(size) 获取结果集的下几行</span><br><span class="line">fetchall()      获取结果集中的所有行</span><br><span class="line">rowcount()      返回数据条数或影响行数</span><br><span class="line">close()         关闭游标对象</span><br></pre></td></tr></table></figure>
 
@@ -793,8 +1258,8 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">import pymysql.cursors</span><br><span class="line"></span><br><span class="line"># 连接数据库</span><br><span class="line">connect = pymysql.Connect(</span><br><span class="line">    host=&apos;localhost&apos;,</span><br><span class="line">    port=3310,</span><br><span class="line">    user=&apos;woider&apos;,</span><br><span class="line">    passwd=&apos;3243&apos;,</span><br><span class="line">    db=&apos;python&apos;,</span><br><span class="line">    charset=&apos;utf8&apos;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"># 获取游标</span><br><span class="line">cursor = connect.cursor()</span><br><span class="line"></span><br><span class="line"># 插入数据</span><br><span class="line">sql = &quot;INSERT INTO trade (name, account, saving) VALUES ( &apos;%s&apos;, &apos;%s&apos;, %.2f )&quot;</span><br><span class="line">data = (&apos;雷军&apos;, &apos;13512345678&apos;, 10000)</span><br><span class="line">cursor.execute(sql % data)</span><br><span class="line">connect.commit()</span><br><span class="line">print(&apos;成功插入&apos;, cursor.rowcount, &apos;条数据&apos;)</span><br><span class="line"></span><br><span class="line"># 修改数据</span><br><span class="line">sql = &quot;UPDATE trade SET saving = %.2f WHERE account = &apos;%s&apos; &quot;</span><br><span class="line">data = (8888, &apos;13512345678&apos;)</span><br><span class="line">cursor.execute(sql % data)</span><br><span class="line">connect.commit()</span><br><span class="line">print(&apos;成功修改&apos;, cursor.rowcount, &apos;条数据&apos;)</span><br><span class="line"></span><br><span class="line"># 查询数据</span><br><span class="line">sql = &quot;SELECT name,saving FROM trade WHERE account = &apos;%s&apos; &quot;</span><br><span class="line">data = (&apos;13512345678&apos;,)</span><br><span class="line">cursor.execute(sql % data)</span><br><span class="line">for row in cursor.fetchall():</span><br><span class="line">    print(&quot;Name:%s\tSaving:%.2f&quot; % row)</span><br><span class="line">print(&apos;共查找出&apos;, cursor.rowcount, &apos;条数据&apos;)</span><br><span class="line"></span><br><span class="line"># 删除数据</span><br><span class="line">sql = &quot;DELETE FROM trade WHERE account = &apos;%s&apos; LIMIT %d&quot;</span><br><span class="line">data = (&apos;13512345678&apos;, 1)</span><br><span class="line">cursor.execute(sql % data)</span><br><span class="line">connect.commit()</span><br><span class="line">print(&apos;成功删除&apos;, cursor.rowcount, &apos;条数据&apos;)</span><br><span class="line"></span><br><span class="line"># 事务处理</span><br><span class="line">sql_1 = &quot;UPDATE trade SET saving = saving + 1000 WHERE account = &apos;18012345678&apos; &quot;</span><br><span class="line">sql_2 = &quot;UPDATE trade SET expend = expend + 1000 WHERE account = &apos;18012345678&apos; &quot;</span><br><span class="line">sql_3 = &quot;UPDATE trade SET income = income + 2000 WHERE account = &apos;18012345678&apos; &quot;</span><br><span class="line"></span><br><span class="line">try:</span><br><span class="line">    cursor.execute(sql_1)  # 储蓄增加1000</span><br><span class="line">    cursor.execute(sql_2)  # 支出增加1000</span><br><span class="line">    cursor.execute(sql_3)  # 收入增加2000</span><br><span class="line">except Exception as e:</span><br><span class="line">    connect.rollback()  # 事务回滚</span><br><span class="line">    print(&apos;事务处理失败&apos;, e)</span><br><span class="line">else:</span><br><span class="line">    connect.commit()  # 事务提交</span><br><span class="line">    print(&apos;事务处理成功&apos;, cursor.rowcount)</span><br><span class="line"></span><br><span class="line"># 关闭连接</span><br><span class="line">cursor.close()</span><br><span class="line">connect.close()[![复制代码](https://common.cnblogs.com/images/copycode.gif)</span><br></pre></td></tr></table></figure>
 
 <p>==================<strong>测试结果</strong>===================</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/875028-20161002001957094-148578946.png" alt="img"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/875028-20161002001957094-148578946.png" alt="img"></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -936,7 +1401,7 @@
 <h3 id="2、修改数据库连接的字符集"><a href="#2、修改数据库连接的字符集" class="headerlink" title="　　2、修改数据库连接的字符集   　　"></a>　　2、修改数据库连接的字符集   　　</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">　　　　conn = pymysql.connect(host=&apos;localhost&apos;, user=&apos;root&apos;, password=&apos;root&apos;, port=3306, db=&apos;cncb&apos;, charset=&apos;utf8mb4&apos;)</span><br></pre></td></tr></table></figure>
 
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1200,7 +1665,7 @@
 
 <p>是不是很简单呢, 如果是批量上传的话, 直接一个循环调用即可</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1326,480 +1791,7 @@
 <h2 id="常用参数"><a href="#常用参数" class="headerlink" title="常用参数"></a>常用参数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">1、null=True</span><br><span class="line">　　数据库中字段是否可以为空</span><br><span class="line">　　</span><br><span class="line">2、blank=True</span><br><span class="line">　　django的Admin中添加数据时是否可允许空值</span><br><span class="line">　　</span><br><span class="line">3、primary_key =False</span><br><span class="line">　　主键，对AutoField设置主键后，就会代替原来的自增 id 列</span><br><span class="line">　　</span><br><span class="line">4、auto_now 和 auto_now_add</span><br><span class="line">　　auto_now 自动创建---无论添加或修改，都是当前操作的时间</span><br><span class="line">　　auto_now_add 自动创建---永远是创建时的时间</span><br><span class="line">　　</span><br><span class="line">5、choices</span><br><span class="line">GENDER_CHOICE =(</span><br><span class="line">(u&apos;M&apos;, u&apos;Male&apos;),</span><br><span class="line">(u&apos;F&apos;, u&apos;Female&apos;),</span><br><span class="line">) </span><br><span class="line">gender = models.CharField(max_length=2,choices = GENDER_CHOICE)  #字段模板展示</span><br><span class="line"></span><br><span class="line">6、max_length  最大长度</span><br><span class="line"></span><br><span class="line">7、default　　默认值</span><br><span class="line"></span><br><span class="line">8、verbose_name　　Admin中字段的显示名称</span><br><span class="line"></span><br><span class="line">9、name|db_column　　数据库中的字段名称</span><br><span class="line"></span><br><span class="line">10、unique=True　　不允许重复</span><br><span class="line"></span><br><span class="line">11、db_index =True　　数据库索引</span><br><span class="line"></span><br><span class="line">12、editable=True　　在Admin里是否可编辑</span><br><span class="line"></span><br><span class="line">13、error_messages=None　　错误提示</span><br><span class="line"></span><br><span class="line">14、auto_created=False　　自动创建</span><br><span class="line"></span><br><span class="line">15、help_text　　在Admin中提示帮助信息</span><br><span class="line"></span><br><span class="line">16、validators=[]  验证器</span><br><span class="line"></span><br><span class="line">17、upload-to    重定义上传文件的路径前缀</span><br></pre></td></tr></table></figure>
 
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../34.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../34.html" itemprop="url">mac平台下使用Charls进行抓包</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-08T14:48:35+08:00">
-                2020-09-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p> 某天，突然产生了对手机访问进行抓包的想法，google了一下，发现在mac下使用charles进行手机访问的抓包比较容易，就进行了一次手机抓包的尝试（安卓手机）。</p>
-<h1 id="mac安装charles"><a href="#mac安装charles" class="headerlink" title="mac安装charles"></a>mac安装charles</h1><p> 对于mac下安装charles，网上教程很多，这里不再进行说明，如果有条件的话，最好进行购买。</p>
-<h1 id="charles捕获http请求"><a href="#charles捕获http请求" class="headerlink" title="charles捕获http请求"></a>charles捕获http请求</h1><p> 1、<strong>Proxy – macOS</strong> Proxy 先打开代理，使得mac上所有请求都通过charles进行代理。</p>
-<p> <img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20200908145123.png" alt></p>
-<p> 2、<strong>Proxy – Proxy Settings</strong> 设置监听端口号为8888。</p>
-<p><img src="https://i.loli.net/2020/09/08/hWPSUBakNF97n12.png" alt></p>
-<p> 3、此时，用电脑访问百度，就已经可以获取访问的包了，如果我们需要监听手机的访问，就还得在手机上进行设置。</p>
-<p> <img src="https://i.loli.net/2020/09/08/wQbUoSWAdhlP52J.png" alt></p>
-<p> 4、先获取电脑的ip地址，<strong>Help – Local Ip Address</strong></p>
-<p> <img src="https://i.loli.net/2020/09/08/BOIz4r5VSdRFAgW.png" alt></p>
-<p> 5、然后在手机连接wifi，此时手机和电脑连接的必须是同一个wifi，然后在手机设置代理。</p>
-<p> <img src="https://i.loli.net/2020/09/08/bdZgW19vieRu3LM.png" alt></p>
-<p>6、设置完成后，在手机打开一个网址，此时chartles就可以获取到手机访问的包了。</p>
-<h1 id="charles捕获https请求"><a href="#charles捕获https请求" class="headerlink" title="charles捕获https请求"></a>charles捕获https请求</h1><p> http的请求我们已经可以获取，但是有些网站是https的，如果我们需要解析https的包，就需要安装证书了。</p>
-<p> 1、<strong>Help – SSL Proxying – install Charles Root Certificate</strong>,首先在mac安装CA证书。</p>
-<p> <img src="https://i.loli.net/2020/09/08/FrVcvGhgWL7CB5T.png" alt></p>
-<p> 2、然后要始终信任该证书。</p>
-<p> <img src="https://i.loli.net/2020/09/08/ibw5QkjI4g8DLEA.png" alt></p>
-<p> 3、<strong>Help – SSL Proxying – Install Charles Root Certificate On …</strong>,然后生成手机上的证书。</p>
-<p><img src="https://i.loli.net/2020/09/08/5RkQIY1svdKUDbN.png" alt></p>
-<p> 4、<strong>Help – SSL Proxying – Save …</strong>,然后保存该证书，它会生成一个类似<strong>charles-ssl-proxying.pem</strong>的文件，把该文件的后缀改为<strong>.crt</strong>,然后发送到你的安卓手机，进行安装即可。</p>
-<p> <img src="https://i.loli.net/2020/09/08/lRA2w4Go5YjLqb8.png" alt></p>
-<p> 5、<strong>Proxy – SSL Proxying setting</strong>,设置你要监听的https请求的网址</p>
-<p> <img src="https://i.loli.net/2020/09/08/GY2pOr1ktqWla9i.png" alt></p>
-<p> 6、手机再访问该网址，即可以抓到https的包了。</p>
-<p><img src="https://i.loli.net/2020/09/08/elVRwzuWX4Jsc32.png" alt></p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://545c.com/file/21042697-460657154" target="_blank" rel="noopener">点击下载</a></p>
-<h4 id="1-如果出现打开时提示：xxx-app已损坏，无法打开-那么输入以下指令解决"><a href="#1-如果出现打开时提示：xxx-app已损坏，无法打开-那么输入以下指令解决" class="headerlink" title="1. 如果出现打开时提示：xxx.app已损坏，无法打开,那么输入以下指令解决:"></a>1. 如果出现打开时提示：xxx.app已损坏，无法打开,那么输入以下指令解决:</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo xattr -d com.apple.quarantine /Applications/xxx.app</span><br></pre></td></tr></table></figure>
-
-<p>其中xxx.app是出问题的APP名称，如名称中有空格，可用“\”加空格代替</p>
-<h4 id="2-如果报错"><a href="#2-如果报错" class="headerlink" title="2.如果报错"></a>2.如果报错</h4><blockquote>
-<p>Charles cannot configure your proxy settings while it is on a read-only volume. Perhaps you are running Charles from the disk image? If so, please copy Charles to the Applications folder and run it again. Otherwise please ensure that Charles is running on a volume that is read-write and try again.</p>
-</blockquote>
-<h4 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo chown -R root &quot;/Applications/Charles.app/Contents/Resources&quot;</span><br><span class="line"> sudo chmod -R u+s &quot;/Applications/Charles.app/Contents/Resources&quot;</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../21.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../21.html" itemprop="url">Ajax 跨域问题及其解决方案</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-08T11:14:22+08:00">
-                2020-09-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="什么是-ajax-跨域"><a href="#什么是-ajax-跨域" class="headerlink" title="什么是 ajax 跨域"></a>什么是 ajax 跨域</h2><p>主流的<strong>前后端分离模式</strong>下，当前端调用后台接口时，由于是在非同一个域下的请求，从而会引发<strong>浏览器</strong>的自我安全保护机制，最终结果是<strong>接口成功请求并响应</strong>，但<strong>前端不能正常处理该返回数据</strong>。</p>
-<p><img src="https://i.loli.net/2020/09/08/EGern4xhRwqF7gU.png" alt="Access-Control-Allow-Origin"></p>
-<p>因此，当<strong>同时满足</strong>以下三个条件的情况下，就会出现跨域问题：</p>
-<ol>
-<li>浏览器限制</li>
-<li>非同源请求（跨域）</li>
-<li>发送的是 XHR ( XMLHttpRequest ) 请求</li>
-</ol>
-<p><img src="https://i.loli.net/2020/09/08/u8D62HznvwgcM1W.png" alt="跨域问题"></p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>想要彻底解决跨域问题，只需要破坏以上三个条件的任一即可：</p>
-<h4 id="1-修改浏览器（不推荐）"><a href="#1-修改浏览器（不推荐）" class="headerlink" title="1. 修改浏览器（不推荐）"></a>1. 修改浏览器（<strong>不推荐</strong>）</h4><p>添加浏览器启动参数：<code>chrome --disable-web-security</code>，但是极不推荐这种解决方式。</p>
-<h4 id="2-JSONP请求（不常用）"><a href="#2-JSONP请求（不常用）" class="headerlink" title="2. JSONP请求（不常用）"></a>2. JSONP请求（<strong>不常用</strong>）</h4><p>Jsonp，全称 <code>JSON with Padding</code>，一种非官方的协议，而是一种约定；前端通过向后台发送 <code>script</code> 类型请求解决跨域，此时接口响应的 <code>application/javascript</code> 类型的数据会作为 <code>callback</code> 函数的参数进行处理。</p>
-<p><img src="https://i.loli.net/2020/09/08/1RqpuXFLGTlMjI7.png" alt="Jsonp Request"></p>
-<p>所以，后台也需要做相应的处理。以 Java 为例，添加如下配置即可：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@ControllerAdvice</span><br><span class="line">public class JsonpAdvice extends AbstractJsonpResponseBodyAdvice &#123;</span><br><span class="line"></span><br><span class="line">    public JsonpAdvice() &#123;</span><br><span class="line">		// 前后端约定的jsonp参数名，默认值是callback</span><br><span class="line">        super(&quot;callback&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>注意，<code>Spring 4.1</code> 版本之后，官方已不再推荐使用上述允许 <code>jsonp</code> 请求的配置，建议使用 <code>CROS</code> 配置来解决跨域问题，详情可查看<a href="https://docs.spring.io/spring/docs/5.0.x/spring-framework-reference/web.html#mvc-cors" target="_blank" rel="noopener">这里</a></p>
-</blockquote>
-<p>综上，<code>jsonp</code> 请求存在以下几个弊端：</p>
-<ol>
-<li>服务端需要改动代码进行支持；</li>
-<li>只支持发送 <code>Get</code> 请求，请求头中更改其它类型的请求方式是无效的；</li>
-<li>发送的不是 <code>XHR</code> 请求，而是 <code>script</code> 类型，无法享受到相关的特性。</li>
-</ol>
-<h4 id="3-调用方隐藏跨域"><a href="#3-调用方隐藏跨域" class="headerlink" title="3. 调用方隐藏跨域"></a>3. 调用方隐藏跨域</h4><p>用 <code>Nginx</code> 或 <code>Apache</code> 来代理调用方的请求（<strong>客户端变更为相对路径请求，而非绝对路径</strong>），此时对于浏览器来说，由于请求是同源的，因此就不存在跨域问题。</p>
-<h4 id="4-被调用方允许跨域（最常用）"><a href="#4-被调用方允许跨域（最常用）" class="headerlink" title="4. 被调用方允许跨域（最常用）"></a>4. 被调用方允许跨域（<strong>最常用</strong>）</h4><ul>
-<li>服务端配置</li>
-</ul>
-<p>以 Java 应用为例，添加如下全局配置：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">public class CorsConfig implements WebMvcConfigurer &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void addCorsMappings(CorsRegistry registry) &#123;</span><br><span class="line">        registry.addMapping(&quot;/**&quot;)  // 允许跨域的接口</span><br><span class="line">                .allowedOrigins(&quot;*&quot;)  // 允许跨域的请求源</span><br><span class="line">                .allowedMethods(&quot;*&quot;)  // 允许跨域的请求方式</span><br><span class="line">                .allowedHeaders(&quot;*&quot;) // 允许跨域的请求头</span><br><span class="line">                .allowCredentials(true)  // 带cookie请求的时候需要开启，且allowedOrigins需要指定为具体的请求源（最好是动态配置）</span><br><span class="line">                .maxAge(60 * 60 * 24); // 设定options请求预检命令的缓存时长</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>如果只想针对某个类下的接口，或者是某个具体的接口配置允许跨域，只需要在相应的地方添加注解 <code>@CrossOrigin</code> 即可。</p>
-<ul>
-<li>Nginx 配置</li>
-</ul>
-<p>如果配置了 <code>nginx</code> 作为代理服务器，那么只需要为 <code>nginx</code> 添加支持跨域请求即可：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">	listen 80;</span><br><span class="line">	server_name xxx.com;</span><br><span class="line"></span><br><span class="line">	location / &#123;</span><br><span class="line">		proxy_pass http://localhost:8080/;</span><br><span class="line"></span><br><span class="line">		# 配置允许跨域</span><br><span class="line">		add_header Access-Control-Allow-Origin $http_origin;</span><br><span class="line">		add_header Access-Control-Allow-Methods *;</span><br><span class="line">		add_header Access-Control-Allow-Headers $http_access_control_request_headers;</span><br><span class="line">		add_header Access-Control-Max-Age 3600;</span><br><span class="line">		add_header Access-Control-Allow-Credentials true;</span><br><span class="line">		</span><br><span class="line">		# 对于options预检请求，直接响应200</span><br><span class="line">		if ($request_method = OPTIONS) &#123;</span><br><span class="line">			return 200;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="扩展思考"><a href="#扩展思考" class="headerlink" title="扩展思考"></a>扩展思考</h2><p>Q1：浏览器在执行跨域请求时，是先执行后判断，还是先判断后执行？<br>A1：都有可能，这需要根据所发送的请求是<strong>简单请求</strong>还是<strong>非简单请求</strong>来判断；如果是非简单请求，浏览器每次在执行真正的请求之前，还会先发送一个 <code>options</code> 请求方式的预检命令【 <strong>可设定缓存时长，取消每次请求都要预检，提高效率，参考上面的服务端配置</strong> 】。关于两种请求的区分及定义，参考下图说明：</p>
-<p><img src="https://i.loli.net/2020/09/08/TWOvdB8wLxclq65.png" alt="简单请求 VS 非简单请求"></p>
-<p>Q2：如果是允许带（<strong>被调用方</strong>） <code>cookie</code> 的跨域请求，此时服务端同样配置为 <code>Access-Control-Allow-Origin</code> 等于 <code>*</code>，前端是否还可以请求成功？<br>A2：不可以，此时要将 <code>Access-Control-Allow-Origin</code> 指定为<strong>调用方</strong>具体的域【 <strong>可以先取得调用方的域再动态配置，这样就不存在多个域请求的限制问题</strong> 】，并且添加配置 <code>Access-Control-Allow-Credentials</code> 为 <code>true</code>。</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../43.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../43.html" itemprop="url">向谷歌搜索引擎主动推送网页的教程 Google Indexing API 接口实现</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-08T11:04:25+08:00">
-                2020-09-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/jHXAmlIOfwsvtep-20200908110823361.jpg" alt></p>
-<p>谷歌搜索引擎作为全球第一的搜索引擎早就支持了站长主动推送的功能，只不过不是面向普通用户的可视化界面，而是通过编程API接口实现的，有很多站长并不是专业的开发者，但由于谷歌需要验证网站所有权，所以我不能直接做一个可视化界面让站长自己填写自己的秘钥，所以只能对谷歌的接口进行二次封装，以降低使用的难度。</p>
-<p>源码项目地址：<a href="https://github.com/NeilRen/GoogleIndexing" target="_blank" rel="noopener">https://github.com/NeilRen/GoogleIndexing</a></p>
-<h2 id="环境要求"><a href="#环境要求" class="headerlink" title="环境要求"></a>环境要求</h2><p>首先，我是以Java为平台进行的封装，JDK版本为1.8，其他程序可能需要中间层才能打通，还不如自己实现，其他编程语言的同学我也没有办法，这个世界上编程语言太多了。</p>
-<p>其次，谷歌的Google Indexing API接口在中国大陆无法访问，所以程序需要运行在可以访问谷歌的网络环境中。</p>
-<h2 id="前提条件"><a href="#前提条件" class="headerlink" title="前提条件"></a>前提条件</h2><p>首先，你需要一个谷歌账号。你的项目是Java的，并且JDK为1.8以上。</p>
-<h2 id="创建-Google-API-项目"><a href="#创建-Google-API-项目" class="headerlink" title="创建 Google API 项目"></a>创建 Google API 项目</h2><p>然后在向 Indexing API 发送请求之前，您需要告知 Google 您的客户端并激活对 Indexing API 的访问权限。谷歌为我们提供了一个<a href="https://console.developers.google.com/start/api?id=indexing.googleapis.com&credential=client_key" target="_blank" rel="noopener">设置向导</a>，设置向导会引导您在 Google API 控制台中创建项目、启用 Indexing API 以及创建凭据。</p>
-<p>首先先跟着向导创建一个项目</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/M2ptE4nOaW6Z3qg.png" alt="Google Indexing API 设置向导"></p>
-<p>然后转到凭据，添加凭据</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20200310210556-20200908110850707.png" alt="Google Indexing API 添加凭证"></p>
-<p>添加的凭据选择Indexing API、网页服务器(例如 node.js、Tomecat)，选择应用数据，点击“我需要哪些凭据？”到下一页</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20200310210605-20200908110904033.png" alt="Google Indexing API 为项目添加凭证"></p>
-<p>创建一个服务账号，名称可以自己起一个名字，秘钥类型选择JSON，点击继续</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20200310210613-20200908110918941.png" alt="Google Indexing API 创建服务账号"></p>
-<p>选择创建无角色账号即可</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20200310210621-20200908110933400.png" alt="Google Indexing API 创建无角色账号"></p>
-<p>这时就会自动下载一个json文件，这个就是我们的私钥，要保存好</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20200310210628-20200908110944503.png" alt="Google Indexing API 秘钥"></p>
-<h2 id="在-Search-Console-中验证网站所有权"><a href="#在-Search-Console-中验证网站所有权" class="headerlink" title="在 Search Console 中验证网站所有权"></a>在 Search Console 中验证网站所有权</h2><p>我们还需要到 <a href="https://www.google.com/webmasters/tools/home" target="_blank" rel="noopener">Search Console</a> 添加我们的网站，验证所有权，验证成功以后，注意我们要去<a href="https://www.google.com/webmasters/verification/home?pli=1" target="_blank" rel="noopener">旧版的控制台</a>，不要去新版的控制台！然后添加所有者</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20200310210643-20200908110957641.png" alt="Google 旧版控制台">]</p>
-<p>所有者的邮箱填写我们上一步获得的私钥JSON文件中的邮箱地址。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20200310210636-20200908111008115.png" alt="Google Indexing API 秘钥JSON"><img src="https://cdn.jsdelivr.net/gh/songjianzaina/lunanzb_img/img/20200310210654-20200908111018700.png" alt="Google 添加网站所有者"></p>
-<h2 id="在自己的项目中安装依赖"><a href="#在自己的项目中安装依赖" class="headerlink" title="在自己的项目中安装依赖"></a>在自己的项目中安装依赖</h2><p>如果您使用Apache Maven来管理Java项目，只需在项目的<code>pom.xml</code>文件加入相应的依赖项即可。您只需在<code>pom.xml</code>中声明以下依赖：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;net.renfei&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;googleindexing&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;1.0.0&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-
-<p>编写代码调用服务，在实例化GoogleIndexing的时候，需要传一个String参数，这个参数是私钥JSON文件所在的文件地址：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">import com.alibaba.fastjson.JSON;</span><br><span class="line">import com.google.api.services.indexing.v3.model.UrlNotificationMetadata;</span><br><span class="line">import net.renfei.googleindexing.GoogleIndexing;</span><br><span class="line">import net.renfei.googleindexing.entity.UrlNotification;</span><br><span class="line">import net.renfei.googleindexing.entity.UrlNotificationType;</span><br><span class="line"></span><br><span class="line">public class Demo &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            GoogleIndexing googleIndexing = new GoogleIndexing(&quot;/Users/renfei/Google/Ren-Fei-5a8df7c2b912.json&quot;);</span><br><span class="line">            UrlNotification urlNotification = new UrlNotification();</span><br><span class="line">            urlNotification.setUrl(&quot;https://www.renfei.net&quot;);</span><br><span class="line">            urlNotification.setType(UrlNotificationType.URL_UPDATED);</span><br><span class="line">            UrlNotificationMetadata urlNotificationMetadata = googleIndexing.publish(urlNotification);</span><br><span class="line">            System.out.printf(JSON.toJSONString(urlNotificationMetadata));</span><br><span class="line">        &#125; catch (Exception ex) &#123;</span><br><span class="line">            ex.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1886,7 +1878,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">332</span>
+                  <span class="site-state-item-count">335</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1899,7 +1891,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">95</span>
+                  <span class="site-state-item-count">96</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
