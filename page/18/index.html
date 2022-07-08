@@ -20,6 +20,7 @@
 
 
 
+
 <meta http-equiv="Cache-Control" content="no-transform">
 <meta http-equiv="Cache-Control" content="no-siteapp">
 
@@ -287,6 +288,316 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../165.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../165.html" itemprop="url">汇编语言之debug模式常用指令介绍</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-01T16:14:19+08:00">
+                2020-11-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p> 在搭建好了8086汇编的开发环境后，接下来介绍8086的debug模式。执行debug.exe以进入debug调试模式，在dos中通过输入命令的方式进行交互 </p>
+</blockquote>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201101210639.png" alt></p>
+<p>##　－Ｒ命令</p>
+<p> <strong>R命令的作用是查看和修改debug模式下CPU中寄存器的值</strong> </p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201101210624.png" alt></p>
+<p>##　－Ｄ命令</p>
+<p> <strong>D命令的作用是查看内存中的内容</strong> </p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201101211009.png" alt></p>
+<p> 上面为<strong>（段地址:偏移地址）</strong>查看方式。D命令默认会显示<strong>寻址地址开始的后128个内存单元</strong>的内容，以16进制的方式显示(每个内存单元8位，一行最多16个内存单元)，而最右边会将内存单元中的二进制数据<strong>以ascll码</strong>的形式翻译展示 </p>
+<p>　　<strong>但有时</strong>，我们只想聚焦于某一部分内存地址的内容，而默认展示的内存视图不是很方便。</p>
+<p>　　D命令提供了另外一种访问内存的方式（<strong>段地址:偏移起始地址 偏移终止地址</strong>），其能够展示（<strong>段地址:偏移起始地址 至 段地址:偏移终止地址</strong>）的内存信息，范围两端均为闭区间</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201101211514.png" alt></p>
+<h2 id="－E命令"><a href="#－E命令" class="headerlink" title="－Ｅ命令"></a>－Ｅ命令</h2><p> <strong>E命令的作用是改变内存中的内容</strong>。 </p>
+<p>　和对CPU中寄存器的查看，修改不同，对内存进行查看和修改较为复杂，为此debug设计了两个不同的命令分别进行控制(<strong>E命令修改内存、D命令查看内存</strong>)。</p>
+<p>　　通过(<strong>E 起始地址 数据1 数据2 数据3…</strong>)命令可以修改内存中以起始地址开始，顺序的N个内存单元的值(N为实际参数传递的数量)</p>
+<p> <img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201101211543.png" alt> </p>
+<p> 也可以和R命令修改CPU中寄存器值类似的，通过提示来修改特定内存单元的值。<strong>00.12</strong> <strong>00代表内存单元在修改前的值，12是我们手动输入的、需要修改的新值</strong> </p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201101211618.png" alt></p>
+<h2 id="－U命令"><a href="#－U命令" class="headerlink" title="－Ｕ命令"></a>－Ｕ命令</h2><p>  <strong>U命令的作用是将内存中的二进制数据转换为汇编指令展示(反汇编)</strong></p>
+<p>D命令能够将内存中的数据以16进制或ascll码的形式展现出来，但有时我们需要观察的是内存中的机器指令时，D命令的视图过于抽象，不利于理解。debug提供了U命令来解决这个问题。</p>
+<p>　　对于前面我们在1000:0处输入的机器指令，使用 U 1000:0 命令(u 内存地址)可以将内存中的数据以汇编语言指令的方式进行展示</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201101211814.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201102181847.png" alt></p>
+<h2 id="－A命令"><a href="#－A命令" class="headerlink" title="－Ａ命令"></a>－Ａ命令</h2><p> <strong>A命令能够以汇编指令的形式向内存中写入内容</strong>  </p>
+<p>对于内存操作，D命令可以查看内存中的内容，但如果想查看的是程序指令，显然U命令更加方便；E命令可以向内存中写入数据，但对于程序指令的写入，直接操作二进制机器码的方式过于硬核。为此，debug提供了A命令，我们可以通过A命令以汇编指令的形式向内存中写入内容。</p>
+<p>　　通过A命令将(<strong>mov ax,0001，mov bx,0002，add ax,bx</strong>)三条指令写入内存1000:0处：</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201101211916.png" alt></p>
+<p>通过A命令进行指令的写入，和E命令达到的效果一样，但使用起来却更加便捷。A命令能够自动识别所输入汇编指令的长度，正确的在内存中写入程序指令。</p>
+<p>　　<strong>debug提供了D、E两种命令用于对内存进行通用的操作(纯二进制、十六进制数据的读、写)。</strong></p>
+<p>　　<strong>对于程序指令，debug提供了U、A两种命令以更人性化的方式来读写内存中的指令内容</strong></p>
+<h2 id="－T命令"><a href="#－T命令" class="headerlink" title="－Ｔ命令"></a>－Ｔ命令</h2><p> 　<strong>T命令的作用是进行单步机器指令的调试</strong> </p>
+<h2 id="－G命令"><a href="#－G命令" class="headerlink" title="－G命令"></a>－G命令</h2><p> 　<strong>G命令的作用是进行Debug程序断点调试</strong> </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-g 代码地址(cs+ip)地址</span><br></pre></td></tr></table></figure>
+
+<h2 id="－p命令"><a href="#－p命令" class="headerlink" title="－p命令"></a>－p命令</h2><p>　<strong>p命令的作用是断点跳过执行 ,可用于循环调试</strong> </p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../166.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../166.html" itemprop="url">8086汇编语言之数据段和代码段以及栈段的理解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-01T16:14:19+08:00">
+                2020-11-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="数据段DS＋偏移地址段BX"><a href="#数据段DS＋偏移地址段BX" class="headerlink" title="数据段DS＋偏移地址段BX"></a>数据段DS＋偏移地址段BX</h2><p><strong>数据段可以通俗理解为数据容器指针</strong></p>
+<p>比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">MOV AX 0220H</span><br><span class="line">MOV DS AX</span><br><span class="line">MOV BX 0</span><br><span class="line">MOV AX [BX]</span><br><span class="line">;我们发现 DS数据段一直都是在给不同地址的容器赋值</span><br></pre></td></tr></table></figure>
+
+<h2 id="代码段CS-偏移地址段IP"><a href="#代码段CS-偏移地址段IP" class="headerlink" title="代码段CS+偏移地址段IP"></a>代码段CS+偏移地址段IP</h2><p><strong>代码段可以通俗理解为汇编代码指针</strong></p>
+<p>比如:</p>
+<p>代码从 <code>MOV AX 0220H</code> 开始,那么代码段指向这行代码地址, 如果想要跳过这行代码的执行,那么进行代码段偏移</p>
+<p><strong>在通过debug模式配合-u指令查看汇编代码时,可以根据CS进行范围查看:</strong></p>
+<p>比如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#以下模拟控制台输出</span><br><span class="line">-r</span><br><span class="line">AX=0000 BX=0000.....</span><br><span class="line">DS=13DB ES=13DB SS=13EB CS=13EB IP=0000</span><br><span class="line">-u 13eb:0</span><br><span class="line">13BE:0000 B8FFFF MOV   AX,FFFF</span><br></pre></td></tr></table></figure>
+
+<h2 id="栈段SS-偏移地址段SP"><a href="#栈段SS-偏移地址段SP" class="headerlink" title="栈段SS+偏移地址段SP"></a>栈段SS+偏移地址段SP</h2><p><strong>栈段可以通俗理解为栈指针</strong></p>
+<h2 id="什么是段"><a href="#什么是段" class="headerlink" title="什么是段"></a>什么是段</h2><p> 首先内存并没有分段，段的划分来自CPU，来自我们自己对内存的操作。由8086CPU</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">（段地址+偏移地址=“物理地址”）</span><br></pre></td></tr></table></figure>
+
+<p>的方式给出内存单元的物理地址，使得我们用分段的方式管理内存</p>
+<p>可以将段通俗理解为小区的一栋楼,偏移地址为这栋楼的住户门牌号.比如五号楼101房,那么形象比喻:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">五号楼----&gt;段地址  101房----&gt;偏移地址</span><br></pre></td></tr></table></figure>
+
+<h2 id="为什么要这样划分"><a href="#为什么要这样划分" class="headerlink" title="为什么要这样划分?"></a>为什么要这样划分?</h2><p>直接使用一个物理地址岂不是更简单,何必拆分成段地址+物理地址?</p>
+<p>这是由于8086cpu16位寄存器局限性造成的, 由于16位的寄存器最大只能存放0xFFFF 如果存放超过五位的地址比如0xFFFFA 则无法存放, 为了解决这个问题, cup设计者想出了 <strong>段地址*16+偏移地址</strong>的方法完美解决这个问题 </p>
+<p><strong>物理地址</strong>=<strong>段地址*16+偏移地址</strong></p>
+<p>一个物理地址可以有四种写法, 比如0xFFFFA:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">0xFFFFA=0xFFFF0*16+0x000A</span><br><span class="line"></span><br><span class="line">0xFFFFA=0xFFF00*16+0x00FA</span><br><span class="line"></span><br><span class="line">0xFFFFA=0xFF000*16+0x0FFA</span><br><span class="line"></span><br><span class="line">0xFFFFA=0xF0000*16+0xFFFA</span><br></pre></td></tr></table></figure>
+
+<h2 id="段的赋值"><a href="#段的赋值" class="headerlink" title="段的赋值"></a>段的赋值</h2><p><strong>代码段CS 数据段DS 栈段SS 不能直接赋值</strong>, 必须通过通用寄存器中转赋值</p>
+<p>偏移地址可以直接赋值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mov ax ,2000H</span><br><span class="line">mov ss ,ax</span><br><span class="line">mov sp ,10H</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../168.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -362,7 +673,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">assume cs:cscode</span><br><span class="line">cscode segment</span><br><span class="line">	dw 0,0,0,0,0,0,0,0 ;定义8个字型数据,在程序加载后,将取得8个字的内存空间,可当做栈空间使用</span><br><span class="line">start:mov ax,cs</span><br><span class="line">	...</span><br><span class="line">cscode ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
 
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -483,7 +794,7 @@
       
         
           
-            <p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/%E6%97%A0%E6%A0%87%E9%A2%98.png" alt></p>
+            <p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/%E6%97%A0%E6%A0%87%E9%A2%98.png" alt></p>
 <h2 id="baksmali和smali-jar工具下载"><a href="#baksmali和smali-jar工具下载" class="headerlink" title="baksmali和smali.jar工具下载"></a>baksmali和smali.jar工具下载</h2><p><a href="https://bitbucket.org/JesusFreke/smali/downloads/" target="_blank" rel="noopener">https://bitbucket.org/JesusFreke/smali/downloads/</a></p>
 <p><a href="https://bitbucket.org/JesusFreke/smali/downloads/" target="_blank" rel="noopener">点此下载</a></p>
 <h2 id="class转dex指令"><a href="#class转dex指令" class="headerlink" title=".class转dex指令"></a>.class转dex指令</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dx.bat --dex --output=./aa.dex Test.class</span><br></pre></td></tr></table></figure>
@@ -504,9 +815,9 @@
 <li><p>android studio自带的.class转smali就非常好用,如图:</p>
 </li>
 </ol>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201104143153.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201104143153.png" alt></p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -644,7 +955,7 @@
 </ol>
 <h2 id="Step-3"><a href="#Step-3" class="headerlink" title="Step 3"></a>Step 3</h2><p><strong>Done!</strong></p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -786,7 +1097,7 @@
 <li>二进制每四位分割对应一个16进制,每三位分割对应一个八进制</li>
 </ul>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -932,7 +1243,7 @@
 </li>
 </ol>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1056,7 +1367,7 @@
             <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Base64是网络上最常见的用于传输8Bit<a href="https://baike.baidu.com/item/字节码/9953683" target="_blank" rel="noopener">字节码</a>的编码方式之一，Base64就是一种基于64个可打印字符来表示<a href="https://baike.baidu.com/item/二进制/361457" target="_blank" rel="noopener">二进制</a>数据的方法。可查看RFC2045～RFC2049，上面有MIME的详细规范。</p>
 <p>Base64编码是从二进制到字符的过程，可用于在<a href="https://baike.baidu.com/item/HTTP" target="_blank" rel="noopener">HTTP</a>环境下传递较长的标识信息。采用Base64编码具有不可读性，需要解码后才能阅读。</p>
 <p>Base64由于以上优点被广泛应用于计算机的各个领域，然而由于输出内容中包括两个以上“符号类”字符（+, /, =)，不同的应用场景又分别研制了Base64的各种“变种”。为统一和规范化Base64的输出，Base62x被视为无符号化的改进版本。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20201029122454.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201029122454.png" alt></p>
 <h1 id="python中的base64"><a href="#python中的base64" class="headerlink" title="python中的base64"></a>python中的base64</h1><h3 id="将url编码成base64"><a href="#将url编码成base64" class="headerlink" title="将url编码成base64"></a>将url编码成base64</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 想将字符串转编码成base64,要先将字符串转换成二进制数据</span><br><span class="line">url = &quot;https://www.cnblogs.com/songzhixue/&quot;</span><br><span class="line">bytes_url = url.encode(&quot;utf-8&quot;)</span><br><span class="line">str_url = base64.b64encode(bytes_url)  # 被编码的参数必须是二进制数据</span><br><span class="line">print(str_url)</span><br><span class="line"></span><br><span class="line">b&apos;aHR0cHM6Ly93d3cuY25ibG9ncy5jb20vc29uZ3poaXh1ZS8=&apos;</span><br></pre></td></tr></table></figure>
 
 <h3 id="解码base64"><a href="#解码base64" class="headerlink" title="解码base64"></a>解码base64</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 将base64解码成字符串</span><br><span class="line">import base64</span><br><span class="line">url = &quot;aHR0cHM6Ly93d3cuY25ibG9ncy5jb20vc29uZ3poaXh1ZS8=&quot;</span><br><span class="line">str_url = base64.b64decode(url).decode(&quot;utf-8&quot;)</span><br><span class="line">print(str_url)</span><br><span class="line"></span><br><span class="line">&apos;https://www.cnblogs.com/songzhixue/&apos;</span><br></pre></td></tr></table></figure>
@@ -1066,7 +1377,7 @@
 <li>解码解的是字符串， 编码编的是字节数组</li>
 </ul>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1192,7 +1503,7 @@
 <h2 id="字节数组转字符串"><a href="#字节数组转字符串" class="headerlink" title="字节数组转字符串"></a>字节数组转字符串</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">b = <span class="string">b"Hello, world!"</span>  <span class="comment"># bytes object  </span></span><br><span class="line"></span><br><span class="line"><span class="comment">#一共有三种方式 任选其一</span></span><br><span class="line">print(<span class="string">'\nbytes --&gt; str'</span>)</span><br><span class="line">print(str(b, encoding=<span class="string">"utf-8"</span>))   </span><br><span class="line">print(bytes.decode(b))  <span class="comment"># 默认 encoding="utf-8"</span></span><br><span class="line">print(b.decode())       <span class="comment"># 默认 encoding="utf-8"</span></span><br></pre></td></tr></table></figure>
 
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1327,320 +1638,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">from Crypto.Cipher import DES</span><br><span class="line">import binascii</span><br><span class="line">import base64</span><br><span class="line"></span><br><span class="line"># data-&gt;被加密的字符串 key-&gt;密钥 同样传入字符串</span><br><span class="line">def des_decode(data, key):</span><br><span class="line">    b_data = base64.b64decode(data)</span><br><span class="line">    iv = key.encode()</span><br><span class="line">    cipher = DES.new(key.encode(), iv,DES.MODE_CBC)</span><br><span class="line">    decrypted = cipher.decrypt(b_data)</span><br><span class="line">    decrypted.rstrip(b&apos; &apos;)</span><br><span class="line">    return decrypted.decode()  # 解密完成后将加密时添加的多余字符&apos;\0&apos;删除</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># data-&gt;被加密的字符串 key-&gt;密钥 同样传入字符串</span><br><span class="line">def aes_encrypt(data, key):</span><br><span class="line">    # DES CBC模式 需向量iv</span><br><span class="line">    iv = key.encode()</span><br><span class="line">    cipher = DES.new(key.encode(),iv, DES.MODE_CBC)</span><br><span class="line">    # 字符串转字节数组</span><br><span class="line">    b_data = data.encode()</span><br><span class="line">    # ------ 按照16位对其 不足的补空格 ----</span><br><span class="line">    block_size = DES.block_size</span><br><span class="line">    count = len(b_data)</span><br><span class="line">    # text不是16的倍数那就补足为16的倍数</span><br><span class="line">    add_count = block_size - (count % block_size)</span><br><span class="line">    s_plaintext = data + (&apos; &apos; * add_count)</span><br><span class="line">    # ------ 按照16位对其 不足的补空格 ----</span><br><span class="line">  </span><br><span class="line">    b_plaintext = s_plaintext.encode()</span><br><span class="line">    encrypted = cipher.encrypt(b_plaintext)  # des加密</span><br><span class="line"></span><br><span class="line">    return base64.b64encode(encrypted).decode()</span><br></pre></td></tr></table></figure>
 
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../160.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../160.html" itemprop="url">Python DES EBC 加密解密代码示范</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-29T16:14:19+08:00">
-                2020-10-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Python-DES-EBC-加密解密代码示范"><a href="#Python-DES-EBC-加密解密代码示范" class="headerlink" title="Python DES EBC 加密解密代码示范"></a>Python DES EBC 加密解密代码示范</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pyDes <span class="keyword">import</span> des, ECB, PAD_PKCS5</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">des_encrypt</span><span class="params">(s)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    DES 加密</span></span><br><span class="line"><span class="string">    :param s: 原始字符串</span></span><br><span class="line"><span class="string">    :return: 加密后字符串，16进制</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    secret_key = <span class="string">'ucserver'</span>.encode()</span><br><span class="line"></span><br><span class="line">    k = des(secret_key, ECB, pad=<span class="literal">None</span>, padmode=PAD_PKCS5)</span><br><span class="line">    en = k.encrypt(s.encode(), padmode=PAD_PKCS5)</span><br><span class="line">    <span class="comment"># return binascii.b2a_hex(en)</span></span><br><span class="line">    <span class="keyword">return</span> base64.b64encode(en).decode()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">des_descrypt</span><span class="params">(s)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    DES 解密</span></span><br><span class="line"><span class="string">    :param s: 加密后的字符串，16进制</span></span><br><span class="line"><span class="string">    :return:  解密后的字符串</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    secret_key = <span class="string">'ucserver'</span>.encode()</span><br><span class="line"> </span><br><span class="line">    k = des(secret_key, ECB, pad=<span class="literal">None</span>, padmode=PAD_PKCS5)</span><br><span class="line">    de = k.decrypt(base64.b64decode(s), padmode=PAD_PKCS5)</span><br><span class="line">    <span class="keyword">return</span> de.decode()</span><br></pre></td></tr></table></figure>
-
-<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><p><strong>python中还有一个库Crypto 也是用于加密的, 但是加密的结果和java不一致, 这是个坑, 以下是Crypto加密的代码, 用于对比:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">from Crypto.Cipher import DES</span><br><span class="line">import binascii</span><br><span class="line">import base64</span><br><span class="line"></span><br><span class="line"># data-&gt;被加密的字符串 key-&gt;密钥 同样传入字符串</span><br><span class="line">def des_decode(data, key):</span><br><span class="line">    b_data = base64.b64decode(data)</span><br><span class="line">    cipher = DES.new(key.encode(), DES.MODE_ECB)</span><br><span class="line">    decrypted = cipher.decrypt(b_data)</span><br><span class="line">    decrypted.rstrip(b&apos; &apos;)</span><br><span class="line">    return decrypted.decode()  # 解密完成后将加密时添加的多余字符&apos;\0&apos;删除</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># data-&gt;被加密的字符串 key-&gt;密钥 同样传入字符串</span><br><span class="line">def aes_encrypt(data, key):</span><br><span class="line">    # DES ECB模式 无需向量iv</span><br><span class="line">    cipher = DES.new(key.encode(), DES.MODE_ECB)</span><br><span class="line">    # 字符串转字节数组</span><br><span class="line">    b_data = data.encode()</span><br><span class="line">    # ------ 按照16位对其 不足的补空格 ----</span><br><span class="line">    block_size = DES.block_size</span><br><span class="line">    count = len(b_data)</span><br><span class="line">    # text不是16的倍数那就补足为16的倍数</span><br><span class="line">    add_count = block_size - (count % block_size)</span><br><span class="line">    s_plaintext = data + (&apos; &apos; * add_count)</span><br><span class="line">    # ------ 按照16位对其 不足的补空格 ----</span><br><span class="line">  </span><br><span class="line">    b_plaintext = s_plaintext.encode()</span><br><span class="line">    encrypted = cipher.encrypt(b_plaintext)  # des加密</span><br><span class="line"></span><br><span class="line">    return base64.b64encode(encrypted).decode()</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../155.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../155.html" itemprop="url">android NDK编译涉及的cpu架构种类</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-28T16:14:19+08:00">
-                2020-10-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>在使用NDK编译过程中发现针对不同的CPU架构，部分支持编译调试，部分不支持调试，故记录下来，以防忘记</p>
-</blockquote>
-<p>在Application.mk文件中有个预定义命令参数APP_ABI，是指明编译与调试的CPU架构。</p>
-<p>目前Android系统支持以下七种不同的CPU架构：<strong>ARMv5</strong>，<strong>ARMv7</strong>（从2010年起），<strong>x86</strong>（从2011年），<strong>MIPS</strong>（从2012年），<strong>ARMv8</strong>，<strong>MIPS64</strong>和<strong>x86_64</strong>（从2014年），每一种都对应相应的ABI。</p>
-<table>
-<thead>
-<tr>
-<th>CPU架构</th>
-<th>ABI</th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>ARMv5</td>
-<td>armeabi</td>
-<td>32位，从2010年</td>
-</tr>
-<tr>
-<td>ARMv7</td>
-<td>armeabi-v7a</td>
-<td>32位，从2010年</td>
-</tr>
-<tr>
-<td>x86</td>
-<td>x86</td>
-<td>32位，从2011年</td>
-</tr>
-<tr>
-<td>MIPS</td>
-<td>mips</td>
-<td>32位，从2012年</td>
-</tr>
-<tr>
-<td>ARMv8</td>
-<td>arm64-v8a</td>
-<td>64位，从2014年</td>
-</tr>
-<tr>
-<td>MIPS64</td>
-<td>mips64</td>
-<td>64位，从2014年</td>
-</tr>
-<tr>
-<td>x86_64</td>
-<td>x86_64</td>
-<td>64位，从2014年</td>
-</tr>
-</tbody></table>
-<p><strong>相应生成arm64-v8a，mips64，x86_64下的文件需要NDK_r10以上版本支持</strong>。在Application.mk文件里配置APP_ABI的内容。例如指明某个具体的CPU架构</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">APP_ABI := arm64-v8a</span><br></pre></td></tr></table></figure>
-
-<p>或者直接生成所有的版本</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">APP_ABI := all</span><br></pre></td></tr></table></figure>
-
-<p>注意：根据不同的NDK版本，APP_ABI := all仅能生成当前版本支持的ABI信息库文件，如果需要生成最新的必须更新相应的NDK版本。</p>
-<p>或者明确写明支持的CPU架构</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">APP_ABI := armeabi，armeabi-v7a，x86，mips，arm64-v8a，mips64，x86_64</span><br></pre></td></tr></table></figure>
-
-<p>建议采用该方法</p>
-<p>注意：由于目前版本支持的问题，采用Eclipse+NDK+Windows集成方式开发，对应编译生成对应CPU架构的so文件是没有问题的。但是不一定可以执行调试工作，启动NDK调试模式时将会提示无法识别对应的ABI。</p>
-<p>注意：</p>
-<p>(1)、目前模拟器只有x86_64的没有arm64-v8a的；</p>
-<p>(2)、在用真机测试armv8-a时，最好先通过<code>adb shell</code>， <code>cat /proc/cpuinfo</code> ，来查看下真机是否是支持armv8-a；</p>
-<p>(3)、arm32和arm64有些配置参数不能共存，如-msoft-float仅在arm32位下支持，在arm64位下是不支持的. </p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1727,7 +1725,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">336</span>
+                  <span class="site-state-item-count">338</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1740,7 +1738,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">96</span>
+                  <span class="site-state-item-count">98</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

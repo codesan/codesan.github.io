@@ -20,6 +20,7 @@
 
 
 
+
 <meta http-equiv="Cache-Control" content="no-transform">
 <meta http-equiv="Cache-Control" content="no-siteapp">
 
@@ -287,6 +288,342 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../216.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../216.html" itemprop="url">Makefile的详细介绍和使用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-29T18:14:19+08:00">
+                2021-01-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>待完善。。。</p>
+<p><a href="https://seisman.github.io/how-to-write-makefile/invoke.html" target="_blank" rel="noopener">makefile详细介绍和使用</a></p>
+<h3 id="Makefile定义规则"><a href="#Makefile定义规则" class="headerlink" title="Makefile定义规则"></a>Makefile定义规则</h3><p>参考链接1：<a href="https://seisman.github.io/how-to-write-makefile/invoke.html" target="_blank" rel="noopener">https://seisman.github.io/how-to-write-makefile/invoke.html</a></p>
+<p>参考链接2：<a href="https://www.cnblogs.com/LittleHann/p/3855905.html" target="_blank" rel="noopener">https://www.cnblogs.com/LittleHann/p/3855905.html</a></p>
+<p>规则是<code>makefile</code>中<strong>最重要的概念</strong>，其告诉<code>make</code> 目标文件的依赖关系，以及如何生成及更新这些目标文件。在<code>makefile</code>文件规则有2种，一种是<strong>显式规则</strong>，另一种是<strong>隐式规则。</strong></p>
+<ol>
+<li><strong>显示规则</strong></li>
+</ol>
+<p>显式规则用于说明何时及如何重新生成目标，其列出了目标依赖的文件信息，并通过调用命令来创建或更新目标，其语法一般为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">targets : prerequisites</span><br><span class="line"></span><br><span class="line">recipe</span><br><span class="line">…</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>targets：为要生成或更新的目标</p>
+</li>
+<li><p>prerequisites：为目标依赖的关系</p>
+</li>
+<li><p>recipe：为生成目标的命令，</p>
+<p>一个规则可以有多条recipe，比如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">foo.o : foo.c defs.h</span><br><span class="line"></span><br><span class="line">cc -c -g foo.c</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>其中<code>foo.o</code>为target，<code>foo.c defs.h</code> 为prerequisites，<code>cc -c -g foo.c</code>为recipe。</p>
+<h4 id="示例讲解"><a href="#示例讲解" class="headerlink" title="示例讲解"></a>示例讲解</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">test:main.o channle.o</span><br><span class="line">	gcc main.o channle.o -o test</span><br><span class="line">main.o:main.c function.h</span><br><span class="line">	gcc -c main.c -o main.o</span><br><span class="line">channle.o:channle.c  WavHead.h</span><br><span class="line">	gcc -c channle.c -o channle.o -<span class="built_in">std</span>=c99</span><br><span class="line"></span><br><span class="line">.PHONY:clean</span><br><span class="line">clean:</span><br><span class="line">	-rm -rf *.o</span><br></pre></td></tr></table></figure>
+
+<p>执行的过程简单说就是最终需要生成一个名为test的文件，这个文件需要<code>main.o</code>和<code>channle.o</code>，于是继续往下执行，然后通过命令<code>gcc -c main.c -o main.o</code>得到了<code>main.o</code>文件，同理再得到<code>channle.o</code>文件，最后通过命令<code>gcc main.o channle.o -o test</code>进行链接最终就会得到一个名为test的可执行文件了。</p>
+<p>上面的代码在<code>linux</code>的命令窗口下输入<code>make</code>命令就可以执行了，最终会生成一个<code>test</code>的可执行文件。 如果需要清除生成的中间<code>.o</code>文件，输入<code>make clean</code>就可以全部清除了。</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../215.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../215.html" itemprop="url">GCC工具的具体使用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-29T16:14:19+08:00">
+                2021-01-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="编译工具链"><a href="#编译工具链" class="headerlink" title="编译工具链"></a>编译工具链</h2><p>高级语言翻译成机器语言不是一步到位的,以C语言为例,通常要经历以下四个步骤:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">预处理---&gt;编译---&gt;汇编---&gt;连接</span><br><span class="line"></span><br><span class="line">源代码---&gt;汇编代码---&gt;目标代码---&gt;可执行程序</span><br></pre></td></tr></table></figure>
+
+<p>每一步都需要使用不同的工具,比如源代码需要借助编译工具翻译成汇编代码,汇编代码需要借助汇编器翻译成目标代码,最后还要借助连接器帮忙整理汇总, 那么这些个工具集合到一块就叫做<strong>工具链</strong></p>
+<h2 id="GCC工具链"><a href="#GCC工具链" class="headerlink" title="GCC工具链"></a>GCC工具链</h2><p>由GNU提供的一整套的工具集,这套工具集中包含了汇编器,编译器和链接器,二进制转换,调试工具等</p>
+<p>通过GCC，我们可以一步完成源码到可执行文件的编译， 也可以单步独立进行，方便程序员获取中间代码代码，进行调试 </p>
+<h2 id="GCC常用命令选项"><a href="#GCC常用命令选项" class="headerlink" title="GCC常用命令选项"></a>GCC常用命令选项</h2><p>假设只编译<strong>单个源文件test.c</strong></p>
+<ol>
+<li><p>无选项编译</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gcc test.c  </span><br><span class="line">或者</span><br><span class="line">gcc test.o</span><br></pre></td></tr></table></figure>
+
+<p>在当前目录下直接生成可执行文件,默认名称为<code>a.out</code></p>
+</li>
+<li><p>选项<code>-o</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc test.c  -o test</span><br></pre></td></tr></table></figure>
+
+<p>在当前目录下生成名为<code>test</code>的可执行文件</p>
+</li>
+<li><p>选项<code>-E</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -E test.c  -o test.i</span><br></pre></td></tr></table></figure>
+
+<p>在当前目录下生成名为<code>test.i</code>的预处理文件</p>
+</li>
+<li><p>选项<code>-S</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -S test.c  -o test.s</span><br></pre></td></tr></table></figure>
+
+<p>在当前目录下生成名为<code>test.s</code>的汇编文件，将源码转成汇编代码</p>
+</li>
+<li><p>选项<code>-c</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -c test.c</span><br></pre></td></tr></table></figure>
+
+<p>在当前目录下生成名为<code>test.o</code>的目标文件</p>
+</li>
+<li><p>选项<code>-O数字</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -O1 test.c  -o test</span><br></pre></td></tr></table></figure>
+
+<p>在当前目录下生成名为<code>test</code>的可执行文件,并且使用编译优化级别1编译程序。可选级别为1~3，级别越大优化效果越好，但编译时间越长。 </p>
+</li>
+</ol>
+<h2 id="多文件编译"><a href="#多文件编译" class="headerlink" title="多文件编译"></a>多文件编译</h2><p>比如一个汇编文件<code>aaa.s</code>一个C源文件<code>test.c</code>:</p>
+<ol>
+<li><p><strong>方式一 多文件同时编译</strong></p>
+<p>直接追加文件名进行同时编译输出即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc aaa.s test.c -o bbb</span><br></pre></td></tr></table></figure>
+
+<p> 如果要编译的文件都在同一个目录下，可以用通配符<code>gcc *.c -o</code> 来进行编译 </p>
+</li>
+<li><p><strong>方式二 多文件分开编译</strong></p>
+<p>首先将源文件编译成目标文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gcc -c aaa.s  //生成aaa.o</span><br><span class="line"></span><br><span class="line">gcc -c test.c  //生成test.o</span><br></pre></td></tr></table></figure>
+
+<p>然后将所有目标文件连接成可执行文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc  test.o aaa.o -o test</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>方式三 编写makefile文件进行编译</strong></p>
+<p>第一步 <code>makefile</code>文件编写</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 我是注释</span></span><br><span class="line">SRC=aaa.s test.c</span><br><span class="line">main: $(OBJS)   <span class="comment">#指定需要生成的文件名称以及相应的依赖关系 </span></span><br><span class="line">        gcc -o main $(SRC) <span class="comment">#生成所需要的指令</span></span><br></pre></td></tr></table></figure>
+
+<p>第二步 使用<code>bin</code>包下的<code>cs-make</code>工具，直接在命令窗口中执行该指令，默认在当前目录虚招makefile文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> cs-make</span></span><br></pre></td></tr></table></figure>
+
+<p>该指令实际上执行的就是makefile中我们编写的指令<code>gcc -o main aaa.s test.c</code></p>
+</li>
+</ol>
+<p>以上三种方法相比较，第一中方法编译时需要所有文件重新编译，而第二种方法可以只重新编译修改的文件，未修改的文件不用重新编译 ,第三种方法适用于文件较多依赖关系复杂的工程编译</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../214.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -373,7 +710,7 @@
 <li>6个16位段寄存器，例如：cs，ds，等</li>
 </ul>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -520,7 +857,7 @@
 <h2 id="GCC工具链"><a href="#GCC工具链" class="headerlink" title="GCC工具链"></a>GCC工具链</h2><p>一个程序从代码编译到机器执行,中间需要经历很多步骤,比如从预编译,编译,到汇编和连接, 这一系列环环相扣过程中涉及到的GNU工具集,称之为GCC工具链</p>
 <p>在windows平台中,我们有许多的图形化IDE可以选择,一般编译工具链都集成进了软件内部,无需开发者关心,但是在Linux平台,基本以命令行的方式进行操作,那么对于开发者来说,需要了解每个工具的作用和具体使用方法</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -851,7 +1188,7 @@
 <li>在线ARM汇编编辑器:<a href="https://azm.azerialabs.com/" target="_blank" rel="noopener">https://azm.azerialabs.com/</a></li>
 </ul>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -999,12 +1336,12 @@
 <p>那么我们想减小视频的体积的话,只能从码率入手了, 找到一个画质能接受,体积小的平衡点</p>
 <p>比如1980x1080的分辨率,我使用500kbps左右的码率,差不多可以接受,OBS在录制时默认也是在这个码率内来回波动</p>
 <p>以下是常见分辨率和码率之间平衡参考表:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20210124171800.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20210124171800.png" alt></p>
 <p><strong>举例</strong>:如果要想百分百还原1080p HQ的画质,至少需要5.76Mkpbs码率的支撑,如果是直播的话需要至少9M的宽带才能稳定传输对应的数据量,否则画面卡顿</p>
 <p>直播中,在分辨率和网速一定的情况下,我们会适当降低码率,牺牲部分清晰度的来保证视频的流畅性</p>
 <p>如果网速不行又希望画面还清晰流畅,那么就降低拍摄的分辨率,同时降低数据传输量也就是码率值,当然分辨率降低之后所谓的视频清晰度也只是相对的,凡事总有取舍</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1188,7 +1525,7 @@
 <li>Mode 6在启动时不从重做日志（ib_logfiles）前滚</li>
 </ul>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1414,7 +1751,7 @@
 <li>使用<code>回车</code>重复上一条指令</li>
 </ol>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1634,7 +1971,7 @@
 </li>
 </ol>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1810,302 +2147,7 @@
 </ul>
 <p>假如我们接下来要使用UTF-8进行编码，那么我们需要指定一张表，也就是二进制码和功能之间的一一对应关系，比如算术运算中<code>加</code>这个关键字：编译器从文本中连续读取两个字节二进制数据然后查表，如果对应上了加法功能，那么继续往后读取需要进行运算的内容，读到结束标记的时候，然后将之前所读取的二进制转化成与之对应功能的机器码，以此类推，这个结束标记也是由我们来定，我们可以使用分号、回车换行或者其它特殊的符号作为一行语句的结束</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../207.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../207.html" itemprop="url">硬件开发之个人PCB电路板制作</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-07T16:14:19+08:00">
-                2021-01-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h2><h4 id="第一步-画电路原理图"><a href="#第一步-画电路原理图" class="headerlink" title="第一步 画电路原理图"></a>第一步 画电路原理图</h4><ol>
-<li><p>工具</p>
-<p><strong>Altium Designer 19</strong>: 中文官网：<a href="https://www.altium.com.cn/products/downloads" target="_blank" rel="noopener">https://www.altium.com.cn/products/downloads</a> </p>
-</li>
-</ol>
-<h4 id="第二步-联系PCB厂家"><a href="#第二步-联系PCB厂家" class="headerlink" title="第二步 联系PCB厂家"></a>第二步 联系PCB厂家</h4><ol>
-<li>廉价厂家推荐<ul>
-<li><a href="https://www.jlc.com/" target="_blank" rel="noopener">嘉立创</a> :10x10cm的板子5张 只需5块钱</li>
-<li><a href="https://www.jiepei.com" target="_blank" rel="noopener">捷配</a>  :10x10cm的板子5张 19块钱</li>
-</ul>
-</li>
-</ol>
-<h4 id="第三步-电子元器件采购"><a href="#第三步-电子元器件采购" class="headerlink" title="第三步 电子元器件采购"></a>第三步 电子元器件采购</h4><h4 id="第四步-电子元器件焊接"><a href="#第四步-电子元器件焊接" class="headerlink" title="第四步 电子元器件焊接"></a>第四步 电子元器件焊接</h4><h4 id="第四步-电路板测试"><a href="#第四步-电路板测试" class="headerlink" title="第四步 电路板测试"></a>第四步 电路板测试</h4><p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../206.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../206.html" itemprop="url">硬件开发之基础知识(-)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-06T16:14:19+08:00">
-                2021-01-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>随着智能家居的兴起,5G时代的到来, 智能硬件扮演者越来越关键的角色, 对于老百姓的我们而言,占据先机最好的办法的就是了解并掌握它, 因为知识是公平的</p>
-<h2 id="基础物理知识"><a href="#基础物理知识" class="headerlink" title="基础物理知识"></a>基础物理知识</h2><p>这些我们在学生时代都学过,现在需要把它们都重新拾起来</p>
-<h4 id="1-电压"><a href="#1-电压" class="headerlink" title="1. 电压"></a>1. 电压</h4><p>可以理解为电子移动的动力,压力即是动力,单位:V</p>
-<h4 id="2-电流"><a href="#2-电流" class="headerlink" title="2. 电流"></a>2. 电流</h4><p> 电荷的定向流动 ,犹如水流</p>
-<p>流动的电才能将电灯点亮</p>
-<p>单位:A</p>
-<h4 id="3-电的产生"><a href="#3-电的产生" class="headerlink" title="3.电的产生"></a>3.电的产生</h4><p>产生电的方式有很多种,摩擦生电,电解质生电,一般我们日常使用的电,是通过发电机发电,它的原理是:</p>
-<p> 闭合电路的一部分导体在磁场里做切割磁感线的运动时，导体中就会产生电流</p>
-<p>材料:</p>
-<pre><code>1. 磁铁
- 2. 线圈</code></pre><p>自制发电机:<a href="https://v.163.com/static/1/VYUIDVSRG.html" target="_blank" rel="noopener">https://v.163.com/static/1/VYUIDVSRG.html</a></p>
-<h2 id="电子元器件"><a href="#电子元器件" class="headerlink" title="电子元器件"></a>电子元器件</h2><p>分类:</p>
-<ul>
-<li>元件:工厂在加工时没改变原材料分子成分的产品可称为元件。元件属于不需要能源的器件。它包括：电阻、电容、电感等</li>
-<li>器件:工厂在生产加工时改变了原材料分子结构的产品称为器件。器件需要消耗能源,它包括双极性晶体三极管 场效应晶体管 可控硅 等</li>
-</ul>
-<h4 id="常见电子元器件"><a href="#常见电子元器件" class="headerlink" title="常见电子元器件"></a>常见电子元器件</h4><ol>
-<li>电阻</li>
-<li>电容</li>
-<li>二极管</li>
-<li>三极管</li>
-<li>继电器</li>
-<li>电容器</li>
-<li>电位器</li>
-<li>传感器</li>
-<li></li>
-</ol>
-<h3 id="电流的的流向判断"><a href="#电流的的流向判断" class="headerlink" title="电流的的流向判断"></a>电流的的流向判断</h3><p><strong>第一步</strong>:判断是否有一条电路直接将正负极向连,如果有则短路,没有则进入第二步</p>
-<p><strong>第二步</strong>:在电流分叉路口,判断是否有一条电路没有连接任何元器件,如果有则走这条路,其他路不通, 如果都连接了器件,那么都有电流通过</p>
-<h2 id="串联和并联电路"><a href="#串联和并联电路" class="headerlink" title="串联和并联电路"></a>串联和并联电路</h2><p> 1.串联电路的特点：<br>（1）电流：文字表达：串联电路中各处电流都相等.<br>公式表达：I=I1=I2=I3=……=In<br>（2）电压：文字表达：串联电路中的总电压等于各部分电路电压之和.<br>公式表达：U=U1+U2+U3+……+Un<br>（3）电阻：文字表达：串联电路中的总电阻等于各部分电路的电阻之和.<br>公式表达：R=R1+R2+R3+……+Rn<br>（4）分压定律：文字表达：串联电路中各部分电路两端电压与其电阻成正比.<br>公式表达：U1/R1=U2/R2=U3/R3=.=Un/Rn<br>另种表达：U1：U2：U3：…：Un= R1：R2：R3：…：Rn<br>特例：U1/U2=R1/R2<br>2.并联电路的特点：<br>（1）电流：文字表达：并联电路中总电流等于各支路中的电流之和.<br>公式表达：I=I1+I2+I3+……+In<br>（2）电压：文字表达：并联电路中各支路两端的电压都相等.<br>公式表达：U=U1=U2=U3=……=Un<br>（3）电阻：文字表达：并联电路总电阻的倒数等于各支路电阻倒数之和.<br>公式表达：1/R=1/R1+1/R2+1/R3+……+1/Rn<br>（4）分流定律：文字表达：并联电路中,流过各支路的电流与其电阻成反比.<br>公式表达：I1R1=I2R2=I3R3= …=InRn<br>特例：I1/I2=R2/R1 </p>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>在串联电路中</p>
-<ul>
-<li>电阻越大,截取的电压越大</li>
-</ul>
-<p>在并联电路中</p>
-<ul>
-<li>电阻越大, 截取的电流越小</li>
-<li>分支电路越多,总电流越大</li>
-</ul>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -2192,7 +2234,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">336</span>
+                  <span class="site-state-item-count">338</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2205,7 +2247,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">96</span>
+                  <span class="site-state-item-count">98</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

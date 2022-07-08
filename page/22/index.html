@@ -20,6 +20,7 @@
 
 
 
+
 <meta http-equiv="Cache-Control" content="no-transform">
 <meta http-equiv="Cache-Control" content="no-siteapp">
 
@@ -287,6 +288,297 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../126.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../126.html" itemprop="url">mysql百万数据字符串匹配查询速度优化之覆盖索引法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-23T14:34:28+08:00">
+                2020-09-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="什么是“索引覆盖”？"><a href="#什么是“索引覆盖”？" class="headerlink" title="什么是“索引覆盖”？"></a>什么是“索引覆盖”？</h2><p>简单来的说，就是让查询的字段（包括where子句中的字段），都是索引字段。索引覆盖的好处是什么？好处是极大的、极大的、极大的提高查询的效率！重要的说三遍！</p>
+<p><strong>特别说明：</strong></p>
+<ol>
+<li>where条件中如果使用like关键词，即使字段是索引中的，也不构成索引覆盖。</li>
+<li>单个字段的索引，对于搜索单个where条件有较好的效果。但索引覆盖需要使用多字列索引。</li>
+</ol>
+<p>假设创建一个zaho_user表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> CREATE TABLE `zaho_user` (</span><br><span class="line"> `u_id` int(11) NOT NULL AUTO_INCREMENT,</span><br><span class="line"> `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,</span><br><span class="line"> `u_name` varchar(20) NOT NULL DEFAULT &apos;&apos; COMMENT &apos;用户名&apos;,</span><br><span class="line"> `u_sex` tinyint(4) NOT NULL DEFAULT &apos;1&apos; COMMENT &apos;性别&apos;,</span><br><span class="line"> `u_desc` varchar(200) NOT NULL DEFAULT &apos;&apos; COMMENT &apos;介绍&apos;</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT &apos;用户表&apos;;</span><br></pre></td></tr></table></figure>
+
+<p>这里我们创建一个索引：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter table `zaho_user` add index (`u_name`,`insert_time`,`u_sex`);</span><br></pre></td></tr></table></figure>
+
+<p>那么，我们执行如下查询时，效率将会非常高：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select `u_name`,`insert_time` from `zaho_user` where `u_sex`=1</span><br></pre></td></tr></table></figure>
+
+<p>例子中的三个字段：<code>u_name</code>,<code>insert_time</code>,<code>u_sex</code>创建了一个多列索引，而SQL查询时形成了索引覆盖。 在百万数据量匹配查询时速度提升非常可观</p>
+<h3 id="网站速度优化"><a href="#网站速度优化" class="headerlink" title="网站速度优化"></a>网站速度优化</h3><p>为什么网站访问很慢, 想优化可以参考以下方式, 优先级由高到低:</p>
+<ol>
+<li><strong>数据库位置优化 (优先采用内网访问而非外网)</strong></li>
+<li><strong>硬盘优化 (优先固态硬盘)</strong></li>
+<li><strong>SQL语句优化</strong></li>
+<li><strong>服务器硬件和外网带宽升级</strong></li>
+<li><strong>应用代码优化</strong></li>
+<li><strong>定期重启mysql 连接优化 (亲测效果明显)</strong> </li>
+</ol>
+<h3 id="网站维护记录"><a href="#网站维护记录" class="headerlink" title="网站维护记录"></a>网站维护记录</h3><p>本人有一个博客采集站, 内置文章3万左右, 访问和渲染速度非常快, 后来爬取文章增量到6万左右, 感觉网站速度明显变慢, 起初以为是内容过多导致, 可是也才6万就这么慢了那百万数据岂不没法玩了</p>
+<p>我甚至在想 可能是服务器配置以及博客程序有限导致的 也没再管它</p>
+<p>直到有一天 数据库容器挂了 , 重启数据库后, 网站恢复访问, 速度竟惊人地变快, 和最开始没两样, 于是乎我否断了之前的猜测, 之前速度慢有可能仅仅是数据库连接过多 垃圾缓存导致的</p>
+<p>因此 定期重启数据库 似乎可以纳入我的定时任务计划中 </p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../2.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../2.html" itemprop="url">使用docker部署redis</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-18T17:02:33+08:00">
+                2020-09-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="部署Redis"><a href="#部署Redis" class="headerlink" title="部署Redis"></a>部署Redis</h2><ol>
+<li>搜索redis镜像</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker search redis</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>拉取redis镜像</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull redis</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>创建容器 设置端口映射</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -id --name=c_redis -p 6379:6379 redis:5.0</span><br></pre></td></tr></table></figure>
+
+<p> 使用外部机器连接redis</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.redis-cli.exe -h 192.168.149.135 -p 6379</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../124.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -402,7 +694,7 @@
 
 <h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><p>如果对<code>Nginx</code>配置文件进行了修改操作, 需要重启<code>Nginx</code>容器才能生效</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -559,7 +851,7 @@
 </li>
 </ul>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -720,7 +1012,7 @@
 
 <h4 id="小提示"><a href="#小提示" class="headerlink" title="小提示"></a>小提示</h4><p>如果你是使用的阿里云ECS 测试java和mysql的时候可能会无法访问， 这是因为 阿里云ECS处于安全考虑，默认的安全组规则只开通了22和3389号端口，而我们在实际使用当中可能会需要80、8888、21等端口号，这时只要去阿里云管理后台进行安全组设置新增开放端口号即可</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -869,7 +1161,7 @@
 </ul>
 <h4 id="小提示"><a href="#小提示" class="headerlink" title="小提示"></a>小提示</h4><p>如果你是使用的阿里云ECS 测试tomcat和mysql的时候可能会无法访问， 这是因为 阿里云ECS处于安全考虑，默认的安全组规则只开通了22和3389号端口，而我们在实际使用当中可能会需要80、8888、21等端口号，这时只要去阿里云管理后台进行安全组设置新增开放端口号即可</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1020,7 +1312,7 @@
 </li>
 </ul>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1250,7 +1542,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* */2 * * *  /usr/bin/python3  /root/xxx/xxx.py &gt;&gt;/root/xxx/mylog_$(date +\%Y-\%m-\%d-\%H:\%M:\%S).log 2&gt;&amp;1</span><br></pre></td></tr></table></figure>
 
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1374,9 +1666,9 @@
             <p>对于windows用户来说上传文件到服务器有很多资源可以利用,例如xshell,xftp等可视化进行服务器的管控,但是对于mac的小伙伴来说现在找一个替代xshell的不是很好找,要么不好用要么用起来比较繁琐.小编发现idea自带ssh连接,也可以通过idea进行文件管理上传至服务器.</p>
 <p>打开idea可以单独设置一个空包作为服务器管理,只需要把要上传的文件放到包里面即可.</p>
 <p><strong>idea &gt;&gt; Tools &gt;&gt; Deployment &gt;&gt; Configuration 进入到配置页面</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200918131554.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200918131554.png" alt></p>
 <p><strong>点击加号出现配置服务器信息.我们选择sftp文件上传模式,名称为为当前上产服务器设置的别名</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200918131613.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200918131613.png" alt></p>
 <p>录入必要信息:</p>
 <ul>
 <li><p>SFTP host 服务器地址.</p>
@@ -1393,20 +1685,20 @@
 </li>
 </ul>
 <p>录入完必要信息以后可以点击Test SFTP connection进行连接测试</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200918131521.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200918131521.png" alt></p>
 <p><strong>通过 Tools &gt;&gt; Start SSH 进行ssh远程连接,点击后会出现配置好的ssh信息,选择即可</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200918131628.png" alt></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200918131646.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200918131628.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200918131646.png" alt></p>
 <p>链接成功后在idea的Terminal中可以看到链接成功的信息</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200918131702.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200918131702.png" alt></p>
 <p><strong>通过Configuration 下选择配置好的ssh服务器进入Mappings文件夹 可以配置上传路径和本地文件存放路径</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200918131750.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200918131750.png" alt></p>
 <p><strong>配置完以后 通过项目右键可以看到一个上传到服务器按钮点击即可把要上传的文件上传至服务器</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200918131716.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200918131716.png" alt></p>
 <p><strong>上传后的效果.</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20200918131808.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200918131808.png" alt></p>
 <p>至此通过idea远程链接ssh并上传文件至服务器配置完毕.需要的小伙伴们可以去使用啦</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1555,297 +1847,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> $(date +\%Y-\%m-\%d-%H:%M:%S)</span><br></pre></td></tr></table></figure>
 
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../137.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../137.html" itemprop="url">如何创建Xposed模块工程进行代码hook</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-15T19:55:32+08:00">
-                2020-09-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="快速搭建模块工程"><a href="#快速搭建模块工程" class="headerlink" title="快速搭建模块工程"></a>快速搭建模块工程</h1><ol>
-<li><strong>第一步 使用Android Studio创建空工程</strong></li>
-<li><strong>第二步 导入依赖</strong></li>
-</ol>
-<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">compileOnly <span class="string">'de.robv.android.xposed:api:53'</span></span><br><span class="line">compileOnly <span class="string">'de.robv.android.xposed:api:53:sources'</span></span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li><strong>在AndroidManifest.xml清单文件application节点下加入以下代码</strong></li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta-data</span><br><span class="line">          android:name=<span class="string">"xposedmodule"</span></span><br><span class="line">          android:value=<span class="string">"true"</span> /&gt;</span><br><span class="line">      &lt;meta-data</span><br><span class="line">          android:name=<span class="string">"xposeddescription"</span></span><br><span class="line">          android:value=<span class="string">"Xposed模块初体验"</span> /&gt;</span><br><span class="line">      &lt;meta-data</span><br><span class="line">          android:name=<span class="string">"xposedminversion"</span></span><br><span class="line">          android:value=<span class="string">"53"</span> /&gt;</span><br></pre></td></tr></table></figure>
-
-<ol start="4">
-<li><strong>创建Hook逻辑类,该类继承自IXposedHookLoadPackage,示例如下:</strong></li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HookTest</span> <span class="keyword">implements</span> <span class="title">IXposedHookLoadPackage</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleLoadPackage</span><span class="params">(XC_LoadPackage.LoadPackageParam lpparam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        XposedBridge.log(<span class="string">"HOOK初体验："</span> + lpparam.processName + <span class="string">":"</span> + lpparam.packageName);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ol start="5">
-<li><strong>在assets目录下创建xposed_init文件并将Hook逻辑类引用路径填入,比如:</strong></li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">com.example.test.HookTest</span><br></pre></td></tr></table></figure>
-
-<ol start="6">
-<li><strong>编译并运行至装有xposed容器app的设备中即可, 重启设备生效</strong></li>
-</ol>
-<h4 id="注-以上操作成功的前提是你需要一台拥有root权限的手机或者模拟器-并已经安装了xposed安装器"><a href="#注-以上操作成功的前提是你需要一台拥有root权限的手机或者模拟器-并已经安装了xposed安装器" class="headerlink" title="注:以上操作成功的前提是你需要一台拥有root权限的手机或者模拟器,并已经安装了xposed安装器"></a>注:以上操作成功的前提是你需要一台拥有root权限的手机或者模拟器,并已经安装了xposed安装器</h4><p><strong>搭建本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../9.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../9.html" itemprop="url">apk反汇编工具apktool问题集锦</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-15T19:55:32+08:00">
-                2020-09-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Apktool的基本使用"><a href="#Apktool的基本使用" class="headerlink" title="Apktool的基本使用"></a>Apktool的基本使用</h2><p><strong>解包指令:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apktool d [apk文件] -o [解包存放路径]</span><br></pre></td></tr></table></figure>
-
-<p>如果使用的是jar包,则:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar apktool.jar d [apk文件] -o [解包存放路径]</span><br></pre></td></tr></table></figure>
-
-<p><strong>打包指令:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">apktool b [源码目录] -o [apk文件]</span><br><span class="line">或者</span><br><span class="line">java -jar apktool.jar  b [源码目录] -o [apk文件]</span><br></pre></td></tr></table></figure>
-
-<p><strong>签名指令:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jarsigner -verbose -keystore [签名文件] -signedjar [签名后的apk 可自定义文件名] [需要签名的apk]  [签名文件的别名]</span><br></pre></td></tr></table></figure>
-
-<h3 id="温馨提示"><a href="#温馨提示" class="headerlink" title="温馨提示"></a>温馨提示</h3><p>由于apk在反编译后进行回编时容易出现各种异常情况, 建议解包后立马进行装包测试,以免白费功夫!</p>
-<h2 id="问题1-DexBackedDexFile-NotADexFile"><a href="#问题1-DexBackedDexFile-NotADexFile" class="headerlink" title="问题1 DexBackedDexFile$NotADexFile"></a>问题1 DexBackedDexFile$NotADexFile</h2><p><strong>apktool反编apk时报错:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">org.jf.dexlib2.dexbacked.DexBackedDexFile$NotADexFile: Not a valid dex magic value: cf 77 4c c7 9b 21 01 cd</span><br></pre></td></tr></table></figure>
-
-<p> 提示很明显，就是非法Dex，这是因为apk里有加密过后的dex文件，比如有些apk的assets目录下有加密后的Dex文件，添加<code>–only-main-classes</code>参数即可 </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apktool d ~/tmp/test.apk -o /tmp/test --only-main-classes</span><br></pre></td></tr></table></figure>
-
-<h2 id="apktool打包时找不到打包后的apk文件"><a href="#apktool打包时找不到打包后的apk文件" class="headerlink" title="apktool打包时找不到打包后的apk文件"></a>apktool打包时找不到打包后的apk文件</h2><p>新版的apktool需要加上 -o 参数, 否则只编译不输出apk 文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apktool b ~/tmp/test -o /tmp/test.apk</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1932,7 +1934,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">336</span>
+                  <span class="site-state-item-count">338</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1945,7 +1947,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">96</span>
+                  <span class="site-state-item-count">98</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

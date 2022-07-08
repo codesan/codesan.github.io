@@ -20,6 +20,7 @@
 
 
 
+
 <meta http-equiv="Cache-Control" content="no-transform">
 <meta http-equiv="Cache-Control" content="no-siteapp">
 
@@ -287,6 +288,364 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../288.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../288.html" itemprop="url">越来越火的网络请求Fetch和Axios到底有什么区别</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-11-30T10:14:19+08:00">
+                2021-11-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在这几天由于编写脚本等一系列原因，<strong>不知怎么的突然发现现在很多主流的网站已经大量开始使用Fetch进行网络请求</strong>，感觉再不学习Fetch就要Out了，所以我花了一些时间专门去研究了一下关于Fetch的相关知识，发现Fetch被讨论的并不多，很多都是一年前甚至两年前的文章，大多数文章最后得出来的结论几乎都是<strong>Axios比Fetch好用。</strong></p>
+<p>事实确实如此，<strong>就我个人的体验来讲，Axios使用体验确实优于Fetch</strong>，那么为什么目前在很多大公司的网站上面都开始使用Fetch进行网络请求，带着这个疑问，我又去查找了很多资料，同时又自行将同样的请求使用Axios和Fetch进行尝试，最后得出一个结论：<strong>Fetch的优势仅仅在于浏览器原生支持。</strong></p>
+<p>对的，其实<strong>Fetch比起Axios来讲几乎没有任何优势（除了浏览器原生支持）</strong>，Axios各个方面都比Fetch好用，Fetch要想实现Axios的一些功能还需要手动进行封装。</p>
+<p>我截取了几个比较大的网站的请求图：</p>
+<p>掘金：</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-edffec624c2fbec0b489ddaf59613ff3_720w.jpg" alt="img"></p>
+<p>YouTube：</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-9670a0136a47e08acfda806feeb44521_720w.png" alt="img"></p>
+<p>知乎：</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-2c408cf91f7d6daf8721b341c60c7d6c_720w.jpg" alt="img"></p>
+<p>需要注意的是：<strong>Axios是对XMLHttpRequest的封装，而Fetch是一种新的获取资源的接口方式，并不是对XMLHttpRequest的封装。</strong></p>
+<p>它们<strong>最大的不同点在于Fetch是浏览器原生支持，而Axios需要引入Axios库。</strong></p>
+<h2 id="1-火热程度"><a href="#1-火热程度" class="headerlink" title="1. 火热程度"></a><strong>1. 火热程度</strong></h2><p>虽然无法进行直观的比较，但是我们可以从npm包下载量来看：</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-2a3d77bebd30d21187c5830a11a0c9c3_720w.jpg" alt="img"></p>
+<p>因为Node环境下默认是不支持Fetch的，所以必须要使用<code>node-fetch</code>这个包，而这个包的周下载量一路攀升，可以看到已经来到了每周2千多万的下载量。这还仅仅是Node环境下，浏览器则是默认支持不需要第三方包。</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-36007b64d9682fb5b6ad9cb8418c1a0e_720w.jpg" alt="img"></p>
+<p>上面是Axios的下载量，可以看到也是一路攀升，Axios封装的各种方法确实非常的好用。</p>
+<hr>
+<p>本篇文章着重会从下面几项内容进行比较：</p>
+<ul>
+<li>兼容性</li>
+<li>基本语法</li>
+<li>响应超时</li>
+<li>对数据的转化</li>
+<li>HTTP拦截器</li>
+<li>同时请求</li>
+</ul>
+<h2 id="2-兼容性问题"><a href="#2-兼容性问题" class="headerlink" title="2. 兼容性问题"></a><strong>2. 兼容性问题</strong></h2><p>Axios可以兼容IE浏览器，而<strong>Fetch在IE浏览器和一些老版本浏览器上没有受到支持</strong>，但是有一个库可以让老版本浏览器支持Fetch即它就是<code>whatwg-fetch</code>，它可以让你在老版本的浏览器中也可以使用Fetch，并且现在很多网站的开发都为了减少成本而选择不再兼容IE浏览器。</p>
+<p><strong>注意：在比较旧的浏览器上面可能还需要使用promise兼容库。</strong></p>
+<p>各个浏览器对Fetch的兼容：</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-f4f89efd5bd6aa15a9d30b0b298a0f1f_720w.jpg" alt="img"></p>
+<h2 id="3-请求方式"><a href="#3-请求方式" class="headerlink" title="3. 请求方式"></a><strong>3. 请求方式</strong></h2><p>下面我们来看一下如何使用Axios和Fetch进行请求。</p>
+<p>Axios：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> options = &#123;</span><br><span class="line">  url: <span class="string">"http://example.com/"</span>,</span><br><span class="line">  method: <span class="string">"POST"</span>,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    Accept: <span class="string">"application/json"</span>,</span><br><span class="line">    <span class="string">"Content-Type"</span>: <span class="string">"application/json;charset=UTF-8"</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  data: &#123;</span><br><span class="line">    a: <span class="number">10</span>,</span><br><span class="line">    b: <span class="number">20</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">axios(options).then(<span class="function">(<span class="params">response</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(response.status);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>Fetch：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> url = <span class="string">"http://example.com/"</span>;</span><br><span class="line"><span class="keyword">const</span> options = &#123;</span><br><span class="line">  method: <span class="string">"POST"</span>,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    Accept: <span class="string">"application/json"</span>,</span><br><span class="line">    <span class="string">"Content-Type"</span>: <span class="string">"application/json;charset=UTF-8"</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  body: <span class="built_in">JSON</span>.stringify(&#123;</span><br><span class="line">    a: <span class="number">10</span>,</span><br><span class="line">    b: <span class="number">20</span>,</span><br><span class="line">  &#125;),</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">fetch(url, options).then(<span class="function">(<span class="params">response</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(response.status);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>其中最大的不同之处在于<strong>传递数据的方式不同</strong>，Axios是放到<code>data</code>属性里，以对象的方式进行传递，而Fetch则是需要放在<code>body</code>属性中，以字符串的方式进行传递。</p>
+<h2 id="4-响应超时"><a href="#4-响应超时" class="headerlink" title="4. 响应超时"></a><strong>4. 响应超时</strong></h2><p>Axios的相应超时设置是非常简单的，直接设置<code>timeout</code>属性就可以了，而Fetch设置起来就远比Axios麻烦，这也是很多人更喜欢Axios而不太喜欢Fetch的原因之一。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">axios(&#123;</span><br><span class="line">  method: <span class="string">"post"</span>,</span><br><span class="line">  url: <span class="string">"http://example.com/"</span>,</span><br><span class="line">  timeout: <span class="number">4000</span>, <span class="comment">// 请求4秒无响应则会超时</span></span><br><span class="line">  data: &#123;</span><br><span class="line">    firstName: <span class="string">"David"</span>,</span><br><span class="line">    lastName: <span class="string">"Pollock"</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;)</span><br><span class="line">  .then(<span class="function">(<span class="params">response</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">/* 处理响应 */</span></span><br><span class="line">  &#125;)</span><br><span class="line">  .catch(<span class="function">(<span class="params">error</span>) =&gt;</span> <span class="built_in">console</span>.error(<span class="string">"请求超时"</span>));</span><br></pre></td></tr></table></figure>
+
+<p>Fetch提供了<code>AbortController</code>属性，但是使用起来不像Axios那么简单。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> controller = <span class="keyword">new</span> AbortController();</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> options = &#123;</span><br><span class="line">  method: <span class="string">"POST"</span>,</span><br><span class="line">  signal: controller.signal,</span><br><span class="line">  body: <span class="built_in">JSON</span>.stringify(&#123;</span><br><span class="line">    firstName: <span class="string">"David"</span>,</span><br><span class="line">    lastName: <span class="string">"Pollock"</span>,</span><br><span class="line">  &#125;),</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">const</span> promise = fetch(<span class="string">"http://example.com/"</span>, options);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 如果4秒钟没有响应则超时</span></span><br><span class="line"><span class="keyword">const</span> timeoutId = setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> controller.abort(), <span class="number">4000</span>);</span><br><span class="line"></span><br><span class="line">promise</span><br><span class="line">  .then(<span class="function">(<span class="params">response</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">/* 处理响应 */</span></span><br><span class="line">  &#125;)</span><br><span class="line">  .catch(<span class="function">(<span class="params">error</span>) =&gt;</span> <span class="built_in">console</span>.error(<span class="string">"请求超时"</span>));</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-对数据的转化"><a href="#5-对数据的转化" class="headerlink" title="5. 对数据的转化"></a><strong>5. 对数据的转化</strong></h2><p>Axios还有非常好的一点就是会自动对数据进行转化，而Fetch则不同，它需要使用者进行手动转化。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// axios</span></span><br><span class="line">axios.get(<span class="string">"http://example.com/"</span>).then(</span><br><span class="line">  (response) =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(response.data);</span><br><span class="line">  &#125;,</span><br><span class="line">  (error) =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(error);</span><br><span class="line">  &#125;</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">// fetch</span></span><br><span class="line">fetch(<span class="string">"http://example.com/"</span>)</span><br><span class="line">  .then(<span class="function">(<span class="params">response</span>) =&gt;</span> response.json()) <span class="comment">// 需要对响应数据进行转换</span></span><br><span class="line">  .then(<span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(data);</span><br><span class="line">  &#125;)</span><br><span class="line">  .catch(<span class="function">(<span class="params">error</span>) =&gt;</span> <span class="built_in">console</span>.error(error));</span><br></pre></td></tr></table></figure>
+
+<p>Fetch提供的转化API有下面几种：</p>
+<ul>
+<li>arrayBuffer()</li>
+<li>blob()</li>
+<li>json()</li>
+<li>text()</li>
+<li>formData()</li>
+</ul>
+<p>使用Fetch时你需要清楚请求后的数据类型是什么，然后再用对应的方法将它进行转换。</p>
+<p>Fetch可以通过一些封装实现Axios的自动转化功能，至于如何实现由于我没有去研究过所以就不再这里多嘴，不过实现起来应该不难，但是要将实现过程写的健壮就需要花费一定的时间。</p>
+<h2 id="6-HTTP拦截器"><a href="#6-HTTP拦截器" class="headerlink" title="6. HTTP拦截器"></a><strong>6. HTTP拦截器</strong></h2><p>Axios的一大卖点就是它提供了拦截器，可以统一对请求或响应进行一些处理，相信如果看过一个比较完整的项目的请求封装的话，一定对Axios的拦截器有一定的了解，它是一个非常重要的功能。</p>
+<p>使用它可以为请求附加token、为请求增加时间戳防止请求缓存，以及拦截响应，一旦状态码不符合预期则直接将响应消息通过弹框的形式展示在界面上，比如密码错误、服务器内部错误、表单验证不通过等问题。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">axios.interceptors.request.use(<span class="function">(<span class="params">config</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 在请求之前对请求参数进行处理</span></span><br><span class="line">  <span class="keyword">return</span> config;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 发送GET请求</span></span><br><span class="line">axios.get(<span class="string">"http://example.com/"</span>).then(<span class="function">(<span class="params">response</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(response.data);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>而Fetch没有拦截器功能，但是要实现该功能并不难，直接重写全局Fetch方法就可以办到。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">fetch = <span class="function">(<span class="params">(originalFetch</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function">(<span class="params">...<span class="built_in">arguments</span></span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> result = originalFetch.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>);</span><br><span class="line">    <span class="keyword">return</span> result.then(<span class="built_in">console</span>.log(<span class="string">"请求已发送"</span>));</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;)(fetch);</span><br><span class="line"></span><br><span class="line">fetch(<span class="string">"http://example.com/"</span>)</span><br><span class="line">  .then(<span class="function">(<span class="params">response</span>) =&gt;</span> response.json())</span><br><span class="line">  .then(<span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(data);</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="7-同时请求"><a href="#7-同时请求" class="headerlink" title="7. 同时请求"></a><strong>7. 同时请求</strong></h2><p>同时请求在项目中用的不多，但是偶尔可能会用到。</p>
+<p>Axios：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">axios</span><br><span class="line">  .all([</span><br><span class="line">    axios.get(<span class="string">"https://api.github.com/users/iliakan"</span>),</span><br><span class="line">    axios.get(<span class="string">"https://api.github.com/users/taylorotwell"</span>),</span><br><span class="line">  ])</span><br><span class="line">  .then(</span><br><span class="line">    axios.spread(<span class="function">(<span class="params">obj1, obj2</span>) =&gt;</span> &#123;</span><br><span class="line">      ...</span><br><span class="line">    &#125;)</span><br><span class="line">  );</span><br></pre></td></tr></table></figure>
+
+<p>Fetch：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Promise</span>.all([</span><br><span class="line">  fetch(<span class="string">"https://api.github.com/users/iliakan"</span>),</span><br><span class="line">  fetch(<span class="string">"https://api.github.com/users/taylorotwell"</span>),</span><br><span class="line">])</span><br><span class="line">  .then(<span class="keyword">async</span> ([res1, res2]) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> a = <span class="keyword">await</span> res1.json();</span><br><span class="line">    <span class="keyword">const</span> b = <span class="keyword">await</span> res2.json();</span><br><span class="line">  &#125;)</span><br><span class="line">  .catch(<span class="function">(<span class="params">error</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(error);</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="8-浏览器原生支持"><a href="#8-浏览器原生支持" class="headerlink" title="8. 浏览器原生支持"></a><strong>8. 浏览器原生支持</strong></h2><p>Fetch唯一碾压Axios的一点就是现代浏览器的原生支持。</p>
+<p>本着负责的态度（其实是因为这篇文章写得比较困难…因为我对Fetch的研究不深）在这几天，我多次尝试使用Fetch，习惯后觉得还挺好用的，最主要是浏览器原生就支持，不像Axios需要引入一个包，而且需要即时测试某些接口直接在Chrome浏览器中使用Fetch进行请求，尤其是编写爬虫或脚本的时候，你在当前网页打开Chrome的控制台使用Fetch几乎不需要什么配置就可以直接进行请求。</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-7273fe165ca8d4558a9e7539c2fcb280_720w.png" alt="img"></p>
+<p>上图是在知乎打开Chrome控制台然后调用知乎个人数据API，可以看到能够成功的拿到数据。</p>
+<h2 id="9-最后"><a href="#9-最后" class="headerlink" title="9. 最后"></a><strong>9. 最后</strong></h2><p>Fetch可以实现所有Axios能够实现的功能，但是需要自行进行封装，如果不喜欢折腾直接在项目中使用Axios是一个非常明智的选择，这完全取决于你是否愿意使用浏览器内置API。</p>
+<p>有时候新技术逐渐取代老技术是一个必然趋势，所以Fetch有一天终将会取代<code>XMLHttpRequest</code>，也许之后Axios库会改为使用Fetch请求</p>
+<p><strong>本文为转载文章</strong> <a href="https://zhuanlan.zhihu.com/p/353492075" target="_blank" rel="noopener">点击进入原文</a></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../286.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../286.html" itemprop="url">android中获取控件宽高的几种方式总结</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-11-26T10:14:19+08:00">
+                2021-11-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>我们知道, 在<code>Activity</code>的<code>onCreate</code>中通过<code>width</code>和<code>height</code>方法是通常是无法获取到控件的宽高的</p>
+<p>因为控件还未测量完毕</p>
+<p>如果想要获取到值, 那么有以下几种方式可选</p>
+<h3 id="第一种-获取前调用一次measure方法"><a href="#第一种-获取前调用一次measure方法" class="headerlink" title="第一种 获取前调用一次measure方法"></a>第一种 获取前调用一次<code>measure</code>方法</h3><p>示例如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">int width = View.MeasureSpec.makeMeasureSpec(0,</span><br><span class="line">        View.MeasureSpec.UNSPECIFIED);</span><br><span class="line">int height = View.MeasureSpec.makeMeasureSpec(0,</span><br><span class="line">        View.MeasureSpec.UNSPECIFIED);</span><br><span class="line">view.measure(width, height);</span><br><span class="line">view.getMeasuredWidth(); // 获取宽度</span><br><span class="line">view.getMeasuredHeight(); // 获取高度</span><br></pre></td></tr></table></figure>
+
+<h3 id="第二种-使用ViewTreeObserver-OnPreDrawListener进行绘制前事件监听"><a href="#第二种-使用ViewTreeObserver-OnPreDrawListener进行绘制前事件监听" class="headerlink" title="第二种 使用ViewTreeObserver. OnPreDrawListener进行绘制前事件监听"></a>第二种 使用<code>ViewTreeObserver. OnPreDrawListener</code>进行绘制前事件监听</h3><p>示例如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">view.getViewTreeObserver().addOnPreDrawListener(</span><br><span class="line">        new ViewTreeObserver.OnPreDrawListener() &#123;</span><br><span class="line"> </span><br><span class="line">    @Override</span><br><span class="line">    public boolean onPreDraw() &#123;</span><br><span class="line">        view.getViewTreeObserver().removeOnPreDrawListener(this);</span><br><span class="line">        view.getWidth(); // 获取宽度</span><br><span class="line">        view.getHeight(); // 获取高度</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>该方法会被调用多次，因此获取到视图的宽度和高度后要移除该监听事件</p>
+<h3 id="第三种-使用ViewTreeObserver-OnGlobalLayoutListener"><a href="#第三种-使用ViewTreeObserver-OnGlobalLayoutListener" class="headerlink" title="第三种 使用ViewTreeObserver. OnGlobalLayoutListener"></a>第三种 使用<code>ViewTreeObserver. OnGlobalLayoutListener</code></h3><p>在布局发生改变或者某个视图的可视状态发生改变时调用该事件</p>
+<p>示例如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">view.getViewTreeObserver().addOnGlobalLayoutListener(</span><br><span class="line">        new ViewTreeObserver.OnGlobalLayoutListener() &#123;</span><br><span class="line"> </span><br><span class="line">    @Override</span><br><span class="line">    public void onGlobalLayout() &#123;</span><br><span class="line">        if (Build.VERSION.SDK_INT &gt;= 16) &#123;</span><br><span class="line">            view.getViewTreeObserver()</span><br><span class="line">                    .removeOnGlobalLayoutListener(this);</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            view.getViewTreeObserver()</span><br><span class="line">                    .removeGlobalOnLayoutListener(this);</span><br><span class="line">        &#125;</span><br><span class="line">        view.getWidth(); // 获取宽度</span><br><span class="line">        view.getHeight(); // 获取高度</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>该方法会被多次调用，因此需要在获取到视图的宽度和高度后执行 remove 方法移除该监听事件。</p>
+<h3 id="第四种-使用View-OnLayoutChangeListener"><a href="#第四种-使用View-OnLayoutChangeListener" class="headerlink" title="第四种 使用View.OnLayoutChangeListener"></a>第四种 使用<code>View.OnLayoutChangeListener</code></h3><p>在视图的 layout 改变时调用该事件, <code>API&gt;=11</code>才能使用</p>
+<p>示例如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">view.addOnLayoutChangeListener(</span><br><span class="line">        new View.OnLayoutChangeListener() &#123;</span><br><span class="line"> </span><br><span class="line">    @Override</span><br><span class="line">    public void onLayoutChange(View v, int l, int t, int r, int b,</span><br><span class="line">            int oldL, int oldT, int oldR, int oldB) &#123;</span><br><span class="line">        view.removeOnLayoutChangeListener(this);</span><br><span class="line">        view.getWidth(); // 获取宽度</span><br><span class="line">        view.getHeight(); // 获取高度</span><br><span class="line">     &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>该方法同样会被多次调用，因此需要在获取到视图的宽度和高度后执行 remove 方法移除该监听事件。</p>
+<h3 id="第五种-View-post-方法"><a href="#第五种-View-post-方法" class="headerlink" title="第五种 View.post() 方法"></a>第五种 View.post() 方法</h3><p>方法会在 View 的 measure、layout 等事件完成后触发</p>
+<p>示例如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">view.post(new Runnable() &#123;</span><br><span class="line"> </span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        view.getWidth(); // 获取宽度</span><br><span class="line">        view.getHeight(); // 获取高度</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>该方法只会执行一次，且逻辑简单，建议使用</p>
+<h3 id="第六种-重写-View-的-onSizeChanged-方法"><a href="#第六种-重写-View-的-onSizeChanged-方法" class="headerlink" title="第六种 重写 View 的 onSizeChanged 方法"></a>第六种 重写 View 的 onSizeChanged 方法</h3><p>在视图的大小发生改变时调用该方法，会被多次调用，因此获取到宽度和高度后需要考虑禁用掉代码</p>
+<p>示例如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">protected void onSizeChanged(int w, int h, int oldw, int oldh) &#123;</span><br><span class="line">    super.onSizeChanged(w, h, oldw, oldh);</span><br><span class="line"> </span><br><span class="line">    view.getWidth(); // 获取宽度</span><br><span class="line">    view.getHeight(); // 获取高度</span><br></pre></td></tr></table></figure>
+
+<p>该实现方法需要继承 View，且多次被调用，不建议使用</p>
+<h3 id="第七种-重写-View-的-onLayout-方法"><a href="#第七种-重写-View-的-onLayout-方法" class="headerlink" title="第七种 重写 View 的 onLayout 方法"></a>第七种 重写 View 的 onLayout 方法</h3><p>示例如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">protected void onLayout(boolean changed, int l, int t, int r, int b) &#123;</span><br><span class="line">    super.onLayout(changed, l, t, r, b);</span><br><span class="line"> </span><br><span class="line">    view.getWidth(); // 获取宽度</span><br><span class="line">    view.getHeight(); // 获取高度</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该实现方法需要继承 View，且多次被调用，不建议使用</p>
+<h3 id="实际场景"><a href="#实际场景" class="headerlink" title="实际场景"></a>实际场景</h3><p>目前有个业务需求, 我需要在<code>addView</code>之后获取到被<code>add</code>子控件的宽高, 此时最好的方法就是使用<code>View.post</code>, 如下:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20211126123723329.png" alt="image-20211126123723329"></p>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../285.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -389,7 +748,7 @@
 <p>这两个对角可以使左上角右下角, 也可以是左下角和右上角</p>
 <p>这样一想, 那么所谓的<code>left</code>和<code>top</code>实际就是左上角的<code>xy</code>坐标, 而<code>right</code>和 <code>bottom</code>就是右下角的坐标</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -521,7 +880,7 @@
 
 <p>问题解决</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -660,7 +1019,7 @@
 <p>不知道能不能理解</p>
 <p>无妨 , 编程这东西 就是编程来的  慢慢就都明白了, 以上也只是个人的小小想法罢了</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -810,7 +1169,7 @@
 <p>我还尝试了使用B站云端剪辑合成, 没有对比就没有伤害:</p>
 <p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20211026175441786.png" alt="image-20211026175441786"></p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -940,7 +1299,7 @@
 <h3 id="工具下载地址"><a href="#工具下载地址" class="headerlink" title="工具下载地址"></a>工具下载地址</h3><p><a href="https://url97.ctfile.com/f/21042697-518378723-46d038" target="_blank" rel="noopener">点击下载</a></p>
 <p>（访问密码：312306）</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -1076,7 +1435,7 @@
 </li>
 </ol>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -1224,7 +1583,7 @@
 </ul>
 <p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210930101639592.png" alt="image-20210930101639592"></p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -1574,312 +1933,7 @@
 </li>
 </ol>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../277.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../277.html" itemprop="url">使用docker部署Django项目</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-18T16:14:19+08:00">
-                2021-09-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="部署Django项目"><a href="#部署Django项目" class="headerlink" title="部署Django项目"></a>部署Django项目</h2><ol>
-<li><p>搜索<code>python</code>镜像</p>
- <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker search python</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>拉取<code>python</code>镜像</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull python</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>创建并运行容器</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker run -id \</span><br><span class="line">--name=c_django \</span><br><span class="line">-p 8000:8000 \</span><br><span class="line">-v /root/app:/root/app</span><br><span class="line">-h c_django \</span><br><span class="line"> python:latest</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>将源程序上传至服务器</p>
-<p>可以使用<code>FTP</code>工具或者<code>scp</code>指令上传 其他也可</p>
-</li>
-<li><p>进入程序目录 安装依赖包</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>启动程序</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python manage.py runserver 0.0.0.0:8000</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>网站访问</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://服务器ip:8000</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-
-
-
-
-
-
-
-
-</li>
-</ol>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../276.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../276.html" itemprop="url">记录一次504 Gateway Time-out的解决</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-18T11:05:19+08:00">
-                2021-09-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>今早起来, 突然发现网站挂了, 直接报<code>504 Gateway Time-out</code></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210918111428739.png" alt="image-20210918111428739"></p>
-<h3 id="经过"><a href="#经过" class="headerlink" title="经过"></a>经过</h3><p>我立马联想是否是<code>docker</code>挂了或者数据库容器出了问题</p>
-<p>进入终端 使用<code>docker ps</code> 所有容器都在正常运行 没问题, 然后<code>docker logs --tail=10 mysql</code>数据库也没报错</p>
-<p>我怀疑是不是docker内部哪里卡住了, 于是<code>systemctl restart docker</code>立马重启<code>docker</code>, 然后重新访问网站 还是不行</p>
-<p>有点懵了, 到底哪里出了问题呢? 网上说是<code>Nginx</code>配置问题, 可是我<code>nginx</code>配置一直都没动过, 而且查看<code>nginx</code>容器日志也是正常, 难道是<code>docker</code>容器间通信不正常?</p>
-<p>紧接着我又进入<code>nginx</code>容器, 使用<code>nc -zv wordpress 80</code>指令进行容器间通信测试, 也是正常打通的</p>
-<p>这问题到底是出在哪了?</p>
-<p>难道真的只是超时?  我给的时间太短了不成? 于是乎 我干脆将<code>nginx</code>反向代理超时时间调大, 死马当活马医, 不试试怎么知道呢</p>
-<p>我将以下三行配置加入到代理块中:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">proxy_connect_timeout 300s;</span><br><span class="line">    proxy_send_timeout 300s;</span><br><span class="line">    proxy_read_timeout 300s;</span><br></pre></td></tr></table></figure>
-
-<p>具体配置如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">location /foo &#123;</span><br><span class="line">     proxy_pass http://xxx.xxx.xxx.xxx:8080/foo;</span><br><span class="line">     proxy_set_header Host $host;</span><br><span class="line">     proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">     </span><br><span class="line">     proxy_connect_timeout 300s;</span><br><span class="line">     proxy_send_timeout 300s;</span><br><span class="line">     proxy_read_timeout 300s;</span><br><span class="line">     break;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>然后重启<code>nginx</code>, 这时访问网站 次数<code>504 Gateway Time-out</code>消失了, 换成了<code>Error establishing a database connection</code></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210918111216604.png" alt="image-20210918111216604"></p>
-<p>我靠, 原来还是数据库的问题</p>
-<h3 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h3><p>我开始回忆, 前段时间刚进行<code>docker</code>跨服务器迁移, 昨天旧服务器刚好到期停机, 今天就突然访问不上了, 难道我的程序此时访问的还是原来旧服务器的数据库</p>
-<p>对了 我的源码目录是直接从旧服务器拷贝过来的, 虽然<code>docker</code>容器是新建的, 但是因为存在旧目录 所以<code>docker run</code>配置的数据库参数全部无法重写, 也就是说程序配置文件中的数据库连接参数没有被重写</p>
-<p>恍然大悟, 立马进入源程序目录找到配置文件打开查看, 果真如此, 然后将其修改为新的</p>
-<p>此时重新访问, 网站正常显示</p>
-<h1 id><a href="#" class="headerlink" title></a></h1><p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
-<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
-<p>微信公众号二维码如下:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/songjianzaina/SavePicGoPic/img/20191119095516.png" alt="img"></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="http://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -1966,7 +2020,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">336</span>
+                  <span class="site-state-item-count">338</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1979,7 +2033,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">96</span>
+                  <span class="site-state-item-count">98</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
