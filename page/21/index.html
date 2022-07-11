@@ -288,6 +288,383 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../136.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../136.html" itemprop="url">Xposed 如何Hook静态变量or构造方法or复杂参数的方法or替换函数执行内容or内部类中的函数or匿名类的函数</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-14T19:55:32+08:00">
+                2020-10-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Xposed框架Hook相关api的使用"><a href="#Xposed框架Hook相关api的使用" class="headerlink" title="Xposed框架Hook相关api的使用"></a>Xposed框架Hook相关api的使用</h2><p><strong>首先创建测试类继承IXposedHookLoadPackage, 以下所有的hook方法都在handleLoadPackage方法内部进行调用</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HookTest</span> <span class="keyword">implements</span> <span class="title">IXposedHookLoadPackage</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleLoadPackage</span><span class="params">(XC_LoadPackage.LoadPackageParam lpparam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        XposedBridge.log(<span class="string">"HOOK初体验："</span> + lpparam.processName + <span class="string">":"</span> + lpparam.packageName);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="准备需要被hook的代码用于测试"><a href="#准备需要被hook的代码用于测试" class="headerlink" title="准备需要被hook的代码用于测试"></a>准备需要被hook的代码用于测试</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HookDemo</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String Tag = <span class="string">"HookDemo"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span>  <span class="keyword">int</span> staticInt = <span class="number">100</span>;</span><br><span class="line">    <span class="keyword">public</span>  <span class="keyword">int</span> publicInt = <span class="number">200</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> privateInt = <span class="number">300</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HookDemo</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(<span class="string">"NOHook"</span>);</span><br><span class="line">        Log.d(Tag, <span class="string">"HookDemo() was called|||"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">HookDemo</span><span class="params">(String str)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"HookDemo(String str) was called|||"</span> + str);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hookDemoTest</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"staticInt = "</span> + staticInt);</span><br><span class="line">        Log.d(Tag, <span class="string">"PublicInt = "</span> + publicInt);</span><br><span class="line">        Log.d(Tag, <span class="string">"privateInt = "</span> + privateInt);</span><br><span class="line">        publicFunc(<span class="string">"NOHook"</span>);</span><br><span class="line">        Log.d(Tag, <span class="string">"PublicInt = "</span> + publicInt);</span><br><span class="line">        Log.d(Tag, <span class="string">"privateInt = "</span> + privateInt);</span><br><span class="line">        privateFunc(<span class="string">"NOHook"</span>);</span><br><span class="line">        staticPrivateFunc(<span class="string">"NOHook"</span>);</span><br><span class="line"></span><br><span class="line">        String[][] str = <span class="keyword">new</span> String[<span class="number">1</span>][<span class="number">2</span>];</span><br><span class="line">        Map map = <span class="keyword">new</span> HashMap&lt;String, String&gt;();</span><br><span class="line">        map.put(<span class="string">"key"</span>, <span class="string">"value"</span>);</span><br><span class="line">        ArrayList arrayList = <span class="keyword">new</span> ArrayList();</span><br><span class="line">        arrayList.add(<span class="string">"listValue"</span>);</span><br><span class="line">        complexParameterFunc(<span class="string">"NOHook"</span>, str, map, arrayList);</span><br><span class="line"></span><br><span class="line">        repleaceFunc();</span><br><span class="line">        anonymousInner(<span class="keyword">new</span> Animal() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eatFunc</span><span class="params">(String value)</span> </span>&#123;</span><br><span class="line">                Log.d(Tag, <span class="string">"eatFunc(String value)  was called|||"</span> + value);</span><br><span class="line">                Log.d(Tag, <span class="string">"anonymoutInt =  "</span> + anonymoutInt);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, <span class="string">"NOHook"</span>);</span><br><span class="line"></span><br><span class="line">        InnerClass innerClass = <span class="keyword">new</span> InnerClass();</span><br><span class="line">        innerClass.InnerFunc(<span class="string">"NOHook"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">publicFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"publicFunc(String value) was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">privateFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"privateFunc(String value) was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">private</span> <span class="keyword">void</span> <span class="title">staticPrivateFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">        Log.d(<span class="string">"HookDemo"</span>, <span class="string">"staticPrivateFunc(Strin value) was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">complexParameterFunc</span><span class="params">(String value, String[][] str, Map&lt;String,String&gt; map, ArrayList arrayList)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        Log.d(<span class="string">"HookDemo"</span>, <span class="string">"complexParameter(Strin value) was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">repleaceFunc</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"repleaceFunc will be replace|||"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">anonymousInner</span><span class="params">(Animal dog, String value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"anonymousInner was called|||"</span> + value);</span><br><span class="line">        dog.eatFunc(<span class="string">"NOHook"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">hideFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"hideFunc was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">argFunc</span><span class="params">(Objcet... value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"argFunc was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">InnerClass</span></span>&#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">int</span> innerPublicInt = <span class="number">10</span>;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> innerPrivateInt = <span class="number">20</span>;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">InnerClass</span><span class="params">()</span></span>&#123;</span><br><span class="line">            Log.d(Tag, <span class="string">"InnerClass constructed func was called"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">InnerFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">            Log.d(Tag, <span class="string">"InnerFunc(String value) was called|||"</span> + value);</span><br><span class="line">            Log.d(Tag, <span class="string">"innerPublicInt = "</span> + innerPublicInt);</span><br><span class="line">            Log.d(Tag, <span class="string">"innerPrivateInt = "</span> + innerPrivateInt);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><strong>修改类中的私有静态变量</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; clazz = XposedHelpers.findClass(<span class="string">"com.example.xposedhooktarget.HookDemo"</span>, lpparam.classLoader);</span><br><span class="line">XposedHelpers.setStaticIntField(clazz, <span class="string">"staticInt"</span>, <span class="number">99</span>);</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><strong>Hook无参构造函数</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; clazz = XposedHelpers.findClass(<span class="string">"com.example.xposedhooktarget.HookDemo"</span>, loadPackageParam.classLoader);</span><br><span class="line">XposedHelpers.findAndHookConstructor(clazz, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                XposedBridge.log(<span class="string">"Haha, HookDemo constructed was hooked"</span>);</span><br><span class="line">                <span class="comment">//大坑，此时对象还没有建立，即不能获取对象，也不能修改非静态变量的值</span></span><br><span class="line">                <span class="comment">//XposedHelpers.setIntField(param.thisObject, "publicInt", 199);</span></span><br><span class="line">                <span class="comment">//XposedHelpers.setIntField(param.thisObject, "privateInt", 299);</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><strong>Hook有参构造函数，并修改参数</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookConstructor(clazz, String.class,  <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                param.args[<span class="number">0</span>] = <span class="string">"Haha, HookDemo(str) are hooked"</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><strong>Hook公有方法publicFunc，并修改参数以及修改下publicInt和privateInt的值,再顺便调用一下隐藏函数hideFunc</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"publicFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    param.args[<span class="number">0</span>] = <span class="string">"Haha, publicFunc are hooked"</span>;</span><br><span class="line">                    <span class="comment">//修改成员变量的值</span></span><br><span class="line">                    XposedHelpers.setIntField(param.thisObject, <span class="string">"publicInt"</span>, <span class="number">199</span>);</span><br><span class="line">                    XposedHelpers.setIntField(param.thisObject, <span class="string">"privateInt"</span>, <span class="number">299</span>);</span><br><span class="line">                  	<span class="comment">//调用函数</span></span><br><span class="line">                    XposedHelpers.callMethod(param.thisObject, <span class="string">"hideFunc"</span>, <span class="string">"Haha, hideFunc was hooked"</span>);</span><br><span class="line"></span><br><span class="line">                   </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li><strong>Hook私有方法privateFunc，并修改参数</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"privateFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">               <span class="meta">@Override</span></span><br><span class="line">               <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                   param.args[<span class="number">0</span>] = <span class="string">"Haha, privateFunc are hooked"</span>;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li><strong>Hook私有静态方法staticPrivateFunc, 并修改参数</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"staticPrivateFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">              <span class="meta">@Override</span></span><br><span class="line">              <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                  param.args[<span class="number">0</span>] = <span class="string">"Haha, staticPrivateFunc are hooked"</span>;</span><br><span class="line">              &#125;</span><br><span class="line">          &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li><strong>Hook复杂参数函数complexParameterFunc</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Class fclass1 = XposedHelpers.findClass(<span class="string">"java.util.Map"</span>, loadPackageParam.classLoader);</span><br><span class="line">           Class fclass2 = XposedHelpers.findClass(<span class="string">"java.util.ArrayList"</span>, loadPackageParam.classLoader);</span><br><span class="line">           XposedHelpers.findAndHookMethod(clazz, <span class="string">"complexParameterFunc"</span>, String.class,</span><br><span class="line">                   <span class="string">"[[Ljava.lang.String;"</span>, fclass1, fclass2, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                       <span class="meta">@Override</span></span><br><span class="line">                       <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                           param.args[<span class="number">0</span>] = <span class="string">"Haha, complexParameterFunc are hooked"</span>;</span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="8">
+<li><strong>Hook私有方法repleaceFunc, 并替换打印内容</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"repleaceFunc"</span>, <span class="keyword">new</span> XC_MethodReplacement() &#123;</span><br><span class="line">             <span class="meta">@Override</span></span><br><span class="line">             <span class="function"><span class="keyword">protected</span> Object <span class="title">replaceHookedMethod</span><span class="params">(MethodHookParam methodHookParam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                 Log.d(<span class="string">"HookDemo"</span>, <span class="string">"Haha, repleaceFunc are replaced"</span>);</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="9">
+<li><strong>Hook方法, anonymousInner， 参数是抽象类，先加载所需要的类即可</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Class animalClazz  = loadPackageParam.classLoader.loadClass(<span class="string">"com.example.xposedhooktarget.Animal"</span>);</span><br><span class="line">           XposedHelpers.findAndHookMethod(clazz, <span class="string">"anonymousInner"</span>, animalClazz, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">               <span class="meta">@Override</span></span><br><span class="line">               <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                   XposedBridge.log(<span class="string">"HookDemo This is test"</span>);</span><br><span class="line">                   param.args[<span class="number">1</span>] = <span class="string">"Haha, anonymousInner are hooked"</span>;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="10">
+<li><strong>Hook匿名类的eatFunc方法，修改参数，顺便修改类中的anonymoutInt变量</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(<span class="string">"com.example.xposedhooktarget.HookDemo$1"</span>, clazz.getClassLoader(),</span><br><span class="line">                    <span class="string">"eatFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                        <span class="meta">@Override</span></span><br><span class="line">                        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                            param.args[<span class="number">0</span>] = <span class="string">"Haha, eatFunc are hooked"</span>;</span><br><span class="line">                            XposedHelpers.setIntField(param.thisObject, <span class="string">"anonymoutInt"</span>, <span class="number">499</span>);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="11">
+<li><strong>Hook内部类InnerClass的InnerFunc方法，修改参数，顺便修改类中的innerPublicInt和innerPrivateInt变量</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> Class&lt;?&gt; clazz1 = XposedHelpers.findClass(<span class="string">"com.example.xposedhooktarget.HookDemo$InnerClass"</span>, loadPackageParam.classLoader);</span><br><span class="line">            XposedHelpers.findAndHookMethod(clazz1, <span class="string">"InnerFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                        <span class="meta">@Override</span></span><br><span class="line">                        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                            param.args[<span class="number">0</span>] = <span class="string">"Haha, InnerFunc was hooked"</span>;</span><br><span class="line">                            XposedHelpers.setIntField(param.thisObject, <span class="string">"innerPublicInt"</span>, <span class="number">9</span>);</span><br><span class="line">                            XposedHelpers.setIntField(param.thisObject, <span class="string">"innerPrivateInt"</span>, <span class="number">19</span>);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="12">
+<li><strong>对于一些延迟动态加载的代码,hook方式</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(<span class="string">"dalvik.system.DexFile"</span>, lpparam.classLoader, <span class="string">"loadClass"</span>,</span><br><span class="line">                String.class, <span class="string">"java.lang.ClassLoader"</span>, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                        String className = (String) param.args[<span class="number">0</span>];</span><br><span class="line">                        Object result = param.getResult();</span><br><span class="line">                        <span class="keyword">if</span> (result != <span class="keyword">null</span> &amp;&amp; result <span class="keyword">instanceof</span> Class) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (<span class="string">"com.alipay.mobile.nebulauc.impl.UCWebViewClient"</span>.equals(className)) &#123;</span><br><span class="line">                                <span class="comment">// hookLoadWebViewClient(((Class) result).getClassLoader());</span></span><br><span class="line">                            &#125; </span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                &#125;);</span><br></pre></td></tr></table></figure>
+
+<ol start="13">
+<li><strong>Hook有可变参数的方法</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"argFunc"</span>, Object[].class,<span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">             <span class="meta">@Override</span></span><br><span class="line">             <span class="function"><span class="keyword">protected</span> Object <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam methodHookParam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                </span><br><span class="line">             &#125;</span><br><span class="line">         &#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li><p>无论hook公有私有方法还是静态方法 ,抑或可变参方法,甚至是带返回值的方法,统一使用<code>findAndHookMethod</code>这个Api</p>
+</li>
+<li><p>xposed无法hook接口和抽象类方法</p>
+</li>
+<li><p>Hook逻辑类可实现的接口有 : </p>
+<ul>
+<li><p>安卓系统启动的时候（使用 IXposedHookZygoteInit 接口）、</p>
+</li>
+<li><p>一个新的app被加载的时候（使用 IXposedHookLoadPackage 接口）、</p>
+</li>
+<li><p>一个资源被初始化的时候（ 使用 IXposedHookInitPackageResources 接口 )</p>
+</li>
+</ul>
+</li>
+<li><p>实现IXposedHookLoadPackage 并使用 XposedBridge.log 打印的日志,当启动第三方应用后,Android Studio控制台无法查看到日志信息,需要在xposed应用内进行查看</p>
+</li>
+<li><p>参数为基本数据类型时需要传对应包装类的type属性,比如int传Integer.TYPE, 否则提示找不到方法,如果参数为引用数据类型,那直接传xxx.class即可</p>
+</li>
+<li><ul>
+<li><p>beforeHookedMethod 会在调用原方法前执行，如果使用setResult则跳过原方法，并返回setResult参数中的值。</p>
+</li>
+<li><p>afterHookedMethod 会在调用原方法后执行，setResult可改变返回值</p>
+</li>
+<li><p>replaceHookedMethod 会完全替换原方法，即原方法不执行，且返回值可以直接return，setResult不生效。</p>
+</li>
+</ul>
+</li>
+</ol>
+<p><strong>注:每次修改完毕后需要重启才生效</strong></p>
+<h2 id="附"><a href="#附" class="headerlink" title="附"></a>附</h2><h5 id="Hook-修改方法返回值"><a href="#Hook-修改方法返回值" class="headerlink" title="Hook 修改方法返回值"></a>Hook 修改方法返回值</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, method, <span class="keyword">new</span> Object[]&#123;<span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">     <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                   param.setResult(result);  <span class="comment">// 设置返回值</span></span><br><span class="line">               &#125;</span><br><span class="line">           &#125;&#125;);</span><br></pre></td></tr></table></figure>
+
+<h5 id="Hook-获取方法返回值"><a href="#Hook-获取方法返回值" class="headerlink" title="Hook 获取方法返回值"></a>Hook 获取方法返回值</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, method, <span class="keyword">new</span> Object[]&#123;<span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">      <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    Object result = param.getResult(); <span class="comment">//获取返回值</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;&#125;);</span><br></pre></td></tr></table></figure>
+
+<h5 id="Hook-获取方法传入的参数值"><a href="#Hook-获取方法传入的参数值" class="headerlink" title="Hook 获取方法传入的参数值"></a>Hook 获取方法传入的参数值</h5><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(claName, cl, <span class="string">"i"</span>, String.<span class="keyword">class</span>, String.<span class="keyword">class</span>, Object[].<span class="keyword">class</span>, new XC_MethodHook() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> void afterHookedMethod(MethodHookParam param) throws Throwable &#123;</span><br><span class="line">         <span class="comment">// 数组param.args存储的参数列表里的值</span></span><br><span class="line">         XposedBridge.log(TAG + param.args[<span class="number">0</span>]);</span><br><span class="line">         XposedBridge.log(TAG + param.args[<span class="number">1</span>]);</span><br><span class="line">         XposedBridge.log(TAG + param.args[<span class="number">2</span>]);</span><br><span class="line">          &#125;</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+
+<h5 id="Hook-给方法传值"><a href="#Hook-给方法传值" class="headerlink" title="Hook 给方法传值"></a>Hook 给方法传值</h5><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Class cla = XposedHelpers.findClass(className, loadPackageParam.classLoader);</span><br><span class="line"><span class="built_in">Object</span> com = XposedHelpers.callStaticMethod(cla, <span class="string">"getInstance"</span>);</span><br><span class="line">XposedHelpers.callMethod(com, <span class="string">"setDebug"</span>, <span class="keyword">true</span>); <span class="comment">// 传入指定值</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="Hook-获取Intent的值"><a href="#Hook-获取Intent的值" class="headerlink" title="Hook 获取Intent的值"></a>Hook 获取Intent的值</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">hookGetIntent</span><span class="params">(XC_LoadPackage.LoadPackageParam loadPackageParam)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        XposedHelpers.findAndHookMethod(<span class="string">"android.app.Activity"</span>, loadPackageParam.classLoader, <span class="string">"getIntent"</span>, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                Intent sou = (Intent) param.getResult();</span><br><span class="line">                KLog.d(<span class="string">"hookGetIntent:"</span> + sou.toURI().toString());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="Hook-广播发送的Intent信息"><a href="#Hook-广播发送的Intent信息" class="headerlink" title="Hook 广播发送的Intent信息"></a>Hook 广播发送的Intent信息</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">hookSendBroadcast</span><span class="params">(XC_LoadPackage.LoadPackageParam loadPackageParam)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        XposedHelpers.findAndHookMethod(<span class="string">"android.content.ContextWrapper"</span>, loadPackageParam.classLoader, <span class="string">"sendBroadcast"</span>, Intent.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                Intent sou = (Intent) param.args[<span class="number">0</span>];</span><br><span class="line">                KLog.d(<span class="string">"sendBroadcast:"</span> + sou.toURI().toString());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Xposed一般Hook的是默认的dex文件，但是现在很多的APP都有多个Dex文件，所以使用Xposed时，经常遇到类名路径正确却出现ClassNotFoundError找不到类的错误。要解决这个问题，需要获取对应Dex文件的上下文环境。</p>
+<p>Android在加载dex文件后会创建一个Application类，然后会调用attach方法，attach方法的参数就是上下文context，而且attach方法是final方法，不会因为被覆盖而hook不到，拿到这个context就可以获取对应的classload，然后就可以顺利hook到multidex的类了。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(Application.<span class="keyword">class</span>, <span class="string">"attach"</span>, Context.<span class="keyword">class</span>, new XC_MethodHook() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> void afterHookedMethod(MethodHookParam param) throws Throwable &#123;</span><br><span class="line">        ClassLoader cl = ((Context) param.args[<span class="number">0</span>]).getClassLoader(); <span class="comment">// 获取ClassLoader</span></span><br><span class="line">        Class&lt;?&gt; hookClass = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            hookClass = cl.loadClass(claName); <span class="comment">// 获取Class</span></span><br><span class="line">            <span class="comment">// 使用cl 和 hookClass 完成hook</span></span><br><span class="line">            XposedHelpers.setStaticIntField(hookClass, fieldName, <span class="keyword">val</span>);</span><br><span class="line">            XposedHelpers.findAndHookMethod(claName, cl, <span class="string">"i"</span>, String.<span class="keyword">class</span>, String.<span class="keyword">class</span>, Object[].<span class="keyword">class</span>, new XC_MethodHook() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="keyword">protected</span> void afterHookedMethod(MethodHookParam param) throws Throwable &#123;</span><br><span class="line">                    XposedBridge.log(TAG + param.args[<span class="number">0</span>]);</span><br><span class="line">                    XposedBridge.log(TAG + param.args[<span class="number">1</span>]);</span><br><span class="line">                    XposedBridge.log(TAG + param.args[<span class="number">2</span>]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../133.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../133.html" itemprop="url">Linux系统查看时区以及时区修改</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-12T16:14:19+08:00">
+                2020-10-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><code>wp-config.php</code>里加入下面代码:</p>
+<h4 id="这里以Ubuntu系统为例"><a href="#这里以Ubuntu系统为例" class="headerlink" title="这里以Ubuntu系统为例"></a>这里以Ubuntu系统为例</h4><p><strong>查看时区:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date -R</span><br></pre></td></tr></table></figure>
+
+<p><strong>修改时区为东八区</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">timedatectl set-timezone Asia/Shanghai</span><br></pre></td></tr></table></figure>
+
+<h5 id="老版本系统以上修改时区指令可能不生效-需要采用以下办法"><a href="#老版本系统以上修改时区指令可能不生效-需要采用以下办法" class="headerlink" title="老版本系统以上修改时区指令可能不生效, 需要采用以下办法"></a>老版本系统以上修改时区指令可能不生效, 需要采用以下办法</h5><p><strong>1.运行tzselect</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:/# tzselect</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201012105429.png" alt></p>
+<p><strong>在这里我们选择亚洲 Asia，确认之后选择中国（China)，最后选择北京(Beijing)</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201012105446.png" alt>**</p>
+<p><strong>2.复制文件到/etc目录下</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:/# cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime</span><br></pre></td></tr></table></figure>
+
+<p><strong>3.再次查看时间date -R，已经修改为北京时间</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201012105502.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../134.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1466,352 +1843,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../125.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../125.html" itemprop="url">docker部署Django项目</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-23T14:38:50+08:00">
-                2020-09-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h1><p>已经写好了一个Django项目，需要将这个项目用docker封装一个镜像，使用k8s发布！</p>
-<p>在封装并运行的过程中，发现了很多问题，这里会一一介绍！</p>
-<h1 id="二、时区问题"><a href="#二、时区问题" class="headerlink" title="二、时区问题"></a>二、时区问题</h1><p>采用的是镜像是 ubuntu:16.04 默认的时区是UTC，比中国时间，晚了8个小时！</p>
-<p>那么因此，需要将默认的时区给覆盖掉！</p>
-<p>默认是没有安装 tzdata，因此没有 /usr/share/zoneinfo 目录！</p>
-<p>安装tzdata，使用命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install -y tzdata</span><br></pre></td></tr></table></figure>
-
-<p> 设置时区为 上海，使用以下命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TZ=Asia/Shanghai</span><br><span class="line">ln -snf /usr/share/zoneinfo/$TZ /etc/localtime &amp;&amp; echo $TZ &gt; /etc/timezone</span><br></pre></td></tr></table></figure>
-
-<h1 id="三、中文乱码问题"><a href="#三、中文乱码问题" class="headerlink" title="三、中文乱码问题"></a>三、中文乱码问题</h1><p>默认的系统编码是ascii，因此不支持中文！</p>
-<p>需要安装 locales 软件包</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install -y locales</span><br></pre></td></tr></table></figure>
-
-<p>设置utf-8编码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">locale-gen en_US.UTF-8</span><br></pre></td></tr></table></figure>
-
-<p>设置全局变量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">LANG en_US.UTF-8</span><br><span class="line">LANGUAGE en_US:en</span><br><span class="line">LC_ALL en_US.UTF-8</span><br></pre></td></tr></table></figure>
-
-<p>设置utf-8编码之后，那么在python的print命令，就可以输出中文了，而不会提示</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&apos;ascii&apos; codec can&apos;t encode characters in position 8-50: ordinal not in range(128)</span><br></pre></td></tr></table></figure>
-
-<p>在python文件头部，记得增加一行代码，指定utf-8编码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># coding: utf-8</span><br></pre></td></tr></table></figure>
-
-<h1 id="四、任务计划问题"><a href="#四、任务计划问题" class="headerlink" title="四、任务计划问题"></a>四、任务计划问题</h1><h2 id="启动问题"><a href="#启动问题" class="headerlink" title="启动问题"></a>启动问题</h2><p>在ubuntu:16.04 的镜像中，默认是没有cron包的，所以需要手动安装</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install -y cron</span><br></pre></td></tr></table></figure>
-
-<p>那么启动任务计划时，不能使用命令 /etc/init.d/cron start 以及 service cron start</p>
-<p>在dockerfile中，会启动不成功的。</p>
-<p><strong>必须使用 /usr/sbin/cron 命令，才能启动成功！</strong></p>
-<h2 id="添加问题"><a href="#添加问题" class="headerlink" title="添加问题"></a>添加问题</h2><p>一般来讲，添加任务计划，直接修改 /etc/crontab 文件即可。</p>
-<p>在dockerfile 中，不能使用echo EOF 等命令修改/etc/crontab文件</p>
-<p><strong>必须使用 sed 命令修改/etc/crontab文件，才能成功！</strong></p>
-<p>如果需要在最后一行添加任务计划，可以使用以下命令：</p>
-<p>语法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;$a需要添加的内容&apos; 文件名</span><br></pre></td></tr></table></figure>
-
-<p>比如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;$a* * * * * root python3 /messagecenter/cron/voc_receipt.py&apos; /etc/crontab</span><br></pre></td></tr></table></figure>
-
-<h1 id="五、封装Django项目镜像"><a href="#五、封装Django项目镜像" class="headerlink" title="五、封装Django项目镜像"></a>五、封装Django项目镜像</h1><p> 新建空目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir /opt/messagecenter</span><br></pre></td></tr></table></figure>
-
-<p>目录结构如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">./</span><br><span class="line">├── dockerfile</span><br><span class="line">├── messagecenter.tar</span><br><span class="line">├── run.sh</span><br><span class="line">└── sources.list</span><br></pre></td></tr></table></figure>
-
-<p><strong>dockerfile</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu:16.04</span><br><span class="line"># 修改更新源为阿里云</span><br><span class="line">ADD sources.list /etc/apt/sources.list</span><br><span class="line">ADD messagecenter.tar /</span><br><span class="line"># 时区为上海</span><br><span class="line">ENV TZ Asia/Shanghai</span><br><span class="line"></span><br><span class="line"># 设置时区,设置utf-8编码,安装django,添加任务计划</span><br><span class="line">RUN apt-get update &amp;&amp; apt-get install -y tzdata locales python3-pip cron &amp;&amp; apt-get clean all &amp;&amp; \</span><br><span class="line">    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime &amp;&amp; echo $TZ &gt; /etc/timezone &amp;&amp; \</span><br><span class="line">    locale-gen en_US.UTF-8 &amp;&amp; \</span><br><span class="line">    pip3 install django requests</span><br><span class="line"></span><br><span class="line"># 解决中文乱码问题</span><br><span class="line">#RUN locale-gen en_US.UTF-8</span><br><span class="line">ENV LANG en_US.UTF-8</span><br><span class="line">ENV LANGUAGE en_US:en</span><br><span class="line">ENV LC_ALL en_US.UTF-8</span><br><span class="line"></span><br><span class="line">EXPOSE 8000</span><br><span class="line"># 添加启动脚本</span><br><span class="line">ADD run.sh .</span><br><span class="line">RUN chmod 755 run.sh</span><br><span class="line">ENTRYPOINT [ &quot;/run.sh&quot;]</span><br></pre></td></tr></table></figure>
-
-<p><strong>messagecenter.tar</strong> 这个是Django项目，已经打成tar包了。在dockerfile中，执行ADD命令时，会自动解压tar包</p>
-<p><strong>run.sh</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line"># 启动任务计划</span><br><span class="line">/usr/sbin/cron</span><br><span class="line"></span><br><span class="line"># 最后一行增加任务计划</span><br><span class="line">sed -i &apos;$a* * * * * root python3 /messagecenter/cron/voc_receipt.py&apos; /etc/crontab</span><br><span class="line"></span><br><span class="line"># 启动django项目</span><br><span class="line">cd /messagecenter/</span><br><span class="line">python3 manage.py runserver 0.0.0.0:8000</span><br></pre></td></tr></table></figure>
-
-<p>在Django项目中，有一个python脚本，需要每分钟执行一次！</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial main restricted</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-updates main restricted</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial universe</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-updates universe</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-updates multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-backports main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu xenial-security main restricted</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu xenial-security universe</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu xenial-security multiverse</span><br></pre></td></tr></table></figure>
-
-<p>生成镜像</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t messagecenter /opt/messagecenter</span><br></pre></td></tr></table></figure>
-
-<p>启动镜像</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -it -p 8000:8000 messagecenter</span><br></pre></td></tr></table></figure>
-
-<p>访问页面：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.0.162:8000</span><br></pre></td></tr></table></figure>
-
-<p>就可以访问Django的默认页面了！</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../142.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../142.html" itemprop="url">使用nginx反向代理后如何获取客户端ip</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-23T14:38:50+08:00">
-                2020-09-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="一、nginx-反向代理"><a href="#一、nginx-反向代理" class="headerlink" title="一、nginx 反向代理"></a>一、nginx 反向代理</h4><p>nginx反向代理后，在应用中取得的ip都是反向代理服务器的ip，取得的域名也是反向代理配置的url的域名，解决该问题，需要在nginx反向代理配置中添加一些配置信息，目的将客户端的真实ip和域名传递到应用程序中。</p>
-<p><strong>nginx反向代理配置时，一般会添加下面的配置：</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`proxy_set_header Host $host;``proxy_set_header X-Real-IP $remote_addr;``proxy_set_header REMOTE-HOST $remote_addr;``proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;`</span><br></pre></td></tr></table></figure>
-
-<p><strong>1. proxy_set_header X-real-ip $remote_addr;</strong></p>
-<p>这句话之前已经解释过，有了这句就可以在web服务器端获得用户的真实ip</p>
-<p>但是，实际上要获得用户的真实ip，不是只有这一个方法，下面我们继续看。</p>
-<p><strong>2.  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</strong></p>
-<p>我们先看看这里有个X-Forwarded-For变量，这是一个squid开发的，用于识别通过HTTP代理或负载平衡器原始IP一个连接到Web服务器的客户机地址的非rfc标准，如果有做X-Forwarded-For设置的话,每次经过proxy转发都会有记录,格式就是client1, proxy1, proxy2,以逗号隔开各个地址，由于他是非rfc标准，所以默认是没有的，需要强制添加，在默认情况下经过proxy转发的请求，在后端看来远程地址都是proxy端的ip 。也就是说在默认情况下我们使用request.getAttribute(“X-Forwarded-For”)获取不到用户的ip，如果我们想要通过这个变量获得用户的ip，我们需要自己在nginx添加如下配置：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br></pre></td></tr></table></figure>
-
-<p>意思是增加一个$proxy_add_x_forwarded_for到X-Forwarded-For里去，注意是增加，而不是覆盖，当然由于默认的X-Forwarded-For值是空的，所以我们总感觉X-Forwarded-For的值就等于$proxy_add_x_forwarded_for的值，实际上当你搭建两台nginx在不同的ip上，并且都使用了这段配置，那你会发现在web服务器端通过request.getAttribute(“X-Forwarded-For”)获得的将会是客户端ip和第一台nginx的ip。</p>
-<p><strong>那么$proxy_add_x_forwarded_for又是什么？</strong></p>
-<p>$proxy_add_x_forwarded_for变量包含客户端请求头中的”X-Forwarded-For”，与$remote_addr两部分，他们之间用逗号分开。</p>
-<p>举个例子，有一个web应用，在它之前通过了两个nginx转发，<a href="http://www.linuxidc.com" target="_blank" rel="noopener">www.linuxidc.com</a> 即用户访问该web通过两台nginx。</p>
-<p>在第一台nginx中,使用 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</p>
-<p>现在的$proxy_add_x_forwarded_for变量的”X-Forwarded-For”部分是空的，所以只有$remote_addr，而$remote_addr的值是用户的ip，于是赋值以后，X-Forwarded-For变量的值就是用户的真实的ip地址了。</p>
-<p>到了第二台nginx，使用 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</p>
-<p>现在的$proxy_add_x_forwarded_for变量，X-Forwarded-For部分包含的是用户的真实ip，$remote_addr部分的值是上一台nginx的ip地址，于是通过这个赋值以后现在的X-Forwarded-For的值就变成了“用户的真实ip，第一台nginx的ip”，这样就清楚了吧。</p>
-<p>最后我们看到还有一个$http_x_forwarded_for变量，这个变量就是X-Forwarded-For，由于之前我们说了，默认的这个X-Forwarded-For是为空的，所以当我们直接使用proxy_set_header X-Forwarded-For $http_x_forwarded_for时会发现，web服务器端使用request.getAttribute(“X-Forwarded-For”)获得的值是null。如果想要通过request.getAttribute(“X-Forwarded-For”)获得用户ip，就必须先使用proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;这样就可以获得用户真实ip。</p>
-<h4 id="二、Java获取客户端真实IP地址"><a href="#二、Java获取客户端真实IP地址" class="headerlink" title="二、Java获取客户端真实IP地址"></a>二、Java获取客户端真实IP地址</h4><p>在JSP里，获取客户端的IP地址的方法是：request.getRemoteAddr（），这种方法在大部分情况下都是有效的。但是在通过了Apache，Squid等反向代理软件就不能获取到客户端的真实IP地址了。</p>
-<p>如果使用了反向代理软件，将<a href="http://192.168.1.110：2046/" target="_blank" rel="noopener">http://192.168.1.110：2046/</a> 的URL反向代理为 <a href="http://www.javapeixun.com.cn" target="_blank" rel="noopener">http://www.javapeixun.com.cn</a> / 的URL时，用request.getRemoteAddr（）方法获取的IP地址是：127.0.0.1　或　192.168.1.110，而并不是客户端的真实IP。</p>
-<p>经过代理以后，由于在客户端和服务之间增加了中间层，因此服务器无法直接拿到客户端的IP，服务器端应用也无法直接通过转发请求的地址返回给客户端。但是在转发请求的HTTP头信息中，增加了X－FORWARDED－FOR信息。用以跟踪原有的客户端IP地址和原来客户端请求的服务器地址。当我们访问<a href="http://www.javapeixun.com.cn" target="_blank" rel="noopener">http://www.javapeixun.com.cn</a> /index.jsp/ 时，其实并不是我们浏览器真正访问到了服务器上的index.jsp文件，而是先由代理服务器去访问<a href="http://192.168.1.110：2046/index.jsp" target="_blank" rel="noopener">http://192.168.1.110：2046/index.jsp</a> ，代理服务器再将访问到的结果返回给我们的浏览器，因为是代理服务器去访问index.jsp的，所以index.jsp中通过request.getRemoteAddr（）的方法获取的IP实际上是代理服务器的地址，并不是客户端的IP地址。</p>
-<p><strong>于是可得出获得客户端真实IP地址的方法一：</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`public` `String getRemortIP(HttpServletRequest request) &#123; ``  ``if` `(request.getHeader(``&quot;x-forwarded-for&quot;``) == ``null``) &#123; ``    ``return` `request.getRemoteAddr(); ``  ``&#125; ``  ``return` `request.getHeader(``&quot;x-forwarded-for&quot;``); ``&#125;`</span><br></pre></td></tr></table></figure>
-
-<p>可是当我访问<a href="http://www.5a520.cn" target="_blank" rel="noopener">http://www.5a520.cn</a> /index.jsp/ 时，返回的IP地址始终是unknown，也并不是如上所示的127.0.0.1　或　192.168.1.110了，而我访问<a href="http://192.168.1.110：2046/index.jsp" target="_blank" rel="noopener">http://192.168.1.110：2046/index.jsp</a> 时，则能返回客户端的真实IP地址，写了个方法去验证。原因出在了Squid上。squid.conf 的配制文件　forwarded_for 项默认是为on，如果 forwarded_for 设成了 off 　则：X-Forwarded-For： unknown</p>
-<p><strong>于是可得出获得客户端真实IP地址的方法二：</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`public` `String getIpAddr(HttpServletRequest request) &#123; ``  ``String ip = request.getHeader(``&quot;x-forwarded-for&quot;``); ``  ``if``(ip == ``null` `|| ip.length() == ``0` `|| ``&quot;unknown&quot;``.equalsIgnoreCase(ip)) &#123; ``    ``ip = request.getHeader(``&quot;Proxy-Client-IP&quot;``); ``  ``&#125; ``  ``if``(ip == ``null` `|| ip.length() == ``0` `|| ``&quot;unknown&quot;``.equalsIgnoreCase(ip)) &#123; ``    ``ip = request.getHeader(``&quot;WL-Proxy-Client-IP&quot;``); ``  ``&#125; ``  ``if``(ip == ``null` `|| ip.length() == ``0` `|| ``&quot;unknown&quot;``.equalsIgnoreCase(ip)) &#123; ``    ``ip = request.getRemoteAddr(); ``  ``&#125; ``  ``return` `ip; ``&#125;`</span><br></pre></td></tr></table></figure>
-
-<p>可是，如果通过了多级反向代理的话，X-Forwarded-For的值并不止一个，而是一串Ｉｐ值，究竟哪个才是真正的用户端的真实IP呢？</p>
-<p>答案是取X-Forwarded-For中第一个非unknown的有效IP字符串。</p>
-<p>如：X-Forwarded-For：192.168.1.110， 192.168.1.120， 192.168.1.130， 192.168.1.100用户真实IP为： 192.168.1.110</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1862,7 +1893,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">338</span>
+                  <span class="site-state-item-count">340</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1875,7 +1906,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">98</span>
+                  <span class="site-state-item-count">99</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
