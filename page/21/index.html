@@ -288,7 +288,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../136.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../152.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -307,7 +307,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../136.html" itemprop="url">Xposed 如何Hook静态变量or构造方法or复杂参数的方法or替换函数执行内容or内部类中的函数or匿名类的函数</a></h1>
+                <a class="post-title-link" href="../../152.html" itemprop="url">Android常见App加固厂商脱壳方法的整理</a></h1>
         
 
         <div class="post-meta">
@@ -319,8 +319,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-14T19:55:32+08:00">
-                2020-10-14
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-27T16:14:19+08:00">
+                2020-10-27
               </time>
             
 
@@ -359,121 +359,695 @@
       
         
           
-            <h2 id="Xposed框架Hook相关api的使用"><a href="#Xposed框架Hook相关api的使用" class="headerlink" title="Xposed框架Hook相关api的使用"></a>Xposed框架Hook相关api的使用</h2><p><strong>首先创建测试类继承IXposedHookLoadPackage, 以下所有的hook方法都在handleLoadPackage方法内部进行调用</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HookTest</span> <span class="keyword">implements</span> <span class="title">IXposedHookLoadPackage</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleLoadPackage</span><span class="params">(XC_LoadPackage.LoadPackageParam lpparam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        XposedBridge.log(<span class="string">"HOOK初体验："</span> + lpparam.processName + <span class="string">":"</span> + lpparam.packageName);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="准备需要被hook的代码用于测试"><a href="#准备需要被hook的代码用于测试" class="headerlink" title="准备需要被hook的代码用于测试"></a>准备需要被hook的代码用于测试</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HookDemo</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String Tag = <span class="string">"HookDemo"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span>  <span class="keyword">int</span> staticInt = <span class="number">100</span>;</span><br><span class="line">    <span class="keyword">public</span>  <span class="keyword">int</span> publicInt = <span class="number">200</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> privateInt = <span class="number">300</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HookDemo</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(<span class="string">"NOHook"</span>);</span><br><span class="line">        Log.d(Tag, <span class="string">"HookDemo() was called|||"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">HookDemo</span><span class="params">(String str)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"HookDemo(String str) was called|||"</span> + str);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hookDemoTest</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"staticInt = "</span> + staticInt);</span><br><span class="line">        Log.d(Tag, <span class="string">"PublicInt = "</span> + publicInt);</span><br><span class="line">        Log.d(Tag, <span class="string">"privateInt = "</span> + privateInt);</span><br><span class="line">        publicFunc(<span class="string">"NOHook"</span>);</span><br><span class="line">        Log.d(Tag, <span class="string">"PublicInt = "</span> + publicInt);</span><br><span class="line">        Log.d(Tag, <span class="string">"privateInt = "</span> + privateInt);</span><br><span class="line">        privateFunc(<span class="string">"NOHook"</span>);</span><br><span class="line">        staticPrivateFunc(<span class="string">"NOHook"</span>);</span><br><span class="line"></span><br><span class="line">        String[][] str = <span class="keyword">new</span> String[<span class="number">1</span>][<span class="number">2</span>];</span><br><span class="line">        Map map = <span class="keyword">new</span> HashMap&lt;String, String&gt;();</span><br><span class="line">        map.put(<span class="string">"key"</span>, <span class="string">"value"</span>);</span><br><span class="line">        ArrayList arrayList = <span class="keyword">new</span> ArrayList();</span><br><span class="line">        arrayList.add(<span class="string">"listValue"</span>);</span><br><span class="line">        complexParameterFunc(<span class="string">"NOHook"</span>, str, map, arrayList);</span><br><span class="line"></span><br><span class="line">        repleaceFunc();</span><br><span class="line">        anonymousInner(<span class="keyword">new</span> Animal() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eatFunc</span><span class="params">(String value)</span> </span>&#123;</span><br><span class="line">                Log.d(Tag, <span class="string">"eatFunc(String value)  was called|||"</span> + value);</span><br><span class="line">                Log.d(Tag, <span class="string">"anonymoutInt =  "</span> + anonymoutInt);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, <span class="string">"NOHook"</span>);</span><br><span class="line"></span><br><span class="line">        InnerClass innerClass = <span class="keyword">new</span> InnerClass();</span><br><span class="line">        innerClass.InnerFunc(<span class="string">"NOHook"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">publicFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"publicFunc(String value) was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">privateFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"privateFunc(String value) was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">private</span> <span class="keyword">void</span> <span class="title">staticPrivateFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">        Log.d(<span class="string">"HookDemo"</span>, <span class="string">"staticPrivateFunc(Strin value) was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">complexParameterFunc</span><span class="params">(String value, String[][] str, Map&lt;String,String&gt; map, ArrayList arrayList)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        Log.d(<span class="string">"HookDemo"</span>, <span class="string">"complexParameter(Strin value) was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">repleaceFunc</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"repleaceFunc will be replace|||"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">anonymousInner</span><span class="params">(Animal dog, String value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"anonymousInner was called|||"</span> + value);</span><br><span class="line">        dog.eatFunc(<span class="string">"NOHook"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">hideFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"hideFunc was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">argFunc</span><span class="params">(Objcet... value)</span></span>&#123;</span><br><span class="line">        Log.d(Tag, <span class="string">"argFunc was called|||"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">InnerClass</span></span>&#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">int</span> innerPublicInt = <span class="number">10</span>;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> innerPrivateInt = <span class="number">20</span>;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">InnerClass</span><span class="params">()</span></span>&#123;</span><br><span class="line">            Log.d(Tag, <span class="string">"InnerClass constructed func was called"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">InnerFunc</span><span class="params">(String value)</span></span>&#123;</span><br><span class="line">            Log.d(Tag, <span class="string">"InnerFunc(String value) was called|||"</span> + value);</span><br><span class="line">            Log.d(Tag, <span class="string">"innerPublicInt = "</span> + innerPublicInt);</span><br><span class="line">            Log.d(Tag, <span class="string">"innerPrivateInt = "</span> + innerPrivateInt);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+            <h3 id="目录简述（脱壳前学习的知识、壳的历史、脱壳方法）"><a href="#目录简述（脱壳前学习的知识、壳的历史、脱壳方法）" class="headerlink" title="目录简述（脱壳前学习的知识、壳的历史、脱壳方法）"></a>目录简述（脱壳前学习的知识、壳的历史、脱壳方法）</h3><ul>
+<li>第一代壳</li>
+<li>第二代壳</li>
+<li>第三代壳</li>
+<li>第N代壳<h4 id="简述Apk文件结构Dex文件结构壳史壳的识别Apk文件结构"><a href="#简述Apk文件结构Dex文件结构壳史壳的识别Apk文件结构" class="headerlink" title="简述Apk文件结构Dex文件结构壳史壳的识别Apk文件结构"></a>简述Apk文件结构Dex文件结构壳史壳的识别Apk文件结构</h4></li>
+</ul>
+<p><img src="https://img.jbzj.com/file_images/article/201801/2018012720435089.png" alt="1"></p>
+<p>Dex文件结构</p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/2018012720435091.png" alt="2"></p>
+<h3 id="壳史"><a href="#壳史" class="headerlink" title="壳史"></a>壳史</h3><p><strong>第一代壳 Dex加密</strong></p>
 <ol>
-<li><strong>修改类中的私有静态变量</strong></li>
+<li>Dex字符串加密</li>
+<li>资源加密</li>
+<li>对抗反编译</li>
+<li>反调试</li>
+<li>自定义DexClassLoader</li>
 </ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; clazz = XposedHelpers.findClass(<span class="string">"com.example.xposedhooktarget.HookDemo"</span>, lpparam.classLoader);</span><br><span class="line">XposedHelpers.setStaticIntField(clazz, <span class="string">"staticInt"</span>, <span class="number">99</span>);</span><br></pre></td></tr></table></figure>
+<p><strong>第二代壳 Dex抽取与So加固</strong></p>
+<ol>
+<li>对抗第一代壳常见的脱壳法</li>
+<li>Dex Method代码抽取到外部（通常企业版）</li>
+<li>Dex动态加载</li>
+<li>So加密</li>
+</ol>
+<p><strong>第三代壳 Dex动态解密与So混淆</strong></p>
+<ol>
+<li>Dex Method代码动态解密</li>
+<li>So代码膨胀混淆</li>
+<li>对抗之前出现的所有脱壳法</li>
+</ol>
+<p><strong>第四代壳 arm vmp（未来）</strong></p>
+<ol>
+<li>vmp</li>
+</ol>
+<h3 id="壳的识别"><a href="#壳的识别" class="headerlink" title="壳的识别"></a>壳的识别</h3><p><strong>1.用加固厂商特征：</strong></p>
+<ul>
+<li>娜迦： libchaosvmp.so , libddog.solibfdog.so</li>
+<li>爱加密：libexec.so, libexecmain.so</li>
+<li>梆梆： libsecexe.so, libsecmain.so , libDexHelper.so</li>
+<li>360：libprotectClass.so, libjiagu.so</li>
+<li>通付盾：libegis.so</li>
+<li>网秦：libnqshield.so</li>
+<li>百度：libbaiduprotect.so</li>
+<li>腾讯御安全:  libshell-super.so, libshella.so</li>
+</ul>
+<p><strong>2.基于特征的识别代码</strong></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/2018012720435092.png" alt="3"></p>
+<h2 id="第一代壳"><a href="#第一代壳" class="headerlink" title="第一代壳"></a>第一代壳</h2><ol>
+<li>内存Dump法</li>
+<li>文件监视法</li>
+<li>Hook法</li>
+<li>定制系统</li>
+<li>动态调试法</li>
+</ol>
+<h3 id="内存Dump法"><a href="#内存Dump法" class="headerlink" title="内存Dump法"></a>内存Dump法</h3><ul>
+<li><strong>内存中寻找dex.035或者dex.036</strong></li>
+<li><strong>/proc/xxx/maps中查找后，手动Dump</strong></li>
+</ul>
+<p><img src="https://img.jbzj.com/file_images/article/201801/2018012720435093.png" alt="4"></p>
+<p><strong>android-unpacker <a href="https://github.com/strazzere/android-unpacker" target="_blank" rel="noopener">https://github.com/strazzere/android-unpacker</a></strong></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/2018012720435094.png" alt="5"></p>
+<ul>
+<li><p><strong>drizzleDumper <a href="https://link.jianshu.com?t=https://github.com/DrizzleRisk/drizzleDumper" target="_blank" rel="noopener">https://github.com/DrizzleRisk/drizzleDumper</a></strong></p>
+</li>
+<li><p><strong>升级版的android-unpacker，read和lseek64代替pread，匹配dex代替匹配odex</strong></p>
+</li>
+</ul>
+<p><img src="https://img.jbzj.com/file_images/article/201801/2018012720435095.png" alt="6"></p>
+<p><strong>IDA Pro + dumpDEX**</strong>dumpDex <a href="https://github.com/CvvT/dumpDex" target="_blank" rel="noopener">https://github.com/CvvT/dumpDex</a>**</p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/2018012720435096.png" alt="7"></p>
+<h3 id="文件监视法"><a href="#文件监视法" class="headerlink" title="文件监视法"></a>文件监视法</h3><ul>
+<li><strong>Dex优化生成odex</strong></li>
+<li><strong>inotifywait-for-Android <a href="https://link.jianshu.com?t=https://github.com/mkttanabe/inotifywait-for-Android" target="_blank" rel="noopener">https://github.com/mkttanabe/inotifywait-for-Android</a></strong></li>
+<li><strong>监视文件变化</strong></li>
+</ul>
+<p><img src="https://img.jbzj.com/file_images/article/201801/2018012720435097.png" alt="8"></p>
+<ul>
+<li><strong>notifywait-for-Android <a href="https://link.jianshu.com/?t=https://github.com/mkttanabe/inotifywait-for-Android" target="_blank" rel="noopener">https://github.com/mkttanabe/inotifywait-for-Android</a></strong></li>
+<li><strong>监视DexOpt输出</strong></li>
+</ul>
+<p><img src="https://img.jbzj.com/file_images/article/201801/2018012720435098.png" alt="9"></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/2018012720435099.png" alt="10"></p>
+<h3 id="Hook法"><a href="#Hook法" class="headerlink" title="Hook法"></a>Hook法</h3><ul>
+<li><strong>Hook dvmDexFileOpenPartial</strong></li>
+<li><strong><a href="https://link.jianshu.com/?t=http://androidxref.com/4.4_r1/xref/dalvik/vm/DvmDex.cpp" target="_blank" rel="noopener">http://androidxref.com/4.4_r1/xref/dalvik/vm/DvmDex.cpp</a></strong></li>
+</ul>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204350100.png" alt="11"></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204350101.png" alt="12"></p>
+<h3 id="定制系统"><a href="#定制系统" class="headerlink" title="定制系统"></a>定制系统</h3><ul>
+<li><strong>修改安卓源码并刷机</strong></li>
+</ul>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204350102.png" alt="13"></p>
+<ul>
+<li><strong>DumpApk <a href="https://link.jianshu.com/?t=https://github.com/CvvT/DumpApk" target="_blank" rel="noopener">https://github.com/CvvT/DumpApk</a></strong></li>
+<li><strong>只针对部分壳</strong></li>
+</ul>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204350103.png" alt="14"></p>
+<h3 id="动态调试法"><a href="#动态调试法" class="headerlink" title="动态调试法"></a>动态调试法</h3><ul>
+<li><strong>IDA Pro</strong></li>
+</ul>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204351104.png" alt="15"></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204351105.png" alt="16"></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204351106.png" alt="17"></p>
+<p><strong>gdb gcore法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.gdbserver :1234 –attach pid .gdb (gdb) target remote :1234 (gdb) gcore</span><br></pre></td></tr></table></figure>
+
+<p>coredump文件中搜索“dex.035”</p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204351107.png" alt="18"></p>
+<h2 id="第二代壳"><a href="#第二代壳" class="headerlink" title="第二代壳"></a>第二代壳</h2><ol>
+<li>内存重组法</li>
+<li>Hook法</li>
+<li>动态调试</li>
+<li>定制系统</li>
+<li>静态脱壳机</li>
+</ol>
+<h3 id="内存重组法"><a href="#内存重组法" class="headerlink" title="内存重组法"></a>内存重组法</h3><p><strong>Dex篇</strong></p>
+<p>ZjDroid <a href="https://link.jianshu.com?t=http://bbs.pediy.com/showthread.php?t=190494" target="_blank" rel="noopener">http://bbs.pediy.com/showthread.php?t=190494</a></p>
+<p>对付一切内存中完整的dex，包括壳与动态加载的jar</p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204351108.png" alt="19"></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204351109.png" alt="20"></p>
+<p><strong>so篇</strong></p>
+<p>elfrebuild</p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204351110.png" alt="21"></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204351111.png" alt="22"></p>
+<p>构造soinfo，然后对其进行重建</p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204351112.png" alt="23"></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204351113.png" alt="24"></p>
+<h4 id="Hook法-1"><a href="#Hook法-1" class="headerlink" title="Hook法"></a>Hook法</h4><p>针对无代码抽取且Hook dvmDexFileOpenPartial失败</p>
+<p>Hook dexFileParse</p>
+<p><a href="http://androidxref.com/4.4_r1/xref/dalvik/vm/DvmDex.cpp" target="_blank" rel="noopener">http://androidxref.com/4.4_r1/xref/dalvik/vm/DvmDex.cpp</a></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204351114.png" alt="25"></p>
+<p><a href="https://github.com/WooyunDota/DumpDex" target="_blank" rel="noopener">https://github.com/WooyunDota/DumpDex</a></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204351115.png" alt="26"></p>
+<p>针对无代码抽取且Hook dexFileParse失败</p>
+<p>Hook memcmp</p>
+<p><a href="http://androidxref.com/4.4_r1/xref/dalvik/vm/DvmDex.cpp" target="_blank" rel="noopener">http://androidxref.com/4.4_r1/xref/dalvik/vm/DvmDex.cpp</a></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204351116.png" alt="27"></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204351117.png" alt="28"></p>
+<h4 id="定制系统-1"><a href="#定制系统-1" class="headerlink" title="定制系统"></a>定制系统</h4><p>修改安卓源码并刷机－针对无抽取代码</p>
+<p><a href="https://github.com/bunnyblue/DexExtractor" target="_blank" rel="noopener">https://github.com/bunnyblue/DexExtractor</a></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204351118.png" alt="29"></p>
+<p>Hook dexfileParse</p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204351119.png" alt="30"></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204351120.png" alt="31"></p>
+<h3 id="DexHunter-最强大的二代壳脱壳工具"><a href="#DexHunter-最强大的二代壳脱壳工具" class="headerlink" title="DexHunter-最强大的二代壳脱壳工具"></a>DexHunter-最强大的二代壳脱壳工具</h3><p><a href="https://github.com/zyq8709/DexHunter" target="_blank" rel="noopener">https://github.com/zyq8709/DexHunter</a></p>
+<p><strong>DexHunter的工作流程：</strong></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204351121.png" alt="32"></p>
+<p>DexHunter的工作原理：</p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204352122.png" alt="33"></p>
+<p><strong>绕过三进程反调试</strong></p>
+<p><a href="http://bbs.pediy.com/showthread.php?p=1439627" target="_blank" rel="noopener">http://bbs.pediy.com/showthread.php?p=1439627</a></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204352123.png" alt="34"></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204352124.png" alt="35"></p>
+<p>修改系统源码后：</p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204352125.png" alt="36"></p>
+<p><a href="http://www.cnblogs.com/lvcha/p/3903669.html" target="_blank" rel="noopener">http://www.cnblogs.com/lvcha/p/3903669.html</a></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204352126.png" alt="37"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls /proc/345/task</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204352127.png" alt="38"></p>
+<p>./gdbserver :1234 –attach346 … (gdb) gcore</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="gcore防Dump解决方案："><a href="#gcore防Dump解决方案：" class="headerlink" title="gcore防Dump解决方案："></a>gcore防Dump解决方案：</h4><p><a href="http://bbs.pediy.com/showthread.php?t=198995" target="_blank" rel="noopener">http://bbs.pediy.com/showthread.php?t=198995</a></p>
+<p>断点mmap调试，针对Hook dexFileParse无效</p>
+<p>原理： dexopt优化时， dvmContinueOptimization()-&gt;mmap()</p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204352128.png" alt="39"></p>
+<p><strong>静态脱壳机</strong></p>
+<p>分析壳so逻辑并还原加密算法</p>
+<p><a href="http://www.cnblogs.com/2014asm/p/4924342.html" target="_blank" rel="noopener">http://www.cnblogs.com/2014asm/p/4924342.html</a></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204352129.png" alt="40"></p>
+<p><strong>自定义linker脱so壳</strong></p>
+<p><a href="https://github.com/devilogic/udog" target="_blank" rel="noopener">https://github.com/devilogic/udog</a></p>
+<p>main() -&gt; dump_file()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204352130.png" alt="41"></p>
+<h2 id="第三代壳"><a href="#第三代壳" class="headerlink" title="第三代壳"></a>第三代壳</h2><ol>
+<li>dex2oat法</li>
+<li>定制系统</li>
+</ol>
+<h3 id="dex2oat法"><a href="#dex2oat法" class="headerlink" title="dex2oat法"></a>dex2oat法</h3><p>ART模式下，dex2oat生成oat时，内存中的DEX是完整的</p>
+<p><a href="https://link.jianshu.com?t=http://bbs.pediy.com/showthread.php?t=210532" target="_blank" rel="noopener">http://bbs.pediy.com/showthread.php?t=210532</a></p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204352131.png" alt="43"></p>
+<h4 id="定制系统-2"><a href="#定制系统-2" class="headerlink" title="定制系统"></a>定制系统</h4><p>Hook Dalvik_dalvik_system_DexFile_defineClassNative</p>
+<p>枚举所有DexClassDef，对所有的class，调用dvmDefineClass进行强制加载</p>
+<p><img src="https://img.jbzj.com/file_images/article/201801/20180127204352132.png" alt="44"></p>
+<p>第N代壳so + vmp动态调试 ＋ 人肉还原</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../154.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../154.html" itemprop="url">android原生shell中端可使用的命令</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-27T16:14:19+08:00">
+                2020-10-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>android系统本身属于简化版的linux, 有些功能缺失,很多linux命令用不了,这边总结几个可以使用的命令</p>
+</blockquote>
+<h2 id="首先"><a href="#首先" class="headerlink" title="首先"></a>首先</h2><p>1.使用adb进入shell中端</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb -s 设备名 shell</span><br></pre></td></tr></table></figure>
+
+<p>2.更改读写权限,否则无法操作指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mount -o remount ,rw /</span><br></pre></td></tr></table></figure>
+
+<h2 id="可用指令"><a href="#可用指令" class="headerlink" title="可用指令"></a>可用指令</h2><ol>
+<li><strong>ping</strong></li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping baidu.com</span><br></pre></td></tr></table></figure>
 
 <ol start="2">
-<li><strong>Hook无参构造函数</strong></li>
+<li><strong>cat</strong></li>
 </ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Class&lt;?&gt; clazz = XposedHelpers.findClass(<span class="string">"com.example.xposedhooktarget.HookDemo"</span>, loadPackageParam.classLoader);</span><br><span class="line">XposedHelpers.findAndHookConstructor(clazz, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                XposedBridge.log(<span class="string">"Haha, HookDemo constructed was hooked"</span>);</span><br><span class="line">                <span class="comment">//大坑，此时对象还没有建立，即不能获取对象，也不能修改非静态变量的值</span></span><br><span class="line">                <span class="comment">//XposedHelpers.setIntField(param.thisObject, "publicInt", 199);</span></span><br><span class="line">                <span class="comment">//XposedHelpers.setIntField(param.thisObject, "privateInt", 299);</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat xxx.txt //查看文件</span><br><span class="line">cat  /proc/cpuinfo  //查看cpu信息</span><br></pre></td></tr></table></figure>
 
 <ol start="3">
-<li><strong>Hook有参构造函数，并修改参数</strong></li>
+<li><strong>curl</strong></li>
 </ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookConstructor(clazz, String.class,  <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                param.args[<span class="number">0</span>] = <span class="string">"Haha, HookDemo(str) are hooked"</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -o xxxxx //下载文件</span><br></pre></td></tr></table></figure>
 
 <ol start="4">
-<li><strong>Hook公有方法publicFunc，并修改参数以及修改下publicInt和privateInt的值,再顺便调用一下隐藏函数hideFunc</strong></li>
+<li><strong>mv</strong></li>
 </ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"publicFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    param.args[<span class="number">0</span>] = <span class="string">"Haha, publicFunc are hooked"</span>;</span><br><span class="line">                    <span class="comment">//修改成员变量的值</span></span><br><span class="line">                    XposedHelpers.setIntField(param.thisObject, <span class="string">"publicInt"</span>, <span class="number">199</span>);</span><br><span class="line">                    XposedHelpers.setIntField(param.thisObject, <span class="string">"privateInt"</span>, <span class="number">299</span>);</span><br><span class="line">                  	<span class="comment">//调用函数</span></span><br><span class="line">                    XposedHelpers.callMethod(param.thisObject, <span class="string">"hideFunc"</span>, <span class="string">"Haha, hideFunc was hooked"</span>);</span><br><span class="line"></span><br><span class="line">                   </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv ./a.txt  ../  //移动文件</span><br></pre></td></tr></table></figure>
 
 <ol start="5">
-<li><strong>Hook私有方法privateFunc，并修改参数</strong></li>
+<li><strong>date</strong></li>
 </ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"privateFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">               <span class="meta">@Override</span></span><br><span class="line">               <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                   param.args[<span class="number">0</span>] = <span class="string">"Haha, privateFunc are hooked"</span>;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date //查看当前时间</span><br></pre></td></tr></table></figure>
 
 <ol start="6">
-<li><strong>Hook私有静态方法staticPrivateFunc, 并修改参数</strong></li>
+<li><strong>top</strong></li>
 </ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"staticPrivateFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">              <span class="meta">@Override</span></span><br><span class="line">              <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                  param.args[<span class="number">0</span>] = <span class="string">"Haha, staticPrivateFunc are hooked"</span>;</span><br><span class="line">              &#125;</span><br><span class="line">          &#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">top //查看当前系统资源消耗</span><br></pre></td></tr></table></figure>
 
 <ol start="7">
-<li><strong>Hook复杂参数函数complexParameterFunc</strong></li>
+<li><strong>调用Dalvik VM执行apk文件</strong></li>
 </ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Class fclass1 = XposedHelpers.findClass(<span class="string">"java.util.Map"</span>, loadPackageParam.classLoader);</span><br><span class="line">           Class fclass2 = XposedHelpers.findClass(<span class="string">"java.util.ArrayList"</span>, loadPackageParam.classLoader);</span><br><span class="line">           XposedHelpers.findAndHookMethod(clazz, <span class="string">"complexParameterFunc"</span>, String.class,</span><br><span class="line">                   <span class="string">"[[Ljava.lang.String;"</span>, fclass1, fclass2, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                       <span class="meta">@Override</span></span><br><span class="line">                       <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                           param.args[<span class="number">0</span>] = <span class="string">"Haha, complexParameterFunc are hooked"</span>;</span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125;);</span><br></pre></td></tr></table></figure>
+<p><strong>创建java文件</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public class Foo&#123;</span><br><span class="line">    public static void main(String [] args)&#123;</span><br><span class="line">            System.out.println(&quot;Hello, world!haha&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<p><strong>将.java转换成.class文件</strong></p>
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dx --dex --output=foo.apk Foo.class</span><br></pre></td></tr></table></figure>
+
+<p><strong>安装到设备上</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb push foo.apk /sdcard/</span><br></pre></td></tr></table></figure>
+
+<p><strong>调用Dalvik VM执行foo.apk</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">adb shell</span><br><span class="line"></span><br><span class="line">dalvikvm -cp /sdcard/foo.apk Foo</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201103163303.png" alt></p>
 <ol start="8">
-<li><strong>Hook私有方法repleaceFunc, 并替换打印内容</strong></li>
+<li>查看当前Activity信息</li>
 </ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"repleaceFunc"</span>, <span class="keyword">new</span> XC_MethodReplacement() &#123;</span><br><span class="line">             <span class="meta">@Override</span></span><br><span class="line">             <span class="function"><span class="keyword">protected</span> Object <span class="title">replaceHookedMethod</span><span class="params">(MethodHookParam methodHookParam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                 Log.d(<span class="string">"HookDemo"</span>, <span class="string">"Haha, repleaceFunc are replaced"</span>);</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb shell dumpsys activity top   //可快速定位当前activity路径</span><br></pre></td></tr></table></figure>
 
 <ol start="9">
-<li><strong>Hook方法, anonymousInner， 参数是抽象类，先加载所需要的类即可</strong></li>
+<li>命令行启动调试模式 </li>
 </ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Class animalClazz  = loadPackageParam.classLoader.loadClass(<span class="string">"com.example.xposedhooktarget.Animal"</span>);</span><br><span class="line">           XposedHelpers.findAndHookMethod(clazz, <span class="string">"anonymousInner"</span>, animalClazz, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">               <span class="meta">@Override</span></span><br><span class="line">               <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                   XposedBridge.log(<span class="string">"HookDemo This is test"</span>);</span><br><span class="line">                   param.args[<span class="number">1</span>] = <span class="string">"Haha, anonymousInner are hooked"</span>;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb shell am start -D -n packagename/ MainActivity</span><br></pre></td></tr></table></figure>
 
 <ol start="10">
-<li><strong>Hook匿名类的eatFunc方法，修改参数，顺便修改类中的anonymoutInt变量</strong></li>
+<li>获取进程pid </li>
 </ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(<span class="string">"com.example.xposedhooktarget.HookDemo$1"</span>, clazz.getClassLoader(),</span><br><span class="line">                    <span class="string">"eatFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                        <span class="meta">@Override</span></span><br><span class="line">                        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                            param.args[<span class="number">0</span>] = <span class="string">"Haha, eatFunc are hooked"</span>;</span><br><span class="line">                            XposedHelpers.setIntField(param.thisObject, <span class="string">"anonymoutInt"</span>, <span class="number">499</span>);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps | grep packagename</span><br></pre></td></tr></table></figure>
 
 <ol start="11">
-<li><strong>Hook内部类InnerClass的InnerFunc方法，修改参数，顺便修改类中的innerPublicInt和innerPrivateInt变量</strong></li>
+<li>建立端口转发</li>
 </ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> Class&lt;?&gt; clazz1 = XposedHelpers.findClass(<span class="string">"com.example.xposedhooktarget.HookDemo$InnerClass"</span>, loadPackageParam.classLoader);</span><br><span class="line">            XposedHelpers.findAndHookMethod(clazz1, <span class="string">"InnerFunc"</span>, String.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                        <span class="meta">@Override</span></span><br><span class="line">                        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                            param.args[<span class="number">0</span>] = <span class="string">"Haha, InnerFunc was hooked"</span>;</span><br><span class="line">                            XposedHelpers.setIntField(param.thisObject, <span class="string">"innerPublicInt"</span>, <span class="number">9</span>);</span><br><span class="line">                            XposedHelpers.setIntField(param.thisObject, <span class="string">"innerPrivateInt"</span>, <span class="number">19</span>);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb forward tcp:8700 jdwp:pid</span><br></pre></td></tr></table></figure>
 
 <ol start="12">
-<li><strong>对于一些延迟动态加载的代码,hook方式</strong></li>
+<li>查看设备参数</li>
 </ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(<span class="string">"dalvik.system.DexFile"</span>, lpparam.classLoader, <span class="string">"loadClass"</span>,</span><br><span class="line">                String.class, <span class="string">"java.lang.ClassLoader"</span>, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                        String className = (String) param.args[<span class="number">0</span>];</span><br><span class="line">                        Object result = param.getResult();</span><br><span class="line">                        <span class="keyword">if</span> (result != <span class="keyword">null</span> &amp;&amp; result <span class="keyword">instanceof</span> Class) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (<span class="string">"com.alipay.mobile.nebulauc.impl.UCWebViewClient"</span>.equals(className)) &#123;</span><br><span class="line">                                <span class="comment">// hookLoadWebViewClient(((Class) result).getClassLoader());</span></span><br><span class="line">                            &#125; </span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                &#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getprop  #该指令可以查看设备所有信息 包括cpu 网络 model等等</span><br></pre></td></tr></table></figure>
 
 <ol start="13">
-<li><strong>Hook有可变参数的方法</strong></li>
+<li>查看设备可用命令</li>
 </ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, <span class="string">"argFunc"</span>, Object[].class,<span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">             <span class="meta">@Override</span></span><br><span class="line">             <span class="function"><span class="keyword">protected</span> Object <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam methodHookParam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                </span><br><span class="line">             &#125;</span><br><span class="line">         &#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd system/bin  #该目录下可以查看所有可用的指令</span><br></pre></td></tr></table></figure>
 
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
-<li><p>无论hook公有私有方法还是静态方法 ,抑或可变参方法,甚至是带返回值的方法,统一使用<code>findAndHookMethod</code>这个Api</p>
-</li>
-<li><p>xposed无法hook接口和抽象类方法</p>
-</li>
-<li><p>Hook逻辑类可实现的接口有 : </p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../145.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../145.html" itemprop="url">android在adb shell进入linux之后mkdir提示Read-only file system解决方法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-26T16:14:19+08:00">
+                2020-10-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>前提是你手机拥有root权限, 这边以模拟器为例</p>
+</blockquote>
+<h4 id="1-进入shell模式"><a href="#1-进入shell模式" class="headerlink" title="1.进入shell模式"></a>1.进入shell模式</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb shell</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-切换root用户"><a href="#2-切换root用户" class="headerlink" title="2.切换root用户"></a>2.切换root用户</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">su</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-更改system权限"><a href="#3-更改system权限" class="headerlink" title="3.更改system权限"></a>3.更改system权限</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mount -o remount ,rw /</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-接下来即可成功创建文件夹"><a href="#4-接下来即可成功创建文件夹" class="headerlink" title="4.接下来即可成功创建文件夹"></a>4.接下来即可成功创建文件夹</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir mydir</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../147.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../147.html" itemprop="url">linux 压缩和解压缩命令gz、tar、zip、bz2</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-26T16:14:19+08:00">
+                2020-10-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="gzip"><a href="#gzip" class="headerlink" title="gzip"></a>gzip</h2><ul>
+<li>压缩后的格式为：*.gz</li>
+<li>这种压缩方式不能保存原文件；且不能压缩目录</li>
+<li>命令举例：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#压缩</span><br><span class="line">[root@localhost tmp]# gzip buodo</span><br><span class="line">[root@localhost tmp]# ls</span><br><span class="line">buodo.gz</span><br><span class="line">#解压</span><br><span class="line">[root@localhost tmp]# gunzip buodo.gz </span><br><span class="line">[root@localhost tmp]# ls</span><br><span class="line">buodo12345678</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="tar"><a href="#tar" class="headerlink" title="tar"></a>tar</h2><ul>
+<li>命令选项：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-z(gzip)      用gzip来压缩/解压缩文件</span><br><span class="line">-j(bzip2)     用bzip2来压缩/解压缩文件</span><br><span class="line">-v(verbose)   详细报告tar处理的文件信息</span><br><span class="line">-c(create)    创建新的档案文件</span><br><span class="line">-x(extract)   解压缩文件或目录</span><br><span class="line">-f(file)      使用档案文件或设备，这个选项通常是必选的。123456</span><br></pre></td></tr></table></figure>
+
 <ul>
-<li><p>安卓系统启动的时候（使用 IXposedHookZygoteInit 接口）、</p>
-</li>
-<li><p>一个新的app被加载的时候（使用 IXposedHookLoadPackage 接口）、</p>
-</li>
-<li><p>一个资源被初始化的时候（ 使用 IXposedHookInitPackageResources 接口 )</p>
-</li>
+<li>命令举例：</li>
 </ul>
-</li>
-<li><p>实现IXposedHookLoadPackage 并使用 XposedBridge.log 打印的日志,当启动第三方应用后,Android Studio控制台无法查看到日志信息,需要在xposed应用内进行查看</p>
-</li>
-<li><p>参数为基本数据类型时需要传对应包装类的type属性,比如int传Integer.TYPE, 否则提示找不到方法,如果参数为引用数据类型,那直接传xxx.class即可</p>
-</li>
-<li><ul>
-<li><p>beforeHookedMethod 会在调用原方法前执行，如果使用setResult则跳过原方法，并返回setResult参数中的值。</p>
-</li>
-<li><p>afterHookedMethod 会在调用原方法后执行，setResult可改变返回值</p>
-</li>
-<li><p>replaceHookedMethod 会完全替换原方法，即原方法不执行，且返回值可以直接return，setResult不生效。</p>
-</li>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#压缩</span><br><span class="line">[root@localhost tmp]# tar -zvcf buodo.tar.gz buodo</span><br><span class="line">[root@localhost tmp]# tar -jvcf buodo.tar.bz2 buodo </span><br><span class="line"></span><br><span class="line">#解压</span><br><span class="line">[root@localhost tmp]# tar -zvxf buodo.tar.gz </span><br><span class="line">[root@localhost tmp]# tar -jvxf buodo.tar.bz21234567</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="zip"><a href="#zip" class="headerlink" title="zip"></a>zip</h2><ul>
+<li>与gzip相比：1）可以压缩目录； 2）可以保留原文件；</li>
+<li>选项：</li>
 </ul>
-</li>
-</ol>
-<p><strong>注:每次修改完毕后需要重启才生效</strong></p>
-<h2 id="附"><a href="#附" class="headerlink" title="附"></a>附</h2><h5 id="Hook-修改方法返回值"><a href="#Hook-修改方法返回值" class="headerlink" title="Hook 修改方法返回值"></a>Hook 修改方法返回值</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, method, <span class="keyword">new</span> Object[]&#123;<span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">     <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                   param.setResult(result);  <span class="comment">// 设置返回值</span></span><br><span class="line">               &#125;</span><br><span class="line">           &#125;&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-r(recursive)    递归压缩目录内的所有文件和目录1</span><br></pre></td></tr></table></figure>
 
-<h5 id="Hook-获取方法返回值"><a href="#Hook-获取方法返回值" class="headerlink" title="Hook 获取方法返回值"></a>Hook 获取方法返回值</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(clazz, method, <span class="keyword">new</span> Object[]&#123;<span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">      <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    Object result = param.getResult(); <span class="comment">//获取返回值</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;&#125;);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>命令举例：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">#压缩和解压文件</span><br><span class="line">[root@localhost tmp]# zip boduo.zip boduo</span><br><span class="line">[root@localhost tmp]# unzip boduo.zip</span><br><span class="line"></span><br><span class="line">#压缩和解压目录</span><br><span class="line">[root@localhost tmp]# zip -r Demo.zip Demo</span><br><span class="line">  adding: Demo/ (stored 0%)</span><br><span class="line">  adding: Demo/Test2/ (stored 0%)</span><br><span class="line">  adding: Demo/Test1/ (stored 0%)</span><br><span class="line">  adding: Demo/Test1/test4 (stored 0%)</span><br><span class="line">  adding: Demo/test3 (stored 0%)</span><br><span class="line">[root@localhost tmp]# unzip Demo.zip </span><br><span class="line">Archive:  Demo.zip</span><br><span class="line">   creating: Demo/</span><br><span class="line">   creating: Demo/Test2/</span><br><span class="line">   creating: Demo/Test1/</span><br><span class="line"> extracting: Demo/Test1/test4        </span><br><span class="line"> extracting: Demo/test3  123456789101112131415161718</span><br></pre></td></tr></table></figure>
 
-<h5 id="Hook-获取方法传入的参数值"><a href="#Hook-获取方法传入的参数值" class="headerlink" title="Hook 获取方法传入的参数值"></a>Hook 获取方法传入的参数值</h5><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(claName, cl, <span class="string">"i"</span>, String.<span class="keyword">class</span>, String.<span class="keyword">class</span>, Object[].<span class="keyword">class</span>, new XC_MethodHook() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> void afterHookedMethod(MethodHookParam param) throws Throwable &#123;</span><br><span class="line">         <span class="comment">// 数组param.args存储的参数列表里的值</span></span><br><span class="line">         XposedBridge.log(TAG + param.args[<span class="number">0</span>]);</span><br><span class="line">         XposedBridge.log(TAG + param.args[<span class="number">1</span>]);</span><br><span class="line">         XposedBridge.log(TAG + param.args[<span class="number">2</span>]);</span><br><span class="line">          &#125;</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="bzip2"><a href="#bzip2" class="headerlink" title="bzip2"></a>bzip2</h2><ul>
+<li>压缩后的格式：.bz2</li>
+<li>参数</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-k    产生压缩文件后保留原文件1</span><br></pre></td></tr></table></figure>
 
-<h5 id="Hook-给方法传值"><a href="#Hook-给方法传值" class="headerlink" title="Hook 给方法传值"></a>Hook 给方法传值</h5><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Class cla = XposedHelpers.findClass(className, loadPackageParam.classLoader);</span><br><span class="line"><span class="built_in">Object</span> com = XposedHelpers.callStaticMethod(cla, <span class="string">"getInstance"</span>);</span><br><span class="line">XposedHelpers.callMethod(com, <span class="string">"setDebug"</span>, <span class="keyword">true</span>); <span class="comment">// 传入指定值</span></span><br></pre></td></tr></table></figure>
-
-<h5 id="Hook-获取Intent的值"><a href="#Hook-获取Intent的值" class="headerlink" title="Hook 获取Intent的值"></a>Hook 获取Intent的值</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">hookGetIntent</span><span class="params">(XC_LoadPackage.LoadPackageParam loadPackageParam)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        XposedHelpers.findAndHookMethod(<span class="string">"android.app.Activity"</span>, loadPackageParam.classLoader, <span class="string">"getIntent"</span>, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                Intent sou = (Intent) param.getResult();</span><br><span class="line">                KLog.d(<span class="string">"hookGetIntent:"</span> + sou.toURI().toString());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h5 id="Hook-广播发送的Intent信息"><a href="#Hook-广播发送的Intent信息" class="headerlink" title="Hook 广播发送的Intent信息"></a>Hook 广播发送的Intent信息</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">hookSendBroadcast</span><span class="params">(XC_LoadPackage.LoadPackageParam loadPackageParam)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        XposedHelpers.findAndHookMethod(<span class="string">"android.content.ContextWrapper"</span>, loadPackageParam.classLoader, <span class="string">"sendBroadcast"</span>, Intent.class, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                Intent sou = (Intent) param.args[<span class="number">0</span>];</span><br><span class="line">                KLog.d(<span class="string">"sendBroadcast:"</span> + sou.toURI().toString());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>Xposed一般Hook的是默认的dex文件，但是现在很多的APP都有多个Dex文件，所以使用Xposed时，经常遇到类名路径正确却出现ClassNotFoundError找不到类的错误。要解决这个问题，需要获取对应Dex文件的上下文环境。</p>
-<p>Android在加载dex文件后会创建一个Application类，然后会调用attach方法，attach方法的参数就是上下文context，而且attach方法是final方法，不会因为被覆盖而hook不到，拿到这个context就可以获取对应的classload，然后就可以顺利hook到multidex的类了。</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">XposedHelpers.findAndHookMethod(Application.<span class="keyword">class</span>, <span class="string">"attach"</span>, Context.<span class="keyword">class</span>, new XC_MethodHook() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> void afterHookedMethod(MethodHookParam param) throws Throwable &#123;</span><br><span class="line">        ClassLoader cl = ((Context) param.args[<span class="number">0</span>]).getClassLoader(); <span class="comment">// 获取ClassLoader</span></span><br><span class="line">        Class&lt;?&gt; hookClass = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            hookClass = cl.loadClass(claName); <span class="comment">// 获取Class</span></span><br><span class="line">            <span class="comment">// 使用cl 和 hookClass 完成hook</span></span><br><span class="line">            XposedHelpers.setStaticIntField(hookClass, fieldName, <span class="keyword">val</span>);</span><br><span class="line">            XposedHelpers.findAndHookMethod(claName, cl, <span class="string">"i"</span>, String.<span class="keyword">class</span>, String.<span class="keyword">class</span>, Object[].<span class="keyword">class</span>, new XC_MethodHook() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="keyword">protected</span> void afterHookedMethod(MethodHookParam param) throws Throwable &#123;</span><br><span class="line">                    XposedBridge.log(TAG + param.args[<span class="number">0</span>]);</span><br><span class="line">                    XposedBridge.log(TAG + param.args[<span class="number">1</span>]);</span><br><span class="line">                    XposedBridge.log(TAG + param.args[<span class="number">2</span>]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>命令举例</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#压缩</span><br><span class="line">[root@localhost tmp]# bzip2 boduo</span><br><span class="line">[root@localhost tmp]# bzip2 -k boduo</span><br><span class="line"></span><br><span class="line">#解压</span><br><span class="line">[root@localhost tmp]# bunzip2 boduo.bz2</span><br></pre></td></tr></table></figure>
 
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
 <p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
@@ -526,7 +1100,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../133.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../148.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -545,7 +1119,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../133.html" itemprop="url">Linux系统查看时区以及时区修改</a></h1>
+                <a class="post-title-link" href="../../148.html" itemprop="url">adb shell中设置android系统linux内部环境变量</a></h1>
         
 
         <div class="post-meta">
@@ -557,8 +1131,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-12T16:14:19+08:00">
-                2020-10-12
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-26T16:14:19+08:00">
+                2020-10-26
               </time>
             
 
@@ -597,1072 +1171,48 @@
       
         
           
-            <p><code>wp-config.php</code>里加入下面代码:</p>
-<h4 id="这里以Ubuntu系统为例"><a href="#这里以Ubuntu系统为例" class="headerlink" title="这里以Ubuntu系统为例"></a>这里以Ubuntu系统为例</h4><p><strong>查看时区:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date -R</span><br></pre></td></tr></table></figure>
-
-<p><strong>修改时区为东八区</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">timedatectl set-timezone Asia/Shanghai</span><br></pre></td></tr></table></figure>
-
-<h5 id="老版本系统以上修改时区指令可能不生效-需要采用以下办法"><a href="#老版本系统以上修改时区指令可能不生效-需要采用以下办法" class="headerlink" title="老版本系统以上修改时区指令可能不生效, 需要采用以下办法"></a>老版本系统以上修改时区指令可能不生效, 需要采用以下办法</h5><p><strong>1.运行tzselect</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:/# tzselect</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201012105429.png" alt></p>
-<p><strong>在这里我们选择亚洲 Asia，确认之后选择中国（China)，最后选择北京(Beijing)</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201012105446.png" alt>**</p>
-<p><strong>2.复制文件到/etc目录下</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:/# cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime</span><br></pre></td></tr></table></figure>
-
-<p><strong>3.再次查看时间date -R，已经修改为北京时间</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201012105502.png" alt></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../134.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../134.html" itemprop="url">docker设置启动docker后 开启或关闭自启容器</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-12T16:14:19+08:00">
-                2020-10-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>我们需要在<code>docker</code>启动的时候自动运行容器, 具体操作分为以下两种情况</p>
-<h3 id="容器未创建"><a href="#容器未创建" class="headerlink" title="容器未创建"></a>容器未创建</h3><p>如果容器还没有创建, 可以采用增加容器运行参数的方式实现</p>
-<p>命令如下：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run xxx –-restart=always</span><br></pre></td></tr></table></figure>
-
-<h3 id="容器已创建"><a href="#容器已创建" class="headerlink" title="容器已创建"></a>容器已创建</h3><p>当然如果你的容器已经启动,可以通过<code>update</code>命令进行修改.<br>命令如下：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker update –-restart=always &lt;CONTAINER ID&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="取消自启动"><a href="#取消自启动" class="headerlink" title="取消自启动"></a>取消自启动</h3><p>如果你想取消掉<br>命令如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker update --restart=no &lt;CONTAINER ID&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="容器批量操作"><a href="#容器批量操作" class="headerlink" title="容器批量操作"></a>容器批量操作</h3><ol>
-<li><p>给已启动所有容器设置自启动</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker update --restart=no $(docker ps -q)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>给所有容器设置自启动 包括停止的容器</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker update --restart=no $(docker ps -aq)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>查看容器是否配置成功</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker inspect 容器名</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210916151358153.png" alt="image-20210916151358153"></p>
-</li>
+            <blockquote>
+<p>Android系统本身就是基于linux系统， 有时候我们需要给其配置环境变量，如下操作：</p>
+</blockquote>
+<h2 id="配置步骤"><a href="#配置步骤" class="headerlink" title="配置步骤"></a>配置步骤</h2><ol>
+<li><strong>进入shell环境</strong></li>
 </ol>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../135.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../135.html" itemprop="url">使用docker在服务器部署vscode实现云端web开发</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-12T16:14:19+08:00">
-                2020-10-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>采用codercom/code-server</strong></p>
-<h3 id="拉取codercom-code-server镜像"><a href="#拉取codercom-code-server镜像" class="headerlink" title="拉取codercom/code-server镜像"></a>拉取codercom/code-server镜像</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull codercom/code-server</span><br></pre></td></tr></table></figure>
-
-<h3 id="运行code-server-容器"><a href="#运行code-server-容器" class="headerlink" title="运行code-server 容器"></a>运行code-server 容器</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --name=code_server  -p 8443:8080 -p 4001:4000 -v /root/songjian:/home/coder/songjian -h code_server -e PASSWORD=123  codercom/code-server</span><br></pre></td></tr></table></figure>
-
-<h3 id="浏览器中输入ip：8843-开始云端开发之旅"><a href="#浏览器中输入ip：8843-开始云端开发之旅" class="headerlink" title="浏览器中输入ip：8843 开始云端开发之旅"></a>浏览器中输入ip：8843 开始云端开发之旅</h3><h3 id="编辑代码时出现权限问题"><a href="#编辑代码时出现权限问题" class="headerlink" title="编辑代码时出现权限问题"></a>编辑代码时出现权限问题</h3><p>解决方案：<br>在宿主机中开放读写权限</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod a+rwx -R /root/songjian/</span><br></pre></td></tr></table></figure>
-
-<p>或者在容器运行的时候指定用户组为root <strong>(推荐)</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it -u root --name=code_server  -p 8443:8080 -p 4001:4000 -v /root/songjian:/home/coder/songjian -h code_server -e PASSWORD=123  codercom/code-server</span><br></pre></td></tr></table></figure>
-
-<p>问题解决</p>
-<h3 id><a href="#" class="headerlink" title></a></h3><p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../128.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../128.html" itemprop="url">MySQL8.0登录提示caching_sha2_password问题解决方法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-30T16:14:19+08:00">
-                2020-09-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>用docker构建mysql容器后连接遇到以下问题</p>
-<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Authentication plugin &apos;caching_sha2_password&apos; cannot be loaded: dlopen(/usr/local/mysql/lib/plugin/caching_sha2_password.so, 2): image not found</span><br><span class="line">1</span><br><span class="line">mysqli_real_connect(): The server requested authentication method unknown to the client [caching_sha2_password]</span><br><span class="line">1</span><br><span class="line">mysqli_real_connect(): (HY000/2054): The server requested authentication method unknown to the client</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
-
-<p><a href="https://mysqlserverteam.com/mysql-8-0-4-new-default-authentication-plugin-caching_sha2_password/" target="_blank" rel="noopener">MySQL官方说明</a></p>
-<h2 id="解决方法1-docker"><a href="#解决方法1-docker" class="headerlink" title="解决方法1(docker)"></a>解决方法1(docker)</h2><h4 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h4><ol>
-<li>第一次构建容器/安装</li>
-<li>已安装完成后新增用户</li>
-</ol>
-<h4 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h4><p>配置 <strong>mysql.cnf</strong> 配置默认身份验证插件</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[mysqld]</span></span><br><span class="line"><span class="attr">default_authentication_plugin</span> = mysql_native_password</span><br><span class="line">12</span><br></pre></td></tr></table></figure>
-
-<h4 id="验证是否生效"><a href="#验证是否生效" class="headerlink" title="验证是否生效"></a>验证是否生效</h4><p>使用CLI进入MySQL</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql -u root -p</span></span><br><span class="line">1</span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> use mysql;</span></span><br><span class="line">Reading table information for completion of table and column names</span><br><span class="line">You can turn off this feature to get a quicker startup with -A</span><br><span class="line"></span><br><span class="line">Database changed</span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> SELECT Host, User, plugin from user;</span></span><br><span class="line">+-----------+------------------+-----------------------+</span><br><span class="line">| Host      | User             | plugin                |</span><br><span class="line">+-----------+------------------+-----------------------+</span><br><span class="line">| %         | root             | mysql_native_password |</span><br><span class="line">| localhost | mysql.infoschema | caching_sha2_password |</span><br><span class="line">| localhost | mysql.session    | caching_sha2_password |</span><br><span class="line">| localhost | mysql.sys        | caching_sha2_password |</span><br><span class="line">| localhost | root             | mysql_native_password |</span><br><span class="line">+-----------+------------------+-----------------------+</span><br><span class="line">5 rows in set (0.00 sec)</span><br><span class="line">12345678910111213141516</span><br></pre></td></tr></table></figure>
-
-<p>root用户的身份验证器插件已经变为：<strong>mysql_native_password</strong></p>
-<h2 id="解决方法2"><a href="#解决方法2" class="headerlink" title="解决方法2"></a>解决方法2</h2><h4 id="适用场景-1"><a href="#适用场景-1" class="headerlink" title="适用场景"></a>适用场景</h4><ol>
-<li><strong>MySQL</strong> 已成功安装完成后</li>
-</ol>
-<h4 id="查看身份验证类型"><a href="#查看身份验证类型" class="headerlink" title="查看身份验证类型"></a>查看身份验证类型</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; use mysql;</span><br><span class="line">Database changed</span><br><span class="line"></span><br><span class="line">mysql&gt; SELECT Host, User, plugin from user;</span><br><span class="line">+-----------+------------------+-----------------------+</span><br><span class="line">| Host      | User             | plugin                |</span><br><span class="line">+-----------+------------------+-----------------------+</span><br><span class="line">| %         | root             | caching_sha2_password |</span><br><span class="line">| localhost | mysql.infoschema | caching_sha2_password |</span><br><span class="line">| localhost | mysql.session    | caching_sha2_password |</span><br><span class="line">| localhost | mysql.sys        | caching_sha2_password |</span><br><span class="line">| localhost | root             | caching_sha2_password |</span><br><span class="line">+-----------+------------------+-----------------------+</span><br><span class="line">5 rows in set (0.00 sec)</span><br><span class="line">1234567891011121314</span><br></pre></td></tr></table></figure>
-
-<p><code>root</code> 用户的验证器插件为 <strong>caching_sha2_password</strong></p>
-<h4 id="修改身份验证类型-修改密码"><a href="#修改身份验证类型-修改密码" class="headerlink" title="修改身份验证类型(修改密码)"></a>修改身份验证类型(修改密码)</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; ALTER USER &apos;root&apos;@&apos;%&apos; IDENTIFIED WITH mysql_native_password BY &apos;123456&apos;;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER USER &apos;root&apos;@&apos;localhost&apos; IDENTIFIED WITH mysql_native_password BY &apos;123456&apos;;</span><br><span class="line">Query OK, 0 rows affected (0.01 sec)</span><br><span class="line">12345</span><br></pre></td></tr></table></figure>
-
-<h4 id="使生效"><a href="#使生效" class="headerlink" title="使生效"></a>使生效</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; FLUSH PRIVILEGES;</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
-
-<h4 id="验证是否生效-1"><a href="#验证是否生效-1" class="headerlink" title="验证是否生效"></a>验证是否生效</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SELECT Host, User, plugin from user;</span><br><span class="line">+-----------+------------------+-----------------------+</span><br><span class="line">| Host      | User             | plugin                |</span><br><span class="line">+-----------+------------------+-----------------------+</span><br><span class="line">| %         | root             | mysql_native_password |</span><br><span class="line">| localhost | mysql.infoschema | caching_sha2_password |</span><br><span class="line">| localhost | mysql.session    | caching_sha2_password |</span><br><span class="line">| localhost | mysql.sys        | caching_sha2_password |</span><br><span class="line">| localhost | root             | mysql_native_password |</span><br><span class="line">+-----------+------------------+-----------------------+</span><br><span class="line">5 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../129.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../129.html" itemprop="url">关于WordPress 安装主题或插件时提示需要登陆FTP解决方法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-30T16:14:19+08:00">
-                2020-09-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>wp-config.php里加入下面代码:</p>
-<p><strong>在wp-config.php里加入下面代码:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">define( &apos;FS_METHOD&apos;,  &apos;direct&apos;);</span><br><span class="line">define( &apos;FS_CHMOD_DIR&apos;, 0777);</span><br><span class="line">define( &apos;FS_CHMOD_FILE&apos;, 0777);</span><br></pre></td></tr></table></figure>
-
-<p><strong>加入完毕后不再提示FTP登录, 但是有可能安装插件时提示 安装失败，无法创建目录</strong></p>
-<p>解决方案:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">chmod -R 777 wp-content/ </span><br><span class="line">chmod -R 777 theme/ </span><br><span class="line">chmod -R 777 plugin/ </span><br><span class="line">chmod -R 777 language/</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../130.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../130.html" itemprop="url">怎样修改Wordpress地址和站点地址怎样改回IP地址</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-30T16:14:19+08:00">
-                2020-09-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="wordpress搭建后地址栏页面显示IP地址的问题"><a href="#wordpress搭建后地址栏页面显示IP地址的问题" class="headerlink" title="wordpress搭建后地址栏页面显示IP地址的问题"></a>wordpress搭建后地址栏页面显示IP地址的问题</h2><h3 id="如果可以登录wordpress后台管理面板"><a href="#如果可以登录wordpress后台管理面板" class="headerlink" title="如果可以登录wordpress后台管理面板"></a>如果可以登录wordpress后台管理面板</h3><p>1.先点击wordpress右边的小房子图标</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200930112809.png" alt> </p>
-<p>2.点击仪表盘图片进入仪表盘菜单</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200930112830.png" alt></p>
-<p>3.点击设置，进入设置界面，找到WordPress地址（URL）和站点地址（URL）所对应的ip地址，如下图</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200930112846.png" alt></p>
-<p>4.将ip地址更改为你网站的域名，之后保存，如下图</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200930112859.png" alt></p>
-<p>5.清空浏览器的缓存，之后用域名访问网站，就不会在地址栏出现ip地址了。</p>
-<h3 id="如果无法登陆wordpress"><a href="#如果无法登陆wordpress" class="headerlink" title="如果无法登陆wordpress"></a>如果无法登陆wordpress</h3><p>那么需要修改数据库 如图</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/%E6%8D%95%E8%8E%B72.PNG" alt></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/%E6%8D%95%E8%8E%B7.PNG" alt></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/%E6%8D%95%E8%8E%B72.PNG" alt><br><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/%E6%8D%95%E8%8E%B7.PNG" alt></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../131.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../131.html" itemprop="url">mysql使用命令导入和导出sql文件</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-30T16:14:19+08:00">
-                2020-09-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="window下"><a href="#window下" class="headerlink" title="window下"></a>window下</h3><p><strong>1.导出整个数据库，首先打开要导出的目录</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -u 用户名 -p 数据库名 &gt; 导出的文件名</span><br><span class="line"></span><br><span class="line">mysqldump -u dbuser -p dbname &gt; dbname.sql 下一行需要输入密码</span><br><span class="line"></span><br><span class="line">mysqldump -uroot -proot [dbname]&gt; english.sql 在本行直接输入密码</span><br></pre></td></tr></table></figure>
-
-<p><strong>2.导出一个表</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -u 用户名 -p 数据库名 表名&gt; 导出的文件名</span><br><span class="line"></span><br><span class="line">mysqldump -u dbuser -p dbname users&gt; dbname_users.sql</span><br></pre></td></tr></table></figure>
-
-<p><strong>3.导出一个数据库结构</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -u dbuser -p -d --add-drop-table dbname &gt;d:/dbname_db.sql</span><br><span class="line"></span><br><span class="line">-d 没有数据 --add-drop-table 在每个create语句之前增加一个drop table</span><br></pre></td></tr></table></figure>
-
-<p><strong>4.导入数据库</strong></p>
-<p>常用source 命令</p>
-<p>进入mysql数据库控制台，如</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p</span><br><span class="line"></span><br><span class="line">mysql&gt;use 数据库</span><br></pre></td></tr></table></figure>
-
-<p>然后使用source命令，后面参数为脚本文件(如这里用到的.sql)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;source d:/dbname.sql</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<h3 id="linux下"><a href="#linux下" class="headerlink" title="linux下"></a>linux下</h3><p><strong>一、导出数据库用mysqldump命令（注意mysql的安装路径，即此命令的路径）：</strong></p>
-<p>1、导出数据和表结构：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -u用户名 -p密码 数据库名 &gt; 数据库名.sql</span><br><span class="line"></span><br><span class="line">\#/usr/local/mysql/bin/  mysqldump -uroot -p abc &gt; abc.sql</span><br></pre></td></tr></table></figure>
-
-<p>敲回车后会提示输入密码</p>
-<p>2、只导出表结构</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -u用户名 -p密码 -d 数据库名 &gt; 数据库名.sql</span><br><span class="line"></span><br><span class="line">\#/usr/local/mysql/bin/  mysqldump -uroot -p -d abc &gt; abc.sql</span><br><span class="line"></span><br><span class="line">注：/usr/local/mysql/bin/ ---&gt; mysql的data目录</span><br></pre></td></tr></table></figure>
-
-
-
-<p><strong>二、导入数据库</strong></p>
-<p>1、首先建空数据库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;create database abc;</span><br></pre></td></tr></table></figure>
-
-<p>2、导入数据库</p>
-<p>方法一：</p>
-<p>（1）选择数据库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;use abc;</span><br></pre></td></tr></table></figure>
-
-<p>（2）设置数据库编码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;set names utf8;</span><br></pre></td></tr></table></figure>
-
-<p>（3）导入数据（注意sql文件的路径）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;source /home/abc/abc.sql;</span><br></pre></td></tr></table></figure>
-
-<p>方法二：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql -u用户名 -p密码 数据库名 &lt; 数据库名.sql</span><br><span class="line"></span><br><span class="line">\#mysql -uabc_f -p abc &lt; abc.sql</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../132.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../132.html" itemprop="url">Linux文件误删后如何恢复</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-30T16:14:19+08:00">
-                2020-09-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>以下方法适用于文件或目录被删,如果被覆盖则无法恢复</strong></p>
-<h3 id="方法一-使用系统自带的还原工具debugfs"><a href="#方法一-使用系统自带的还原工具debugfs" class="headerlink" title="方法一 使用系统自带的还原工具debugfs"></a>方法一 使用系统自带的还原工具<code>debugfs</code></h3><ol>
-<li>第一步 查看文件或目录锁挂载的磁盘名</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df  /root/你被删的目录</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb shell</span><br></pre></td></tr></table></figure>
 
 <ol start="2">
-<li>输入<code>debugfs</code>指令进入命令区</li>
+<li><strong>更改system系统为可读写</strong></li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@xxx:# /debugfs</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mount -o remount ,rw /</span><br></pre></td></tr></table></figure>
 
 <ol start="3">
-<li>进入挂载磁盘 查找被删目录和文件</li>
+<li><strong>将 /system/etc/目录下的 mkshrc文件拉出来进行修改  该文件几位系统环境变量配置文件</strong></li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">open dev/vda1 #这个是我服务磁盘名 你的也许不一样</span><br><span class="line">ls -d /root/你被删的目录 #查找被删文件</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb -s 设备名 pull /system/etc/mkshrc  ./</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200930130559.png" alt></p>
-<p><strong>带尖括号开头的文件表示已经被删除的 无尖括号表示当前已经存在的文件</strong></p>
-<p>接下来 咱们需要借助尖括号中的地址进行文件还原</p>
 <ol start="4">
-<li>根据node地址查找文件信息, 在debugfs命令区中输入</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">logdump -i &lt;19662057&gt;</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200930131041.png" alt></p>
-<ol start="5">
-<li><p>文件还原</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dd  if=/dev/vda1 of=/root/被删除文件  bs=3456 count=1 skip=524974</span><br></pre></td></tr></table></figure>
-
+<li><p><strong>使用文本编辑器编辑 mkshrc文件，找到 ${TERM:=vt100} ${HOME:=/data} ${MKSH:=/system/bin/sh}  这么一行</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">&#123;TERM:=vt100&#125; <span class="variable">$&#123;HOME:=/data&#125;</span> <span class="variable">$&#123;MKSH:=/system/bin/sh&#125;</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>将环境变量依葫芦画瓢添加至改行尾部， 如</strong></p>
 </li>
 </ol>
-<p>*　bs对应offset 表示文件大小<br>*　count 表示需要还原几份<br>*　skip对应block值 表示跳过blocks个块后再开始复制</p>
-<p>至此　恢复完毕</p>
-<p>###　方法二 使用第三方的还原工具<code>extundelete</code></p>
-<ol>
-<li>第一步 安装 </li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install extundelete -y</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>第二步 获取被删文件或目录的node</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -lia 目标目录</span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li>根据node查看文件信息</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extundelete /dev/sda5 --inode 24904454</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#以下为控制台输出信息</span></span><br><span class="line">File name                                       <span class="params">| Inode number |</span> Deleted status</span><br><span class="line">.                                                 <span class="number">2</span></span><br><span class="line">..                                                <span class="number">2</span></span><br><span class="line">deletetest                                        <span class="number">12</span>             Deleted</span><br><span class="line">tmppasswd                                         <span class="number">14</span>             Deleted</span><br></pre></td></tr></table></figure>
-
-<ol start="4">
-<li>恢复全部数据</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extundelete /dev/sda5 --restore-all</span><br></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>恢复单个数据</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extundelete /dev/sdb5 --restore-file xxx</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">&#123;TERM:=vt100&#125; <span class="variable">$&#123;HOME:=/data&#125;</span> <span class="variable">$&#123;MKSH:=/system/bin/sh&#125;</span> <span class="variable">$&#123;mypath:=/system/bin/my&#125;</span></span></span><br></pre></td></tr></table></figure>
 
 <ol start="6">
-<li>恢复指定目录</li>
+<li><p><strong>然后找到export处，将自己的环境变量加到后面：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export HOME HOSTNAME MKSH SHELL TERM USER mypath</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>将修改完后的mkshrc文件push会Android系统进行替换</strong></p>
+</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extundelete /dev/sdb5 --restore-directory  xxx</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb -s 设备名 push ./mkshrc /system/etc/mkshrc</span><br></pre></td></tr></table></figure>
 
-<p>至此 ，恢复完毕</p>
+<ol start="8">
+<li><strong>进入shell环境 使用 export 命令即可查看刚刚配置的环境变量参数</strong></li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
 <p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
@@ -1713,7 +1263,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../123.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../149.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -1732,7 +1282,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../123.html" itemprop="url">使用nginx部署django项目需要注意的问题</a></h1>
+                <a class="post-title-link" href="../../149.html" itemprop="url">arm32系统的树莓派4b docker安装32位java镜像并部署springboot项目</a></h1>
         
 
         <div class="post-meta">
@@ -1744,8 +1294,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-23T17:42:15+08:00">
-                2020-09-23
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-26T16:14:19+08:00">
+                2020-10-26
               </time>
             
 
@@ -1784,27 +1334,626 @@
       
         
           
-            <h3 id="首先配置nginx-conf文件"><a href="#首先配置nginx-conf文件" class="headerlink" title="首先配置nginx.conf文件"></a>首先配置nginx.conf文件</h3><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">worker_processes</span>  <span class="number">1</span><span class="string">;</span></span><br><span class="line"><span class="string">events</span> <span class="string">&#123;</span></span><br><span class="line">        <span class="string">worker_connections</span>  <span class="number">1024</span><span class="string">;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">http&#123;</span></span><br><span class="line">	<span class="string">server&#123;</span></span><br><span class="line">        <span class="string">listen</span> <span class="number">80</span><span class="string">;</span></span><br><span class="line">        <span class="string">server_name</span> <span class="string">py.newban.cn;</span>   <span class="comment">#</span></span><br><span class="line">        <span class="string">root</span> <span class="string">/usr/share/nginx/html/blog;</span></span><br><span class="line">        <span class="string">index</span> <span class="string">index.html;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">server&#123;</span></span><br><span class="line">    <span class="string">listen</span> <span class="number">80</span><span class="string">;</span></span><br><span class="line">    <span class="string">server_name</span> <span class="string">blog.newban.cn;</span>   <span class="comment">#</span></span><br><span class="line">    <span class="string">root</span> <span class="string">/usr/share/nginx/html/blog2;</span></span><br><span class="line">    <span class="string">index</span> <span class="string">index.html;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> <span class="comment">#反向代理部分</span></span><br><span class="line"><span class="string">upstream</span> <span class="string">my.blog&#123;</span> <span class="comment">#部署django 名称不能使用下滑线分割比如my_blog 否则报错</span></span><br><span class="line">	<span class="string">server</span> <span class="number">118.10</span><span class="number">.25</span><span class="number">.17</span><span class="string">:8000</span> <span class="string">weight=1;</span></span><br><span class="line">	<span class="comment">#负载均衡 随机访问 权重1：1 各占50%</span></span><br><span class="line">	<span class="string">server</span> <span class="number">118.10</span><span class="number">.25</span><span class="number">.17</span><span class="string">:8001</span>  <span class="string">weight=1;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">server&#123;</span></span><br><span class="line">    <span class="string">listen</span> <span class="number">80</span><span class="string">;</span></span><br><span class="line">    <span class="string">server_name</span> <span class="string">py.insoan.com;</span>   <span class="comment">#</span></span><br><span class="line">	<span class="string">location</span> <span class="string">/</span> <span class="string">&#123;</span></span><br><span class="line">         <span class="string">proxy_pass</span> <span class="attr">http://my.blog;</span></span><br><span class="line">        <span class="string">index</span> <span class="string">index.html;</span></span><br><span class="line">		<span class="string">&#125;</span></span><br><span class="line">	<span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+            <p>最近通过docker在树莓派上部署springboot项目，然而报错了，因为直接下载的jdk不支持。<br>先看一下之前的docker文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">FROM java:8</span><br><span class="line">ADD meeting-0.0.1-SNAPSHOT.jar /meeting-1.0-SNAPSHOT.jar</span><br><span class="line">EXPOSE 8084</span><br><span class="line">ENTRYPOINT [&quot;java&quot;, &quot;-jar&quot;, &quot;/meeting-1.0-SNAPSHOT.jar&quot;, &quot;&quot;]</span><br><span class="line">1234</span><br></pre></td></tr></table></figure>
 
-<h3 id="问题1-DisallowedHost-at"><a href="#问题1-DisallowedHost-at" class="headerlink" title="问题1 DisallowedHost at /"></a>问题1 DisallowedHost at /</h3><p>使用 nginx 部署django时，会出现下面的错误</p>
+<p>这里从docker镜像官网获取的java是64位的，树莓派32位系统不能用，所以需要自己弄一个镜像。<br><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201026115311.png" alt></p>
 <ol>
-<li>首先使用的域名不符合 RFC 1034/1035.规范时，会出现下面的错误（如包含下划线）</li>
+<li>首先去oracle下载一个32位的arm镜像，我下载了<code>jdk-8u241-linux-arm32-vfp-hflt.tar.gz</code>，注意不能下载错。</li>
+<li>将镜像解压缩并放置到Linux的<code>/usr/lib/jvm</code>文件夹下<br><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201026115325.png" alt></li>
+<li>打开文件<code>~/.bashrc</code>，增加以下内容</li>
 </ol>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DisallowedHost at /Invalid HTTP_HOST header: <span class="string">'learning_log.cent.com'</span>. The domain name provided <span class="keyword">is</span> <span class="keyword">not</span> valid according to RFC <span class="number">1034</span>/<span class="number">1035.</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">nano ~/.bashrc</span><br><span class="line">1</span><br><span class="line">export JAVA_HOME=/usr/lib/jvm/jdk1.8.0_241</span><br><span class="line">export JRE_HOME=$&#123;JAVA_HOME&#125;/jre</span><br><span class="line">export CLASSPATH=.:$&#123;JAVA_HOME&#125;/lib:$&#123;JRE_HOME&#125;/lib</span><br><span class="line">export PATH=$&#123;JAVA_HOME&#125;/bin:$PATH</span><br><span class="line">1234</span><br></pre></td></tr></table></figure>
 
-<ol start="2">
-<li>解决方式：</li>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201026115339.png" alt></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201026115352.png" alt></p>
+<ol start="4">
+<li>查看是否生效</li>
 </ol>
-<p>修改域名，去除下划线，即将 learning_log.cent.com 修改成 llog.cent.com</p>
-<ol start="3">
-<li>再重新访问出现另外一个错误</li>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">source ~/.bashrc</span><br><span class="line">java -version</span><br><span class="line">12</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201026115434.png" alt></p>
+<ol>
+<li>编写Dockerfile文件：</li>
 </ol>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">invalid http_host header</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">#Docker image of JDK8 in ARM32</span><br><span class="line"># VERSION 8</span><br><span class="line"># Author: yuwen</span><br><span class="line">#基础镜像使用的是OpenJDK官方镜像公用的</span><br><span class="line">FROM buildpack-deps:stretch-scm</span><br><span class="line">#作者</span><br><span class="line">MAINTAINER yuwen &lt;yuwengoku@163.com&gt;</span><br><span class="line"># Default to UTF-8 file.encoding</span><br><span class="line">ENV LANG C.UTF-8</span><br><span class="line">ENV JAVA_HOME /usr/local/jdk8</span><br><span class="line">ENV PATH $JAVA_HOME/bin:$PATH</span><br><span class="line">ENV JDK_FILE jdk-8u241-linux-arm32-vfp-hflt.tar.gz</span><br><span class="line">COPY $JDK_FILE /usr/local/</span><br><span class="line">RUN mkdir -p &quot;$JAVA_HOME&quot;; \</span><br><span class="line">    tar --extract \</span><br><span class="line">		--file /usr/local/$JDK_FILE \</span><br><span class="line">		--directory &quot;$JAVA_HOME&quot; \</span><br><span class="line">		--strip-components 1 \</span><br><span class="line">		--no-same-owner; \</span><br><span class="line">    rm /usr/local/$JDK_FILE</span><br><span class="line">1234567891011121314151617181920</span><br></pre></td></tr></table></figure>
+
+<p>其中，<strong>from</strong>不要修改，<strong>作者</strong>可以修改，其他的不要变化即可。</p>
+<ol>
+<li>将Dockerfile文件和下载的镜像一起拷贝到同一个目录，并创建镜像<br> <img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201026115516.png" alt><br>然后执行创建镜像命令：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker build -t arm32jdk:8 .</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201026115529.png" alt><br>\7. 创建好了以后，就可以利用这个我们自己创建的jdk镜像部署springboot项目了<br>我创建自己的springboot项目的Dockerfile文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">FROM arm32jdk:8</span><br><span class="line">ADD meeting-0.0.1-SNAPSHOT.jar /meeting-1.0-SNAPSHOT.jar</span><br><span class="line">EXPOSE 8084</span><br><span class="line">ENTRYPOINT [&quot;java&quot;, &quot;-jar&quot;, &quot;/meeting-1.0-SNAPSHOT.jar&quot;, &quot;&quot;]</span><br><span class="line">1234</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>这里我创建好自己的镜像后，创建容器还遇到了一个问题，就是容器创建默认的时区是中时区，即(UTC+0)<br><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201026115544.png" alt><br>那么获取的系统时间就不对，所以创建容器的时候需要指定时区为上海(UTC+8)，即东八区：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker run --name meeting -e TZ=&quot;Asia/Shanghai&quot; -p 8084:8084 -d --restart=always meeting</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+
+<p>然后进入容器重新查看时区：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker exec -i -t  gateway-server /bin/bash</span><br><span class="line">date -R</span><br><span class="line">12</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201026115556.png" alt></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../146.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../146.html" itemprop="url">linux查看系统架构的几种方法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-26T16:14:19+08:00">
+                2020-10-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>有时候,咱们不清楚自己安装的操作系统是什么架构的x86还是arm, 64位还是32位， 可以通过以下指令进行查询</p>
+</blockquote>
+<h2 id="查看是x86还是arm系统"><a href="#查看是x86还是arm系统" class="headerlink" title="查看是x86还是arm系统"></a>查看是x86还是arm系统</h2><h4 id="1-uname-a-命令"><a href="#1-uname-a-命令" class="headerlink" title="1.uname -a 命令"></a>1.<code>uname -a</code> 命令</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -a  //如果输出带有x86字样即为x86系统 带有arm字样则位arm系统</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-file-命令"><a href="#2-file-命令" class="headerlink" title="2. file 命令"></a>2. <strong>file</strong> 命令</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">file /sbin/init //如果输出带有x86字样即为x86系统</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看系统是64位还是32位"><a href="#查看系统是64位还是32位" class="headerlink" title="查看系统是64位还是32位"></a>查看系统是64位还是32位</h2><h4 id="1-getconf-命令"><a href="#1-getconf-命令" class="headerlink" title="1.getconf 命令"></a>1.getconf 命令</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getconf LONG_BIT  //如果输出32即为32位系统 输出64即为64位系统</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-dpkg-命令"><a href="#2-dpkg-命令" class="headerlink" title="2.dpkg 命令"></a>2.dpkg 命令</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dpkg --print-architecturemkdir mydir //如果当前 Linux 是 64 位则输出 amd64，是 32 位则会输出 i386</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-arch-命令"><a href="#3-arch-命令" class="headerlink" title="3.arch 命令"></a>3.arch 命令</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arch   //如果输出 x86_64 则表示为 64 位系统，如果输出 i686 或 i386 则表示为 32 位系统</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-hostnamectl-指令"><a href="#4-hostnamectl-指令" class="headerlink" title="4. hostnamectl 指令"></a>4. hostnamectl 指令</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hostnamectl</span><br></pre></td></tr></table></figure>
+
+<p>​    如下:<img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210914145006176.png" alt="image-20210914145006176"></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../144.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../144.html" itemprop="url">Windows环境下使用ndk-build指令编译c/c++生成so库</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-23T15:22:32+08:00">
+                2020-10-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="编译环境"><a href="#编译环境" class="headerlink" title="编译环境"></a>编译环境</h2><ul>
+<li><p>android-ndk-r9b （这里使用老版本库为例 ，将该库目录下的ndk-build.cmd添加至系统环境变量中，方便后续操作，不同版本的ndk库ndk-build位置可能不太一样，这里你也可以使用最新库）</p>
+</li>
+<li><p>Windows10</p>
+</li>
+</ul>
+<h2 id="编译步骤"><a href="#编译步骤" class="headerlink" title="编译步骤"></a>编译步骤</h2><ol>
+<li><strong>第一步 创建工程文件夹， 这里以E盘下App目录为例</strong></li>
+<li><strong>第二步 在App文件夹下创建子文件夹jni， 并将编写好的源代码以及Android.mk文件放入</strong></li>
+<li><strong>打开命令窗口，执行编译命令</strong></li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ndk-build.cmd  NDK_PROJECT_PATH=E:\App</span><br></pre></td></tr></table></figure>
 
 <ol start="4">
-<li>解决方式</li>
+<li><strong>等待编译 完成后会在jni同级目录下生成libs和obj两个文件夹，libs目录下存放的是编译好的so库，obj目录下存放的是.o链接库, 如果有需要，使用以下命令可以清除obj目录下文件：</strong></li>
 </ol>
-<p>将 setting.py 的 ALLOWED_HOSTS = [] 修改成 ALLOWED_HOSTS = [‘*’]</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ndk-build.cmd  clean</span><br></pre></td></tr></table></figure>
+
+<h2 id="编译扩展配置"><a href="#编译扩展配置" class="headerlink" title="编译扩展配置"></a>编译扩展配置</h2><ol>
+<li>默认情况下编译只生成armeabi架构的so库，如果要生成x86以及其他cpu架构的so，需要在Android.mk文件所在目录下新建Application.mk文件，并加入以下配置：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">APP_ABI := armeabi armeabi-v7a x86</span><br><span class="line">或者编译所有架构</span><br><span class="line">APP_ABI := all # 注意必须小写</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>默认情况下使用Andorid.mk作为编译脚本，如果想指定编译脚本文件可以添加<code>APP_BUILD_SCRIPT</code>参数进行指定：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ndk-build.cmd  NDK_PROJECT_PATH=E:\App APP_BUILD_SCRIPT=new_android.mk</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>默认情况下使用Andorid.mk同级目录下找Application.mk 如果想指定Application.mk文件路径，可以添加<code>NDK_APPLICATION_MK</code>进行指定：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ndk-build.cmd  NDK_PROJECT_PATH=E:\App NDK_APPLICATION_MK=new_application.mk</span><br></pre></td></tr></table></figure>
+
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
+<li><p>编译时默认找jni目录下源码进行编译，所以需要在工程目录下新建jni子目录，原因在此</p>
+</li>
+<li><p>android工程在引用so库时,必须放在对应架构目录下,否则打包apk时会忽略该文件的打包, 比如指定jni目录为libs ,引用的so是x86架构的,那么必须在libs目录下再新建一个名为x86的文件夹,然后将so放进去, 否则so库不打包</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201211165808.png" alt></p>
+</li>
+</ol>
+<h2 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h2><p>ndk编译脚本文件Android.mk配置:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">LOCAL_PATH := $(call my-dir)</span><br><span class="line"></span><br><span class="line">include $(CLEAR_VARS)</span><br><span class="line"></span><br><span class="line">LOCAL_MODULE := key #so库引用名称  编译时会自动添加lib前缀，最后的结果为libkey.so</span><br><span class="line">LOCAL_SRC_FILES := Test.cpp # 需要编译的源码</span><br><span class="line"></span><br><span class="line">include $(BUILD_SHARED_LIBRARY)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../141.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../141.html" itemprop="url">SpringBoot开发之采用Feign进行第三方网络请求</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-19T19:55:32+08:00">
+                2020-10-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>1、在maven项目中添加依赖</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-cloud-starter-feign&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;1.2.2.RELEASE&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<p>2、编写接口，放置在service层</p>
+<p>这里的decisionEngine.url 是配置在properties中的 是ip地址和端口号<br>decisionEngine.url=<a href="https://link.zhihu.com/?target=http%3A//10.2.1.148%3A3333/decision/person" target="_blank" rel="noopener">http://10.2.1.148:3333/decision/person</a> 是接口名字</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@FeignClient(url = &quot;$&#123;decisionEngine.url&#125;&quot;,name=&quot;engine&quot;)</span><br><span class="line">public interface DecisionEngineService &#123;</span><br><span class="line">　　@RequestMapping(value=&quot;/decision/person&quot;,method= RequestMethod.POST)</span><br><span class="line">　　public JSONObject getEngineMesasge(@RequestParam(&quot;uid&quot;) String uid,@RequestParam(&quot;productCode&quot;) String productCode);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3、在Java的启动类上加上@EnableFeignClients</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">@EnableFeignClients //参见此处</span><br><span class="line">@EnableDiscoveryClient</span><br><span class="line">@SpringBootApplication</span><br><span class="line">@EnableResourceServer</span><br><span class="line">public class Application   implements CommandLineRunner &#123;</span><br><span class="line">    private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);</span><br><span class="line">    @Autowired</span><br><span class="line">    private AppMetricsExporter appMetricsExporter;</span><br><span class="line"></span><br><span class="line">    @Autowired</span><br><span class="line">    private AddMonitorUnitService addMonitorUnitService;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        new SpringApplicationBuilder(Application.class).web(true).run(args);</span><br><span class="line">    &#125;    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>4、在代码中调用接口即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@Autowired</span><br><span class="line">private DecisionEngineService decisionEngineService ;</span><br><span class="line">// ...</span><br><span class="line">decisionEngineService.getEngineMesasge(&quot;uid&quot; ,  &quot;productCode&quot;);</span><br></pre></td></tr></table></figure>
+
+<h3 id><a href="#" class="headerlink" title></a></h3><p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../140.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../140.html" itemprop="url">SpringBoot开发之采用RestTemplate进行第三方网络请求</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-19T19:55:32+08:00">
+                2020-10-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>在Spring-Boot开发中，RestTemplate同样提供了对外访问的接口API，这里主要介绍Get和Post方法的使用。Get请求提供了两种方式的接口getForObject 和 getForEntity，getForEntity提供如下三种方法的实现。</p>
+</blockquote>
+<h3 id="Get请求之——getForEntity-Stringurl-Class-responseType-Object…urlVariables"><a href="#Get请求之——getForEntity-Stringurl-Class-responseType-Object…urlVariables" class="headerlink" title="Get请求之——getForEntity(Stringurl,Class responseType,Object…urlVariables)"></a><strong>Get请求之——getForEntity(Stringurl,Class responseType,Object…urlVariables)</strong></h3><p>该方法提供了三个参数，其中url为请求的地址，responseType为请求响应body的包装类型，urlVariables为url中的参数绑定，该方法的参考调用如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// http://USER-SERVICE/user?name=&#123;name)</span><br><span class="line">RestTemplate restTemplate=new RestTemplate();</span><br><span class="line">Map&lt;String,String&gt; params=new HashMap&lt;&gt;();</span><br><span class="line">params.put(&quot;name&quot;,&quot;dada&quot;);  //</span><br><span class="line">ResponseEntity&lt;String&gt; responseEntity=restTemplate.getForEntity(&quot;http://USERSERVICE/user?name=&#123;name&#125;&quot;,String.class,params);</span><br></pre></td></tr></table></figure>
+
+<h3 id="Get请求之——getForEntity-URI-url-Class-responseType"><a href="#Get请求之——getForEntity-URI-url-Class-responseType" class="headerlink" title="Get请求之——getForEntity(URI url,Class responseType)"></a><strong>Get请求之——getForEntity(URI url,Class responseType)</strong></h3><p>该方法使用URI对象来替代之前的url和urlVariables参数来指定访问地址和参数绑定。URI是JDK <a href="https://link.zhihu.com/?target=http%3A//java.net" target="_blank" rel="noopener">http://java.net</a>包下的一个类，表示一个统一资源标识符(Uniform Resource Identifier)引用。参考如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">RestTemplate restTemplate=new RestTemplate();</span><br><span class="line">UriComponents uriComponents=UriComponentsBuilder.fromUriString(&quot;http://USER-SERVICE/user?name=&#123;name&#125;&quot;)</span><br><span class="line">    .build()</span><br><span class="line">    .expand(&quot;dodo&quot;)</span><br><span class="line">    .encode();</span><br><span class="line">URI uri=uriComponents.toUri();</span><br><span class="line">ResponseEntity&lt;String&gt; responseEntity=restTemplate.getForEntity(uri,String.class).getBody();</span><br></pre></td></tr></table></figure>
+
+<h3 id="Get请求之——getForObject"><a href="#Get请求之——getForObject" class="headerlink" title="Get请求之——getForObject"></a><strong>Get请求之——getForObject</strong></h3><p>getForObject方法可以理解为对getForEntity的进一步封装，它通过HttpMessageConverterExtractor对HTTP的请求响应体body内容进行对象转换，实现请求直接返回包装好的对象内容。getForObject方法有如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">getForObject(String url,Class responseType,Object...urlVariables)</span><br><span class="line">getForObject(String url,Class responseType,Map urlVariables)</span><br><span class="line">getForObject(URI url,Class responseType)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Post-请求"><a href="#Post-请求" class="headerlink" title="Post 请求"></a><strong>Post 请求</strong></h3><p>Post请求提供有三种方法，postForEntity、postForObject和postForLocation。其中每种方法都存在三种方法，postForEntity方法使用如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">RestTemplate restTemplate=new RestTemplate();</span><br><span class="line">User user=newUser(&quot;didi&quot;,30);</span><br><span class="line">ResponseEntity&lt;String&gt; responseEntity=restTemplate.postForEntity(&quot;http://USER-SERVICE/user&quot;,user,String.class); //提交的body内容为user对象，请求的返回的body类型为String</span><br><span class="line">String body=responseEntity.getBody();</span><br></pre></td></tr></table></figure>
+
+<p>postForEntity存在如下三种方法的重载</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">postForEntity(String url,Object request,Class responseType,Object... uriVariables)</span><br><span class="line">postForEntity(String url,Object request,Class responseType,Map uriVariables)</span><br><span class="line">postForEntity(URI url,Object request，Class responseType)</span><br></pre></td></tr></table></figure>
+
+<p>postForEntity中的其它参数和getForEntity的参数大体相同在此不做介绍。</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
 <p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
@@ -1847,7 +1996,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="../20/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../20/">20</a><span class="page-number current">21</span><a class="page-number" href="../22/">22</a><span class="space">&hellip;</span><a class="page-number" href="../34/">34</a><a class="extend next" rel="next" href="../22/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="../20/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../20/">20</a><span class="page-number current">21</span><a class="page-number" href="../22/">22</a><span class="space">&hellip;</span><a class="page-number" href="../36/">36</a><a class="extend next" rel="next" href="../22/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1893,7 +2042,7 @@
               
                 <a href="http://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">340</span>
+                  <span class="site-state-item-count">352</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1906,7 +2055,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">99</span>
+                  <span class="site-state-item-count">105</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
