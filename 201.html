@@ -82,19 +82,19 @@
 
 
 
-<meta name="description" content="前言咱们知道android设备可以直接运行apk应用,或者使用dalvikvm指令运行dex文件中的程序, 但是这两者本质上使用的语言都是java或者smali, 如果需要执行C语言程序,需要借助NDK编译成so库, 有没有不使用NDK而直接编译c原生程序然后在安卓设备中运行的方式呢? 交叉编译C语言是一门跨平台的语言,语言跨平台,但是程序不跨平台, 也就是说在windows平台下编译的程序只能在">
+<meta name="description" content="前言咱们知道android设备可以直接运行apk,或者使用dalvikvm指令运行dex文件中的程序, 但是这两者本质上使用的语言都是java或者smali, 如果需要执行C语言程序,我们通常需要借助NDK编译成so库, 那有没有不使用NDK而直接编译c原生程序然后在安卓设备中运行的方式呢? 交叉编译C语言是一门跨平台的语言,语言跨平台,但是程序不跨平台 也就是说在windows平台下编译的程序只">
 <meta name="keywords" content="汇编">
 <meta property="og:type" content="article">
 <meta property="og:title" content="android设备上如何运行C语言原生程序">
 <meta property="og:url" content="https://code.newban.cn/201.html">
 <meta property="og:site_name" content="乱码三千 – 分享实用IT技术">
-<meta property="og:description" content="前言咱们知道android设备可以直接运行apk应用,或者使用dalvikvm指令运行dex文件中的程序, 但是这两者本质上使用的语言都是java或者smali, 如果需要执行C语言程序,需要借助NDK编译成so库, 有没有不使用NDK而直接编译c原生程序然后在安卓设备中运行的方式呢? 交叉编译C语言是一门跨平台的语言,语言跨平台,但是程序不跨平台, 也就是说在windows平台下编译的程序只能在">
+<meta property="og:description" content="前言咱们知道android设备可以直接运行apk,或者使用dalvikvm指令运行dex文件中的程序, 但是这两者本质上使用的语言都是java或者smali, 如果需要执行C语言程序,我们通常需要借助NDK编译成so库, 那有没有不使用NDK而直接编译c原生程序然后在安卓设备中运行的方式呢? 交叉编译C语言是一门跨平台的语言,语言跨平台,但是程序不跨平台 也就是说在windows平台下编译的程序只">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png">
-<meta property="og:updated_time" content="2022-09-06T05:58:02.480Z">
+<meta property="og:updated_time" content="2022-09-16T03:40:23.438Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="android设备上如何运行C语言原生程序">
-<meta name="twitter:description" content="前言咱们知道android设备可以直接运行apk应用,或者使用dalvikvm指令运行dex文件中的程序, 但是这两者本质上使用的语言都是java或者smali, 如果需要执行C语言程序,需要借助NDK编译成so库, 有没有不使用NDK而直接编译c原生程序然后在安卓设备中运行的方式呢? 交叉编译C语言是一门跨平台的语言,语言跨平台,但是程序不跨平台, 也就是说在windows平台下编译的程序只能在">
+<meta name="twitter:description" content="前言咱们知道android设备可以直接运行apk,或者使用dalvikvm指令运行dex文件中的程序, 但是这两者本质上使用的语言都是java或者smali, 如果需要执行C语言程序,我们通常需要借助NDK编译成so库, 那有没有不使用NDK而直接编译c原生程序然后在安卓设备中运行的方式呢? 交叉编译C语言是一门跨平台的语言,语言跨平台,但是程序不跨平台 也就是说在windows平台下编译的程序只">
 <meta name="twitter:image" content="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png">
 
 
@@ -367,31 +367,38 @@
       
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>咱们知道android设备可以直接运行apk应用,或者使用<code>dalvikvm</code>指令运行dex文件中的程序, 但是这两者本质上使用的语言都是java或者smali, 如果需要执行C语言程序,需要借助NDK编译成so库, 有没有不使用NDK而直接编译c原生程序然后在安卓设备中运行的方式呢?</p>
-<h2 id="交叉编译"><a href="#交叉编译" class="headerlink" title="交叉编译"></a>交叉编译</h2><p>C语言是一门跨平台的语言,<strong>语言跨平台,但是程序不跨平台</strong>, 也就是说在windows平台下编译的程序只能在windows平台上执行,linux亦是如此, 为什么会出现这种情况呢? 除了操作系统导致的文件格式不一致之外,本质上是因为不同平台cpu使用的架构不一致导致, 目前主流的三大cpu架构<strong>x86,ARM,MIPS</strong>,每个架构都对应着属于自己的一套汇编指令集, 我们编写的程序,最终都会解码成汇编指令被cpu所指行,那么在windows平台上进行本机编译的C语言代码,会根据当前平台的cpu架构和操作系统生成只能在当前平台运行的程序</p>
-<p>如果我想在windows平台编译出能在linux系统或者在ARM 设备中运行的程序, 那该怎么办呢?, 这个时候我们就要使用交叉编译工具, 那这种编译的模式就不叫本机编译了,而叫做交叉编译</p>
-<h2 id="为什么需要交叉编译"><a href="#为什么需要交叉编译" class="headerlink" title="为什么需要交叉编译"></a>为什么需要交叉编译</h2><p>原因:</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>咱们知道<code>android</code>设备可以直接运行<code>apk</code>,或者使用<code>dalvikvm</code>指令运行<code>dex</code>文件中的程序, 但是这两者本质上使用的语言都是<code>java</code>或者<code>smali</code>,</p>
+<p>如果需要执行C语言程序,我们通常需要借助<code>NDK</code>编译成<code>so</code>库, 那有没有不使用<code>NDK</code>而直接编译c原生程序然后在安卓设备中运行的方式呢?</p>
+<h2 id="交叉编译"><a href="#交叉编译" class="headerlink" title="交叉编译"></a>交叉编译</h2><p>C语言是一门跨平台的语言,<strong>语言跨平台,但是程序不跨平台</strong></p>
+<p>也就是说在<code>windows</code>平台下编译的程序只能在<code>windows</code>平台上执行,<code>linux</code>亦是如此, 为什么会出现这种情况呢? </p>
+<p>除了操作系统导致的文件格式不一致之外,本质上是因为不同平台<code>cpu</code>使用的架构不一致导致</p>
+<p>目前主流的三大<code>cpu</code>架构<strong>x86,ARM,MIPS</strong>,每个架构都对应着属于自己的一套汇编指令集, 我们编写的程序,最终都会解码成汇编指令被<code>cpu</code>所执行,</p>
+<p>那么在<code>windows</code>平台上进行本机编译的C语言代码,会根据当前平台的<code>cpu</code>架构和操作系统生成只能在当前平台运行的程序</p>
+<p>如果我想在<code>windows</code>平台编译出能在<code>linux</code>系统或者在<code>ARM</code>设备中运行的程序, 那该怎么办呢?</p>
+<p>这个时候我们就要使用交叉编译工具, 那这种<strong>编译的模式就不叫本机编译了,而叫做交叉编译</strong></p>
+<h2 id="为什么需要交叉编译"><a href="#为什么需要交叉编译" class="headerlink" title="为什么需要交叉编译"></a>为什么需要交叉编译</h2><p>场景:</p>
 <ul>
-<li>你正在编译一款linux应用,但你手上只有一台windows电脑,这个时候交叉编译能帮上大忙</li>
+<li>你正在编译一款<code>linux</code>应用,但你手上只有一台<code>windows</code>电脑,这个时候交叉编译能帮上大忙</li>
 <li>目标设备环境不允许,比如单片机, 内存和性能无法支持程序的编译</li>
 </ul>
 <h2 id="交叉编译工具"><a href="#交叉编译工具" class="headerlink" title="交叉编译工具"></a>交叉编译工具</h2><p>交叉编译工具链的命名规则为：<strong>arch [-vendor] [-os] [-(gnu)eabi]</strong></p>
 <ul>
-<li><strong>arch</strong> – 体系架构，如ARM，MIPS</li>
+<li><strong>arch</strong> – 体系架构，如<code>ARM</code>，<code>MIPS</code></li>
 <li><strong>vendor</strong> – 工具链提供商</li>
 <li><strong>os</strong> – 目标操作系统</li>
 <li><strong>eabi</strong> – 嵌入式应用二进制接口（Embedded Application Binary Interface）</li>
 </ul>
 <p>根据对操作系统的支持与否，<strong>ARM GCC可分为支持和不支持操作系统</strong>，如</p>
 <ul>
-<li><strong>arm-none-eabi</strong>：这个是没有操作系统的,适用于ARM架构裸机,工具链提供商未知,嵌入式应用二进制接口,这个工具不支持那些跟操作系统关系密切的函数，比如fork(2)。他使用的是newlib这个专用于嵌入式系统的C库。</li>
-<li><strong>arm-none-linux-eabi</strong>：用于Linux的，ARM架构,使用Glibc</li>
+<li><strong>arm-none-eabi</strong>：这个是没有操作系统的,适用于<code>ARM</code>架构裸机,工具链提供商未知,嵌入式应用二进制接口,这个工具不支持那些跟操作系统关系密切的函数，比如fork(2)。他使用的是<code>newlib</code>这个专用于嵌入式系统的C库。</li>
+<li><strong>arm-none-linux-eabi</strong>：用于<code>Linux</code>的，<code>ARM</code>架构,使用<code>Glibc</code></li>
 </ul>
 <blockquote>
 <p>如果是裸机编译,由于没有操作系统进行文件识别翻译,因此编译出来的大部分是面向cpu内核的机器码文件</p>
 <p>单片机编译后的文件就是如此</p>
 </blockquote>
-<h2 id="回到主题"><a href="#回到主题" class="headerlink" title="回到主题"></a>回到主题</h2><p>我需要用C语言编写一个能在安卓设备上运行的程序, 首先安卓设备大多采用的是ARM架构cpu, 系统采用的是linux系统, 如果我们想在安卓设备中进行本机编译的话,实现起来比较困难, 那么咱们可以借助交叉编译工具,实现在windows平台上编译出能够在ARM+Linux平台上的可执行程序</p>
+<h2 id="回到主题"><a href="#回到主题" class="headerlink" title="回到主题"></a>回到主题</h2><p>我需要用C语言编写一个能在安卓设备上运行的程序, 首先安卓设备大多采用的是<code>ARM</code>架构<code>cpu,</code> 系统采用的是<code>linux</code>系统, </p>
+<p>如果我们想在安卓设备中进行本机编译的话,实现起来比较困难, 那么咱们可以借助交叉编译工具,实现在<code>windows</code>平台上编译出能够在<code>ARM+Linux</code>平台上的可执行程序</p>
 <p>这里我们使用 <code>arm-none-linux-gnueabi-gcc</code> 这款交叉编译工具</p>
 <p>工具下载:</p>
 <p><a href="https://code.newban.cn/202.html">各个平台arm-none-linux-gnueabi交叉编译工具下载</a></p>
@@ -403,15 +410,16 @@
 <h4 id="第二步-源码编译"><a href="#第二步-源码编译" class="headerlink" title="第二步 源码编译"></a>第二步 源码编译</h4><p>在命令窗口执行bin包下的<code>arm-none-linux-gnueabi-gcc</code>指令</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arm-none-linux-gnueabi-gcc test.c -o test -<span class="keyword">static</span></span><br></pre></td></tr></table></figure>
 
-<p> 因为Android 的 Linux 内核没有标准IO库函数，因此我们采用静态编译的方式进行编译 末尾<code>-static</code>必须要有</p>
+<p> 因为<code>Android 的 Linux</code> 内核没有标准IO库函数，因此我们采用静态编译的方式进行编译 末尾<code>-static</code>必须要有</p>
 <h4 id="第三步-将编译后的可执行文件传至安卓设备"><a href="#第三步-将编译后的可执行文件传至安卓设备" class="headerlink" title="第三步 将编译后的可执行文件传至安卓设备"></a>第三步 将编译后的可执行文件传至安卓设备</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb push test /data/</span><br></pre></td></tr></table></figure>
 
 <h4 id="第四步-执行文件"><a href="#第四步-执行文件" class="headerlink" title="第四步 执行文件"></a>第四步 执行文件</h4><p>直接在控制台输入文件名即可执行</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./test</span><br></pre></td></tr></table></figure>
 
-<p>如果提示权限拒绝,那么</p>
+<p>如果提示权限拒绝,那么执行以下指令:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 test</span><br></pre></td></tr></table></figure>
 
+<p>至此 程序正常运行 控台输出<code>Hello world!</code></p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
 <p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
@@ -553,7 +561,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">360</span>
+                  <span class="site-state-item-count">374</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -566,7 +574,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">108</span>
+                  <span class="site-state-item-count">113</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

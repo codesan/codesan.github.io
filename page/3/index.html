@@ -288,7 +288,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../340.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../354.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -307,7 +307,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../340.html" itemprop="url">Mac快速开启http本地服务共享文件</a></h1>
+                <a class="post-title-link" href="../../354.html" itemprop="url">使用Hugo搭建个人博客</a></h1>
         
 
         <div class="post-meta">
@@ -319,8 +319,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-11T11:04:19+08:00">
-                2022-07-11
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-01T11:04:19+08:00">
+                2022-09-01
               </time>
             
 
@@ -359,518 +359,91 @@
       
         
           
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>有时候我们可能需要用手机访问电脑上的文件, 或者用手机测试电脑上编写的程序</p>
-<p>此时 在同一个<code>wifi</code>网络的前提下我们可以这么做:</p>
-<h3 id="第一种-使用python"><a href="#第一种-使用python" class="headerlink" title="第一种 使用python"></a>第一种 使用python</h3><p>直接使用自带<code>python</code>工具开启<code>http</code>服务, 首先打开终端, 进入需要共享的目录,然后运行以下代码即可:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m SimpleHTTPServer  <span class="number">8000</span></span><br></pre></td></tr></table></figure>
-
-<p>如果是<code>python3</code>, 则将<code>SimpleHTTPServer</code>改成<code>http.server</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m http.server <span class="number">8000</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220711144617056.png" alt="image-20220711144617056"></p>
-<p>紧接着就可以在浏览器上访问了: 在地址栏输入<code>http://127.0.0.1:8000/</code>或者<code>http://localhost:8000/</code></p>
-<h5 id="局域网设备访问"><a href="#局域网设备访问" class="headerlink" title="局域网设备访问"></a>局域网设备访问</h5><p>如果局域网内其他设备访问, 则需要先获取到<code>Mac</code>的局域网<code>Ip</code>, 我们可以从系统偏好设置中的网络选项中查看到<code>IP</code>地址:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220711145144222.png" alt="image-20220711145144222"></p>
-<p>然后使用<code>http://局域网ip:8000</code>这个地址就可以供其他设备访问啦</p>
-<h3 id="第二种-使用Apache"><a href="#第二种-使用Apache" class="headerlink" title="第二种 使用Apache"></a>第二种 使用Apache</h3><h5 id="服务开启"><a href="#服务开启" class="headerlink" title="服务开启"></a>服务开启</h5><p><code>Mac</code>本身自带了<code>Apache</code>服务, 我们无需另外安装, 直接开启即可, 打开终端输入以下指令开启:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apachectl start</span><br></pre></td></tr></table></figure>
-
-<p>打开服务后, 浏览器输入以下地址即可访问:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1</span><br><span class="line"></span><br><span class="line">或者</span><br><span class="line"></span><br><span class="line">http://localhost/</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/c55e4df1cd8b78d32f275946ca4077c4.png" alt="img"></p>
-<p>出现以上页面表示服务启动成功</p>
-<p>此时 <code>Apache</code>默认的服务器根目录在：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Library/WebServer/Documents</span><br></pre></td></tr></table></figure>
-
-<p>我们可以将需要共享的文件存放到该目录下, 比如我存放了一张名为<code>111.gif</code>的图片, 那么访问<code>http://127.0.0.1/111.gif</code>即可查看该图</p>
-<h5 id="Apache配置目录浏览"><a href="#Apache配置目录浏览" class="headerlink" title="Apache配置目录浏览"></a>Apache配置目录浏览</h5><p>可是上面这种操作并不符合我们的预期, 我们想要输入地址后直接列出该目录下的所有文件</p>
-<p>这需要对<code>Apache</code>配置文件中进行修改, 其配置文件路径为:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/apache2/</span><br></pre></td></tr></table></figure>
-
-<p>文件名为<code>httpd.conf</code>, 修改之前建议大家进行一次备份</p>
-<p>打开该文件,  在<code>Options</code> 后面追加一句<code>Indexes</code></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220711151550133.png" alt="image-20220711151550133"></p>
-<p>重启<code>apache</code>服务后, 浏览器输入地址就能查看目录了</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220711151755973.png" alt="image-20220711151755973"></p>
-<p>每次更改了配置, 需要重启服务才能生效, 重启指令如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//重启apache:    </span><br><span class="line">sudo apachectl restart</span><br></pre></td></tr></table></figure>
-
-<h5 id="Apache其他配置"><a href="#Apache其他配置" class="headerlink" title="Apache其他配置"></a>Apache其他配置</h5><ol>
-<li><p><strong>更改服务根目录</strong></p>
-<p>搜索<code>DocumentRoot</code>关键字</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220711152308158.png" alt="image-20220711152308158"></p>
+            <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><code>Hugo</code>和<code>Hexo</code>类似, 也是一个搭建静态博客的工具, <code>Hugo</code>由<code>Go</code>语言编写,相比之下 <code>Hugo</code>编译速度要比<code>Hexo</code>快很多</p>
+<p>不过各有各的优点, 目前我两个工具都在用, 主要还是以<code>Hexo</code>为主</p>
+<p>接下来介绍<code>Hugo</code>的使用</p>
+<h3 id="工具安装"><a href="#工具安装" class="headerlink" title="工具安装"></a>工具安装</h3><ol>
+<li><p><strong>Mac用户</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install hugo</span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>更改访问端口</strong></p>
-<p>搜索<code>ServerName</code>关键字, 去掉改行注释, 然后改为<code>ServerName localhost:端口号</code>或者<code>ServerName 127.0.0.1:端口号</code></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220711152426884.png" alt="image-20220711152426884"></p>
-</li>
-<li><p><strong>开启对<code>PHP</code>的支持</strong></p>
-<p>搜索<code>LoadModule</code>, 去掉<code>php7</code>注释</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220711152834896.png" alt="image-20220711152834896"></p>
+<li><p><strong>Windows用户</strong></p>
+<p><a href="https://github.com/gohugoio/hugo/releases" target="_blank" rel="noopener">GitHub下载安装包</a></p>
+<p>下载完后 给<code>hugo.exe</code>配置环境变量, 方便任意目录使用该程序</p>
 </li>
 </ol>
-<h5 id="局域网设备访问-1"><a href="#局域网设备访问-1" class="headerlink" title="局域网设备访问"></a>局域网设备访问</h5><p><code>Apache</code>默认开启的是<code>80</code>端口,  因此直接<code>http://局域网ip</code>访问即可</p>
-<h5 id="服务关闭"><a href="#服务关闭" class="headerlink" title="服务关闭"></a>服务关闭</h5><p>服务一旦开启 每次电脑启动后<code>Apache</code>都会自动跟着开启</p>
-<p>平常不用的时候我们可以关闭服务, 减少资源消耗, 关闭指令如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//关闭apache:    </span><br><span class="line">sudo apachectl stop</span><br></pre></td></tr></table></figure>
+<p>安装完后 可以在命令窗口输入<code>hugo version</code> 来检测是否安装成功</p>
+<h3 id="工具基础使用"><a href="#工具基础使用" class="headerlink" title="工具基础使用"></a>工具基础使用</h3><ol>
+<li><p><strong>创建博客空工程</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hugo new site 项目名称</span><br></pre></td></tr></table></figure>
 
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>两种方式, 各有各的好处, <code>apache</code>的强大是毋庸置疑的, 如果只是任意文件夹共享, 直接使用<code>python</code>的方法会更加方便一些</p>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../339.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../339.html" itemprop="url">Mac识别二维码 无需安装第三放应用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-09T11:04:19+08:00">
-                2022-07-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>我们在浏览网页的时候经常会碰到二维码扫描需求, 一般情况下 我们会考虑将二维码图片发送到手机上 然后用手机识别    或者干脆装个第三方扫码软件</p>
-<p>为了方便 (主要是懒)  接下来给大家介绍一种使用<code>Safari</code>浏览器二维码识别的方法</p>
-<h3 id="具体操作"><a href="#具体操作" class="headerlink" title="具体操作"></a>具体操作</h3><h5 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a>第一步</h5><p>选中要识别的二维码图片，把它拖到<code>Safar浏览器</code>打开。</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20220708154220.png" alt></p>
-<h5 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a>第二步</h5><p>随后右键点击二维码，选择<code>在新标签页中打开...</code></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20220708154248.png" alt></p>
-<p>新标签页中打开的就是二维码中的内容</p>
-<p>是不是很简单 赶紧试试吧~</p>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../338.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../338.html" itemprop="url">img标签随机获取高质量图片</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-09T09:04:19+08:00">
-                2022-07-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>博主打算为自己在vps上挂载的服务, 建立一个导航页, 于是写一个静态页面, 贴了几个超链接</p>
-<p>后来, 感觉不美观, 就放了几张图片</p>
-<p>服务器存储的图片看了几遍就看腻了, 于是找了一个高质量图片的api, 每次打开导航页都能看到随机的封面</p>
-<h3 id="开源图片api的使用"><a href="#开源图片api的使用" class="headerlink" title="开源图片api的使用"></a>开源图片api的使用</h3><ul>
-<li><p>我想获得<code>300*300</code>, 关于<code>book</code>和<code>library</code>的图片” </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://source.unsplash.com/300x300/?book,library</span><br></pre></td></tr></table></figure>
+<p>执行完后会在当前目录下生成工程文件夹:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220901170044828.png" alt="image-20220901170044828"></p>
+<p>目录介绍:</p>
+<ul>
+<li><strong>content目录</strong>: 用于存放博客文章</li>
+<li><strong>themes目录</strong>: 用于存放博客主题</li>
+<li><strong>static目录</strong>: 该目录下文件不会被渲染 可用于存放静态资源 比如图片<code>js</code> <code>css</code>以及<code>CNAME</code>等等</li>
+<li><strong>archetypes目录</strong>:里面存放文章模版文件</li>
+<li><strong>data目录</strong>:用于存放数据</li>
+<li><strong>layouts目录</strong>:用于存放布局文件</li>
+<li><strong>config.toml文件</strong>: 配置文件</li>
+</ul>
 </li>
-<li><p>将随机图片嵌入到html中 </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=&quot;https://source.unsplash.com/300x300/?book,library&quot;&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-
+<li><p><strong>新建文章</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hugo new post/first.md</span><br></pre></td></tr></table></figure>
 </li>
-</ul>
-<h3 id="随机封面效果展示"><a href="#随机封面效果展示" class="headerlink" title="随机封面效果展示"></a>随机封面效果展示</h3><ul>
-<li>第一次打开:</li>
-</ul>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/1620.png" alt="img"></p>
-<ul>
-<li>第二次打开</li>
-</ul>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/1620-20220708113914217.png" alt="img"></p>
-<ul>
-<li>第三次打开</li>
-</ul>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/1620-20220708114509494.png" alt="img"></p>
-<ul>
-<li>第N次打开…</li>
-</ul>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/1620-20220708113921160.png" alt="img"></p>
-<h3 id="随机封面测试地址-页面每次刷新，都能看到不同的封面"><a href="#随机封面测试地址-页面每次刷新，都能看到不同的封面" class="headerlink" title="随机封面测试地址(页面每次刷新，都能看到不同的封面)"></a>随机封面测试地址(页面每次刷新，都能看到不同的封面)</h3><p>页面部分源码:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;section <span class="class"><span class="keyword">class</span></span>=<span class="string">"clearfix"</span>&gt;</span><br><span class="line">        &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"item"</span>&gt;</span><br><span class="line">            &lt;a href=<span class="string">"http://git.zhaoolee.com"</span>&gt;</span><br><span class="line">                &lt;img src=<span class="string">"https://source.unsplash.com/300x300/?program"</span> alt=<span class="string">""</span>&gt;</span><br><span class="line">                &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"item-title"</span>&gt;私有Git仓库&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">            &lt;/</span>a&gt;</span><br><span class="line">        &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">        &lt;div class="item"&gt;</span></span><br><span class="line"><span class="regexp">            &lt;a href="http:/</span><span class="regexp">/cloud.zhaoolee.com"&gt;</span></span><br><span class="line"><span class="regexp">                &lt;img src="https:/</span><span class="regexp">/source.unsplash.com/</span><span class="number">300</span>x300/?<span class="built_in">document</span><span class="string">" alt="</span><span class="string">"&gt;</span></span><br><span class="line"><span class="string">                &lt;div class="</span>item-title<span class="string">"&gt;私有云网盘&lt;/div&gt;</span></span><br><span class="line"><span class="string">            &lt;/a&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">        &lt;div class="</span>item<span class="string">"&gt;</span></span><br><span class="line"><span class="string">            &lt;a href="</span>https:<span class="comment">//www.jianshu.com/u/c5d047065c42"&gt;</span></span><br><span class="line">                &lt;img src=<span class="string">"https://source.unsplash.com/300x300/?book,library"</span> alt=<span class="string">""</span>&gt;</span><br><span class="line">                &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"item-title"</span>&gt;简书主页&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">            &lt;/</span>a&gt;</span><br><span class="line">        &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">    </span></span><br><span class="line"><span class="regexp">        &lt;div class="item"&gt;</span></span><br><span class="line"><span class="regexp">            &lt;a href="https:/</span><span class="regexp">/github.com/</span>zhaoolee<span class="string">"&gt;</span></span><br><span class="line"><span class="string">                &lt;img src="</span>https:<span class="comment">//source.unsplash.com/300x300/?github" alt=""&gt;</span></span><br><span class="line">                &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"item-title"</span>&gt;Github主页&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">            &lt;/</span>a&gt;</span><br><span class="line">        &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">    </span></span><br><span class="line"><span class="regexp">        &lt;div class="item"&gt;</span></span><br><span class="line"><span class="regexp">            &lt;a href=""&gt;</span></span><br><span class="line"><span class="regexp">                &lt;img src="https:/</span><span class="regexp">/source.unsplash.com/</span><span class="number">300</span>x300/?cartoon<span class="string">" alt="</span><span class="string">"&gt;</span></span><br><span class="line"><span class="string">                &lt;div class="</span>item-title<span class="string">"&gt;在线爬虫(建设中)&lt;/div&gt;</span></span><br><span class="line"><span class="string">            &lt;/a&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        &lt;div class="</span>item<span class="string">"&gt;</span></span><br><span class="line"><span class="string">            &lt;a href="</span><span class="string">"&gt;</span></span><br><span class="line"><span class="string">                &lt;img src="</span>https:<span class="comment">//source.unsplash.com/300x300/?beauty" alt=""&gt;</span></span><br><span class="line">                &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"item-title"</span>&gt;资源分享(建设中)&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">            &lt;/</span>a&gt;</span><br><span class="line">        &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">    &lt;/</span>section&gt;</span><br><span class="line">&lt;<span class="regexp">/body&gt;</span></span><br></pre></td></tr></table></figure>
+<li><p><strong>下载博客主题</strong></p>
+<p>博客必须要有一个主题 不然渲染出来的页面是空白, 我们以<code>hyde</code>主题为例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 创建 themes 目录</span><br><span class="line">$ cd themes</span><br><span class="line">$ git clone https://github.com/spf13/hyde.git</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>生成静态文件</strong></p>
+<p>需要指定以那个主题进行静态页面渲染</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hugo --theme=hyde</span><br></pre></td></tr></table></figure>
 
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结:"></a>小结:</h3><ul>
-<li>使用随机化开源图片封面, 能让我们每次打开页面都有惊喜.</li>
-<li>对于刚刚接触前端的小伙伴, 使用开源的图片库, 能让你的页面更加丰富多彩, 提升学习的兴趣.</li>
-<li>对于前端老司机,可以获取定制化的开源图片, 提升页面展示效果.</li>
-<li>如果你对图片的质量有极致的追求,<a href="https://source.unsplash.com/" target="_blank" rel="noopener">https://source.unsplash.com</a> 提供了丰富的接口参数设置,可以定制化随机图片的范围, 当然也可以在<a href="http://unsplash.com/" target="_blank" rel="noopener">unsplash.com</a> 注册一个账号, 订阅特别主题的图片</li>
-</ul>
-<p><strong>本文转载自</strong>: <a href="https://cloud.tencent.com/developer/article/1344365?from=15425" target="_blank" rel="noopener">https://cloud.tencent.com/developer/article/1344365?from=15425</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+<p>此时目录下会自动生成一个<code>public</code>目录, 里面的文件即为生成的静态文件, 可以直接部署到网站</p>
+</li>
+<li><p><strong>部署到<code>GitHub</code></strong></p>
+<p>添加静态仓库关联:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ cd public</span><br><span class="line">$ git init</span><br><span class="line">$ git remote add origin https://github.com/xxx/xxx.github.io.git</span><br></pre></td></tr></table></figure>
 
-          
-        
-      
-    </div>
-    
-    
-    
+<p>或者使用submodule的方式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule add -f -b master https://github.com/xxx/xxx.github.io.git public</span><br></pre></td></tr></table></figure>
 
-    
+<p>最后将静态文件推送到仓库:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">$ git add -A</span><br><span class="line">$ git commit -m &quot;first commit&quot;</span><br><span class="line">$ git push -u origin master</span><br></pre></td></tr></table></figure>
 
-    
+<p>部署这一块 相比<code>hexo</code>要繁琐一些, 我们可以使用脚本或者用<code>GitHub actions</code>自动部署</p>
+</li>
+</ol>
+<h3 id="其他命令"><a href="#其他命令" class="headerlink" title="其他命令"></a>其他命令</h3><ol>
+<li><p><strong>生成独立页面</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hugo new about.md</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>博客本地调试</strong></p>
+<p>调试时同样需要指定一个主题</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hugo server --theme=hyde</span><br></pre></td></tr></table></figure>
 
-    
+<p>服务启动后 浏览器里打开： <code>http://localhost:1313</code>, 即可看到当前博客页面, 修改文章动态更新</p>
+<p>如果需要让草稿一并加入调试 那么可以加入<code>-D</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hugo server --theme=hyde -D</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>生成静态文件时草稿也进行渲染</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hugo  --theme=hyde -D</span><br></pre></td></tr></table></figure>
 
-    <footer class="post-footer">
-      
+<p>必须是大写的<code>D</code></p>
+</li>
+</ol>
+<h3 id="进阶使用"><a href="#进阶使用" class="headerlink" title="进阶使用"></a>进阶使用</h3><ol>
+<li><p>每次执行指令都要指定主题太过繁琐?  没事 我们在配置文件中添加以下代码 配置默认主题即可解决烦恼</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 主题名称</span><br><span class="line">theme = &quot;hyde&quot;</span><br></pre></td></tr></table></figure>
 
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../336.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../336.html" itemprop="url">给Hexo添加Github贡献日历图</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-08T16:04:19+08:00">
-                2022-07-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="图示"><a href="#图示" class="headerlink" title="图示"></a>图示</h3><h5 id="样式一"><a href="#样式一" class="headerlink" title="样式一"></a>样式一</h5><p><img src="https://github-readme-stats.vercel.app/api?username=songjianzaina" alt="Zfour&#39;s github stats"></p>
-<h5 id="样式二"><a href="#样式二" class="headerlink" title="样式二"></a>样式二</h5><p><img src="https://ghchart.rshah.org/newbanh" alt></p>
-<h5 id="样式三"><a href="#样式三" class="headerlink" title="样式三"></a>样式三</h5><p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDU4MDA3Ng==,size_16,color_FFFFFF,t_70.png" alt="小冰的插件效果"></p>
-<p>接下来给大家介绍它们的实现方法</p>
-<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><h5 id="第一种"><a href="#第一种" class="headerlink" title="第一种"></a>第一种</h5><p>只需将<code>username</code>的值设置为你的<code>github</code>用户名即可:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://github-readme-stats.vercel.app/api?username=github用户名</span><br></pre></td></tr></table></figure>
-
-<p>然后以图片的形式进行加载:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">![](https://github-readme-stats.vercel.app/api?username=github用户名)</span><br></pre></td></tr></table></figure>
-
-<p>如果是放置在<code>html</code>中, 替换用户名后 拷贝以下代码:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=&quot;https://github-readme-stats.vercel.app/api?username=github用户名&quot; referrerpolicy=&quot;no-referrer&quot; &quot;&gt;</span><br></pre></td></tr></table></figure>
-
-<p>项目GitHub: <a href="https://github.com/anuraghazra/github-readme-stats" target="_blank" rel="noopener">github-readme-stats</a></p>
-<h5 id="第二种"><a href="#第二种" class="headerlink" title="第二种"></a>第二种</h5><p>和第一种类似, 尾部改成<code>github</code>用户名即可</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://ghchart.rshah.org/github用户名</span><br></pre></td></tr></table></figure>
-
-<p>然后以图片的形式进行加载:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">![](https://ghchart.rshah.org/github用户名)</span><br></pre></td></tr></table></figure>
-
-<p>如果是放置在<code>html</code>中, 替换用户名后 拷贝以下代码:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=&quot;https://ghchart.rshah.org/github用户名&quot;  referrerpolicy=&quot;no-referrer&quot; &quot;&gt;</span><br></pre></td></tr></table></figure>
-
-<p>项目GitHub: <a href="https://github.com/2016rshah/githubchart-api" target="_blank" rel="noopener">githubchart-api</a></p>
-<h5 id="第三种"><a href="#第三种" class="headerlink" title="第三种"></a>第三种</h5><p>这种是以<code>hexo</code>插件的形式实现, 具体步骤如下:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220901174231361.png" alt="image-20220901174231361"></p>
+</li>
+<li><p>自定义域名无法访问?</p>
 <ol>
-<li><p>安装插件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i hexo-githubcalendar --save</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>hexo根目录下的config文件添加如下配置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"># Ice Kano Plus_in</span><br><span class="line"># Hexo Github Canlendar</span><br><span class="line"># Author: Ice Kano</span><br><span class="line"># Modify: Lete乐特</span><br><span class="line">githubcalendar:</span><br><span class="line">  enable: true</span><br><span class="line">  enable_page: /</span><br><span class="line">  user: 你的github用户名</span><br><span class="line">  layout:</span><br><span class="line">    type: id</span><br><span class="line">    name: recent-posts</span><br><span class="line">    index: 0</span><br><span class="line">  githubcalendar_html: &apos;&lt;div class=&quot;recent-post-item&quot; style=&quot;width:100%;height:auto;padding:10px;&quot;&gt;&lt;div id=&quot;github_loading&quot; style=&quot;width:10%;height:100%;margin:0 auto;display: block&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;  viewBox=&quot;0 0 50 50&quot; style=&quot;enable-background:new 0 0 50 50&quot; xml:space=&quot;preserve&quot;&gt;&lt;path fill=&quot;#d0d0d0&quot; d=&quot;M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z&quot; transform=&quot;rotate(275.098 25 25)&quot;&gt;&lt;animateTransform attributeType=&quot;xml&quot; attributeName=&quot;transform&quot; type=&quot;rotate&quot; from=&quot;0 25 25&quot; to=&quot;360 25 25&quot; dur=&quot;0.6s&quot; repeatCount=&quot;indefinite&quot;&gt;&lt;/animateTransform&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div id=&quot;github_container&quot;&gt;&lt;/div&gt;&lt;/div&gt;&apos;</span><br><span class="line">  pc_minheight: 280px</span><br><span class="line">  mobile_minheight: 0px</span><br><span class="line">  color: &quot;[&apos;#ebedf0&apos;, &apos;#fdcdec&apos;, &apos;#fc9bd9&apos;, &apos;#fa6ac5&apos;, &apos;#f838b2&apos;, &apos;#f5089f&apos;, &apos;#c4067e&apos;, &apos;#92055e&apos;, &apos;#540336&apos;, &apos;#48022f&apos;, &apos;#30021f&apos;]&quot;</span><br><span class="line">  api: https://python-github-calendar-api.vercel.app/api</span><br><span class="line">  # api: https://python-gitee-calendar-api.vercel.app/api</span><br><span class="line">  calendar_js: https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js</span><br><span class="line">  plus_style: &quot;&quot;</span><br></pre></td></tr></table></figure>
-
-<p>将<code>user</code>属性修改为你的<code>github</code>用户名即可,</p>
-<ul>
-<li><p>其他属性用法可参见《<a href="https://zfe.space/post/hexo-githubcalendar.html" target="_blank" rel="noopener">教程：hexo-githubcalendar 插件 1.0</a>》</p>
-</li>
-<li><p>涉及主题: <a href="https://github.com/jerryc127/hexo-theme-butterfly" target="_blank" rel="noopener">hexo-theme-butterfly</a></p>
-</li>
-<li><p>插件GitHub: <a href="https://github.com/Zfour/hexo-github-calendar" target="_blank" rel="noopener">hexo-github-calendar</a></p>
-</li>
-</ul>
+<li>需要在配置文件中将<code>baseURL</code>参数替换成你的域名</li>
+<li>同时在<code>static</code>目录下新建<code>CNAME</code>文件, 然后输入你的域名</li>
+</ol>
 </li>
 </ol>
 <p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
@@ -924,7 +497,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../337.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../353.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -943,7 +516,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../337.html" itemprop="url">解决图片的防盗链导致图片显示不出来</a></h1>
+                <a class="post-title-link" href="../../353.html" itemprop="url">虚幻蓝图快速上手</a></h1>
         
 
         <div class="post-meta">
@@ -955,8 +528,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-08T09:04:19+08:00">
-                2022-07-08
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-29T11:04:19+08:00">
+                2022-08-29
               </time>
             
 
@@ -995,369 +568,865 @@
       
         
           
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>你平常有可能将图片存放到<code>github</code>、<code>gitee</code> 或者博客园  简书等等地方, 供静态博客使用, 除了<code>github</code>之外 大部分国内的网站都设置了图片防盗链</p>
-<p>如果直接使用会导致图片无法显示</p>
-<p>解决防盗链的问题其实也非常简单</p>
-<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>在<code>html</code>的<code>head</code>标签中添加如下代码即可:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta name=&quot;referrer&quot; content=&quot;never&quot;&gt;</span><br></pre></td></tr></table></figure>
-
-<p>如果你只想处理某部分图片, 可以针对性设置, 比如:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=&quot;xxxx.jpg&quot; referrerPolicy=&quot;no-referrer&quot; /&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="批量替换图片域名"><a href="#批量替换图片域名" class="headerlink" title="批量替换图片域名"></a>批量替换图片域名</h3><p>偶尔图床CDN挂了需要更换域名, 一些文章存放在数据库,比如<code>wordpress</code>网站  为了方便 可以采用<code>js</code>动态替换的方式, 将以下代码拷贝到<code>html</code>中即可 </p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">let</span> context = <span class="built_in">Array</span>.prototype.map.call(<span class="built_in">document</span>.images, (event) =&gt; &#123;</span><br><span class="line">          event.src = event.src.replace(<span class="string">"cdn.jsdelivr.net/gh/xxx/xxx"</span>, <span class="string">"raw.fastgit.org/xxx/xxx/master"</span>)</span><br><span class="line">        </span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">  &lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>另外还可以动态添加<code>meta</code>标签</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> addMeta = <span class="function">(<span class="params">name, content</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> meta = <span class="built_in">document</span>.createElement(<span class="string">'meta'</span>);</span><br><span class="line">  meta.content = content;</span><br><span class="line">  meta.name = name;</span><br><span class="line">  <span class="built_in">document</span>.getElementsByTagName(<span class="string">'head'</span>)[<span class="number">0</span>].appendChild(meta);</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line">addMeta(</span><br><span class="line">    <span class="string">'referrer'</span>,</span><br><span class="line">    <span class="string">'never'</span>,</span><br><span class="line">  );</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../335.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../335.html" itemprop="url">Android锁屏息屏状态下弹出界面</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-07T16:04:19+08:00">
-                2022-07-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>最近公司客户端项目需要支持锁屏息屏状态下弹出应用界面, 类似于微信来电显示, 实现方法很简单, 如下:</p>
-<h3 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h3><h5 id="第一步-在清单文件中添加休眠唤醒和解锁权限"><a href="#第一步-在清单文件中添加休眠唤醒和解锁权限" class="headerlink" title="第一步 在清单文件中添加休眠唤醒和解锁权限"></a>第一步 在清单文件中添加休眠唤醒和解锁权限</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;uses-permission android:name=&quot;android.permission.DISABLE_KEYGUARD&quot; /&gt;</span><br><span class="line">&lt;uses-permission android:name=&quot;android.permission.WAKE_LOCK&quot; /&gt;</span><br></pre></td></tr></table></figure>
-
-<h5 id="第二步-在需要弹出显示的Activity的onCreate方法中添加相应flag代码"><a href="#第二步-在需要弹出显示的Activity的onCreate方法中添加相应flag代码" class="headerlink" title="第二步 在需要弹出显示的Activity的onCreate方法中添加相应flag代码"></a>第二步 在需要弹出显示的<code>Activity</code>的<code>onCreate</code>方法中添加相应<code>flag</code>代码</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">       getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED <span class="comment">//锁屏显示</span></span><br><span class="line">               | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD <span class="comment">//解锁</span></span><br><span class="line">               | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON <span class="comment">//保持屏幕不息屏</span></span><br><span class="line">               | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);<span class="comment">//点亮屏幕</span></span><br><span class="line">     </span><br><span class="line">     setContentView(R.layout.activity_main);</span><br><span class="line">     </span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-
-<h5 id="第三步-触发Activity启动"><a href="#第三步-触发Activity启动" class="headerlink" title="第三步 触发Activity启动"></a>第三步 触发Activity启动</h5><p>比如推送触发  后台<code>Service</code>触发  或者<code>IM</code>长连接信令触发等等</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">openActivity</span><span class="params">(Context context, String msg)</span> </span>&#123;</span><br><span class="line">Intent intent = <span class="keyword">new</span> Intent(context, MainActivity.class)ialarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);</span><br><span class="line">       context.startActivity(intent);</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
-
-<h5 id="完毕"><a href="#完毕" class="headerlink" title="完毕"></a>完毕</h5><p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../334.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../334.html" itemprop="url">关于Github加速方法总结</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-07T09:04:19+08:00">
-                2022-07-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>最近网站大部分图片访问变慢, 原因出在<code>jsdelivr</code>加速失效, 为此我更换了CDN域名, 顺带总结一下<code>github</code>加速小技巧</p>
-<h3 id="GitHub访问加速"><a href="#GitHub访问加速" class="headerlink" title="GitHub访问加速"></a>GitHub访问加速</h3><h5 id="1-使用镜像访问"><a href="#1-使用镜像访问" class="headerlink" title="1. 使用镜像访问"></a>1. 使用镜像访问</h5><p>这相当于是克隆版的 GitHub , 网站的内容和 GitHub 是完整同步, 可以在这个网站里面进行下载克隆等操作, 镜像地址如下:</p>
-<ul>
-<li><a href="https://hub.fastgit.org/" target="_blank" rel="noopener">https://hub.fastgit.org</a></li>
-</ul>
-<p><strong>使用示范:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/typecho/typecho</span><br><span class="line"></span><br><span class="line">可以改成</span><br><span class="line"></span><br><span class="line">https://hub.fastgit.xyz/typecho/typecho</span><br></pre></td></tr></table></figure>
-
-<h5 id="2-修改Host文件加速"><a href="#2-修改Host文件加速" class="headerlink" title="2.修改Host文件加速"></a>2.修改Host文件加速</h5><p>首先需要获取对应域名实际ip地址, 可以通过以下网站查询:</p>
-<ul>
-<li><p><a href="https://www.itdog.cn/" target="_blank" rel="noopener">https://www.itdog.cn/</a></p>
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>蓝图 实际上也是一门编程语言 一种图形化的语言  </p>
+<p>使用蓝图 可以使开发者们省去代码的编写  即便你不会代码 也能进行游戏开发 </p>
+<p>这一点 很大程度地吸引了许许多多的游戏爱好者的加入</p>
+<p>……</p>
+<p>如果你有编程基础的话 那么蓝图上手会非常的快, 接下来 我们来快速入门</p>
+<h4 id="语言类比"><a href="#语言类比" class="headerlink" title="语言类比"></a>语言类比</h4><p>我们知道 正常的编程的语言 基本上都有变量 函数的概念, 蓝图既然是一门语言, 那么它自然也有  只不过表现形式不太一样罢了</p>
+<h3 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h3><ol>
+<li><p><strong>蓝图中函数的表现形式</strong></p>
+<p>在蓝图中 每一个蓝图节点我们可以视作一个函数</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829152437687.png" alt="image-20220829152437687"></p>
 </li>
-<li><p><a href="https://www.ipaddress.com/" target="_blank" rel="noopener">https://www.ipaddress.com/</a></p>
+<li><p><strong>函数的定义</strong></p>
+<p>虚幻引擎给我们封装好了许多函数 比如打印字符串的函数 给物体添加材质的函数等等</p>
+<p>如果我们想要自定义一个函数呢, 那么直接在左侧面板中添加一个新函数, 比如 我定义一个名为<code>Test</code>的函数  内部逻辑是比较传入的值是否等于3</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829180025489.png" alt="image-20220829180025489"></p>
+<p>函数创建好后可以在蓝图事件表中通过鼠标右键进行名称搜索使用:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829180313058.png" alt="image-20220829180313058"></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829180354133.png" alt="image-20220829180354133"></p>
 </li>
-</ul>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220707154831063.png" alt="image-20220707154831063"></p>
-<p>需要查询的地址有:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"># 基本地址</span><br><span class="line">&apos;github.com&apos;,</span><br><span class="line">&apos;gist.github.com&apos;,</span><br><span class="line">&apos;assets-cdn.github.com&apos;,</span><br><span class="line">&apos;raw.githubusercontent.com&apos;,</span><br><span class="line">&apos;gist.githubusercontent.com&apos;,</span><br><span class="line">&apos;cloud.githubusercontent.com&apos;,</span><br><span class="line">&apos;camo.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars0.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars1.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars2.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars3.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars4.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars5.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars6.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars7.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars8.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars.githubusercontent.com&apos;,</span><br><span class="line">&apos;github.githubassets.com&apos;,</span><br><span class="line">&apos;user-images.githubusercontent.com&apos;,</span><br><span class="line">&apos;codeload.github.com&apos;,</span><br><span class="line">&apos;favicons.githubusercontent.com&apos;,</span><br><span class="line">&apos;api.github.com&apos;</span><br></pre></td></tr></table></figure>
-
-<p>一个一个查询太过麻烦, 可以使用python脚本快速批量获取, 代码如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env python</span><br><span class="line"># coding:utf-8</span><br><span class="line"> </span><br><span class="line">import socket</span><br><span class="line"></span><br><span class="line">def output_hosts():</span><br><span class="line">    domains = [&apos;github.com&apos;,</span><br><span class="line">                &apos;gist.github.com&apos;,</span><br><span class="line">                &apos;assets-cdn.github.com&apos;,</span><br><span class="line">                &apos;raw.githubusercontent.com&apos;,</span><br><span class="line">                &apos;gist.githubusercontent.com&apos;,</span><br><span class="line">                &apos;cloud.githubusercontent.com&apos;,</span><br><span class="line">                &apos;camo.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars0.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars1.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars2.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars3.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars4.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars5.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars6.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars7.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars8.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars.githubusercontent.com&apos;,</span><br><span class="line">                &apos;github.githubassets.com&apos;,</span><br><span class="line">                &apos;user-images.githubusercontent.com&apos;,</span><br><span class="line">                &apos;codeload.github.com&apos;,</span><br><span class="line">                &apos;favicons.githubusercontent.com&apos;,</span><br><span class="line">                &apos;api.github.com&apos;</span><br><span class="line">                ]</span><br><span class="line">    </span><br><span class="line">    with open(&apos;hosts.txt&apos;, &apos;w&apos;) as f:</span><br><span class="line">        f.write(&apos;```\n&apos;)</span><br><span class="line">        f.write(&apos;# GitHub Start \n&apos;)</span><br><span class="line">        for domain in domains:</span><br><span class="line">            print(&apos;Querying ip for domain %s&apos;%domain)</span><br><span class="line">            ip = socket.gethostbyname(domain)</span><br><span class="line">            print(ip)</span><br><span class="line">            f.write(&apos;%s %s\n&apos;%(ip, domain))</span><br><span class="line">        f.write(&apos;# GitHub End \n&apos;) </span><br><span class="line">        f.write(&apos;```\n&apos;)</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">    </span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    output_hosts()</span><br></pre></td></tr></table></figure>
-
-<p>执行脚本后, 得到如下结果:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"># GitHub Start </span><br><span class="line">140.82.121.3  github.com</span><br><span class="line">140.82.121.3  gist.github.com</span><br><span class="line">185.199.110.153 assets-cdn.github.com</span><br><span class="line">185.199.108.133 raw.githubusercontent.com</span><br><span class="line">185.199.111.133 gist.githubusercontent.com</span><br><span class="line">185.199.110.133 cloud.githubusercontent.com</span><br><span class="line">185.199.111.133 camo.githubusercontent.com</span><br><span class="line">185.199.111.133 avatars0.githubusercontent.com</span><br><span class="line">185.199.110.133 avatars1.githubusercontent.com</span><br><span class="line">185.199.111.133 avatars2.githubusercontent.com</span><br><span class="line">185.199.109.133 avatars3.githubusercontent.com</span><br><span class="line">185.199.108.133 avatars4.githubusercontent.com</span><br><span class="line">185.199.111.133 avatars5.githubusercontent.com</span><br><span class="line">185.199.109.133 avatars6.githubusercontent.com</span><br><span class="line">185.199.109.133 avatars7.githubusercontent.com</span><br><span class="line">185.199.110.133 avatars8.githubusercontent.com</span><br><span class="line">185.199.108.133 avatars.githubusercontent.com</span><br><span class="line">185.199.111.154 github.githubassets.com</span><br><span class="line">185.199.109.133 user-images.githubusercontent.com</span><br><span class="line">140.82.112.9 codeload.github.com</span><br><span class="line">185.199.110.133 favicons.githubusercontent.com</span><br><span class="line">192.30.255.116 api.github.com</span><br><span class="line"># GitHub End</span><br></pre></td></tr></table></figure>
-
-<p>将以上内容拷贝到系统Host文件中即可, 不同操作系统host文件所在路径不一样:</p>
+<li><p><strong>函数的调用</strong></p>
+<p>节点连线可以表示函数调用和传参, 这种箭头形状的输入口 表示的就是函数调用, 左边调用右边</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829152624719.png" alt="image-20220829152624719"></p>
+</li>
+<li><p><strong>函数传参</strong></p>
+<p>蓝图节点左侧下方的一系列入口 可以理解为函数参数的传递入口:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829170225676.png" alt="image-20220829170225676"></p>
+</li>
+</ol>
+<h3 id="事件监听"><a href="#事件监听" class="headerlink" title="事件监听"></a>事件监听</h3><p>现代程序的编写几乎离不开监听回调, 在设计模式的领域中也叫做观察者者模式, 我们可以在蓝图编辑面板中左侧查看当前创建事件:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220919152646963.png" alt="image-20220919152646963"></p>
+<p>事件主要用于蓝图类之间的信息交互, 当关卡中的某一个子物体需要和所处关卡进行通信时, 我们可以在关卡蓝图中自定义一个事件, 然后子物体蓝图中调用触发:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220919153104557.png" alt="image-20220919153104557"></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220919153620945.png" alt="image-20220919153620945"></p>
+<p>事件触发命令格式为: <code>ce 事件名</code></p>
+<blockquote>
+<p>关卡蓝图是当前关卡内所有物体的父级 它可以获取到物体的实例 很容易和子物体进行数据通信, 但是物体并不持有关卡的实例, 所以信息交互需要依靠事件</p>
+</blockquote>
+<h3 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h3><ol>
+<li><p><strong>定义全局变量</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829152044387.png" alt></p>
+<p>添加变量后 我们可以在属性细节面板中 设置变量的数据类型</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829153316870.png" alt="image-20220829153316870">    </p>
+</li>
+<li><p><strong>定义局部变量</strong></p>
+<p>在左侧面板中 点击鼠标右键调出菜单 可以增加局部变量的设置入口, 其操作和使用与全局变量一样 这里不再赘述</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829155333576.png" alt="image-20220829155333576"></p>
+</li>
+<li><p><strong>初始化变量的值</strong></p>
+<p>通常情况下 我们在定义变量的同时 会对该变量进行值的初始化</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829153622095.png" alt="image-20220829153622095"></p>
+</li>
+<li><p><strong>获取变量值</strong></p>
+<p>程序运行时  我们需要动态读取变量的值, 此时我们按住Ctrl键  然后鼠标左键将变量拖拽至事件图标中 </p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/getvar.gif" alt="getvar"></p>
+<p>此时会生成一个获取变量值的函数(蓝图节点)</p>
+</li>
+<li><p><strong>设置变量的值</strong></p>
+<p>同样的 我们要生成一个设置变量值的函数时, 按住Alt键 然后鼠标左键将变量拖拽至事件图标中即可</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/setvar.gif" alt="setvar"></p>
+</li>
+</ol>
+<h3 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h3><p>任何一门编程语言都有注释  方便我们对于程序的维护  蓝图自然也有</p>
+<p>选中你需要进行注释的蓝图节点 然后按键盘C  则会出现一个方块将选中的节点包裹  此时可以输入注释内容</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829153005361.png" alt="image-20220829153005361"></p>
+<h3 id="逻辑执行"><a href="#逻辑执行" class="headerlink" title="逻辑执行"></a>逻辑执行</h3><p>比如我们要执行一个在屏幕上打印字符串的逻辑, 那么我们可以在游戏启动的时候 调用打印字符串的函数(节点)</p>
+<p>事件开始运行 这个函数 表示的就是游戏启动的 相当于<code>Java</code>中的<code>main</code>函数, 只执行一次</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829160253326.png" alt="image-20220829160253326"></p>
+<p>编写好逻辑后 运行游戏 就能看到屏幕上打印的内容了</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/printString.gif" alt="printString"></p>
+<h3 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h3><p>蓝图是一门面向对象的编程语言  在游戏中每一个物体都是一个对象 </p>
 <ol>
-<li><strong>Windows系统</strong>：修改<code>C:\Windows\System32\drivers\etc\hosts</code>文件</li>
+<li><p><strong>创建对象</strong></p>
+<p>在世界大纲中显示的所有物体都是对象 </p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829161621529.png" alt="image-20220829161621529"></p>
+<p> 而创建对象方法很简单就是直接将素材拖拽至场景中</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/2022-08-29%2016-32-03.2022-08-29%2016_34_17.gif" alt="2022-08-29 16-32-03.2022-08-29 16_34_17"></p>
+<p>有些素材拖入场景后世界大纲中找不到 比如材质 说明该素材在蓝图事件表中不能直接通过右键的方式来创建对象引用</p>
+<p>材质比较特殊 对硬件资源消耗比较大  我们通常会在材质基础上创建材质实例 其好处是一方面减少资源消耗 另一方面可以暴露参数在游戏过程中动态修改属性</p>
+<p>对于材质对象的创建 我们可以选中对应材质 然后鼠标右键创建材质实例:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829170844561.png" alt="image-20220829170844561"></p>
+<p>点击创建后 素材面板会多出一个材质实例, 这个实例是材质的子类:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829171302287.png" alt="image-20220829171302287"></p>
+<p>我们可以在蓝图中创建数组变量来存放该实例:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829173504954.png" alt="image-20220829173504954"></p>
+</li>
+<li><p><strong>获取对象实例</strong></p>
+<p>我们只需在场景或者世界大纲中选中需要引用的物体对象, 然后在蓝图事件表中 右键创建对象引用节点即可</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829164655130.png" alt="image-20220829164655130"></p>
+<p>动图操作如下:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/2022-08-29%2016-48-00.2022-08-29%2016_49_34.gif" alt="2022-08-29 16-48-00.2022-08-29 16_49_34"></p>
+</li>
+<li><p>修改对象属性</p>
+<p>比如修改某个物体的位置属性, 我们可以在游戏启动时调用位置修改函数</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829165958763.png" alt="image-20220829165958763"></p>
+</li>
 </ol>
-   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 网络刷新</span><br><span class="line">ipconfig /flushdns</span><br></pre></td></tr></table></figure>
+<h3 id="关卡蓝图和蓝图类"><a href="#关卡蓝图和蓝图类" class="headerlink" title="关卡蓝图和蓝图类"></a>关卡蓝图和蓝图类</h3><ul>
+<li><strong>关卡蓝图</strong>: 重点在关卡 而不是蓝图  是指以蓝图语言编辑的关卡 </li>
+<li><strong>蓝图类</strong>: 重点在类 是指以蓝图语言定义和编辑的类</li>
+</ul>
+<p>在游戏引擎中  关卡本质就是一个集合了众多<code>Actor</code>的类</p>
+<h3 id="虚幻引擎类继承关系"><a href="#虚幻引擎类继承关系" class="headerlink" title="虚幻引擎类继承关系"></a>虚幻引擎类继承关系</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">        |--Actor--Pawn--Character</span><br><span class="line">        |</span><br><span class="line">Object--|--PlayerController</span><br><span class="line">				|</span><br><span class="line">				|--Info--GameModeBase</span><br><span class="line">				|</span><br><span class="line">				|--ActorComponent--SceneComponent</span><br></pre></td></tr></table></figure>
 
-<ol start="2">
-<li><p><strong>Linux系统</strong>：修改<code>C:\Windows\System32\drivers\etc\hosts</code>文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 网络刷新</span><br><span class="line">systemctl restart network</span><br></pre></td></tr></table></figure>
+<h3 id="开发文档参考"><a href="#开发文档参考" class="headerlink" title="开发文档参考"></a>开发文档参考</h3><p><a href="https://docs.unrealengine.com/4.27/zh-CN/Basics/GettingStarted/" target="_blank" rel="noopener">官方文档</a></p>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../352.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../352.html" itemprop="url">虚幻引擎实用快捷键汇总</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-28T11:04:19+08:00">
+                2022-08-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="场景相关"><a href="#场景相关" class="headerlink" title="场景相关"></a>场景相关</h3><ol>
+<li><p>快速定位聚焦到某个物体</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">键盘F</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使物体下落吸附至地面</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">键盘end</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>快速旋转地图</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Alt+鼠标左键</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>快速缩放地图</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Alt+鼠标右键</span><br></pre></td></tr></table></figure>
+
 
 </li>
 </ol>
-<h3 id="仓库Clone下载加速"><a href="#仓库Clone下载加速" class="headerlink" title="仓库Clone下载加速"></a>仓库Clone下载加速</h3><h5 id="1-将仓库克隆到Gitee"><a href="#1-将仓库克隆到Gitee" class="headerlink" title="1. 将仓库克隆到Gitee"></a>1. 将仓库克隆到Gitee</h5><p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220707151023271.png" alt="image-20220707151023271"></p>
-<h5 id="2-使用Fast-GitHub浏览器插件"><a href="#2-使用Fast-GitHub浏览器插件" class="headerlink" title="2.使用Fast-GitHub浏览器插件"></a>2.使用Fast-GitHub浏览器插件</h5><p><a href="https://github.com/fhefh2015/Fast-GitHub" target="_blank" rel="noopener">Fast-GitHub</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220707151433012.png" alt="image-20220707151433012"></p>
-<h5 id="3-第三方网站解析加速"><a href="#3-第三方网站解析加速" class="headerlink" title="3.第三方网站解析加速"></a>3.第三方网站解析加速</h5><p><a href="http://toolwa.com/github/" target="_blank" rel="noopener">Toolwa</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220707151746721.png" alt="image-20220707151746721"></p>
-<p><a href="https://github.com/hunshcn/gh-proxy" target="_blank" rel="noopener">gh-proxy</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220707152513916.png" alt="image-20220707152513916"></p>
-<p><a href="https://ghproxy.com/" target="_blank" rel="noopener">Ghproxy</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220707155957192.png" alt="image-20220707155957192"></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220707160024075.png" alt="image-20220707160024075"></p>
-<h3 id="Raw资源加速"><a href="#Raw资源加速" class="headerlink" title="Raw资源加速"></a>Raw资源加速</h3><h5 id="1-使用fastgit"><a href="#1-使用fastgit" class="headerlink" title="1. 使用fastgit"></a>1. 使用fastgit</h5><p>将<code>raw.githubusercontent.com</code>替换成<code>raw.fastgit.org</code></p>
-<p>使用示例</p>
-<p>实际上<code>fastgit</code>功能很丰富, 几乎囊括了<code>github</code>所有. 具体如下表:</p>
-<p><strong>反代列表</strong></p>
+<ol start="5">
+<li><p>临时放大地图</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C+鼠标任意键长按</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>临时缩小地图</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Z+鼠标任意键长按</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>进入预览模式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Alt+P</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<h3 id="蓝图相关"><a href="#蓝图相关" class="headerlink" title="蓝图相关"></a>蓝图相关</h3><ol>
+<li><p>在蓝图面板获取变量值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ctrl+鼠标左键拖动</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在蓝图面板设置变量值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Alt+鼠标左键拖动</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>切断蓝图节点之间的连线</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">光标移至线上 然后 Alt+鼠标左键</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>给选中的蓝图节点添加注释</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">键盘C</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>克隆选中的蓝图节点</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"> </span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+</li>
+</ol>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../351.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../351.html" itemprop="url">关于虚幻引擎位置迁移之路径修改</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-22T11:04:19+08:00">
+                2022-08-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>最近换了硬盘 打算将原来的虚幻引擎迁移到另一块硬盘 但是当我将引擎文件拷贝过去后 虚幻启动程序并未识别  然而设置面板中又没有关于这一块路径的修改</p>
+<p>难道我得重新下载一遍? 这我肯定是不能接受的呀</p>
+<p>于是乎我百度了一番经过尝试之后发现一个方法可行</p>
+<h3 id="解决方案一"><a href="#解决方案一" class="headerlink" title="解决方案一"></a>解决方案一</h3><p>重新下载引擎 然后选择新的引擎下载路径 该路径是你新硬盘位置  </p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220822145537993.png" alt="image-20220822145537993"></p>
+<p>下载开始后硬盘中会自动生成相应的引擎目录 此时暂停下载  紧接着将旧引擎迁移至该目录下 最后重启<code>Epic Games Launcher</code>即可</p>
+<h3 id="解决方案二"><a href="#解决方案二" class="headerlink" title="解决方案二"></a>解决方案二</h3><p>进入虚幻<code>support</code>目录 修改<code>install.in</code>文件, <code>Mac</code>系统路径如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Users/你的用户名/Library/Application Support/Epic/UnrealEngine/install.in</span><br></pre></td></tr></table></figure>
+
+<p>用文本文件打开 然后修改对应的路径即可</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220822150921510.png" alt="image-20220822150921510"></p>
+<p>同样的 最后重启<code>Epic Games Launcher</code>即可</p>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../350.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../350.html" itemprop="url">Youtube的山寨版LibreTube国内直连</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-03T17:04:19+08:00">
+                2022-08-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p><strong>发现一款软件 - LibreTube，看这名字就知道八成是 Youtube 的山寨版</strong>。</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20220811122931.png" alt>请忽略google的渣翻译</p>
+<p>打开 APP 后长这样，直接访问无压力：</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20220811122945.png" alt></p>
+<p>界面设计的看起来还是不错的，<strong>视频刚打开需要多缓冲几秒。</strong></p>
+<p>左上角的设置里还可以设置不同国家和视频源，默认分辨率等。<strong>速度慢可以在【选择实例】里切换其他的\</strong>实例*<em>。*</em></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20220811123003.png" alt></p>
+<p><strong>搜索功能也同样好用</strong>，经过小编测试，动漫新番，包括最近比较火的电视剧都能搜到，关键还都是正版。</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20220811123046.png" alt></p>
+<p>视频播放器还自带字幕，变速功能。这么多年过去了，神仙姐姐依旧那么好看<img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20220811123148.png" alt></p>
+<p><strong>另外还可以把喜欢的视频下载下来，订阅喜欢的频道，非常方便。</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20220811123227.png" alt></p>
+<p><strong>APP 是免费开源的</strong>，安装包只有 13.7MB，不得不说，开源牛逼，开源万岁。</p>
+<p>由于直接从 <a href="https://github.com/libre-tube/LibreTube" target="_blank" rel="noopener">Github</a> 下载太慢，小编已经将 apk 安装包上传到了网盘。</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20220811123251.png" alt></p>
+<p>最后附上下载地址：</p>
+<ul>
+<li><p>GitHub: <a href="https://github.com/libre-tube/LibreTube/releases" target="_blank" rel="noopener">点击下载</a></p>
+</li>
+<li><p>蓝奏网盘: <a href="https://wws.lanzoub.com/b00vrggxe" target="_blank" rel="noopener">点击下载</a></p>
+</li>
+</ul>
+<p><strong>本文转载自</strong>:<a href="https://mp.weixin.qq.com/s/-U6iWNORpz-cGKOLvAKSiQ" target="_blank" rel="noopener">微信公众号</a></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../349.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../349.html" itemprop="url">一款好用的搜索引擎推荐</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-02T17:04:19+08:00">
+                2022-08-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>周围不少小伙伴反应，最近搜索引擎的准确率越来越低了，有时候搜索官网都搜不到。</p>
+<p>之前介绍过号称 “<a href="http://mp.weixin.qq.com/s?__biz=MzAwOTk3Mjg4Mg==&mid=2247488414&idx=1&sn=fd614803d9aab89b1ac85e84814e1d4e&chksm=9b562e63ac21a7751b5a85c5120e69d904436ffe855965685858d94cc0a3131dc16208f54d44&scene=21#wechat_redirect" target="_blank" rel="noopener">国内版 Google</a>” 的F搜，前不久还由于各种原因无法访问了。</p>
+<p>今天一看发现，又回归了，域名也由 <code>fsou.cc</code>换成了 <code>fsoufsou.com</code>。界面也和<code>Google</code> 搜索越来越像了。</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20220811122444.png" alt></p>
+<p><strong>不过今天的重点不在这里，最近发现个超级牛的搜索引擎。</strong></p>
+<p>网站走的简洁风格，但功能可不简单。汇聚了来自 <code>Google</code>，<code>Bing</code> 等70多个不同搜索引擎的结果。</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20220811122505.png" alt></p>
+<p>除了常规的网页和图片搜索，<strong>还支持视频，新闻，音乐，学术，文件，社交媒体等。</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20220811122517.png" alt></p>
+<p>还可以在首选项里设置里对不同标签开启不同的搜索引擎。比如常规类中只开启了<code>Google</code>，还可以开启<code>Bing</code>，<code>duckduckgo</code> 等搜索结果。</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20220811122528.png" alt></p>
+<p><strong>开启后你会发现搜索结果准确率又进一步提高。</strong>这个搜索引擎目前是开源的，人人都可以搭建。</p>
+<p>不过，已经有很多大神已经搭建好了，镜像站点非常多，就没必要自己动手了。</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20220811122540.png" alt></p>
+<p><strong>只需要在 <a href="https://searx.space" target="_blank" rel="noopener">https://searx.space</a> 选择一个最快的站点就能访问了。</strong></p>
+<p>通过这个搜索工具 可以搜到平常搜不到的东西 大家懂得</p>
+<p><strong>本文转载自</strong>:<a href="https://mp.weixin.qq.com/s/NSODu5jFta_QS98qJw0oIA" target="_blank" rel="noopener">微信公众号</a></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../348.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../348.html" itemprop="url">一款跨平台的m3u8视频下载工具</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-02T16:04:19+08:00">
+                2022-08-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>M3U8-Downloader是基于Electron框架开发的一款可以下载、播放HLS视频流的APP。</p>
 <table>
 <thead>
 <tr>
-<th>站源</th>
-<th>地址</th>
-<th>缓存</th>
+<th align="left">功能</th>
+<th align="left">支持</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>github.com</td>
-<td>hub.fastgit.xyz</td>
-<td>无</td>
+<td align="left">HLS标准源</td>
+<td align="left">✓</td>
 </tr>
 <tr>
-<td>raw.githubusercontent.com</td>
-<td>raw.fastgit.org</td>
-<td>无</td>
+<td align="left">标准 AES-128-CBC加密</td>
+<td align="left">✓</td>
 </tr>
 <tr>
-<td>github.githubassets.com</td>
-<td>assets.fastgit.org</td>
-<td>无</td>
+<td align="left">标准 AES-196-CBC加密</td>
+<td align="left">✓</td>
 </tr>
 <tr>
-<td>customer-stories-feed.github.com</td>
-<td>customer-stories-feed.fastgit.org</td>
-<td>480 分钟</td>
+<td align="left">标准 AES-256-CBC加密</td>
+<td align="left">✓</td>
 </tr>
 <tr>
-<td>Github Download</td>
-<td>download.fastgit.org</td>
-<td>480 分钟</td>
-</tr>
-<tr>
-<td>GitHub Archive</td>
-<td>archive.fastgit.org</td>
-<td>无</td>
+<td align="left">非标准 AES-*-CBC加密</td>
+<td align="left">ㄨ</td>
 </tr>
 </tbody></table>
-<p><a href="https://fastgit.org/" target="_blank" rel="noopener">fastgit官网</a></p>
-<h5 id="2-使用ghproxy"><a href="#2-使用ghproxy" class="headerlink" title="2.使用ghproxy"></a>2.使用ghproxy</h5><p>在<code>https://raw.githubusercontent.com</code>地址前面添加<code>https://ghproxy.com/</code></p>
-<p>比如:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://ghproxy.com/https://raw.githubusercontent.com/stilleshan/ServerStatus/master/Dockerfile</span><br></pre></td></tr></table></figure>
+<h3 id="开放源码-M3U8-Downloader"><a href="#开放源码-M3U8-Downloader" class="headerlink" title="开放源码 M3U8-Downloader"></a>开放源码 <a href="https://github.com/HeiSir2014/M3U8-Downloader" target="_blank" rel="noopener">M3U8-Downloader</a></h3><h5 id><a href="#" class="headerlink" title></a><a href="https://github.com/HeiSir2014/M3U8-Downloader/" target="_blank" rel="noopener"><img src="https://img.shields.io/github/stars/HeiSir2014/M3U8-Downloader?style=for-the-badge" alt="GitHub stars"></a></h5><h3 id="下载最新版-2-0-7-2022-01-26"><a href="#下载最新版-2-0-7-2022-01-26" class="headerlink" title="下载最新版 2.0.7 (2022-01-26)"></a>下载最新版 2.0.7 (2022-01-26)</h3><h5 id="百度网盘下载"><a href="#百度网盘下载" class="headerlink" title="百度网盘下载"></a>百度网盘下载</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">链接：https://pan.baidu.com/s/14zaMkxgfTC0HSge-Ze6EpQ 提取码：m3u8</span><br></pre></td></tr></table></figure>
 
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<h5 id="阿里云盘下载"><a href="#阿里云盘下载" class="headerlink" title="阿里云盘下载"></a>阿里云盘下载</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">链接：https://www.aliyundrive.com/s/1QjQvn29W6J</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用展示"><a href="#使用展示" class="headerlink" title="使用展示"></a>使用展示</h3><p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/HLSDownloadShow-3-1.gif" alt="M3U8-Downloader 下载展示"><br><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/HLSDownloadShow-3-2.gif" alt="M3U8-Downloader 合并展示"><br><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/HLSDownloadShow-4.gif" alt="M3U8-Downloader 修复合并展示"></p>
+<h3 id="HLS源怎么抓取呢？"><a href="#HLS源怎么抓取呢？" class="headerlink" title="HLS源怎么抓取呢？"></a>HLS源怎么抓取呢？</h3><p>在chrome浏览器打开视频网页，按下F12,页签点击到Network页面，在Filter框里输入”m3u8”,然后按F5刷新页面，如果网页里的视频使用的是HLS源，就可以在这里捕获到视频流地址，然后选中右键 Copy -&gt; Copy Link Address.</p>
+<p>M3U8-Downloader 可以使用您提供m3u8源地址下载并无损转码Mp4文件。</p>
+<iframe src="https://player.bilibili.com/player.html?aid=498666070&amp;bvid=BV1QK411n7VJ&amp;cid=206827525&amp;page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+
+<h3 id="关于-M3U8-Downloader"><a href="#关于-M3U8-Downloader" class="headerlink" title="关于 M3U8-Downloader"></a>关于 M3U8-Downloader</h3><p><a href="https://tools.heisir.cn/HLSDownload/" target="_blank" rel="noopener">点击进入官网</a></p>
 <p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
@@ -1408,7 +1477,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../333.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../347.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -1427,7 +1496,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../333.html" itemprop="url">Hexo NexT 主题渲染 Mermaid 绘图</a></h1>
+                <a class="post-title-link" href="../../347.html" itemprop="url">下载视频m3u8格式视频的若干种方法</a></h1>
         
 
         <div class="post-meta">
@@ -1439,8 +1508,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-05T09:04:19+08:00">
-                2022-07-05
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-01T16:04:19+08:00">
+                2022-08-01
               </time>
             
 
@@ -1479,21 +1548,107 @@
       
         
           
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>由于我的Hexo博客中的Next主题是旧版, 并不支持<code>mermaid</code>, 因此需要手动配置, 步骤如下</p>
-<h3 id="配置步骤"><a href="#配置步骤" class="headerlink" title="配置步骤"></a>配置步骤</h3><h5 id="第一步-安装-mermaid-插件"><a href="#第一步-安装-mermaid-插件" class="headerlink" title="第一步 安装 mermaid 插件"></a>第一步 安装 mermaid 插件</h5><p>在博客的根目录下，执行以下命令安装 <code>hexo-filter-mermaid-diagrams</code> 插件</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install hexo-filter-mermaid-diagrams --save</span><br></pre></td></tr></table></figure>
+            <h2 id="方法1、ffmpeg工具"><a href="#方法1、ffmpeg工具" class="headerlink" title="方法1、ffmpeg工具"></a><strong>方法1、ffmpeg工具</strong></h2><p>先安装ffmpeg：</p>
+<blockquote>
+<p><strong>brew install ffmpeg</strong></p>
+</blockquote>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-a17cb10fcb6fa92e300f1da3642ab0a0_720w.jpg" alt="img"></p>
+<p>ffmpeg安装完成</p>
+<p><strong>ffmpeg使用：通过检查元素，元素定位，可以看到某视频地址的资源地址如下blob:URL的这种形式</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-9718a385f10135d4907eebce7e158e8e_720w.jpg" alt="img"></p>
+<p>然后通过查看Network，找到blob:URL地址背后的m3u8地址</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-cf3ecc6496f532fcd956de52df1bda7e_720w.jpg" alt="img"></p>
+<p><strong>用ffmpeg下载视频，并将m3u8格式转为mp4格式</strong>，指令如下</p>
+<blockquote>
+<p><strong>ffmpeg -i</strong> <a href="https://link.zhihu.com/?target=https%3A//youku.com-youku.net/20180620/13336_33db73a9/index.m3u8" target="_blank" rel="noopener">https://youku.com-youku.net/20180620/13336_33db73a9/index.m3u8</a> <strong>fileName.mp4</strong></p>
+</blockquote>
+<p>或</p>
+<blockquote>
+<p><strong>ffmpeg -i</strong> <a href="https://link.zhihu.com/?target=https%3A//youku.com-youku.net/20180620/13336_33db73a9/index.m3u8" target="_blank" rel="noopener">https://youku.com-youku.net/20180620/13336_33db73a9/index.m3u8</a> <strong>-c copy fileName.mp4</strong></p>
+</blockquote>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-6bbe97f1f8b56fef4740145be4c1f401_720w.jpg" alt="img"></p>
+<p>如上下载中</p>
+<p>由于视频很大，下载需要很长长长时间(1个G的视频可能需下载几小时…)。</p>
+<p>可以通过如下指令进行<strong>下载提速</strong>（下载速度大约能提升到<strong>几到十几分钟</strong>，很棒了哦，起码比百度云快）：</p>
+<blockquote>
+<p><strong>ffmpeg -i</strong> <a href="https://link.zhihu.com/?target=https%3A//youku.com-youku.net/20180620/13336_33db73a9/index.m3u8" target="_blank" rel="noopener">https://youku.com-youku.net/20180620/13336_33db73a9/index.m3u8</a> <strong>-c copy -bsf:a aac_adtstoasc fileName.mp4</strong></p>
+</blockquote>
+<p>如果你想用终端工具拉起视频播放，直接通过如下指令就能 <strong>播放某链接的视频</strong></p>
+<blockquote>
+<p><strong>ffplay -i</strong> <a href="https://link.zhihu.com/?target=https%3A//youku.com-youku.net/20180620/13336_33db73a9/index.m3u8" target="_blank" rel="noopener">https://youku.com-youku.net/20180620/13336_33db73a9/index.m3u8</a></p>
+</blockquote>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-a927d74233b2b271f515901f8087576d_720w.jpg" alt="img"></p>
+<p>下载完成，播放中</p>
+<h2 id="搞定！！！"><a href="#搞定！！！" class="headerlink" title="搞定！！！"></a>搞定！！！</h2><h2 id="方法2、google插件：Tampermonkey（油猴），一个强大到令人无语的脚本工具箱（Tampermonkey绝对是个大宝藏，里面有太多好用的脚本了，你真真真真真真的值得拥有）"><a href="#方法2、google插件：Tampermonkey（油猴），一个强大到令人无语的脚本工具箱（Tampermonkey绝对是个大宝藏，里面有太多好用的脚本了，你真真真真真真的值得拥有）" class="headerlink" title="方法2、google插件：Tampermonkey（油猴），一个强大到令人无语的脚本工具箱（Tampermonkey绝对是个大宝藏，里面有太多好用的脚本了，你真真真真真真的值得拥有）"></a>方法2、google插件：Tampermonkey（油猴），一个强大到令人无语的脚本工具箱（Tampermonkey绝对是个大宝藏，里面有太多好用的脚本了，你真真真真真真的值得拥有）</h2><p>关于Tampermonkey油猴的安装和基本使用，见我之前的一篇文章：</p>
+<p><a href="https://zhuanlan.zhihu.com/p/341412928" target="_blank" rel="noopener">晒一下我常用的几款chrome 插件，你值得拥有92 赞同 · 3 评论文章<img src="https://pic3.zhimg.com/v2-16f6e751ad3a72002004890425f11304_r.jpg?source=172ae18b" alt="img"></a></p>
+<h3 id="这里介绍油猴中1个好用的脚本：media-source-extract"><a href="#这里介绍油猴中1个好用的脚本：media-source-extract" class="headerlink" title="这里介绍油猴中1个好用的脚本：media-source-extract"></a>这里介绍油猴中1个好用的脚本：media-source-extract</h3><p>在油猴脚本列表中暂时无法提供下载，目前需要手动创建安装，具体的视频下载和工具使用，见链接：</p>
+<p><a href="https://link.zhihu.com/?target=https%3A//github.com/Momo707577045/media-source-extract" target="_blank" rel="noopener">https://github.com/Momo707577045/media-source-extractgithub.com/Momo707577045/media-source-extract</a></p>
+<h2 id="「安装或使用遇到问题的，直接私我，我看到了，一定会帮你解答」"><a href="#「安装或使用遇到问题的，直接私我，我看到了，一定会帮你解答」" class="headerlink" title="「安装或使用遇到问题的，直接私我，我看到了，一定会帮你解答」"></a>「安装或使用遇到问题的，直接私我，我看到了，一定会帮你解答」</h2><p>media-source-extract是一款提取视频画面和音频的工具，最终下载得到的是音频文件和视频画面文件。</p>
+<p>因此可以通过合并音视频来完成最终的视频。</p>
+<p>具体音视频合成方法网上有很多，我这边提供一套ffmpeg的合并方法，具体分2步走：</p>
+<p>1、先把音频「audio_mp4」（或多个「audio_mp4」） 进行<strong>合并转码</strong>，转为.aac格式：命令行执行如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i &quot;***-audio_mp4;codecs=***.mp4&quot; -acodec copy &quot;audio.aac&quot;</span><br></pre></td></tr></table></figure>
 
-<h5 id="第二步-NexT-启用-Mermaid"><a href="#第二步-NexT-启用-Mermaid" class="headerlink" title="第二步 NexT 启用 Mermaid"></a>第二步 NexT 启用 Mermaid</h5><p>打开 NexT 主题的 <code>_config.yml</code> 配置文件，添加以下代码：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Mermaid tag</span></span><br><span class="line"><span class="attr">mermaid:</span></span><br><span class="line"><span class="attr">  enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="comment"># Available themes: default | dark | forest | neutral</span></span><br><span class="line"><span class="attr">  theme:</span> <span class="string">default</span></span><br></pre></td></tr></table></figure>
+<p>（记得命令行先切换到音频所在的文件路径下）</p>
+<p>2、再将原始视频「video_mp4」（或多个「video_mp4」），和上一步得到的 aac 「audio.aac」组装到一起，命令行执行如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i &quot;***-video_mp4;codecs=***.mp4&quot; -i &quot;audio.aac&quot; -c copy -shortest &quot;result.mp4&quot;</span><br></pre></td></tr></table></figure>
 
-<h5 id="第三步-添加script脚本"><a href="#第三步-添加script脚本" class="headerlink" title="第三步 添加script脚本"></a>第三步 添加<code>script</code>脚本</h5><p>打开<code>next/layout/_partials/footer.swig</code>文件, 添加以下代码:</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123;% <span class="keyword">if</span> theme.mermaid.enable %&#125;</span><br><span class="line">  &lt;script type=<span class="string">"text/javascript"</span> src=<span class="string">'https://unpkg.com/mermaid@9.0.0/dist/mermaid.min.js'</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line">  &lt;script&gt;</span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">window</span>.mermaid) &#123;</span><br><span class="line">        <span class="keyword">var</span> mermaid_config = &#123;</span><br><span class="line">            startOnLoad: <span class="literal">true</span>,</span><br><span class="line">            theme: <span class="string">'&#123;&#123;theme.mermaid.theme&#125;&#125;'</span>,</span><br><span class="line">            flowchart:&#123;</span><br><span class="line">                useMaxWidth: <span class="literal">false</span>,</span><br><span class="line">                htmlLabels: <span class="literal">true</span></span><br><span class="line">            &#125;                </span><br><span class="line">        &#125;</span><br><span class="line">        mermaid.initialize(mermaid_config);</span><br><span class="line">  &#125;</span><br><span class="line">  &lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp">  &#123;% endif %&#125;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="至此-配置完毕"><a href="#至此-配置完毕" class="headerlink" title="至此 配置完毕"></a>至此 配置完毕</h3><hr>
-<h3 id="js本地引用"><a href="#js本地引用" class="headerlink" title="js本地引用"></a>js本地引用</h3><p>如果你打算将<code>js</code>文件存放在本地, 可以将<code>js</code>文件放置到<code>next/source/js/src</code>目录下, 那么<code>script</code>脚本改成如下即可:</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123;% <span class="keyword">if</span> theme.mermaid.enable %&#125;</span><br><span class="line">  &lt;script type=<span class="string">"text/javascript"</span> src=<span class="string">'js/src/mermaid.min.js'</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line">  &lt;script&gt;</span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">window</span>.mermaid) &#123;</span><br><span class="line">        <span class="keyword">var</span> mermaid_config = &#123;</span><br><span class="line">            startOnLoad: <span class="literal">true</span>,</span><br><span class="line">            theme: <span class="string">'&#123;&#123;theme.mermaid.theme&#125;&#125;'</span>,</span><br><span class="line">            flowchart:&#123;</span><br><span class="line">                useMaxWidth: <span class="literal">false</span>,</span><br><span class="line">                htmlLabels: <span class="literal">true</span></span><br><span class="line">            &#125;                </span><br><span class="line">        &#125;</span><br><span class="line">        mermaid.initialize(mermaid_config);</span><br><span class="line">  &#125;</span><br><span class="line">  &lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp">  &#123;% endif %&#125;</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p>（记得命令行先切换到音频所在的文件路径下）</p>
+<h3 id="最终result-mp4就是你要的合并了音频和画面的视频了！"><a href="#最终result-mp4就是你要的合并了音频和画面的视频了！" class="headerlink" title="最终result.mp4就是你要的合并了音频和画面的视频了！"></a>最终result.mp4就是你要的合并了音频和画面的视频了！</h3><p>media-source-extract这种提取音视频合并的方法，太麻烦了，有点像录屏的感觉。</p>
+<p>下载操作的复杂度，以及过程可能会丢失的视频片段，我表示很淦。</p>
+<p>但是作为一个下载方式，有价值，可作为备胎。</p>
+<h3 id="再介绍1个比较好油猴插件：m3u8-downloader"><a href="#再介绍1个比较好油猴插件：m3u8-downloader" class="headerlink" title="再介绍1个比较好油猴插件：m3u8-downloader"></a>再介绍1个比较好油猴插件：m3u8-downloader</h3><p>在油猴脚本地址栏 <a href="https://link.zhihu.com/?target=https%3A//greasyfork.org/zh-CN/scripts%3Fq%3Dm3u8-downloader" target="_blank" rel="noopener">用户脚本</a> 中去搜索下载安装，如下图：</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-ee45d0c93a265a3c1c8dca02285aae01_720w.jpg" alt="img"></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-7ab4ce4601118b72cb03f4da7977121c_720w.jpg" alt="img"></p>
+<p>使用：譬如下载一部烂片 <a href="https://link.zhihu.com/?target=https%3A//www.gxwkxf.com/xingchenp/89599-1-1.html" target="_blank" rel="noopener">动作片《蛇蝎情人2003正片》免费在线播放-星空影院</a>，用google浏览器输入该视频网址，m3u8-downloader 脚本会自动识别blob:URL地址并拿到m3u8文件，如下：</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-94c77990118e9bdff5fb0da627840483_720w.jpg" alt="img"></p>
+<p>点击“跳转下载”，会跳转到下载页面</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-94c77990118e9bdff5fb0da627840483_720w-20220805173702403.jpg" alt="img"></p>
+<p>选择“原格式下载”或“转码为MP4下载”</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-a1df751f4effd8fc3eef5b7463f2761b_720w.jpg" alt="img"></p>
+<p>开始下载，同时可以看到下载进度，如下：</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-db90f4d256a3f9a55f5e5ad61b1d66d2_720w.jpg" alt="img"></p>
+<p>下载完成，本地播放，如图：</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-84215873dcff9d34d9b4067adb97ca0d_720w.jpg" alt="img"></p>
+<h2 id="搞定！"><a href="#搞定！" class="headerlink" title="搞定！"></a>搞定！</h2><h2 id="方法3、google插件：NeatDownloadManager-Extension"><a href="#方法3、google插件：NeatDownloadManager-Extension" class="headerlink" title="方法3、google插件：NeatDownloadManager Extension"></a><strong>方法3、google插件：</strong>NeatDownloadManager Extension</h2><p>这是一款我常用的插件，很好用。</p>
+<p>可以去下载1个PC端软件 和 google插件</p>
+<p>PC端NeatDownloadManager下载地址：<a href="https://link.zhihu.com/?target=http%3A//www.neatdownloadmanager.com/index.php/en/" target="_blank" rel="noopener">Neat Download Manager for Mac and Windows (Free Internet Download Manager Mac &amp; Windows )</a></p>
+<p>安装后，界面如下</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-6a432bee3ca67e72e73e52b043bdaeda_720w.jpg" alt="img"></p>
+<p>在红色标记1的Setting中，可以设置对应代理，譬如常见的某d下载提速，可以像这样设置：</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-7da9ed71415974b365e9af5bc307cac1_720w.jpg" alt="img"></p>
+<p>红色标记2的Browsers中，点击“Add Chrome Extension”就可以给google浏览器添加该插件啦：</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-328ff8e3e524ca967a3b66aacafe6e62_720w.jpg" alt="img"></p>
+<p>当然也可以直接在google插件搜索 NeatDownloadManager Extension（需要f墙），进行安装：</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-642344f4a2461b29227b50350e3f9505_720w.jpg" alt="img"></p>
+<p>安装已经完成啦：</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-80fd87838a3c1aaecba8776c99214d4b_720w.jpg" alt="img"></p>
+<p>NeatDownloadManager Extension插件的使用：</p>
+<p>我想下载温老的视频：<a href="https://link.zhihu.com/?target=https%3A//www.bilibili.com/video/BV1y44y1H7NN%3Ffrom%3Dsearch%26seid%3D17794320619746015840%26spm_id_from%3D333.337.0.0" target="_blank" rel="noopener">温铁军：四大文明古国为何只有中国没有灭亡？罗马的民主只对其10%的人口？【温铁军践闻录5-35】_哔哩哔哩_bilibili</a></p>
+<p>在google浏览器里，打开该地址，就可以看到该插件拿到的视频资源：</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-158f53d50a36edc65a7dfe0fa98c51b7_720w.jpg" alt="img"></p>
+<p>点击那个size最大的视频资源，就会自动下载了：</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-33d7425486b4c0d4e16aa5677eab813f_720w.jpg" alt="img"></p>
+<p>下载完成</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-36fcdbed33f3f18f9652c4797f485e3e_720w.jpg" alt="img"></p>
+<h2 id="搞定！-1"><a href="#搞定！-1" class="headerlink" title="搞定！"></a>搞定！</h2><h2 id="方法4、google插件：视频下载器-CoCoCut"><a href="#方法4、google插件：视频下载器-CoCoCut" class="headerlink" title="方法4、google插件：视频下载器 - CoCoCut"></a>方法4、google插件：视频下载器 - CoCoCut</h2><p>在google网上应用商店（需要f墙），搜索“视频下载器 - CoCoCut”</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-3919d3f6769e87439c1135e996e94621_720w.jpg" alt="img"></p>
+<p>安装该插件：</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-be27ebd818a82ae20b3d15fa3c086fb1_720w.jpg" alt="img"></p>
+<p>视频下载器 - CoCoCut使用：</p>
+<p>譬如我想下载一个电影，我在goolge 浏览器上随便找了一个电影网站：<a href="https://link.zhihu.com/?target=https%3A//v.iztyy.com/play/aHR0cHM6Ly93d3cuMzYwa2FuLmNvbS9tL2hLUGlaUkg0UUhQN1R4Lmh0bWw%3D.html" target="_blank" rel="noopener">《战狼2》高清完整版_最新电影_免费在线观看平台_猪蹄影院</a> ，然后该插件就会自动检测到该视频信息，点开该插件，就可以看到并执行下载了</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-f895aa8f25e525ab5972bcabb70869e6_720w.jpg" alt="img"></p>
+<p>下载中</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-46cfba4c8aa4247e4a13dad31889a28b_720w.jpg" alt="img"></p>
+<p>下载完成。</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-b59aea33c51aefdd3202b24632f32fb2_720w.jpg" alt="img"></p>
+<h2 id="搞定！-2"><a href="#搞定！-2" class="headerlink" title="搞定！"></a>搞定！</h2><hr>
+<p>最后，推荐几款我常用的解析.m3u8的在线网站：</p>
+<p><a href="https://link.zhihu.com/?target=https%3A//www.flvcd.com/index.htm" target="_blank" rel="noopener">FLVCD - 硕鼠官网|FLV下载|视频下载www.flvcd.com/index.htm<img src="https://pic4.zhimg.com/v2-ada4d4e3cdfc04907af8c33bb2cdbc03_180x120.jpg" alt="img"></a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/49813990" target="_blank" rel="noopener">如何下载YouTube视频1080P高清289 赞同 · 89 评论文章<img src="https://pic2.zhimg.com/v2-a1c5dddd2dafc82c73b7fb9fd2ab077f_r.jpg?source=172ae18b" alt="img"></a></p>
+<p><a href="https://link.zhihu.com/?target=https%3A//www.gihosoft.com/free-youtube-downloader.html" target="_blank" rel="noopener">Gihosoft TubeGetwww.gihosoft.com/free-youtube-downloader.html<img src="https://pic1.zhimg.com/v2-cea395fbbd405ab3e46dbacf612b7adc_180x120.jpg" alt="img"></a></p>
+<p>真心希望，更多的技术为更多人使用。</p>
+<p><strong>本文转载自</strong>:<a href="https://cdn6.hnzycdn.com:65/20210917/URSbyxsH/1172kb/hls/index.m3u8" target="_blank" rel="noopener">https://cdn6.hnzycdn.com:65/20210917/URSbyxsH/1172kb/hls/index.m3u8</a></p>
 <p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
@@ -1544,7 +1699,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../332.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../346.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -1563,7 +1718,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../332.html" itemprop="url">关于Markdown图表绘制</a></h1>
+                <a class="post-title-link" href="../../346.html" itemprop="url">ANDROID跳转到手机自启动管理页面</a></h1>
         
 
         <div class="post-meta">
@@ -1575,8 +1730,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-03T09:04:19+08:00">
-                2022-07-03
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-21T16:04:19+08:00">
+                2022-07-21
               </time>
             
 
@@ -1615,91 +1770,57 @@
       
         
           
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>写作时难免会有图表绘制需求 比如下面几种</p>
-<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><h5 id="第一种样式时序图"><a href="#第一种样式时序图" class="headerlink" title="第一种样式时序图"></a>第一种样式时序图</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Alice -&gt; Bob:Hello Bob, How are you?</span><br><span class="line">Note right of Bob: Bob thinks</span><br><span class="line">Bob -&gt; Alice: I am good thanks!</span><br></pre></td></tr></table></figure>
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>有时候，为了确保APP的后台正常运行，需要让用户去设置打开APP的自启动权限（或者改为手动管理/huawei）。为了更好的用户体验，在APP中可以直接跳转到手机的自启动管理页面或者权限管理页面。</p>
+<hr>
+<h4 id="应用启动管理页面"><a href="#应用启动管理页面" class="headerlink" title="应用启动管理页面"></a>应用启动管理页面</h4><p><code>oppo/vivo</code>是没有这个页面的<br><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/85488098af0ed6049af38f6c344e5d7d.png" alt="华为"></p>
+<ul>
+<li><strong>华为</strong></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">ComponentName componentName = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">int</span> sdkVersion = Build.VERSION.SDK_INT;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</span><br><span class="line">    <span class="comment">//跳自启动管理</span></span><br><span class="line">    <span class="keyword">if</span> (sdkVersion &gt;= <span class="number">28</span>)&#123;<span class="comment">//9:已测试</span></span><br><span class="line">        componentName = ComponentName.unflattenFromString(<span class="string">"com.huawei.systemmanager/.startupmgr.ui.StartupNormalAppListActivity"</span>);<span class="comment">//跳自启动管理</span></span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span> (sdkVersion &gt;= <span class="number">26</span>)&#123;<span class="comment">//8：已测试</span></span><br><span class="line">        componentName = ComponentName.unflattenFromString(<span class="string">"com.huawei.systemmanager/.appcontrol.activity.StartupAppControlActivity"</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span> (sdkVersion &gt;= <span class="number">23</span>)&#123;<span class="comment">//7.6：已测试</span></span><br><span class="line">        componentName = ComponentName.unflattenFromString(<span class="string">"com.huawei.systemmanager/.startupmgr.ui.StartupNormalAppListActivity"</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span> (sdkVersion &gt;= <span class="number">21</span>)&#123;<span class="comment">//5</span></span><br><span class="line">        componentName = ComponentName.unflattenFromString(<span class="string">"com.huawei.systemmanager/com.huawei.permissionmanager.ui.MainActivity"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//componentName = new ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.optimize.process.ProtectActivity");//锁屏清理</span></span><br><span class="line">    intent.setComponent(componentName);</span><br><span class="line">    startActivity(intent);</span><br><span class="line">&#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">	<span class="comment">//跳转失败</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="number">123456789101112131415161718192021</span></span><br></pre></td></tr></table></figure>
 
-<h5 id="第二种样式时序图"><a href="#第二种样式时序图" class="headerlink" title="第二种样式时序图"></a>第二种样式时序图</h5><pre class="mermaid"> sequenceDiagram
-    participant Alice
-    participant Bob
-    Alice->John: Hello John, how are you?
-    loop Healthcheck
-            John->John: Fight against hypochondria
-    end
-    Note right of John: Rational thoughts <br>prevail...
-    John-->Alice: Great!
-    John->Bob: How about you?
-    Bob-->John: Jolly good!</pre>
+<ul>
+<li><strong>小米</strong></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</span><br><span class="line">    ComponentName componentName = <span class="keyword">null</span>;</span><br><span class="line">    componentName = <span class="keyword">new</span> ComponentName(<span class="string">"com.miui.securitycenter"</span>, <span class="string">"com.miui.permcenter.autostart.AutoStartManagementActivity"</span>);</span><br><span class="line">    intent.setComponent(componentName);</span><br><span class="line">    context.startActivity(intent);</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;<span class="comment">//抛出异常就直接打开设置页面</span></span><br><span class="line">    jumpAPPInfo(context);</span><br><span class="line">&#125;</span><br><span class="line"><span class="number">12345678910</span></span><br></pre></td></tr></table></figure>
 
-<h5 id="甘特图"><a href="#甘特图" class="headerlink" title="甘特图"></a>甘特图</h5><pre class="mermaid">  gantt
-    dateFormat  YYYY-MM-DD
-    title Adding GANTT diagram functionality to mermaid
-    section A section
-    Completed task            :done,    des1, 2014-01-06,2014-01-08
-    Active task               :active,  des2, 2014-01-09, 3d
-    Future task               :         des3, after des2, 5d
-    Future task2               :         des4, after des3,6d</pre>
-<h5 id="上下流程图"><a href="#上下流程图" class="headerlink" title="上下流程图"></a>上下流程图</h5><pre class="mermaid">graph TD;
-            A-->B;
-            A-->C;
-            B-->D;
-            C-->D;</pre>
+<ul>
+<li><strong>三星</strong></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">ComponentName componentName = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</span><br><span class="line">    <span class="comment">//跳自启动管理</span></span><br><span class="line">    componentName = ComponentName.unflattenFromString(<span class="string">"com.samsung.android.sm/.app.dashboard.SmartManagerDashBoardActivity"</span>);</span><br><span class="line">    intent.setComponent(componentName);</span><br><span class="line">    startActivity(intent);</span><br><span class="line">&#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        componentName = <span class="keyword">new</span> ComponentName(<span class="string">"com.samsung.android.sm_cn"</span>, <span class="string">"com.samsung.android.sm.ui.ram.AutoRunActivity"</span>);</span><br><span class="line">        intent.setComponent(componentName);</span><br><span class="line">        startActivity(intent);</span><br><span class="line">    &#125;<span class="keyword">catch</span> (Exception e1)&#123;</span><br><span class="line">        <span class="comment">//跳转失败</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="number">1234567891011121314151617</span></span><br></pre></td></tr></table></figure>
 
-<h5 id="左右流程图"><a href="#左右流程图" class="headerlink" title="左右流程图"></a>左右流程图</h5><pre class="mermaid">graph LR;
+<ul>
+<li><strong>魅族</strong></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">ComponentName componentName = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</span><br><span class="line">    <span class="comment">//跳自启动管理</span></span><br><span class="line">    componentName = ComponentName.unflattenFromString(<span class="string">"com.meizu.safe/.permission.SmartBGActivity"</span>);<span class="comment">//跳转到后台管理页面</span></span><br><span class="line">    intent.setComponent(componentName);</span><br><span class="line">    startActivity(intent);</span><br><span class="line">&#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        componentName = ComponentName.unflattenFromString(<span class="string">"com.meizu.safe/.permission.PermissionMainActivity"</span>);<span class="comment">//跳转到手机管家</span></span><br><span class="line">        intent.setComponent(componentName);</span><br><span class="line">        startActivity(intent);</span><br><span class="line">    &#125;<span class="keyword">catch</span> (Exception e1)&#123;</span><br><span class="line">        <span class="comment">//跳转失败</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="number">1234567891011121314151617</span></span><br></pre></td></tr></table></figure>
 
-律动乐器-->律动+氛围乐器-->律动+鼓组贝斯-->律动+鼓组贝斯+氛围乐器;
-铺底+氛围-->铺底+氛围+律动-->铺底+氛围+律动+鼓组贝斯-->追加间奏乐器;</pre>
+<hr>
+<h4 id="权限管理页面"><a href="#权限管理页面" class="headerlink" title="权限管理页面"></a>权限管理页面</h4><p>这个页面重要的权限自启动、锁屏显示、后台弹出界面</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/03b40afbb51494b361fbb9e41ff0b172.png" alt="vivo"></p>
+<ul>
+<li><strong>vivo</strong></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Intent localIntent;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (((Build.MODEL.contains(<span class="string">"Y85"</span>)) &amp;&amp; (!Build.MODEL.contains(<span class="string">"Y85A"</span>))) || (Build.MODEL.contains(<span class="string">"vivo Y53L"</span>))) &#123;</span><br><span class="line">        localIntent = <span class="keyword">new</span> Intent();</span><br><span class="line">        localIntent.setClassName(<span class="string">"com.vivo.permissionmanager"</span>, <span class="string">"com.vivo.permissionmanager.activity.PurviewTabActivity"</span>);</span><br><span class="line">        localIntent.putExtra(<span class="string">"packagename"</span>, context.getPackageName());</span><br><span class="line">        localIntent.putExtra(<span class="string">"tabId"</span>, <span class="string">"1"</span>);</span><br><span class="line">        context.startActivity(localIntent);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        localIntent = <span class="keyword">new</span> Intent();</span><br><span class="line">        localIntent.setClassName(<span class="string">"com.vivo.permissionmanager"</span>, <span class="string">"com.vivo.permissionmanager.activity.SoftPermissionDetailActivity"</span>);</span><br><span class="line">        localIntent.setAction(<span class="string">"secure.intent.action.softPermissionDetail"</span>);</span><br><span class="line">        localIntent.putExtra(<span class="string">"packagename"</span>, context.getPackageName());</span><br><span class="line">        context.startActivity(localIntent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">    <span class="comment">// 否则跳转到应用详情</span></span><br><span class="line">    localIntent = <span class="keyword">new</span> Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);</span><br><span class="line">    Uri uri = Uri.fromParts(<span class="string">"package"</span>, context.getPackageName(), <span class="keyword">null</span>);</span><br><span class="line">    localIntent.setData(uri);</span><br><span class="line">    context.startActivity(localIntent);</span><br><span class="line">&#125;</span><br><span class="line"><span class="number">12345678910111213141516171819202122</span></span><br></pre></td></tr></table></figure>
 
-<h5 id="自定义style的流程图"><a href="#自定义style的流程图" class="headerlink" title="自定义style的流程图"></a>自定义style的流程图</h5><pre class="mermaid">graph LR;
-    id1(Start)-->id2(Stop)
-    style id1 fill:#f9f,stroke:#333,stroke-width:4px
-    style id2 fill:#bbf,stroke:#f66,stroke-width:2px,color:#fff,stroke-dasharray: 5 5</pre>
+<ul>
+<li><strong>OPPO</strong></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</span><br><span class="line">    intent.putExtra(<span class="string">"packageName"</span>, BuildConfig.APPLICATION_ID);</span><br><span class="line">    ComponentName comp = <span class="keyword">new</span> ComponentName(<span class="string">"com.color.safecenter"</span>, <span class="string">"com.color.safecenter.permission.PermissionManagerActivity"</span>);</span><br><span class="line">    intent.setComponent(comp);</span><br><span class="line">    startActivity(intent);</span><br><span class="line">&#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</span><br><span class="line">        intent.putExtra(<span class="string">"pkg_name"</span>, context.getPackageName());</span><br><span class="line">        intent.putExtra(<span class="string">"app_name"</span>, context.getString(R.string.app_name));</span><br><span class="line">        intent.putExtra(<span class="string">"class_name"</span>, <span class="string">"com.welab.notificationdemo.MainActivity"</span>);</span><br><span class="line">        ComponentName comp = <span class="keyword">new</span> ComponentName(<span class="string">"com.coloros.notificationmanager"</span>, <span class="string">"com.coloros"</span> +</span><br><span class="line">                <span class="string">".notificationmanager.AppDetailPreferenceActivity"</span>);</span><br><span class="line">        intent.setComponent(comp);</span><br><span class="line">        startActivity(intent);</span><br><span class="line">    &#125;<span class="keyword">catch</span> (Exception e1)&#123;</span><br><span class="line">        <span class="comment">// 否则跳转到应用详情</span></span><br><span class="line">        intent = <span class="keyword">new</span> Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);</span><br><span class="line">        Uri uri = Uri.fromParts(<span class="string">"package"</span>, context.getPackageName(), <span class="keyword">null</span>);</span><br><span class="line">        intent.setData(uri);</span><br><span class="line">        context.startActivity(intent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="number">12345678910111213141516171819202122232425</span></span><br></pre></td></tr></table></figure>
 
-<h5 id="各种形状的流程图"><a href="#各种形状的流程图" class="headerlink" title="各种形状的流程图"></a>各种形状的流程图</h5>
-<pre class="mermaid">graph  TD;
-    A[/Christmas\]--> B[\This is the text in the box\]-->
-     C[\Go shopping/]-->D[/This is the text in the box/]-->E{{This is the text in the box}}-->F{This is the text in the box}-->G>This is the text in the box]-->H((This is the text in the circle))-->J(This is the text in the box)</pre>
+<ul>
+<li><strong>小米</strong></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// MIUI 8</span></span><br><span class="line">    Intent localIntent = <span class="keyword">new</span> Intent(<span class="string">"miui.intent.action.APP_PERM_EDITOR"</span>);</span><br><span class="line">    localIntent.setClassName(<span class="string">"com.miui.securitycenter"</span>, <span class="string">"com.miui.permcenter.permissions.PermissionsEditorActivity"</span>);</span><br><span class="line">    localIntent.putExtra(<span class="string">"extra_pkgname"</span>, context.getPackageName());</span><br><span class="line">    context.startActivity(localIntent);</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// MIUI 5/6/7</span></span><br><span class="line">        Intent localIntent = <span class="keyword">new</span> Intent(<span class="string">"miui.intent.action.APP_PERM_EDITOR"</span>);</span><br><span class="line">        localIntent.setClassName(<span class="string">"com.miui.securitycenter"</span>, <span class="string">"com.miui.permcenter.permissions.AppPermissionsEditorActivity"</span>);</span><br><span class="line">        localIntent.putExtra(<span class="string">"extra_pkgname"</span>, context.getPackageName());</span><br><span class="line">        context.startActivity(localIntent);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e1) &#123;</span><br><span class="line">        <span class="comment">// 否则跳转到应用详情</span></span><br><span class="line">        Intent intent = <span class="keyword">new</span> Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);</span><br><span class="line">        Uri uri = Uri.fromParts(<span class="string">"package"</span>, context.getPackageName(), <span class="keyword">null</span>);</span><br><span class="line">        intent.setData(uri);</span><br><span class="line">        context.startActivity(intent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="number">123456789101112131415161718192021</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="语法实现"><a href="#语法实现" class="headerlink" title="语法实现"></a>语法实现</h3><p><strong>时序图demo代码：</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">    &lt;pre class=&quot;mermaid&quot;&gt;    sequenceDiagram</span><br><span class="line">    participant Alice</span><br><span class="line">    participant Bob</span><br><span class="line">    Alice-&gt;John: Hello John, how are you?</span><br><span class="line">    loop Healthcheck</span><br><span class="line">            John-&gt;John: Fight against hypochondria</span><br><span class="line">    end</span><br><span class="line">    Note right of John: Rational thoughts &lt;br/&gt;prevail...</span><br><span class="line">    John--&gt;Alice: Great!</span><br><span class="line">    John-&gt;Bob: How about you?</span><br><span class="line">    Bob--&gt;John: Jolly good!&lt;/pre&gt;</span><br><span class="line">**甘特图demo代码：**</span><br></pre></td></tr></table></figure>
+<h4 id="应用详情页面"><a href="#应用详情页面" class="headerlink" title="应用详情页面"></a>应用详情页面</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);</span><br><span class="line">Uri uri = Uri.fromParts(<span class="string">"package"</span>, context.getPackageName(), <span class="keyword">null</span>);</span><br><span class="line">intent.setData(uri);</span><br><span class="line">startActivity(intent);</span><br><span class="line"><span class="number">1234</span></span><br></pre></td></tr></table></figure>
 
-<pre><code>&lt;pre class=&quot;mermaid&quot;&gt;    gantt
-dateFormat  YYYY-MM-DD
-title Adding GANTT diagram functionality to mermaid
-section A section
-Completed task            :done,    des1, 2014-01-06,2014-01-08
-Active task               :active,  des2, 2014-01-09, 3d
-Future task               :         des3, after des2, 5d
-Future task2               :         des4, after des3, 5d
-section Critical tasks
-Completed task in the critical line :crit, done, 2014-01-06,24h
-Implement parser and jison          :crit, done, after des1, 2d
-Create tests for parser             :crit, active, 3d
-Future task in critical line        :crit, 5d
-Create tests for renderer           :2d
-Add to mermaid                      :1d&lt;/pre&gt;</code></pre><p><strong>流程图demo代码：</strong></p>
-<pre><code>    &lt;pre class=&quot;mermaid&quot;&gt;    graph TD;
-            A--&gt;B;
-            A--&gt;C;
-            B--&gt;D;
-            C--&gt;D;&lt;/pre&gt;
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>在其他应用上层显示、后台弹出界面、锁屏显示这三个权限会直接影响APP从后台启动活动，详情可以了解另一篇文章–&gt;<a href="https://blog.csdn.net/weixin_44021615/article/details/104609157" target="_blank" rel="noopener">Android 在后台无法启动Activity</a>。</p>
+<h3 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h3><p><code>vivo/oppo/小米</code>手机有一个“后台弹出界面”权限, 华为是没有的, 可以使用以下代码来检测该权限是否开启:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isAllowed</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     AppOpsManager ops = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);</span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">         <span class="keyword">int</span> op = <span class="number">10021</span>;</span><br><span class="line">         Method method = ops.getClass().getMethod(<span class="string">"checkOpNoThrow"</span>, <span class="keyword">new</span> Class[]&#123;<span class="keyword">int</span>.class, <span class="keyword">int</span>.class, String.class&#125;);</span><br><span class="line">         Integer result = (Integer) method.invoke(ops, op, Process.myUid(), getPackageName());</span><br><span class="line">         <span class="keyword">return</span> result == AppOpsManager.MODE_ALLOWED;</span><br><span class="line"> </span><br><span class="line">     &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">         Log.e(TAG, <span class="string">"not support"</span>);</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
 
-### 总结
+<p><strong>本文转载自</strong>:<a href="https://www.freesion.com/article/7753459867/" target="_blank" rel="noopener">https://www.freesion.com/article/7753459867/</a></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
-以上只是列举其中几种 , 除此之外还可以绘制饼状图 状态图 类图 需求图等等
-
-更多技巧可以参考`mermaid`文档: 《[mermaid官方文档](https://mermaid-js.github.io/mermaid/#/flowchart)》
-
-
-
-
-
-**本文为作者原创转载时请注明出处 谢谢**
-
-![](https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png)
-
-*[乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站](https://code.newban.cn/)*
-
-</code></pre>
           
         
       
@@ -1747,7 +1868,7 @@ Add to mermaid                      :1d&lt;/pre&gt;</code></pre><p><strong>流�
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../327.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../345.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -1766,7 +1887,7 @@ Add to mermaid                      :1d&lt;/pre&gt;</code></pre><p><strong>流�
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../327.html" itemprop="url">关于Git查看提交修改的文件列表</a></h1>
+                <a class="post-title-link" href="../../345.html" itemprop="url">Android代码跳转至电池优化电池信息界面</a></h1>
         
 
         <div class="post-meta">
@@ -1778,8 +1899,8 @@ Add to mermaid                      :1d&lt;/pre&gt;</code></pre><p><strong>流�
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-06-28T09:04:19+08:00">
-                2022-06-28
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-21T15:04:19+08:00">
+                2022-07-21
               </time>
             
 
@@ -1818,22 +1939,41 @@ Add to mermaid                      :1d&lt;/pre&gt;</code></pre><p><strong>流�
       
         
           
-            <h4 id="1-查看最后一次提交记录的修改文件信息"><a href="#1-查看最后一次提交记录的修改文件信息" class="headerlink" title="1.查看最后一次提交记录的修改文件信息"></a>1.查看最后一次提交记录的修改文件信息</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git show --raw</span><br></pre></td></tr></table></figure>
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>最近有一款产品有后台保活需求, 无奈甲方太穷, 厂商白名单什么的是别想了, 只能采用原始粗暴的方法, 就是让用户手动开启各种权限, 至于用户体验  这个不存在的  顶多跳转到相关设置页面</p>
+<p>其中有一项就是涉及到电池优化的, 禁止电池优化可以延长后台保活时间</p>
+<p>以小米手机为例, 给大家列举几个电池相关页面的跳转代码</p>
+<h3 id="电池优化页面"><a href="#电池优化页面" class="headerlink" title="电池优化页面"></a>电池优化页面</h3><p>页面图示:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/1701658389765_.pic.jpg" alt="1701658389765_.pic"></p>
+<p>代码如下:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">startActivity(Intent().apply &#123;</span><br><span class="line">          action = Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS</span><br><span class="line">      &#125;)</span><br></pre></td></tr></table></figure>
 
-<h4 id="2-查看指定commit-id对应修改文件列表"><a href="#2-查看指定commit-id对应修改文件列表" class="headerlink" title="2.查看指定commit id对应修改文件列表"></a>2.查看指定commit id对应修改文件列表</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git show --raw commit_id</span><br></pre></td></tr></table></figure>
+<h3 id="电池信息页面"><a href="#电池信息页面" class="headerlink" title="电池信息页面"></a>电池信息页面</h3><p>页面图示:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/1681658389761_.pic.jpg" alt="1681658389761_.pic"></p>
+<p>代码如下:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">startActivity(Intent(<span class="string">"/"</span>).apply &#123;</span><br><span class="line">          component = ComponentName(<span class="string">"com.android.settings"</span>, <span class="string">"com.android.settings.BatteryInfo"</span>)</span><br><span class="line">          action = <span class="string">"android.intent.action.VIEW"</span></span><br><span class="line">      &#125;)</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git show --raw 2f80f1c8bb2cb8e91d22ad38480b681c194f6518</span><br></pre></td></tr></table></figure>
+<h3 id="耗电统计页面"><a href="#耗电统计页面" class="headerlink" title="耗电统计页面"></a>耗电统计页面</h3><p>页面图示:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/1691658389763_.pic.jpg" alt="1691658389763_.pic"></p>
+<p>代码如下:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> powerUsageIntent = Intent(Intent.ACTION_POWER_USAGE_SUMMARY)</span><br><span class="line">    <span class="keyword">val</span> resolveInfo: ResolveInfo? = requireActivity().packageManager.resolveActivity(powerUsageIntent, <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">if</span> (resolveInfo != <span class="literal">null</span>) &#123;</span><br><span class="line">        startActivity(powerUsageIntent)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
-<h4 id="3-查看所有提交记录的修改文件信息"><a href="#3-查看所有提交记录的修改文件信息" class="headerlink" title="3.查看所有提交记录的修改文件信息"></a>3.查看所有提交记录的修改文件信息</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log --stat</span><br></pre></td></tr></table></figure>
+<h3 id="休眠时始终保持网络连接"><a href="#休眠时始终保持网络连接" class="headerlink" title="休眠时始终保持网络连接"></a>休眠时始终保持网络连接</h3><p>华为手机有这个页面</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/Screenshot_20220721_171601_com.huawei.systemmanager.jpg" alt="Screenshot_20220721_171601_com.huawei.systemmanager"></p>
+<p>想要跳转到这个页面, 首先需要获取到该页面的包名和<code>Activity</code>全路径, 可以使用<code>adb</code>获取, 指令如下;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb -s 设备名  shell dumpsys activity activities</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log --name-only</span><br></pre></td></tr></table></figure>
+<p>运行结果如图:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220721170255859.png" alt="image-20220721170255859"></p>
+<p>其中<code>com.huawei.systemmanager</code>表示包名 也就是<code>applicationId</code>, 而<code>.power.ui.PowerSettingActivity</code>表示<code>Activity</code>路径, 但最前面有个点 因此需要把包名加进去, 最后得到全路径是:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">com.huawei.systemmanager.power.ui.PowerSettingActivity</span><br></pre></td></tr></table></figure>
 
-<h4 id="4-查看所有修改相关的commit-ID和comment信息"><a href="#4-查看所有修改相关的commit-ID和comment信息" class="headerlink" title="4.查看所有修改相关的commit ID和comment信息"></a>4.查看所有修改相关的commit ID和comment信息</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log --pretty=oneline</span><br></pre></td></tr></table></figure>
+<p>有了包名和<code>Activity</code>路径, 那么直接上启动代码:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">startActivity(Intent().apply &#123;</span><br><span class="line">          flags = Intent.FLAG_ACTIVITY_NEW_TASK</span><br><span class="line">          putExtra(<span class="string">"packageName"</span>, requireActivity().packageName)</span><br><span class="line">          component = ComponentName(</span><br><span class="line">              <span class="string">"com.huawei.systemmanager"</span>,</span><br><span class="line">              <span class="string">"com.huawei.systemmanager.power.ui.PowerSettingActivity"</span></span><br><span class="line">          )</span><br><span class="line">      &#125;)</span><br></pre></td></tr></table></figure>
 
-<h4 id="5-查询指定author的修改信息"><a href="#5-查询指定author的修改信息" class="headerlink" title="5.查询指定author的修改信息"></a>5.查询指定author的修改信息</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log --author=jack.li</span><br></pre></td></tr></table></figure>
+<p>最后运行报错. 提示没有权限:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.lang.SecurityException: Permission Denial: starting Intent &#123; flg=<span class="number">0x10000000</span> cmp=com.huawei.systemmanager/.power.ui.PowerSettingActivity (has extras) &#125; from ProcessRecord&#123;<span class="number">439</span>cab1 <span class="number">15282</span>:com.xxx.xxx/u0a211&#125; (pid=<span class="number">15282</span>, uid=<span class="number">10211</span>) not exported from uid <span class="number">1000</span></span><br></pre></td></tr></table></figure>
 
-<h4 id="6-查看指定author在指定时间修改信息"><a href="#6-查看指定author在指定时间修改信息" class="headerlink" title="6.查看指定author在指定时间修改信息"></a>6.查看指定author在指定时间修改信息</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ git log --pretty=&quot;%h - %s&quot; --author=&apos;Junio C Hamano&apos; --since=&quot;2008-10-01&quot; \</span><br><span class="line">   --before=&quot;2008-11-01&quot; --no-merges -- t/</span><br><span class="line">5610e3b - Fix testcase failure when extended attributes are in use</span><br><span class="line">acd3b9e - Enhance hold_lock_file_for_&#123;update,append&#125;() API</span><br><span class="line">f563754 - demonstrate breakage of detached checkout with symbolic link HEAD</span><br><span class="line">d1a43f2 - reset --hard/read-tree --reset -u: remove unmerged new paths</span><br><span class="line">51a94af - Fix &quot;checkout --track -b newbranch&quot; on detached HEAD</span><br><span class="line">b0ad11e - pull: allow &quot;git pull origin $something:$current_branch&quot; into an unborn branch</span><br></pre></td></tr></table></figure>
-
+<p>暂时没有找到解决方法, 以上只是一种思路, 仅供参考</p>
 <p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
 <p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
@@ -1876,7 +2016,7 @@ Add to mermaid                      :1d&lt;/pre&gt;</code></pre><p><strong>流�
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="../2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><a class="page-number" href="../2/">2</a><span class="page-number current">3</span><a class="page-number" href="../4/">4</a><span class="space">&hellip;</span><a class="page-number" href="../36/">36</a><a class="extend next" rel="next" href="../4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="../2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><a class="page-number" href="../2/">2</a><span class="page-number current">3</span><a class="page-number" href="../4/">4</a><span class="space">&hellip;</span><a class="page-number" href="../38/">38</a><a class="extend next" rel="next" href="../4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1922,7 +2062,7 @@ Add to mermaid                      :1d&lt;/pre&gt;</code></pre><p><strong>流�
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">360</span>
+                  <span class="site-state-item-count">374</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1935,7 +2075,7 @@ Add to mermaid                      :1d&lt;/pre&gt;</code></pre><p><strong>流�
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">108</span>
+                  <span class="site-state-item-count">113</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
