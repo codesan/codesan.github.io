@@ -94,8 +94,9 @@
 <meta property="og:image" content="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220920173201984.png">
 <meta property="og:image" content="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220920174602538.png">
 <meta property="og:image" content="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220921101048772.png">
+<meta property="og:image" content="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220922115156138.png">
 <meta property="og:image" content="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png">
-<meta property="og:updated_time" content="2022-09-21T05:42:42.777Z">
+<meta property="og:updated_time" content="2022-09-22T04:02:26.546Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用frp进行内网穿透实现外网访问局域网中的服务器">
 <meta name="twitter:description" content="前言之前给大家介绍过使用内网云实现内网穿透的方案, 一行指令搞定, 详见《使用内网云进行内网穿透实现外网访问局域网中的服务器》 今天给大家介绍如何使用frp实现内网穿透 frp是一个免费开源的内网穿透工具, 包含服务端(frps)和客户端( frpc) Github 假如你自己有云服务器, 那么将服务端安装到具有公网ip的服务器中, 将客户端安装到内网的机器上, 即可实现内网穿透功能 当然  如果">
@@ -418,7 +419,7 @@
 <li><p><strong>域名解析</strong></p>
 <p>将配置文件中的自定义域名以<code>CNAME</code>的方式解析到<code>frp.freefrp.net</code></p>
 </li>
-<li><p>启动<code>frpc</code>客户端程序</p>
+<li><p><strong>启动<code>frpc</code>客户端程序</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./frpc</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>浏览器访问</strong></p>
@@ -428,6 +429,16 @@
 <p>假如我们需要将多个不同域名同时解析到同一个内网程序, 那么只需增加一个新模块, 配置如下:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr = frp.freefrp.net</span><br><span class="line">server_port = 7000</span><br><span class="line">token = freefrp.net</span><br><span class="line"></span><br><span class="line">[mac_http]</span><br><span class="line">type = http</span><br><span class="line">local_ip = 127.0.0.1</span><br><span class="line">local_port = 13000</span><br><span class="line">custom_domains = git.newban.cn</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[mac_http2]</span><br><span class="line">type = http</span><br><span class="line">local_ip = 127.0.0.1</span><br><span class="line">local_port = 13000</span><br><span class="line">custom_domains = git.insoan.com</span><br></pre></td></tr></table></figure>
 
+
+</li>
+</ol>
+<ol start="7">
+<li><p><strong>实现以<code>Web</code>的形式可视化配置客户端</strong></p>
+<p>只需在<code>common</code>的节点下配置<code>admin</code>参数即可, 如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr = frp.freefrp.net</span><br><span class="line">server_port = 7000</span><br><span class="line">token = freefrp.net</span><br><span class="line">admin_addr = 127.0.0.1  #客户端Web管理地址</span><br><span class="line">admin_port = 7122   #客户端Web管理端口</span><br><span class="line">admin_user = admin   #客户端Web管理用户名</span><br><span class="line">admin_pwd = 123456  #客户端Web管理密码</span><br></pre></td></tr></table></figure>
+
+<p>配置完后重启<code>frp</code>, 然后在浏览器输入<code>http://127.0.0.1:7122</code>, 即可以<code>Web</code>的形式监控当前正在穿透的程序:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220922115156138.png" alt="image-20220922115156138"></p>
 </li>
 </ol>
 <h4 id="ssh穿透"><a href="#ssh穿透" class="headerlink" title="ssh穿透"></a>ssh穿透</h4><ol>
@@ -592,7 +603,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">374</span>
+                  <span class="site-state-item-count">385</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -605,7 +616,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">113</span>
+                  <span class="site-state-item-count">119</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

@@ -94,8 +94,13 @@
 <meta property="og:image" content="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220916122359799.png">
 <meta property="og:image" content="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220916122515283.png">
 <meta property="og:image" content="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220916181048724.png">
+<meta property="og:image" content="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220928141059262.png">
+<meta property="og:image" content="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220928141148055.png">
+<meta property="og:image" content="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220928170120305.png">
+<meta property="og:image" content="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220928171158748.png">
+<meta property="og:image" content="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220928171103061.png">
 <meta property="og:image" content="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png">
-<meta property="og:updated_time" content="2022-09-16T10:16:24.098Z">
+<meta property="og:updated_time" content="2022-09-29T02:53:40.938Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用Android Studio进行C&#x2F;C++的开发">
 <meta name="twitter:description" content="前言作为一名专业Android开发者, 当我们遇到需要C/C++的开发时, 完全可以直接使用Android Studio, 而不用另外下载诸如CLion  AppCode等收费IDE 使用Android Studio的好处有:  免费: JetBrains的软件大部分都是收费的 唯独Android Studio 完全免费使用 Gradle天然支持C语言的编译: Gradle不仅可以编译Groovy">
@@ -414,6 +419,35 @@
 <p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220916181048724.png" alt="image-20220916181048724"></p>
 </li>
 </ol>
+<h3 id="增加代码错误提示功能"><a href="#增加代码错误提示功能" class="headerlink" title="增加代码错误提示功能"></a>增加代码错误提示功能</h3><p>虽然<code>c/c++</code>程序可以正常编译执行了, 但是代码在编写过程中并没有语法错误提示, 在这种环境下写代码的体验会比较差</p>
+<p>接下来 我们把该功能实现, 这里需要配合<code>android</code>插件以及<code>cmake</code>构建工具:</p>
+<ol>
+<li><p><strong>下载<code>NDK</code>和<code>cmake</code>工具</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220928141059262.png" alt="image-20220928141059262"></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220928141148055.png" alt="image-20220928141148055"></p>
+</li>
+<li><p><strong>配置<code>build.gradle</code></strong></p>
+<p>增加如下内容:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="string">plugin:</span> <span class="string">'com.android.application'</span></span><br><span class="line">android&#123;</span><br><span class="line">    compileSdkVersion <span class="number">30</span></span><br><span class="line">    externalNativeBuild &#123;</span><br><span class="line">        cmake &#123;</span><br><span class="line">            path <span class="string">"CMakeLists.txt"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        <span class="comment">//需要限制最小库版本不能太低 不然有些c库可能缺失</span></span><br><span class="line">        minSdkVersion    <span class="number">21</span></span><br><span class="line">        targetSdkVersion <span class="number">30</span></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在<code>build.gradle</code>同级目录下创建<code>CMakeLists.txt</code>文件</strong></p>
+<p>并添加以下内容:</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 限定cmake最小版本号 当前使用的版本必须在这个之上</span></span><br><span class="line">cmake_minimum_required(VERSION 3.10.2)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 描述工程名称</span></span><br><span class="line">project(<span class="string">"cproject"</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 自定义变量  使用$&#123;变量名&#125;进行引用</span></span><br><span class="line">set(BINARY_NAME <span class="string">"android-lib"</span>)</span><br><span class="line">set(EXEC_NAME <span class="string">"androidexc"</span>)</span><br><span class="line"></span><br><span class="line">        </span><br><span class="line"><span class="comment">#获取指定目录下源文件列表，保存到 `DIR_SRCS` 变量中</span></span><br><span class="line">aux_source_directory($&#123;PROJECT_SOURCE_DIR&#125;/src/main/c DIR_SRCS)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成可执行文件</span></span><br><span class="line">add_executable($&#123;EXEC_NAME&#125; $&#123;DIR_SRCS&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成动态链接库</span></span><br><span class="line">add_library( <span class="comment"># 动态库名称</span></span><br><span class="line">        $&#123;BINARY_NAME&#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 生成动态库</span></span><br><span class="line">        SHARED</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 被编译进入库中的源码文件</span></span><br><span class="line">        $&#123;DIR_SRCS&#125;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在<code>main</code>目录下创建<code>AndroidManifest.xml</code>文件</strong></p>
+<p>并添加以下内容, 包名自定义:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</span><br><span class="line">    package=&quot;自定义包名&quot;&gt;</span><br><span class="line">    &lt;/manifest&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>同步工程</strong></p>
+<p>同步刷新<code>gradle</code>工程后, 此时我们发现<code>c</code>目录下的源码可以语法错误提示了, 并且代码自动补全功能也有了</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220928170120305.png" alt="image-20220928170120305"></p>
+</li>
+</ol>
+<h3 id="实现交叉编译"><a href="#实现交叉编译" class="headerlink" title="实现交叉编译"></a>实现交叉编译</h3><p>经过上面如此一番配置之后, 相当于结合了<code>gradle</code>和<code>cmake</code>两大构建工具,可以说是强大无比</p>
+<p>我们既可以使用<code>gradle</code>执行<code>execProgram</code>任务生成本地平台的可执行文件, 同时还可以使用<code>cmake</code>交叉编译生成<code>android</code>平台的执行文件和动态库文件</p>
+<p>我们只需编译工程或者执行<code>build</code>任务, 即可自动生成执行文件和动态库, 同时动态库会被<code>gradle</code>工具自动打包进<code>apk</code>文件中</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220928171158748.png" alt="image-20220928171158748"></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220928171103061.png" alt="image-20220928171103061"></p>
 <p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
 <p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
@@ -555,7 +589,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">374</span>
+                  <span class="site-state-item-count">385</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -568,7 +602,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">113</span>
+                  <span class="site-state-item-count">119</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
@@ -608,7 +642,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现步骤"><span class="nav-number">2.</span> <span class="nav-text">实现步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建执行流程优化"><span class="nav-number">3.</span> <span class="nav-text">构建执行流程优化</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现步骤"><span class="nav-number">2.</span> <span class="nav-text">实现步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建执行流程优化"><span class="nav-number">3.</span> <span class="nav-text">构建执行流程优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#增加代码错误提示功能"><span class="nav-number">4.</span> <span class="nav-text">增加代码错误提示功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现交叉编译"><span class="nav-number">5.</span> <span class="nav-text">实现交叉编译</span></a></li></ol></div>
             
 
           </div>

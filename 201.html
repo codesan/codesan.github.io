@@ -91,7 +91,7 @@
 <meta property="og:description" content="前言咱们知道android设备可以直接运行apk,或者使用dalvikvm指令运行dex文件中的程序, 但是这两者本质上使用的语言都是java或者smali, 如果需要执行C语言程序,我们通常需要借助NDK编译成so库, 那有没有不使用NDK而直接编译c原生程序然后在安卓设备中运行的方式呢? 交叉编译C语言是一门跨平台的语言,语言跨平台,但是程序不跨平台 也就是说在windows平台下编译的程序只">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png">
-<meta property="og:updated_time" content="2022-09-16T03:40:23.438Z">
+<meta property="og:updated_time" content="2022-09-27T07:50:29.165Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="android设备上如何运行C语言原生程序">
 <meta name="twitter:description" content="前言咱们知道android设备可以直接运行apk,或者使用dalvikvm指令运行dex文件中的程序, 但是这两者本质上使用的语言都是java或者smali, 如果需要执行C语言程序,我们通常需要借助NDK编译成so库, 那有没有不使用NDK而直接编译c原生程序然后在安卓设备中运行的方式呢? 交叉编译C语言是一门跨平台的语言,语言跨平台,但是程序不跨平台 也就是说在windows平台下编译的程序只">
@@ -380,16 +380,19 @@
 <ul>
 <li>你正在编译一款<code>linux</code>应用,但你手上只有一台<code>windows</code>电脑,这个时候交叉编译能帮上大忙</li>
 <li>目标设备环境不允许,比如单片机, 内存和性能无法支持程序的编译</li>
+<li>一款配备新硬件的机器问世, 需要借助交叉编译来编译它的系统和编译器等</li>
 </ul>
-<h2 id="交叉编译工具"><a href="#交叉编译工具" class="headerlink" title="交叉编译工具"></a>交叉编译工具</h2><p>交叉编译工具链的命名规则为：<strong>arch [-vendor] [-os] [-(gnu)eabi]</strong></p>
+<h2 id="交叉编译工具"><a href="#交叉编译工具" class="headerlink" title="交叉编译工具"></a>交叉编译工具</h2><p>目前主流的交叉编译工具有<code>GCC</code>和<code>Clang</code>, 接下来主要介绍<code>GCC</code>的使用方法:</p>
+<p>首先</p>
+<p>交叉编译工具链的命名规则为：<strong>arch [-vendor] [-os] [-(gnu)eabi]</strong></p>
 <ul>
 <li><strong>arch</strong> – 体系架构，如<code>ARM</code>，<code>MIPS</code></li>
 <li><strong>vendor</strong> – 工具链提供商</li>
 <li><strong>os</strong> – 目标操作系统</li>
 <li><strong>eabi</strong> – 嵌入式应用二进制接口（Embedded Application Binary Interface）</li>
 </ul>
-<p>根据对操作系统的支持与否，<strong>ARM GCC可分为支持和不支持操作系统</strong>，如</p>
-<ul>
+<p>根据对操作系统的支持与否，<strong>ARM GCC可分为支持和不支持操作系统</strong>，</p>
+<h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><ul>
 <li><strong>arm-none-eabi</strong>：这个是没有操作系统的,适用于<code>ARM</code>架构裸机,工具链提供商未知,嵌入式应用二进制接口,这个工具不支持那些跟操作系统关系密切的函数，比如fork(2)。他使用的是<code>newlib</code>这个专用于嵌入式系统的C库。</li>
 <li><strong>arm-none-linux-eabi</strong>：用于<code>Linux</code>的，<code>ARM</code>架构,使用<code>Glibc</code></li>
 </ul>
@@ -561,7 +564,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">374</span>
+                  <span class="site-state-item-count">385</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -574,7 +577,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">113</span>
+                  <span class="site-state-item-count">119</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
@@ -614,7 +617,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#交叉编译"><span class="nav-number">2.</span> <span class="nav-text">交叉编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么需要交叉编译"><span class="nav-number">3.</span> <span class="nav-text">为什么需要交叉编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#交叉编译工具"><span class="nav-number">4.</span> <span class="nav-text">交叉编译工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#回到主题"><span class="nav-number">5.</span> <span class="nav-text">回到主题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#第一步-源码编写"><span class="nav-number">5.0.1.</span> <span class="nav-text">第一步 源码编写</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第二步-源码编译"><span class="nav-number">5.0.2.</span> <span class="nav-text">第二步 源码编译</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第三步-将编译后的可执行文件传至安卓设备"><span class="nav-number">5.0.3.</span> <span class="nav-text">第三步 将编译后的可执行文件传至安卓设备</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第四步-执行文件"><span class="nav-number">5.0.4.</span> <span class="nav-text">第四步 执行文件</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#交叉编译"><span class="nav-number">2.</span> <span class="nav-text">交叉编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么需要交叉编译"><span class="nav-number">3.</span> <span class="nav-text">为什么需要交叉编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#交叉编译工具"><span class="nav-number">4.</span> <span class="nav-text">交叉编译工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#示例"><span class="nav-number">4.0.1.</span> <span class="nav-text">示例</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#回到主题"><span class="nav-number">5.</span> <span class="nav-text">回到主题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#第一步-源码编写"><span class="nav-number">5.0.1.</span> <span class="nav-text">第一步 源码编写</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第二步-源码编译"><span class="nav-number">5.0.2.</span> <span class="nav-text">第二步 源码编译</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第三步-将编译后的可执行文件传至安卓设备"><span class="nav-number">5.0.3.</span> <span class="nav-text">第三步 将编译后的可执行文件传至安卓设备</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第四步-执行文件"><span class="nav-number">5.0.4.</span> <span class="nav-text">第四步 执行文件</span></a></li></ol></li></div>
             
 
           </div>
