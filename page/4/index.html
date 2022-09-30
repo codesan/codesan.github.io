@@ -288,6 +288,388 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../357.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../357.html" itemprop="url">JS读取本地json文件的方法汇总</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-05T11:04:19+08:00">
+                2022-09-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>对于单纯的静态网站而言, 我们有时候可能会直接将<code>json</code>数据放在本地, 此时涉及到<code>json</code>文件内容读取的问题</p>
+<p>假设<code>html</code>同级目录下有一个名为<code>data.json</code>的文件, 读取的方式有:</p>
+<h3 id="第一种-使用ajax"><a href="#第一种-使用ajax" class="headerlink" title="第一种 使用ajax"></a>第一种 使用ajax</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$.ajax(&#123;</span><br><span class="line">                url: <span class="string">"data.json"</span>,<span class="comment">//同文件夹下的json文件路径</span></span><br><span class="line">                type: <span class="string">"GET"</span>,<span class="comment">//请求方式为get</span></span><br><span class="line">                dataType: <span class="string">"json"</span>, <span class="comment">//返回数据格式为json</span></span><br><span class="line">                success: <span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;<span class="comment">//请求成功完成后要执行的方法 </span></span><br><span class="line">                    <span class="built_in">console</span>.log(data);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="第二种-getJson"><a href="#第二种-getJson" class="headerlink" title="第二种 getJson"></a>第二种 getJson</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$.getJSON(<span class="string">"data.json"</span>, <span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">              <span class="built_in">console</span>.log(data)</span><br><span class="line">          &#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="第三种-使用原生XMLHttpRequest"><a href="#第三种-使用原生XMLHttpRequest" class="headerlink" title="第三种 使用原生XMLHttpRequest"></a>第三种 使用原生XMLHttpRequest</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">var</span> url = <span class="string">"data.json"</span></span><br><span class="line"><span class="comment">// 申明一个XMLHttpRequest</span></span><br><span class="line"><span class="keyword">var</span> request = <span class="keyword">new</span> XMLHttpRequest();</span><br><span class="line"><span class="comment">// 设置请求方法与路径</span></span><br><span class="line">request.open(<span class="string">"get"</span>, url);</span><br><span class="line"><span class="comment">// 不发送数据到服务器</span></span><br><span class="line">request.send(<span class="literal">null</span>);</span><br><span class="line"><span class="comment">//XHR对象获取到返回信息后执行</span></span><br><span class="line">request.onload = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 解析获取到的数据</span></span><br><span class="line">    <span class="keyword">var</span> data = <span class="built_in">JSON</span>.parse(request.responseText);</span><br><span class="line">    <span class="built_in">console</span>.log(data)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h3><p>我们在进行本地代码测试的时候, 如果以双击的形式打开<code>html</code>, 会出现跨域问题, 浏览器控台报错如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Access to XMLHttpRequest at &apos;file:///Users/songjian/Desktop/data.json&apos; from origin &apos;null&apos; has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, chrome-extension, chrome-untrusted, https, isolated-app</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法有两种:</strong></p>
+<ol>
+<li><p>第一种是给网页添加一个域名, 比如<code>localhost</code>, 我们可以使用<code>python</code>或者<code>nodejs</code>在本地启动一个服务, 这里以<code>python3</code>为例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m http.server 8000</span><br></pre></td></tr></table></figure>
+
+<p>启动服务后, 浏览器输入<code>localhost:8000</code>, 即可正常获取到本地<code>json</code>数据</p>
+</li>
+<li><p>第二种是修改本地浏览器设置, 以<code>Windows</code>平台谷歌浏览器为例, 启动时添加参数<code>--allow-file-access-from-files</code></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/c8235f9d82ac126c8659f46c06bebb80.png" alt="20201223114910"></p>
+</li>
+</ol>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../356.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../356.html" itemprop="url">acme.sh证书自动部署教程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-02T14:04:19+08:00">
+                2022-09-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本页面介绍了 ACME.sh 结合 CertCloud 的部署流程。</p>
+<blockquote>
+<p>在开始之前需要完成 <a href="https://docs.certcloud.cn/docs/installation/auto/acme" target="_blank" rel="noopener">证书ACME自动部署</a> 页面的前两个步骤。</p>
+</blockquote>
+<h2 id="创建-ACME-目录-URL"><a href="#创建-ACME-目录-URL" class="headerlink" title="创建 ACME 目录 URL"></a>创建 ACME 目录 URL</h2><ol>
+<li>登录 CertCloud 账户，点击【自动化】-&gt;【ACME】-&gt;【添加 ACME 目录 URL】 <img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/acmepage.png" alt="ACME URL 生成操作步骤"></li>
+<li>在弹出框中输入具有标识性的<code>名称</code>，选择证书来源[订单,产品]，选择相应的<code>订单</code>或<code>产品</code> <code>组织</code> ，点击【添加】按钮。ACME 界面会新增一条记录。</li>
+<li>ACME 界面会新增一条记录 ，点击对应记录的 【部署】 按钮，在跳转的页面选择 <code>acme.sh</code>，点击<code>复制图标</code>复制 <strong>acme.sh 部署命令</strong> 。</li>
+</ol>
+<blockquote>
+<p>当前，CertCloud ACME 仅支持 OV 和 EV TLS / SSL 证书。<br>如果需要查看详细的 ACME URL ，则只需要点击对应数据的“ 部署 ”按钮，就可以看到详细的 ACME URL 信息。</p>
+</blockquote>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>官网：<a href="https://github.com/acmesh-official/acme.sh" target="_blank" rel="noopener">ACME.sh GitHub项目地址</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl  https://get.acme.sh | sh</span><br></pre></td></tr></table></figure>
+
+<p>普通用户和 root 用户都可以安装使用。</p>
+<p>安装过程:</p>
+<ol>
+<li>默认安装 acme.sh 到你的 <strong>home</strong> 目录下:</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#cd ~/.acme.sh/</span><br></pre></td></tr></table></figure>
+
+<p>为了方便使用 acme.sh，可以创建 一个 bash 的 alias:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alias acme.sh=~/.acme.sh/acme.sh</span><br></pre></td></tr></table></figure>
+
+<h2 id="颁发并安装证书"><a href="#颁发并安装证书" class="headerlink" title="颁发并安装证书"></a>颁发并安装证书</h2><ol>
+<li>通过 SSH 连接到安装有 ACME 客户端的 Web 服务器。</li>
+<li>在终端提示符下，使用 ACME.sh 客户端命令执行上述复制的颁发命令请求证书。<strong>ACME.sh 客户端颁发、安装以及重颁发示例：</strong></li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 获取</span></span><br><span class="line">sudo acme.sh --issue -d DOMAIN --dns DNS_TYPE --server YOUR-ACME-URL --days DAYS </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 安装</span></span><br><span class="line">sudo acme.sh --installcert -d DOMAIN --key-file  YOUR-KEY.pem  --fullchain-file  YOUR-CERT.pem --reloadcmd   "YOUR-SERVER-RELOAD"</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 获取并安装（以上两条命令合在一起）</span></span><br><span class="line">sudo acme.sh --issue -d DOMAIN --dns DNS_TYPE --server YOUR-ACME-URL --days DAYS &amp;&amp; sudo acme.sh --installcert -d DOMAIN --key-file  YOUR-KEY.pem  --fullchain-file  YOUR-CERT.pem --reloadcmd   "YOUR-SERVER-RELOAD"</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>DOMAIN</code> 需要替换为申请时提交的域名信息，可以为多个。</li>
+<li><code>DNS_TYPE</code> 为需要验证的域名的 DNS 的类型，不同的类型需要配置不同的环境变量。(预审核通过的可以直接配置为 dns_dp ,不需要配置密钥信息)</li>
+<li><code>DAYS</code> 为申请的证书的请求周期，应比当前订单的<strong>密钥轮换周期</strong>时间小。</li>
+<li><code>YOUR-ACME-URL</code> 为先前创建的 ACME 目录 URL （请参阅 <strong>创建 ACME 目录 URL</strong>）。</li>
+<li><code>YOUR-KEY.pem</code> 表示服务配置的证书私钥的路径地址信息。</li>
+<li><code>YOUR-CERT.pem</code> 表示服务配置的证书文件的路径地址信息。</li>
+<li><code>YOUR-SERVER-RELOAD</code> 表示服务重载服务的命令。（具体的实例，可以看下方的 <strong>ACME.sh 部分常用命令</strong>）</li>
+</ul>
+<p>注：可以根据自己的需要和服务器环境自定义 ACME 客户端执行命令。</p>
+<p>ACME返回的错误和错误消息与 CertCloud API 中返回的错误和错误消息相同。有关错误代码及其含义的列表，请参见 <a href="https://docs.certcloud.cn/docs/installation/auto/openapi/errcode" target="_blank" rel="noopener">Open API 错误</a>。</p>
+<blockquote>
+<p>完成后，终端将显示一条成功消息<br>恭喜你！ACME 证书请求已完成，并且新发行的证书已安装(保存)在 Web 服务器上。可以访问网站以确认安装成功。</p>
+</blockquote>
+<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><p>为了更方便使用，提供了部分 ACME.sh 的常用命令。</p>
+<table>
+<thead>
+<tr>
+<th>字段信息</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>- -issue</td>
+<td>签发请求</td>
+</tr>
+<tr>
+<td>- -days [days]</td>
+<td>请求签发证书的周期，配合 –issue 使用</td>
+</tr>
+<tr>
+<td>- -server [ACME 目录 URL]</td>
+<td>证书服务商的 ACME 目录 URL，配合 –issue 使用</td>
+</tr>
+<tr>
+<td>- -installcert</td>
+<td>安装证书</td>
+</tr>
+<tr>
+<td>-d [网站域名]</td>
+<td>配置证书的域名信息</td>
+</tr>
+<tr>
+<td>- -webroot [网站跟文件路径]</td>
+<td>文件验证需要的网站跟文件路径</td>
+</tr>
+<tr>
+<td>- -dns [DNS类型]</td>
+<td>配置验证域名的DNS信息</td>
+</tr>
+<tr>
+<td>- -cert-file [证书保存的路径]</td>
+<td>安装证书保存的路径</td>
+</tr>
+<tr>
+<td>- -key-file [私钥保存的路径]</td>
+<td>安装私钥保存的路径</td>
+</tr>
+<tr>
+<td>- -fullchain-file [证书链保存的路径]</td>
+<td>安装证书链保存的路径</td>
+</tr>
+<tr>
+<td>- -reloadcmd [Web 重载命令]</td>
+<td>安装证书完成之后Web服务的重载命令</td>
+</tr>
+</tbody></table>
+<ol>
+<li><p>文件验证</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">acme.sh  --issue  -d mydomain.com -d www.mydomain.com  --webroot  /home/wwwroot/mydomain.com/ --server https://acme.certcloud.cn/acme/directory/XXX</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>DNS 验证( 以 DNSPod ，阿里 DNS 为例)</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">export DP_Id="XXX"</span><br><span class="line">export DP_Key="XXX"</span><br><span class="line">acme.sh  --issue  --dns dns_dp   -d aa.com  -d www.aa.com --server https://acme.certcloud.cn/acme/directory/XXX </span><br><span class="line">   </span><br><span class="line">export Ali_Key="XXX"</span><br><span class="line">export Ali_Secret="XXX"</span><br><span class="line">acme.sh  --issue --dns dns_ali -d example.com -d www.example.com --server https://acme.certcloud.cn/acme/directory/XXX</span><br></pre></td></tr></table></figure>
+
+<p>更多支持的DNS类型详见 [<a href="https://github.com/acmesh-official/acme.sh/wiki/dnsapi" target="_blank" rel="noopener">ACME.sh 支持的 DNS 类型大全</a>]</p>
+</li>
+<li><p>证书部署：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Nginx example:</span><br><span class="line">   </span><br><span class="line">acme.sh --installcert -d example.com --server https://acme.certcloud.cn/acme/directory/XXX \</span><br><span class="line">--key-file       /path/to/keyfile/in/nginx/key.pem  \</span><br><span class="line">--fullchain-file /path/to/fullchain/nginx/cert.pem \</span><br><span class="line">--reloadcmd     "service nginx force-reload"</span><br><span class="line">   </span><br><span class="line">Apache example:</span><br><span class="line">   </span><br><span class="line">acme.sh --installcert -d example.com --server https://acme.certcloud.cn/acme/directory/XXX  \</span><br><span class="line">--cert-file      /path/to/certfile/in/apache/cert.pem  \</span><br><span class="line">--key-file       /path/to/keyfile/in/apache/key.pem  \</span><br><span class="line">--fullchain-file /path/to/fullchain/certfile/apache/fullchain.pem \</span><br><span class="line">--reloadcmd     "service apache2 force-reload"</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取并部署</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">acme.sh --issue -d example.com -d www.example.com --dns dns_dp --server https://acme.certcloud.cn/acme/directory/XXX --days 30 </span><br><span class="line">&amp;&amp; acme.sh --installcert -d example.com -d www.example.com \</span><br><span class="line">--key-file    /etc/nginx/conf.d/example.com.key  \</span><br><span class="line">--fullchain-file /etc/nginx/conf.d/example.com.cer \</span><br><span class="line">--reloadcmd  "service nginx force-reload"</span><br></pre></td></tr></table></figure>
+
+<p>days 的周期为 30 天，acme.sh 会每 30 天去请求 server 去获取新的证书，并进行安装。</p>
+</li>
+</ol>
+<p><strong>本文转载自</strong>: <a href="https://docs.certcloud.cn/docs/installation/auto/acme/acmesh/" target="_blank" rel="noopener">https://docs.certcloud.cn/docs/installation/auto/acme/acmesh/</a></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../355.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1651,397 +2033,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../347.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../347.html" itemprop="url">下载视频m3u8格式视频的若干种方法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-01T16:04:19+08:00">
-                2022-08-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="方法1、ffmpeg工具"><a href="#方法1、ffmpeg工具" class="headerlink" title="方法1、ffmpeg工具"></a><strong>方法1、ffmpeg工具</strong></h2><p>先安装ffmpeg：</p>
-<blockquote>
-<p><strong>brew install ffmpeg</strong></p>
-</blockquote>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-a17cb10fcb6fa92e300f1da3642ab0a0_720w.jpg" alt="img"></p>
-<p>ffmpeg安装完成</p>
-<p><strong>ffmpeg使用：通过检查元素，元素定位，可以看到某视频地址的资源地址如下blob:URL的这种形式</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-9718a385f10135d4907eebce7e158e8e_720w.jpg" alt="img"></p>
-<p>然后通过查看Network，找到blob:URL地址背后的m3u8地址</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-cf3ecc6496f532fcd956de52df1bda7e_720w.jpg" alt="img"></p>
-<p><strong>用ffmpeg下载视频，并将m3u8格式转为mp4格式</strong>，指令如下</p>
-<blockquote>
-<p><strong>ffmpeg -i</strong> <a href="https://link.zhihu.com/?target=https%3A//youku.com-youku.net/20180620/13336_33db73a9/index.m3u8" target="_blank" rel="noopener">https://youku.com-youku.net/20180620/13336_33db73a9/index.m3u8</a> <strong>fileName.mp4</strong></p>
-</blockquote>
-<p>或</p>
-<blockquote>
-<p><strong>ffmpeg -i</strong> <a href="https://link.zhihu.com/?target=https%3A//youku.com-youku.net/20180620/13336_33db73a9/index.m3u8" target="_blank" rel="noopener">https://youku.com-youku.net/20180620/13336_33db73a9/index.m3u8</a> <strong>-c copy fileName.mp4</strong></p>
-</blockquote>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-6bbe97f1f8b56fef4740145be4c1f401_720w.jpg" alt="img"></p>
-<p>如上下载中</p>
-<p>由于视频很大，下载需要很长长长时间(1个G的视频可能需下载几小时…)。</p>
-<p>可以通过如下指令进行<strong>下载提速</strong>（下载速度大约能提升到<strong>几到十几分钟</strong>，很棒了哦，起码比百度云快）：</p>
-<blockquote>
-<p><strong>ffmpeg -i</strong> <a href="https://link.zhihu.com/?target=https%3A//youku.com-youku.net/20180620/13336_33db73a9/index.m3u8" target="_blank" rel="noopener">https://youku.com-youku.net/20180620/13336_33db73a9/index.m3u8</a> <strong>-c copy -bsf:a aac_adtstoasc fileName.mp4</strong></p>
-</blockquote>
-<p>如果你想用终端工具拉起视频播放，直接通过如下指令就能 <strong>播放某链接的视频</strong></p>
-<blockquote>
-<p><strong>ffplay -i</strong> <a href="https://link.zhihu.com/?target=https%3A//youku.com-youku.net/20180620/13336_33db73a9/index.m3u8" target="_blank" rel="noopener">https://youku.com-youku.net/20180620/13336_33db73a9/index.m3u8</a></p>
-</blockquote>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-a927d74233b2b271f515901f8087576d_720w.jpg" alt="img"></p>
-<p>下载完成，播放中</p>
-<h2 id="搞定！！！"><a href="#搞定！！！" class="headerlink" title="搞定！！！"></a>搞定！！！</h2><h2 id="方法2、google插件：Tampermonkey（油猴），一个强大到令人无语的脚本工具箱（Tampermonkey绝对是个大宝藏，里面有太多好用的脚本了，你真真真真真真的值得拥有）"><a href="#方法2、google插件：Tampermonkey（油猴），一个强大到令人无语的脚本工具箱（Tampermonkey绝对是个大宝藏，里面有太多好用的脚本了，你真真真真真真的值得拥有）" class="headerlink" title="方法2、google插件：Tampermonkey（油猴），一个强大到令人无语的脚本工具箱（Tampermonkey绝对是个大宝藏，里面有太多好用的脚本了，你真真真真真真的值得拥有）"></a>方法2、google插件：Tampermonkey（油猴），一个强大到令人无语的脚本工具箱（Tampermonkey绝对是个大宝藏，里面有太多好用的脚本了，你真真真真真真的值得拥有）</h2><p>关于Tampermonkey油猴的安装和基本使用，见我之前的一篇文章：</p>
-<p><a href="https://zhuanlan.zhihu.com/p/341412928" target="_blank" rel="noopener">晒一下我常用的几款chrome 插件，你值得拥有92 赞同 · 3 评论文章<img src="https://pic3.zhimg.com/v2-16f6e751ad3a72002004890425f11304_r.jpg?source=172ae18b" alt="img"></a></p>
-<h3 id="这里介绍油猴中1个好用的脚本：media-source-extract"><a href="#这里介绍油猴中1个好用的脚本：media-source-extract" class="headerlink" title="这里介绍油猴中1个好用的脚本：media-source-extract"></a>这里介绍油猴中1个好用的脚本：media-source-extract</h3><p>在油猴脚本列表中暂时无法提供下载，目前需要手动创建安装，具体的视频下载和工具使用，见链接：</p>
-<p><a href="https://link.zhihu.com/?target=https%3A//github.com/Momo707577045/media-source-extract" target="_blank" rel="noopener">https://github.com/Momo707577045/media-source-extractgithub.com/Momo707577045/media-source-extract</a></p>
-<h2 id="「安装或使用遇到问题的，直接私我，我看到了，一定会帮你解答」"><a href="#「安装或使用遇到问题的，直接私我，我看到了，一定会帮你解答」" class="headerlink" title="「安装或使用遇到问题的，直接私我，我看到了，一定会帮你解答」"></a>「安装或使用遇到问题的，直接私我，我看到了，一定会帮你解答」</h2><p>media-source-extract是一款提取视频画面和音频的工具，最终下载得到的是音频文件和视频画面文件。</p>
-<p>因此可以通过合并音视频来完成最终的视频。</p>
-<p>具体音视频合成方法网上有很多，我这边提供一套ffmpeg的合并方法，具体分2步走：</p>
-<p>1、先把音频「audio_mp4」（或多个「audio_mp4」） 进行<strong>合并转码</strong>，转为.aac格式：命令行执行如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i &quot;***-audio_mp4;codecs=***.mp4&quot; -acodec copy &quot;audio.aac&quot;</span><br></pre></td></tr></table></figure>
-
-<p>（记得命令行先切换到音频所在的文件路径下）</p>
-<p>2、再将原始视频「video_mp4」（或多个「video_mp4」），和上一步得到的 aac 「audio.aac」组装到一起，命令行执行如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i &quot;***-video_mp4;codecs=***.mp4&quot; -i &quot;audio.aac&quot; -c copy -shortest &quot;result.mp4&quot;</span><br></pre></td></tr></table></figure>
-
-<p>（记得命令行先切换到音频所在的文件路径下）</p>
-<h3 id="最终result-mp4就是你要的合并了音频和画面的视频了！"><a href="#最终result-mp4就是你要的合并了音频和画面的视频了！" class="headerlink" title="最终result.mp4就是你要的合并了音频和画面的视频了！"></a>最终result.mp4就是你要的合并了音频和画面的视频了！</h3><p>media-source-extract这种提取音视频合并的方法，太麻烦了，有点像录屏的感觉。</p>
-<p>下载操作的复杂度，以及过程可能会丢失的视频片段，我表示很淦。</p>
-<p>但是作为一个下载方式，有价值，可作为备胎。</p>
-<h3 id="再介绍1个比较好油猴插件：m3u8-downloader"><a href="#再介绍1个比较好油猴插件：m3u8-downloader" class="headerlink" title="再介绍1个比较好油猴插件：m3u8-downloader"></a>再介绍1个比较好油猴插件：m3u8-downloader</h3><p>在油猴脚本地址栏 <a href="https://link.zhihu.com/?target=https%3A//greasyfork.org/zh-CN/scripts%3Fq%3Dm3u8-downloader" target="_blank" rel="noopener">用户脚本</a> 中去搜索下载安装，如下图：</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-ee45d0c93a265a3c1c8dca02285aae01_720w.jpg" alt="img"></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-7ab4ce4601118b72cb03f4da7977121c_720w.jpg" alt="img"></p>
-<p>使用：譬如下载一部烂片 <a href="https://link.zhihu.com/?target=https%3A//www.gxwkxf.com/xingchenp/89599-1-1.html" target="_blank" rel="noopener">动作片《蛇蝎情人2003正片》免费在线播放-星空影院</a>，用google浏览器输入该视频网址，m3u8-downloader 脚本会自动识别blob:URL地址并拿到m3u8文件，如下：</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-94c77990118e9bdff5fb0da627840483_720w.jpg" alt="img"></p>
-<p>点击“跳转下载”，会跳转到下载页面</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-94c77990118e9bdff5fb0da627840483_720w-20220805173702403.jpg" alt="img"></p>
-<p>选择“原格式下载”或“转码为MP4下载”</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-a1df751f4effd8fc3eef5b7463f2761b_720w.jpg" alt="img"></p>
-<p>开始下载，同时可以看到下载进度，如下：</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-db90f4d256a3f9a55f5e5ad61b1d66d2_720w.jpg" alt="img"></p>
-<p>下载完成，本地播放，如图：</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-84215873dcff9d34d9b4067adb97ca0d_720w.jpg" alt="img"></p>
-<h2 id="搞定！"><a href="#搞定！" class="headerlink" title="搞定！"></a>搞定！</h2><h2 id="方法3、google插件：NeatDownloadManager-Extension"><a href="#方法3、google插件：NeatDownloadManager-Extension" class="headerlink" title="方法3、google插件：NeatDownloadManager Extension"></a><strong>方法3、google插件：</strong>NeatDownloadManager Extension</h2><p>这是一款我常用的插件，很好用。</p>
-<p>可以去下载1个PC端软件 和 google插件</p>
-<p>PC端NeatDownloadManager下载地址：<a href="https://link.zhihu.com/?target=http%3A//www.neatdownloadmanager.com/index.php/en/" target="_blank" rel="noopener">Neat Download Manager for Mac and Windows (Free Internet Download Manager Mac &amp; Windows )</a></p>
-<p>安装后，界面如下</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-6a432bee3ca67e72e73e52b043bdaeda_720w.jpg" alt="img"></p>
-<p>在红色标记1的Setting中，可以设置对应代理，譬如常见的某d下载提速，可以像这样设置：</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-7da9ed71415974b365e9af5bc307cac1_720w.jpg" alt="img"></p>
-<p>红色标记2的Browsers中，点击“Add Chrome Extension”就可以给google浏览器添加该插件啦：</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-328ff8e3e524ca967a3b66aacafe6e62_720w.jpg" alt="img"></p>
-<p>当然也可以直接在google插件搜索 NeatDownloadManager Extension（需要f墙），进行安装：</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-642344f4a2461b29227b50350e3f9505_720w.jpg" alt="img"></p>
-<p>安装已经完成啦：</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-80fd87838a3c1aaecba8776c99214d4b_720w.jpg" alt="img"></p>
-<p>NeatDownloadManager Extension插件的使用：</p>
-<p>我想下载温老的视频：<a href="https://link.zhihu.com/?target=https%3A//www.bilibili.com/video/BV1y44y1H7NN%3Ffrom%3Dsearch%26seid%3D17794320619746015840%26spm_id_from%3D333.337.0.0" target="_blank" rel="noopener">温铁军：四大文明古国为何只有中国没有灭亡？罗马的民主只对其10%的人口？【温铁军践闻录5-35】_哔哩哔哩_bilibili</a></p>
-<p>在google浏览器里，打开该地址，就可以看到该插件拿到的视频资源：</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-158f53d50a36edc65a7dfe0fa98c51b7_720w.jpg" alt="img"></p>
-<p>点击那个size最大的视频资源，就会自动下载了：</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-33d7425486b4c0d4e16aa5677eab813f_720w.jpg" alt="img"></p>
-<p>下载完成</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-36fcdbed33f3f18f9652c4797f485e3e_720w.jpg" alt="img"></p>
-<h2 id="搞定！-1"><a href="#搞定！-1" class="headerlink" title="搞定！"></a>搞定！</h2><h2 id="方法4、google插件：视频下载器-CoCoCut"><a href="#方法4、google插件：视频下载器-CoCoCut" class="headerlink" title="方法4、google插件：视频下载器 - CoCoCut"></a>方法4、google插件：视频下载器 - CoCoCut</h2><p>在google网上应用商店（需要f墙），搜索“视频下载器 - CoCoCut”</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-3919d3f6769e87439c1135e996e94621_720w.jpg" alt="img"></p>
-<p>安装该插件：</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-be27ebd818a82ae20b3d15fa3c086fb1_720w.jpg" alt="img"></p>
-<p>视频下载器 - CoCoCut使用：</p>
-<p>譬如我想下载一个电影，我在goolge 浏览器上随便找了一个电影网站：<a href="https://link.zhihu.com/?target=https%3A//v.iztyy.com/play/aHR0cHM6Ly93d3cuMzYwa2FuLmNvbS9tL2hLUGlaUkg0UUhQN1R4Lmh0bWw%3D.html" target="_blank" rel="noopener">《战狼2》高清完整版_最新电影_免费在线观看平台_猪蹄影院</a> ，然后该插件就会自动检测到该视频信息，点开该插件，就可以看到并执行下载了</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-f895aa8f25e525ab5972bcabb70869e6_720w.jpg" alt="img"></p>
-<p>下载中</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-46cfba4c8aa4247e4a13dad31889a28b_720w.jpg" alt="img"></p>
-<p>下载完成。</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-b59aea33c51aefdd3202b24632f32fb2_720w.jpg" alt="img"></p>
-<h2 id="搞定！-2"><a href="#搞定！-2" class="headerlink" title="搞定！"></a>搞定！</h2><hr>
-<p>最后，推荐几款我常用的解析.m3u8的在线网站：</p>
-<p><a href="https://link.zhihu.com/?target=https%3A//www.flvcd.com/index.htm" target="_blank" rel="noopener">FLVCD - 硕鼠官网|FLV下载|视频下载www.flvcd.com/index.htm<img src="https://pic4.zhimg.com/v2-ada4d4e3cdfc04907af8c33bb2cdbc03_180x120.jpg" alt="img"></a></p>
-<p><a href="https://zhuanlan.zhihu.com/p/49813990" target="_blank" rel="noopener">如何下载YouTube视频1080P高清289 赞同 · 89 评论文章<img src="https://pic2.zhimg.com/v2-a1c5dddd2dafc82c73b7fb9fd2ab077f_r.jpg?source=172ae18b" alt="img"></a></p>
-<p><a href="https://link.zhihu.com/?target=https%3A//www.gihosoft.com/free-youtube-downloader.html" target="_blank" rel="noopener">Gihosoft TubeGetwww.gihosoft.com/free-youtube-downloader.html<img src="https://pic1.zhimg.com/v2-cea395fbbd405ab3e46dbacf612b7adc_180x120.jpg" alt="img"></a></p>
-<p>真心希望，更多的技术为更多人使用。</p>
-<p><strong>本文转载自</strong>:<a href="https://cdn6.hnzycdn.com:65/20210917/URSbyxsH/1172kb/hls/index.m3u8" target="_blank" rel="noopener">https://cdn6.hnzycdn.com:65/20210917/URSbyxsH/1172kb/hls/index.m3u8</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../346.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../346.html" itemprop="url">ANDROID跳转到手机自启动管理页面</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-21T16:04:19+08:00">
-                2022-07-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>有时候，为了确保APP的后台正常运行，需要让用户去设置打开APP的自启动权限（或者改为手动管理/huawei）。为了更好的用户体验，在APP中可以直接跳转到手机的自启动管理页面或者权限管理页面。</p>
-<hr>
-<h4 id="应用启动管理页面"><a href="#应用启动管理页面" class="headerlink" title="应用启动管理页面"></a>应用启动管理页面</h4><p><code>oppo/vivo</code>是没有这个页面的<br><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/85488098af0ed6049af38f6c344e5d7d.png" alt="华为"></p>
-<ul>
-<li><strong>华为</strong></li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">ComponentName componentName = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">int</span> sdkVersion = Build.VERSION.SDK_INT;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</span><br><span class="line">    <span class="comment">//跳自启动管理</span></span><br><span class="line">    <span class="keyword">if</span> (sdkVersion &gt;= <span class="number">28</span>)&#123;<span class="comment">//9:已测试</span></span><br><span class="line">        componentName = ComponentName.unflattenFromString(<span class="string">"com.huawei.systemmanager/.startupmgr.ui.StartupNormalAppListActivity"</span>);<span class="comment">//跳自启动管理</span></span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span> (sdkVersion &gt;= <span class="number">26</span>)&#123;<span class="comment">//8：已测试</span></span><br><span class="line">        componentName = ComponentName.unflattenFromString(<span class="string">"com.huawei.systemmanager/.appcontrol.activity.StartupAppControlActivity"</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span> (sdkVersion &gt;= <span class="number">23</span>)&#123;<span class="comment">//7.6：已测试</span></span><br><span class="line">        componentName = ComponentName.unflattenFromString(<span class="string">"com.huawei.systemmanager/.startupmgr.ui.StartupNormalAppListActivity"</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span> (sdkVersion &gt;= <span class="number">21</span>)&#123;<span class="comment">//5</span></span><br><span class="line">        componentName = ComponentName.unflattenFromString(<span class="string">"com.huawei.systemmanager/com.huawei.permissionmanager.ui.MainActivity"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//componentName = new ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.optimize.process.ProtectActivity");//锁屏清理</span></span><br><span class="line">    intent.setComponent(componentName);</span><br><span class="line">    startActivity(intent);</span><br><span class="line">&#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">	<span class="comment">//跳转失败</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="number">123456789101112131415161718192021</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>小米</strong></li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</span><br><span class="line">    ComponentName componentName = <span class="keyword">null</span>;</span><br><span class="line">    componentName = <span class="keyword">new</span> ComponentName(<span class="string">"com.miui.securitycenter"</span>, <span class="string">"com.miui.permcenter.autostart.AutoStartManagementActivity"</span>);</span><br><span class="line">    intent.setComponent(componentName);</span><br><span class="line">    context.startActivity(intent);</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;<span class="comment">//抛出异常就直接打开设置页面</span></span><br><span class="line">    jumpAPPInfo(context);</span><br><span class="line">&#125;</span><br><span class="line"><span class="number">12345678910</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>三星</strong></li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">ComponentName componentName = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</span><br><span class="line">    <span class="comment">//跳自启动管理</span></span><br><span class="line">    componentName = ComponentName.unflattenFromString(<span class="string">"com.samsung.android.sm/.app.dashboard.SmartManagerDashBoardActivity"</span>);</span><br><span class="line">    intent.setComponent(componentName);</span><br><span class="line">    startActivity(intent);</span><br><span class="line">&#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        componentName = <span class="keyword">new</span> ComponentName(<span class="string">"com.samsung.android.sm_cn"</span>, <span class="string">"com.samsung.android.sm.ui.ram.AutoRunActivity"</span>);</span><br><span class="line">        intent.setComponent(componentName);</span><br><span class="line">        startActivity(intent);</span><br><span class="line">    &#125;<span class="keyword">catch</span> (Exception e1)&#123;</span><br><span class="line">        <span class="comment">//跳转失败</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="number">1234567891011121314151617</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>魅族</strong></li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">ComponentName componentName = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</span><br><span class="line">    <span class="comment">//跳自启动管理</span></span><br><span class="line">    componentName = ComponentName.unflattenFromString(<span class="string">"com.meizu.safe/.permission.SmartBGActivity"</span>);<span class="comment">//跳转到后台管理页面</span></span><br><span class="line">    intent.setComponent(componentName);</span><br><span class="line">    startActivity(intent);</span><br><span class="line">&#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        componentName = ComponentName.unflattenFromString(<span class="string">"com.meizu.safe/.permission.PermissionMainActivity"</span>);<span class="comment">//跳转到手机管家</span></span><br><span class="line">        intent.setComponent(componentName);</span><br><span class="line">        startActivity(intent);</span><br><span class="line">    &#125;<span class="keyword">catch</span> (Exception e1)&#123;</span><br><span class="line">        <span class="comment">//跳转失败</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="number">1234567891011121314151617</span></span><br></pre></td></tr></table></figure>
-
-<hr>
-<h4 id="权限管理页面"><a href="#权限管理页面" class="headerlink" title="权限管理页面"></a>权限管理页面</h4><p>这个页面重要的权限自启动、锁屏显示、后台弹出界面</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/03b40afbb51494b361fbb9e41ff0b172.png" alt="vivo"></p>
-<ul>
-<li><strong>vivo</strong></li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Intent localIntent;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (((Build.MODEL.contains(<span class="string">"Y85"</span>)) &amp;&amp; (!Build.MODEL.contains(<span class="string">"Y85A"</span>))) || (Build.MODEL.contains(<span class="string">"vivo Y53L"</span>))) &#123;</span><br><span class="line">        localIntent = <span class="keyword">new</span> Intent();</span><br><span class="line">        localIntent.setClassName(<span class="string">"com.vivo.permissionmanager"</span>, <span class="string">"com.vivo.permissionmanager.activity.PurviewTabActivity"</span>);</span><br><span class="line">        localIntent.putExtra(<span class="string">"packagename"</span>, context.getPackageName());</span><br><span class="line">        localIntent.putExtra(<span class="string">"tabId"</span>, <span class="string">"1"</span>);</span><br><span class="line">        context.startActivity(localIntent);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        localIntent = <span class="keyword">new</span> Intent();</span><br><span class="line">        localIntent.setClassName(<span class="string">"com.vivo.permissionmanager"</span>, <span class="string">"com.vivo.permissionmanager.activity.SoftPermissionDetailActivity"</span>);</span><br><span class="line">        localIntent.setAction(<span class="string">"secure.intent.action.softPermissionDetail"</span>);</span><br><span class="line">        localIntent.putExtra(<span class="string">"packagename"</span>, context.getPackageName());</span><br><span class="line">        context.startActivity(localIntent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">    <span class="comment">// 否则跳转到应用详情</span></span><br><span class="line">    localIntent = <span class="keyword">new</span> Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);</span><br><span class="line">    Uri uri = Uri.fromParts(<span class="string">"package"</span>, context.getPackageName(), <span class="keyword">null</span>);</span><br><span class="line">    localIntent.setData(uri);</span><br><span class="line">    context.startActivity(localIntent);</span><br><span class="line">&#125;</span><br><span class="line"><span class="number">12345678910111213141516171819202122</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>OPPO</strong></li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</span><br><span class="line">    intent.putExtra(<span class="string">"packageName"</span>, BuildConfig.APPLICATION_ID);</span><br><span class="line">    ComponentName comp = <span class="keyword">new</span> ComponentName(<span class="string">"com.color.safecenter"</span>, <span class="string">"com.color.safecenter.permission.PermissionManagerActivity"</span>);</span><br><span class="line">    intent.setComponent(comp);</span><br><span class="line">    startActivity(intent);</span><br><span class="line">&#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</span><br><span class="line">        intent.putExtra(<span class="string">"pkg_name"</span>, context.getPackageName());</span><br><span class="line">        intent.putExtra(<span class="string">"app_name"</span>, context.getString(R.string.app_name));</span><br><span class="line">        intent.putExtra(<span class="string">"class_name"</span>, <span class="string">"com.welab.notificationdemo.MainActivity"</span>);</span><br><span class="line">        ComponentName comp = <span class="keyword">new</span> ComponentName(<span class="string">"com.coloros.notificationmanager"</span>, <span class="string">"com.coloros"</span> +</span><br><span class="line">                <span class="string">".notificationmanager.AppDetailPreferenceActivity"</span>);</span><br><span class="line">        intent.setComponent(comp);</span><br><span class="line">        startActivity(intent);</span><br><span class="line">    &#125;<span class="keyword">catch</span> (Exception e1)&#123;</span><br><span class="line">        <span class="comment">// 否则跳转到应用详情</span></span><br><span class="line">        intent = <span class="keyword">new</span> Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);</span><br><span class="line">        Uri uri = Uri.fromParts(<span class="string">"package"</span>, context.getPackageName(), <span class="keyword">null</span>);</span><br><span class="line">        intent.setData(uri);</span><br><span class="line">        context.startActivity(intent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="number">12345678910111213141516171819202122232425</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>小米</strong></li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// MIUI 8</span></span><br><span class="line">    Intent localIntent = <span class="keyword">new</span> Intent(<span class="string">"miui.intent.action.APP_PERM_EDITOR"</span>);</span><br><span class="line">    localIntent.setClassName(<span class="string">"com.miui.securitycenter"</span>, <span class="string">"com.miui.permcenter.permissions.PermissionsEditorActivity"</span>);</span><br><span class="line">    localIntent.putExtra(<span class="string">"extra_pkgname"</span>, context.getPackageName());</span><br><span class="line">    context.startActivity(localIntent);</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// MIUI 5/6/7</span></span><br><span class="line">        Intent localIntent = <span class="keyword">new</span> Intent(<span class="string">"miui.intent.action.APP_PERM_EDITOR"</span>);</span><br><span class="line">        localIntent.setClassName(<span class="string">"com.miui.securitycenter"</span>, <span class="string">"com.miui.permcenter.permissions.AppPermissionsEditorActivity"</span>);</span><br><span class="line">        localIntent.putExtra(<span class="string">"extra_pkgname"</span>, context.getPackageName());</span><br><span class="line">        context.startActivity(localIntent);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e1) &#123;</span><br><span class="line">        <span class="comment">// 否则跳转到应用详情</span></span><br><span class="line">        Intent intent = <span class="keyword">new</span> Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);</span><br><span class="line">        Uri uri = Uri.fromParts(<span class="string">"package"</span>, context.getPackageName(), <span class="keyword">null</span>);</span><br><span class="line">        intent.setData(uri);</span><br><span class="line">        context.startActivity(intent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="number">123456789101112131415161718192021</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="应用详情页面"><a href="#应用详情页面" class="headerlink" title="应用详情页面"></a>应用详情页面</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);</span><br><span class="line">Uri uri = Uri.fromParts(<span class="string">"package"</span>, context.getPackageName(), <span class="keyword">null</span>);</span><br><span class="line">intent.setData(uri);</span><br><span class="line">startActivity(intent);</span><br><span class="line"><span class="number">1234</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>在其他应用上层显示、后台弹出界面、锁屏显示这三个权限会直接影响APP从后台启动活动，详情可以了解另一篇文章–&gt;<a href="https://blog.csdn.net/weixin_44021615/article/details/104609157" target="_blank" rel="noopener">Android 在后台无法启动Activity</a>。</p>
-<h3 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h3><p><code>vivo/oppo/小米</code>手机有一个“后台弹出界面”权限, 华为是没有的, 可以使用以下代码来检测该权限是否开启:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isAllowed</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     AppOpsManager ops = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);</span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">         <span class="keyword">int</span> op = <span class="number">10021</span>;</span><br><span class="line">         Method method = ops.getClass().getMethod(<span class="string">"checkOpNoThrow"</span>, <span class="keyword">new</span> Class[]&#123;<span class="keyword">int</span>.class, <span class="keyword">int</span>.class, String.class&#125;);</span><br><span class="line">         Integer result = (Integer) method.invoke(ops, op, Process.myUid(), getPackageName());</span><br><span class="line">         <span class="keyword">return</span> result == AppOpsManager.MODE_ALLOWED;</span><br><span class="line"> </span><br><span class="line">     &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">         Log.e(TAG, <span class="string">"not support"</span>);</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文转载自</strong>:<a href="https://www.freesion.com/article/7753459867/" target="_blank" rel="noopener">https://www.freesion.com/article/7753459867/</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2092,7 +2083,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">385</span>
+                  <span class="site-state-item-count">387</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2105,7 +2096,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">119</span>
+                  <span class="site-state-item-count">120</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

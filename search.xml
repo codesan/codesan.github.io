@@ -24004,35 +24004,70 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
       </tags>
   </entry>
   <entry>
-    <title>Linux 系统下使用 systemd 控制 frps 及配置开机自启</title>
-    <url>/375.html</url>
-    <content><![CDATA[<h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><p>这个示例将会演示在 Linux 系统下使用 systemd 控制 frps 及配置开机自启。</p>
-<p>在 Linux 系统下，使用<code>systemd</code> 可以方便地控制 frp 服务端 <code>frps</code> 的启动和停止、配置后台运行和开启自启。</p>
-<p>要使用 <code>systemd</code> 来控制 <code>frps</code>，需要先安装 <code>systemd</code>，然后在 <code>/etc/systemd/system</code> 目录下创建一个 frps.service 文件。</p>
+    <title>使用Gradle将lua源码构建编译成可执行文件</title>
+    <url>/376.html</url>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>对于<code>lua</code>的构建 官方默认使用<code>make</code>工具, 常见的构建工具有:</p>
+<ul>
+<li><code>Make</code>:又指<code>GNU Make</code>, 是<code>Linux</code>系统下的通用构建工具, 延伸的构建工具还有<code>nmake</code>, <code>dmake</code>, <code>cmake</code>, <code>xmake</code>等等</li>
+<li><code>Scons</code>: 以<code>python</code>语言编写的一款跨平台构建工具 对标<code>make</code> 容易学习快速上手</li>
+<li><code>Ant</code>:  基于<code>java</code>的构建工具, 被认为是<code>make</code>工具的替代品, 早期<code>eclipse</code>采用的构建工具就是它</li>
+<li><code>maven</code>: 同样是基于<code>java</code>, 它不单单是构建工具 还是项目管理工具, 属于<code>Ant</code>进化版, 目前<code>Idea</code>平台中 <code>java</code>的构建基本用的就是它</li>
+<li><code>Gradle:</code> 基于<code>Groovy</code>的构建工具, 被认为是Ant和Maven的替代品, 目前<code>Android</code>编译使用的构建工具就是它</li>
+</ul>
+<h3 id="什么是构建工具"><a href="#什么是构建工具" class="headerlink" title="什么是构建工具"></a>什么是构建工具</h3><p>以<code>java</code>程序为例, 我们在写好代码后, 需要使用<code>javac</code>指令对源码进行编译, 然后使用<code>java</code>指令执行</p>
+<p>这个过程叫做编译, 如果一两个文件还好, 代码文件一多, 手动敲指令进行编译是会死人的🤪, 于是乎自动化的构建工具出现了, 目的就是为了取代人工编译</p>
+<h3 id="构建工具的发展"><a href="#构建工具的发展" class="headerlink" title="构建工具的发展"></a>构建工具的发展</h3><p>早期的<code>make</code>–&gt;<code>java</code>的<code>ant</code>–&gt;后来的<code>maven</code>–&gt;现在的<code>gradle</code></p>
+<p>每一代构建工具的诞生, 都是为了解决上一代工具存在的痛点</p>
+<p><code>Gradle</code>, 用过的都说好!!😆</p>
+<h3 id="对Lua源码进行构建编译"><a href="#对Lua源码进行构建编译" class="headerlink" title="对Lua源码进行构建编译"></a>对Lua源码进行构建编译</h3><p>我这边直接使用<code>Android Studio</code>, 具体步骤如下:</p>
 <ol>
-<li><p>如Linux服务端上没有安装 <code>systemd</code>，可以使用 <code>yum</code> 或 <code>apt</code> 等命令安装 <code>systemd</code>。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># yum</span></span><br><span class="line">yum install systemd</span><br><span class="line"><span class="comment"># apt</span></span><br><span class="line">apt install systemd</span><br></pre></td></tr></table></figure>
+<li><p><strong>首先 去<code>lua</code>官网下载源码, 这里我使用的是<code>5.4</code>的源码</strong></p>
+<p><a href="http://www.lua.org/" target="_blank" rel="noopener">lua官网</a></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220926170825041.png" alt="image-20220926170825041"></p>
 </li>
-<li><p>使用文本编辑器，如 <code>vim</code> 创建并编辑 <code>frps.service</code> 文件。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ vim /etc/systemd/system/frps.service</span><br></pre></td></tr></table></figure>
-
-<p>写入内容</p>
-<figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="section">[Unit]</span></span><br><span class="line"><span class="comment"># 服务名称，可自定义</span></span><br><span class="line"><span class="attr">Description</span> = frp server</span><br><span class="line"><span class="attr">After</span> = network.target syslog.target</span><br><span class="line"><span class="attr">Wants</span> = network.target</span><br><span class="line"></span><br><span class="line"><span class="section">[Service]</span></span><br><span class="line"><span class="attr">Type</span> = simple</span><br><span class="line"><span class="comment"># 启动frps的命令，需修改为您的frps的安装路径</span></span><br><span class="line"><span class="attr">ExecStart</span> = /path/to/frps -c /path/to/frps.ini</span><br><span class="line"></span><br><span class="line"><span class="section">[Install]</span></span><br><span class="line"><span class="attr">WantedBy</span> = multi-user.target</span><br></pre></td></tr></table></figure>
+<li><p><strong>然后 在Studio中新建一个空工程, 然后将<code>lua</code>源码拖进<code>src</code>目录中</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220926163907555.png" alt="image-20220926163907555"></p>
 </li>
-<li><p>使用 <code>systemd</code> 命令，管理 frps。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 启动frp</span></span><br><span class="line">systemctl start frps</span><br><span class="line"><span class="comment"># 停止frp</span></span><br><span class="line">systemctl stop frps</span><br><span class="line"><span class="comment"># 重启frp</span></span><br><span class="line">systemctl restart frps</span><br><span class="line"><span class="comment"># 查看frp状态</span></span><br><span class="line">systemctl status frps</span><br></pre></td></tr></table></figure>
+<li><p><strong>紧接着 对<code>build.gradle</code>文件进行配置</strong></p>
+<p><code>lua</code>一共包含两个可执行文件, 一个是<code>lua</code>另一个是<code>luac</code>, 所以这两个执行文件我们需要分开构建, 具体的<code>gradle</code>配置如下:</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">apply <span class="string">plugin:</span> <span class="string">'c'</span>  <span class="comment">//使用c构建模式</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">model &#123;</span><br><span class="line"></span><br><span class="line">    components &#123;</span><br><span class="line">				<span class="comment">//创建一个lua执行文件构建入口</span></span><br><span class="line">        lua(NativeExecutableSpec) &#123;</span><br><span class="line">            sources &#123;</span><br><span class="line">                c &#123;<span class="comment">//指定源码位置以及需要包含和排除的问价</span></span><br><span class="line">                    source &#123;</span><br><span class="line">                        srcDir <span class="string">"src/main/c/lua"</span></span><br><span class="line">                        include <span class="string">'*.c'</span></span><br><span class="line">                        exclude <span class="string">'luac.c'</span></span><br><span class="line">                    &#125;</span><br><span class="line">                    exportedHeaders &#123;</span><br><span class="line">                        include <span class="string">'lauxlib.h'</span>, <span class="string">'lua.h'</span>, <span class="string">'lua.hpp'</span>, <span class="string">'luaconf.h'</span>, <span class="string">'lualib.h'</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">	<span class="comment">//创建一个luac执行文件构建入口</span></span><br><span class="line">        luac(NativeExecutableSpec) &#123;</span><br><span class="line">            sources &#123;</span><br><span class="line">                c &#123;</span><br><span class="line">                    source &#123;</span><br><span class="line">                        srcDir <span class="string">"src/main/c/lua"</span></span><br><span class="line">                        include <span class="string">'*.c'</span></span><br><span class="line">                        exclude <span class="string">'lua.c'</span></span><br><span class="line">                    &#125;</span><br><span class="line">                    exportedHeaders &#123;</span><br><span class="line">                        include <span class="string">'lauxlib.h'</span>, <span class="string">'lua.h'</span>, <span class="string">'lua.hpp'</span>, <span class="string">'luaconf.h'</span>, <span class="string">'lualib.h'</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>配置 frps 开机自启。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> frps</span><br></pre></td></tr></table></figure>
-
+<li><p><strong>最后 开始编译</strong><br><code>gradle</code>刷新同步后, 我们在右侧<code>gradle</code>任务面板可以看到多出<code>lua</code>和<code>luac</code>相关的<code>task</code>, 此时我们执行<code>build</code>任务开始对<code>lua</code>源码进行编译:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220926164804018.png" alt="image-20220926164804018"></p>
+<p>编译完成后, 我们可以在<code>build</code>文件中查看到生成的可执行文件:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220926165101437.png" alt="image-20220926165101437"></p>
+<p>双击可正常运行:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220926165135047.png" alt="image-20220926165135047"></p>
+<p>至此 我们的<code>lua</code>编译完毕</p>
 </li>
 </ol>
-<p><strong>本文转载自</strong>: <a href="https://gofrp.org/docs/setup/systemd/" target="_blank" rel="noopener">gofrp文档</a></p>
+<h3 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h3><ol>
+<li><p>如果你只想编译<code>lu</code>a而不编译<code>luac</code>, 那么可以单独运行<code>luaExecutable</code>:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220926172451757.png" alt="image-20220926172451757"></p>
+</li>
+</ol>
+<ol start="2">
+<li><p>在<code>gradle</code>配置文件中的组件的名称可以自定义</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220926172714010.png" alt="image-20220926172714010"></p>
+</li>
+</ol>
+<h3 id="关于编译工具"><a href="#关于编译工具" class="headerlink" title="关于编译工具"></a>关于编译工具</h3><p>编译工具和构建工具是两个不同的东西:</p>
+<ul>
+<li><p><code>C/C++/Object-C</code>语言常用的编译工具有: <code>GCC</code>,<code>Clang</code></p>
+</li>
+<li><p><code>Java</code>语言的编译工具为<code>Javac</code>, 当然<code>GCC</code>也能编译<code>java</code>语言</p>
+</li>
+<li><p><code>Android</code>的编译工具为<code>aapt</code>,<code>so</code>库的编译早期采用的是<code>GCC</code>, 现在是<code>Clang</code></p>
+</li>
+</ul>
+<p>上面对于<code>lua</code>的编译, 由于我测试时使用的是<code>Mac</code>平台, 同时电脑还装了<code>Xcode</code>, 所以内部默认采用的编译器是<code>clang</code></p>
+<p>关于<code>Clang</code>和<code>GCC</code>的介绍, 可以参见之前的文章《<a href="https://code.newban.cn/222.html">xcode中三种编译器的区别</a>》</p>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
 <p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 ]]></content>
       <tags>
-        <tag>进程守护</tag>
+        <tag>gradle</tag>
       </tags>
   </entry>
   <entry>
@@ -24130,70 +24165,62 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
       </tags>
   </entry>
   <entry>
-    <title>使用Gradle将lua源码构建编译成可执行文件</title>
-    <url>/376.html</url>
-    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>对于<code>lua</code>的构建 官方默认使用<code>make</code>工具, 常见的构建工具有:</p>
-<ul>
-<li><code>Make</code>:又指<code>GNU Make</code>, 是<code>Linux</code>系统下的通用构建工具, 延伸的构建工具还有<code>nmake</code>, <code>dmake</code>, <code>cmake</code>, <code>xmake</code>等等</li>
-<li><code>Scons</code>: 以<code>python</code>语言编写的一款跨平台构建工具 对标<code>make</code> 容易学习快速上手</li>
-<li><code>Ant</code>:  基于<code>java</code>的构建工具, 被认为是<code>make</code>工具的替代品, 早期<code>eclipse</code>采用的构建工具就是它</li>
-<li><code>maven</code>: 同样是基于<code>java</code>, 它不单单是构建工具 还是项目管理工具, 属于<code>Ant</code>进化版, 目前<code>Idea</code>平台中 <code>java</code>的构建基本用的就是它</li>
-<li><code>Gradle:</code> 基于<code>Groovy</code>的构建工具, 被认为是Ant和Maven的替代品, 目前<code>Android</code>编译使用的构建工具就是它</li>
-</ul>
-<h3 id="什么是构建工具"><a href="#什么是构建工具" class="headerlink" title="什么是构建工具"></a>什么是构建工具</h3><p>以<code>java</code>程序为例, 我们在写好代码后, 需要使用<code>javac</code>指令对源码进行编译, 然后使用<code>java</code>指令执行</p>
-<p>这个过程叫做编译, 如果一两个文件还好, 代码文件一多, 手动敲指令进行编译是会死人的🤪, 于是乎自动化的构建工具出现了, 目的就是为了取代人工编译</p>
-<h3 id="构建工具的发展"><a href="#构建工具的发展" class="headerlink" title="构建工具的发展"></a>构建工具的发展</h3><p>早期的<code>make</code>–&gt;<code>java</code>的<code>ant</code>–&gt;后来的<code>maven</code>–&gt;现在的<code>gradle</code></p>
-<p>每一代构建工具的诞生, 都是为了解决上一代工具存在的痛点</p>
-<p><code>Gradle</code>, 用过的都说好!!😆</p>
-<h3 id="对Lua源码进行构建编译"><a href="#对Lua源码进行构建编译" class="headerlink" title="对Lua源码进行构建编译"></a>对Lua源码进行构建编译</h3><p>我这边直接使用<code>Android Studio</code>, 具体步骤如下:</p>
-<ol>
-<li><p><strong>首先 去<code>lua</code>官网下载源码, 这里我使用的是<code>5.4</code>的源码</strong></p>
-<p><a href="http://www.lua.org/" target="_blank" rel="noopener">lua官网</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220926170825041.png" alt="image-20220926170825041"></p>
+    <title>VST音频插件的开发</title>
+    <url>/379.html</url>
+    <content><![CDATA[<h3 id="关于"><a href="#关于" class="headerlink" title="关于"></a>关于</h3><p><code>JUCE</code>是一个开源的跨平台 <code>C++</code> 应用程序框架，适用于桌面和移动应用程序，包括<code>VST</code>、<code>VST3</code>、<code>AU</code>、<code>AUv</code>3、<code>RTAS</code> 和 <code>AAX</code>音频插件。</p>
+<p><a href="https://github.com/juce-framework/JUCE" target="_blank" rel="noopener">GITHUB地址</a></p>
+<p><a href="https://juce.com/" target="_blank" rel="noopener">JUCE官网</a></p>
+<h3 id="开发前的准备工作"><a href="#开发前的准备工作" class="headerlink" title="开发前的准备工作"></a>开发前的准备工作</h3><ol>
+<li><p>下载<code>juce</code></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220928095652701.png" alt="image-20220928095652701"></p>
+<p><a href="https://juce.com/get-juce/download" target="_blank" rel="noopener">点击进入下载页面</a></p>
 </li>
-<li><p><strong>然后 在Studio中新建一个空工程, 然后将<code>lua</code>源码拖进<code>src</code>目录中</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220926163907555.png" alt="image-20220926163907555"></p>
+<li><p>解压启动<code>Porjucer</code>, 并创建新工程</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220928095935785.png" alt="image-20220928095935785"></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220928101600349.png" alt="image-20220928101600349"></p>
 </li>
-<li><p><strong>紧接着 对<code>build.gradle</code>文件进行配置</strong></p>
-<p><code>lua</code>一共包含两个可执行文件, 一个是<code>lua</code>另一个是<code>luac</code>, 所以这两个执行文件我们需要分开构建, 具体的<code>gradle</code>配置如下:</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">apply <span class="string">plugin:</span> <span class="string">'c'</span>  <span class="comment">//使用c构建模式</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">model &#123;</span><br><span class="line"></span><br><span class="line">    components &#123;</span><br><span class="line">				<span class="comment">//创建一个lua执行文件构建入口</span></span><br><span class="line">        lua(NativeExecutableSpec) &#123;</span><br><span class="line">            sources &#123;</span><br><span class="line">                c &#123;<span class="comment">//指定源码位置以及需要包含和排除的问价</span></span><br><span class="line">                    source &#123;</span><br><span class="line">                        srcDir <span class="string">"src/main/c/lua"</span></span><br><span class="line">                        include <span class="string">'*.c'</span></span><br><span class="line">                        exclude <span class="string">'luac.c'</span></span><br><span class="line">                    &#125;</span><br><span class="line">                    exportedHeaders &#123;</span><br><span class="line">                        include <span class="string">'lauxlib.h'</span>, <span class="string">'lua.h'</span>, <span class="string">'lua.hpp'</span>, <span class="string">'luaconf.h'</span>, <span class="string">'lualib.h'</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">	<span class="comment">//创建一个luac执行文件构建入口</span></span><br><span class="line">        luac(NativeExecutableSpec) &#123;</span><br><span class="line">            sources &#123;</span><br><span class="line">                c &#123;</span><br><span class="line">                    source &#123;</span><br><span class="line">                        srcDir <span class="string">"src/main/c/lua"</span></span><br><span class="line">                        include <span class="string">'*.c'</span></span><br><span class="line">                        exclude <span class="string">'lua.c'</span></span><br><span class="line">                    &#125;</span><br><span class="line">                    exportedHeaders &#123;</span><br><span class="line">                        include <span class="string">'lauxlib.h'</span>, <span class="string">'lua.h'</span>, <span class="string">'lua.hpp'</span>, <span class="string">'luaconf.h'</span>, <span class="string">'lualib.h'</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>最后 开始编译</strong><br><code>gradle</code>刷新同步后, 我们在右侧<code>gradle</code>任务面板可以看到多出<code>lua</code>和<code>luac</code>相关的<code>task</code>, 此时我们执行<code>build</code>任务开始对<code>lua</code>源码进行编译:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220926164804018.png" alt="image-20220926164804018"></p>
-<p>编译完成后, 我们可以在<code>build</code>文件中查看到生成的可执行文件:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220926165101437.png" alt="image-20220926165101437"></p>
-<p>双击可正常运行:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220926165135047.png" alt="image-20220926165135047"></p>
-<p>至此 我们的<code>lua</code>编译完毕</p>
+<li><p>使用本地<code>IDE</code>编辑插件源码</p>
+<p><code>Mac</code>平台支持<code>Xcode</code>,<code>windows</code>平台支持<code>visual studio</code></p>
 </li>
 </ol>
-<h3 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h3><ol>
-<li><p>如果你只想编译<code>lu</code>a而不编译<code>luac</code>, 那么可以单独运行<code>luaExecutable</code>:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220926172451757.png" alt="image-20220926172451757"></p>
-</li>
-</ol>
-<ol start="2">
-<li><p>在<code>gradle</code>配置文件中的组件的名称可以自定义</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220926172714010.png" alt="image-20220926172714010"></p>
-</li>
-</ol>
-<h3 id="关于编译工具"><a href="#关于编译工具" class="headerlink" title="关于编译工具"></a>关于编译工具</h3><p>编译工具和构建工具是两个不同的东西:</p>
-<ul>
-<li><p><code>C/C++/Object-C</code>语言常用的编译工具有: <code>GCC</code>,<code>Clang</code></p>
-</li>
-<li><p><code>Java</code>语言的编译工具为<code>Javac</code>, 当然<code>GCC</code>也能编译<code>java</code>语言</p>
-</li>
-<li><p><code>Android</code>的编译工具为<code>aapt</code>,<code>so</code>库的编译早期采用的是<code>GCC</code>, 现在是<code>Clang</code></p>
-</li>
-</ul>
-<p>上面对于<code>lua</code>的编译, 由于我测试时使用的是<code>Mac</code>平台, 同时电脑还装了<code>Xcode</code>, 所以内部默认采用的编译器是<code>clang</code></p>
-<p>关于<code>Clang</code>和<code>GCC</code>的介绍, 可以参见之前的文章《<a href="https://code.newban.cn/222.html">xcode中三种编译器的区别</a>》</p>
 <p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
 <p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 ]]></content>
       <tags>
-        <tag>gradle</tag>
+        <tag>音频插件</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux 系统下使用 systemd 控制 frps 及配置开机自启</title>
+    <url>/375.html</url>
+    <content><![CDATA[<h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><p>这个示例将会演示在 Linux 系统下使用 systemd 控制 frps 及配置开机自启。</p>
+<p>在 Linux 系统下，使用<code>systemd</code> 可以方便地控制 frp 服务端 <code>frps</code> 的启动和停止、配置后台运行和开启自启。</p>
+<p>要使用 <code>systemd</code> 来控制 <code>frps</code>，需要先安装 <code>systemd</code>，然后在 <code>/etc/systemd/system</code> 目录下创建一个 frps.service 文件。</p>
+<ol>
+<li><p>如Linux服务端上没有安装 <code>systemd</code>，可以使用 <code>yum</code> 或 <code>apt</code> 等命令安装 <code>systemd</code>。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># yum</span></span><br><span class="line">yum install systemd</span><br><span class="line"><span class="comment"># apt</span></span><br><span class="line">apt install systemd</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用文本编辑器，如 <code>vim</code> 创建并编辑 <code>frps.service</code> 文件。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ vim /etc/systemd/system/frps.service</span><br></pre></td></tr></table></figure>
+
+<p>写入内容</p>
+<figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="section">[Unit]</span></span><br><span class="line"><span class="comment"># 服务名称，可自定义</span></span><br><span class="line"><span class="attr">Description</span> = frp server</span><br><span class="line"><span class="attr">After</span> = network.target syslog.target</span><br><span class="line"><span class="attr">Wants</span> = network.target</span><br><span class="line"></span><br><span class="line"><span class="section">[Service]</span></span><br><span class="line"><span class="attr">Type</span> = simple</span><br><span class="line"><span class="comment"># 启动frps的命令，需修改为您的frps的安装路径</span></span><br><span class="line"><span class="attr">ExecStart</span> = /path/to/frps -c /path/to/frps.ini</span><br><span class="line"></span><br><span class="line"><span class="section">[Install]</span></span><br><span class="line"><span class="attr">WantedBy</span> = multi-user.target</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用 <code>systemd</code> 命令，管理 frps。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 启动frp</span></span><br><span class="line">systemctl start frps</span><br><span class="line"><span class="comment"># 停止frp</span></span><br><span class="line">systemctl stop frps</span><br><span class="line"><span class="comment"># 重启frp</span></span><br><span class="line">systemctl restart frps</span><br><span class="line"><span class="comment"># 查看frp状态</span></span><br><span class="line">systemctl status frps</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置 frps 开机自启。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> frps</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p><strong>本文转载自</strong>: <a href="https://gofrp.org/docs/setup/systemd/" target="_blank" rel="noopener">gofrp文档</a></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+]]></content>
+      <tags>
+        <tag>进程守护</tag>
       </tags>
   </entry>
   <entry>
@@ -24439,6 +24466,26 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
       </tags>
   </entry>
   <entry>
+    <title>CURL工具使用问题汇总</title>
+    <url>/382.html</url>
+    <content><![CDATA[<h3 id="问题1"><a href="#问题1" class="headerlink" title="问题1"></a>问题1</h3><p>下载时提示<code>SSL certificate problem</code>:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl: (60) SSL certificate problem: certificate has expired</span><br><span class="line">More details here: https://curl.haxx.se/docs/sslcerts.html</span><br><span class="line"></span><br><span class="line">curl failed to verify the legitimacy of the server and therefore could not</span><br><span class="line">establish a secure connection to it. To learn more about this situation and</span><br><span class="line">how to fix it, please visit the web page mentioned above.</span><br></pre></td></tr></table></figure>
+
+<p><strong>原因:</strong></p>
+<p>这是证书认证缺失导致，可以在请求时关闭ssl证书认证</p>
+<p><strong>解决方案:</strong></p>
+<p>命令行中加上<code>-k</code>即可, 如:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -fsSL https://xmake.io/shget.text -k</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+]]></content>
+      <tags>
+        <tag>c/c++</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>C语言中静态库static和动态库shared的区别</title>
     <url>/381.html</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>在<code>c/c++</code>语言编译时 我们经常能碰到关于静态库(static)和动态库(shared)的链接</p>
@@ -24490,53 +24537,6 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
 <li>运行速度相对静态库会慢一些</li>
 </ul>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>静态库和动态库, 没有孰优孰劣一说, 具体看实际的应用场景, 每种库都有它的用武之地</p>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-]]></content>
-      <tags>
-        <tag>c/c++</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>VST音频插件的开发</title>
-    <url>/379.html</url>
-    <content><![CDATA[<h3 id="关于"><a href="#关于" class="headerlink" title="关于"></a>关于</h3><p><code>JUCE</code>是一个开源的跨平台 <code>C++</code> 应用程序框架，适用于桌面和移动应用程序，包括<code>VST</code>、<code>VST3</code>、<code>AU</code>、<code>AUv</code>3、<code>RTAS</code> 和 <code>AAX</code>音频插件。</p>
-<p><a href="https://github.com/juce-framework/JUCE" target="_blank" rel="noopener">GITHUB地址</a></p>
-<p><a href="https://juce.com/" target="_blank" rel="noopener">JUCE官网</a></p>
-<h3 id="开发前的准备工作"><a href="#开发前的准备工作" class="headerlink" title="开发前的准备工作"></a>开发前的准备工作</h3><ol>
-<li><p>下载<code>juce</code></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220928095652701.png" alt="image-20220928095652701"></p>
-<p><a href="https://juce.com/get-juce/download" target="_blank" rel="noopener">点击进入下载页面</a></p>
-</li>
-<li><p>解压启动<code>Porjucer</code>, 并创建新工程</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220928095935785.png" alt="image-20220928095935785"></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220928101600349.png" alt="image-20220928101600349"></p>
-</li>
-<li><p>使用本地<code>IDE</code>编辑插件源码</p>
-<p><code>Mac</code>平台支持<code>Xcode</code>,<code>windows</code>平台支持<code>visual studio</code></p>
-</li>
-</ol>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-]]></content>
-      <tags>
-        <tag>音频插件</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CURL工具使用问题汇总</title>
-    <url>/382.html</url>
-    <content><![CDATA[<h3 id="问题1"><a href="#问题1" class="headerlink" title="问题1"></a>问题1</h3><p>下载时提示<code>SSL certificate problem</code>:</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl: (60) SSL certificate problem: certificate has expired</span><br><span class="line">More details here: https://curl.haxx.se/docs/sslcerts.html</span><br><span class="line"></span><br><span class="line">curl failed to verify the legitimacy of the server and therefore could not</span><br><span class="line">establish a secure connection to it. To learn more about this situation and</span><br><span class="line">how to fix it, please visit the web page mentioned above.</span><br></pre></td></tr></table></figure>
-
-<p><strong>原因:</strong></p>
-<p>这是证书认证缺失导致，可以在请求时关闭ssl证书认证</p>
-<p><strong>解决方案:</strong></p>
-<p>命令行中加上<code>-k</code>即可, 如:</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -fsSL https://xmake.io/shget.text -k</span><br></pre></td></tr></table></figure>
-
 <p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
 <p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
@@ -24659,11 +24659,35 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
 <ul>
 <li><p><code>android</code>平台:下载 <code>Mac</code>平台可运行的<code>NDK</code> (基于<code>clang</code>)</p>
 </li>
-<li><p><code>ios</code>平台: 下载<code>iphoneos SDK</code>, xcode自带 我们只需下载<code>xcode</code>即可</p>
+<li><p><code>ios</code>平台: 下载<code>iphoneos SDK</code>, xcode自带 我们只需下载<code>xcode</code>即可 (基于<code>clang</code>)</p>
 </li>
 <li><p><code>windows</code>平台:下载<code>MinGW</code> 或者 <a href="https://mxe.cc/" target="_blank" rel="noopener">MXE/MinGW-w64</a> (基于<code>GCC</code>)</p>
 </li>
+<li><p><code>Linux</code>平台:如 <code>arm/x86-Linux-gnueabi</code>套件(基于<code>GCC</code>)</p>
+</li>
 </ul>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p>*<a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a>*9</p>
+]]></content>
+      <tags>
+        <tag>交叉编译</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用brew安装程序是提示No such file or directory @ rb_sysopen</title>
+    <url>/385.html</url>
+    <content><![CDATA[<h3 id="原因一"><a href="#原因一" class="headerlink" title="原因一"></a>原因一</h3><p>使用国内镜像而该镜像未完全同步 导致包找不到</p>
+<p><strong>解决方法:</strong></p>
+<p>临时去除镜像即可:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> HOMEBREW_BOTTLE_DOMAIN=<span class="string">''</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="原因二"><a href="#原因二" class="headerlink" title="原因二"></a>原因二</h3><p>依赖程序缺失 </p>
+<p><strong>解决方法:</strong></p>
+<p>需要进行单独安装, 比如报错<code>Error: No such file or directory @ rb_sysopen - xxxxxxxc–jasper</code>, 此时单独安装<code>jasper</code>:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">brew install jasper</span><br></pre></td></tr></table></figure>
+
+<p>安装完后 再次运行之前的安装之前的指令即可</p>
 <p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
 <p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p>*<a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a>*9</p>
@@ -24695,7 +24719,7 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
 </ul>
 <ol>
 <li><p>下载<code>xmake</code></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash &lt;(curl -fsSL https://xmake.io/shget.text)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash &lt;(curl -fsSL https://xmake.io/shget.text -k)</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>测试<code>c</code>代码准备 文件取名为<code>main</code></p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>** argv)</span></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello World!\n"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -24753,26 +24777,34 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">xmake f --menu</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/68747470733a2f2f786d616b652e696f2f6173736574732f696d672f696e6465782f6d656e75636f6e662e706e67.png" alt="img"></p>
+<p>配置完后 我们查看<code>xmake</code>的配置显示当前平台为<code>mingw</code>:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930102409815.png" alt="image-20220930102409815"></p>
 </li>
 <li><p><strong>编译程序</strong></p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">xmake build main</span><br></pre></td></tr></table></figure>
 
-
-
+<p>编译成功后  我们可以在<code>build</code>目录下找到生成的<code>exe</code>可执行文件:<img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930101946291.png" alt="image-20220930101946291"></p>
+</li>
+<li><p><strong>关于mingw内部编译器</strong></p>
+<p>我们打印编译信息会发现<code>mingw</code>内部采用的是<code>gcc</code>编译工具</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930102723811.png" alt="image-20220930102723811"></p>
 </li>
 </ol>
-<p>编译成功后 </p>
 <h3 id="生成Android平台程序"><a href="#生成Android平台程序" class="headerlink" title="生成Android平台程序"></a>生成Android平台程序</h3><ol>
 <li><p><strong>下载NDK</strong></p>
 <p><a href="https://developer.android.google.cn/ndk/downloads/" target="_blank" rel="noopener">点击进入下载页面</a></p>
 </li>
 <li><p><strong>给<code>xmake</code>指定编译目标平台</strong></p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">xmake f -p android --ndk=ndk路径</span><br></pre></td></tr></table></figure>
+
+<p>此时我们查看<code>xmake</code>配置显示当前编译平台为<code>android</code>:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930101224522.png" alt="image-20220930101224522"></p>
 </li>
 <li><p><strong>编译程序</strong></p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">xmake build main</span><br></pre></td></tr></table></figure>
 
-<p>编译成功后 </p>
+<p>编译成功后  可以在编译目录查看到生成的可执行文件</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930101319392.png" alt="image-20220930101319392"></p>
 </li>
 </ol>
 <h3 id="xmake常用指令"><a href="#xmake常用指令" class="headerlink" title="xmake常用指令"></a>xmake常用指令</h3><ol>
@@ -24793,29 +24825,92 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
 
 <p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220929181646806.png" alt="image-20220929181646806"></p>
 </li>
+<li><p><strong>卸载<code>xmake</code></strong></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">xmake update --uninstall</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
 </ol>
+<h3 id="常见问题汇总"><a href="#常见问题汇总" class="headerlink" title="常见问题汇总"></a>常见问题汇总</h3><ol>
+<li><p>交叉编译报错 <code>unknown platform for xcode!</code></p>
+<p>解决方案: 卸载<code>xmake</code>重装</p>
+</li>
+</ol>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p>*<a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a>*9</p>
 ]]></content>
       <tags>
         <tag>交叉编译</tag>
       </tags>
   </entry>
   <entry>
-    <title>使用brew安装程序是提示No such file or directory @ rb_sysopen</title>
-    <url>/385.html</url>
-    <content><![CDATA[<h3 id="原因一"><a href="#原因一" class="headerlink" title="原因一"></a>原因一</h3><p>使用国内镜像而该镜像未完全同步 导致包找不到</p>
-<p><strong>解决方法:</strong></p>
-<p>临时去除镜像即可:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> HOMEBREW_BOTTLE_DOMAIN=<span class="string">''</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="原因二"><a href="#原因二" class="headerlink" title="原因二"></a>原因二</h3><p>依赖程序缺失 </p>
-<p><strong>解决方法:</strong></p>
-<p>需要进行单独安装, 比如报错<code>Error: No such file or directory @ rb_sysopen - xxxxxxxc–jasper</code>, 此时单独安装<code>jasper</code>:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">brew install jasper</span><br></pre></td></tr></table></figure>
-
-<p>安装完后 再次运行之前的安装之前的指令即可</p>
+    <title>Godot游戏开发之如何将图片铺满整个背景</title>
+    <url>/386.html</url>
+    <content><![CDATA[<h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><p>当前素材库中只有一张小草地图片, 如下:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/GrassBackground.png" alt="GrassBackground"></p>
+<p>如何将其铺满整个背景, 得到如下效果:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930152341903.png" alt="image-20220930152341903"></p>
+<p>我们可能第一时间会想到使用<code>Tilemap</code>, 不过手动绘制相对来说有些费时间, 在<code>Godot</code>中我们有更好的方法可以实现</p>
+<h3 id="实现方式一"><a href="#实现方式一" class="headerlink" title="实现方式一"></a>实现方式一</h3><p>使用<code>Sprite+图片repeat</code>的方式实现</p>
+<ol>
+<li><p>首先创建一个<code>Sprite</code>节点</p>
+</li>
+<li><p>将草地图片添加至该节点的<code>Texture</code>属性上</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930153243013.png" alt="image-20220930153243013"></p>
+</li>
+<li><p>启用<code>Region</code>属性</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930153318292.png" alt="image-20220930153318292"></p>
+</li>
+<li><p>在纹理区域框选需要进行<code>repeat</code>的区域</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930153401635.png" alt="image-20220930153401635"></p>
+</li>
+<li><p>选中草地文件 然后在导入面板开启重复功能, 最后点击重新导入</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930153526042.png" alt="image-20220930153526042"></p>
+</li>
+<li><p>此时我们在纹理区域拉伸选框, 则可以对草地小图片进行重复并铺满整个背景</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930153638246.png" alt="image-20220930153638246"></p>
+</li>
+</ol>
+<h3 id="实现方式二"><a href="#实现方式二" class="headerlink" title="实现方式二"></a>实现方式二</h3><p>使用<code>TextureRect</code>+<code>Tile</code>实现</p>
+<ol>
+<li><p>创建<code>TextureRect</code>节点</p>
+</li>
+<li><p>将图片拖拽至该节点的<code>Texture</code>属性上</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930154030277.png" alt="image-20220930154030277"></p>
+</li>
+<li><p><code>Stretch Mode</code>属性选择<code>Tile</code></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930154057353.png" alt="image-20220930154057353"></p>
+</li>
+<li><p>此时拉伸图片则自动重复</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930154121259.png" alt="image-20220930154121259"></p>
+</li>
+</ol>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p>*<a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a>*9</p>
 ]]></content>
       <tags>
-        <tag>交叉编译</tag>
+        <tag>Godot</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Godot游戏开发之Node和Node2d节点的区别</title>
+    <url>/387.html</url>
+    <content><![CDATA[<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p><code>Node2D</code>节点继承自<code>Node</code>节点, 功能比<code>Node</code>丰富 这个不必多说, 从<code>Godot</code>右侧面板上可以很清晰地看清它们之间的继承关系, 以及暴露出来可供修改的属性:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930164400556.png" alt="image-20220930164400556"></p>
+<p>在实际开发中我们通常会使用<code>Node2d</code>节点, 从开发角度上它有以下优势:</p>
+<ul>
+<li>当我们将子场景拖拽进入<code>Node</code>节点中时, 自场景物体会自定移动到原点位置, 而<code>Node2d</code>则不存在该问题</li>
+<li>通过移动<code>Node2d</code>节点位置, 我们可以将整个场景进行移动, 然而Node节点不具备移动属性, 因此无法实现该效果</li>
+</ul>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p>*<a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a>*9</p>
+]]></content>
+      <tags>
+        <tag>Godot</tag>
       </tags>
   </entry>
 </search>

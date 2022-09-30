@@ -288,6 +288,316 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../286.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../286.html" itemprop="url">android中获取控件宽高的几种方式总结</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-11-26T10:14:19+08:00">
+                2021-11-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>我们知道, 在<code>Activity</code>的<code>onCreate</code>中通过<code>width</code>和<code>height</code>方法是通常是无法获取到控件的宽高的</p>
+<p>因为控件还未测量完毕</p>
+<p>如果想要获取到值, 那么有以下几种方式可选</p>
+<h3 id="第一种-获取前调用一次measure方法"><a href="#第一种-获取前调用一次measure方法" class="headerlink" title="第一种 获取前调用一次measure方法"></a>第一种 获取前调用一次<code>measure</code>方法</h3><p>示例如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">int width = View.MeasureSpec.makeMeasureSpec(0,</span><br><span class="line">        View.MeasureSpec.UNSPECIFIED);</span><br><span class="line">int height = View.MeasureSpec.makeMeasureSpec(0,</span><br><span class="line">        View.MeasureSpec.UNSPECIFIED);</span><br><span class="line">view.measure(width, height);</span><br><span class="line">view.getMeasuredWidth(); // 获取宽度</span><br><span class="line">view.getMeasuredHeight(); // 获取高度</span><br></pre></td></tr></table></figure>
+
+<h3 id="第二种-使用ViewTreeObserver-OnPreDrawListener进行绘制前事件监听"><a href="#第二种-使用ViewTreeObserver-OnPreDrawListener进行绘制前事件监听" class="headerlink" title="第二种 使用ViewTreeObserver. OnPreDrawListener进行绘制前事件监听"></a>第二种 使用<code>ViewTreeObserver. OnPreDrawListener</code>进行绘制前事件监听</h3><p>示例如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">view.getViewTreeObserver().addOnPreDrawListener(</span><br><span class="line">        new ViewTreeObserver.OnPreDrawListener() &#123;</span><br><span class="line"> </span><br><span class="line">    @Override</span><br><span class="line">    public boolean onPreDraw() &#123;</span><br><span class="line">        view.getViewTreeObserver().removeOnPreDrawListener(this);</span><br><span class="line">        view.getWidth(); // 获取宽度</span><br><span class="line">        view.getHeight(); // 获取高度</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>该方法会被调用多次，因此获取到视图的宽度和高度后要移除该监听事件</p>
+<h3 id="第三种-使用ViewTreeObserver-OnGlobalLayoutListener"><a href="#第三种-使用ViewTreeObserver-OnGlobalLayoutListener" class="headerlink" title="第三种 使用ViewTreeObserver. OnGlobalLayoutListener"></a>第三种 使用<code>ViewTreeObserver. OnGlobalLayoutListener</code></h3><p>在布局发生改变或者某个视图的可视状态发生改变时调用该事件</p>
+<p>示例如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">view.getViewTreeObserver().addOnGlobalLayoutListener(</span><br><span class="line">        new ViewTreeObserver.OnGlobalLayoutListener() &#123;</span><br><span class="line"> </span><br><span class="line">    @Override</span><br><span class="line">    public void onGlobalLayout() &#123;</span><br><span class="line">        if (Build.VERSION.SDK_INT &gt;= 16) &#123;</span><br><span class="line">            view.getViewTreeObserver()</span><br><span class="line">                    .removeOnGlobalLayoutListener(this);</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            view.getViewTreeObserver()</span><br><span class="line">                    .removeGlobalOnLayoutListener(this);</span><br><span class="line">        &#125;</span><br><span class="line">        view.getWidth(); // 获取宽度</span><br><span class="line">        view.getHeight(); // 获取高度</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>该方法会被多次调用，因此需要在获取到视图的宽度和高度后执行 remove 方法移除该监听事件。</p>
+<h3 id="第四种-使用View-OnLayoutChangeListener"><a href="#第四种-使用View-OnLayoutChangeListener" class="headerlink" title="第四种 使用View.OnLayoutChangeListener"></a>第四种 使用<code>View.OnLayoutChangeListener</code></h3><p>在视图的 layout 改变时调用该事件, <code>API&gt;=11</code>才能使用</p>
+<p>示例如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">view.addOnLayoutChangeListener(</span><br><span class="line">        new View.OnLayoutChangeListener() &#123;</span><br><span class="line"> </span><br><span class="line">    @Override</span><br><span class="line">    public void onLayoutChange(View v, int l, int t, int r, int b,</span><br><span class="line">            int oldL, int oldT, int oldR, int oldB) &#123;</span><br><span class="line">        view.removeOnLayoutChangeListener(this);</span><br><span class="line">        view.getWidth(); // 获取宽度</span><br><span class="line">        view.getHeight(); // 获取高度</span><br><span class="line">     &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>该方法同样会被多次调用，因此需要在获取到视图的宽度和高度后执行 remove 方法移除该监听事件。</p>
+<h3 id="第五种-View-post-方法"><a href="#第五种-View-post-方法" class="headerlink" title="第五种 View.post() 方法"></a>第五种 View.post() 方法</h3><p>方法会在 View 的 measure、layout 等事件完成后触发</p>
+<p>示例如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">view.post(new Runnable() &#123;</span><br><span class="line"> </span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        view.getWidth(); // 获取宽度</span><br><span class="line">        view.getHeight(); // 获取高度</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>该方法只会执行一次，且逻辑简单，建议使用</p>
+<h3 id="第六种-重写-View-的-onSizeChanged-方法"><a href="#第六种-重写-View-的-onSizeChanged-方法" class="headerlink" title="第六种 重写 View 的 onSizeChanged 方法"></a>第六种 重写 View 的 onSizeChanged 方法</h3><p>在视图的大小发生改变时调用该方法，会被多次调用，因此获取到宽度和高度后需要考虑禁用掉代码</p>
+<p>示例如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">protected void onSizeChanged(int w, int h, int oldw, int oldh) &#123;</span><br><span class="line">    super.onSizeChanged(w, h, oldw, oldh);</span><br><span class="line"> </span><br><span class="line">    view.getWidth(); // 获取宽度</span><br><span class="line">    view.getHeight(); // 获取高度</span><br></pre></td></tr></table></figure>
+
+<p>该实现方法需要继承 View，且多次被调用，不建议使用</p>
+<h3 id="第七种-重写-View-的-onLayout-方法"><a href="#第七种-重写-View-的-onLayout-方法" class="headerlink" title="第七种 重写 View 的 onLayout 方法"></a>第七种 重写 View 的 onLayout 方法</h3><p>示例如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">protected void onLayout(boolean changed, int l, int t, int r, int b) &#123;</span><br><span class="line">    super.onLayout(changed, l, t, r, b);</span><br><span class="line"> </span><br><span class="line">    view.getWidth(); // 获取宽度</span><br><span class="line">    view.getHeight(); // 获取高度</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该实现方法需要继承 View，且多次被调用，不建议使用</p>
+<h3 id="实际场景"><a href="#实际场景" class="headerlink" title="实际场景"></a>实际场景</h3><p>目前有个业务需求, 我需要在<code>addView</code>之后获取到被<code>add</code>子控件的宽高, 此时最好的方法就是使用<code>View.post</code>, 如下:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20211126123723329.png" alt="image-20211126123723329"></p>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../285.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../285.html" itemprop="url">android中获取控件坐标的几种api区分</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-11-25T10:14:19+08:00">
+                2021-11-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>我们经常会看到以下几个方法:</p>
+<ul>
+<li><p>getGlobalVisibleRect()</p>
+</li>
+<li><p>getLocalVisibleRect()</p>
+</li>
+<li><p>getLocationOnScreen()</p>
+</li>
+<li><p>getLocationInWindow()</p>
+</li>
+</ul>
+<p>傻傻分不清?  今天我们简单介绍一下它们各自的作用</p>
+<h3 id="getGlobalVisibleRec"><a href="#getGlobalVisibleRec" class="headerlink" title="getGlobalVisibleRec"></a>getGlobalVisibleRec</h3><p>方法作用:</p>
+<p><strong>其一</strong>: 用于判断控件是否可见, 以屏幕为参考 如果可见返回true, 不可见返回false, 我们可以借助该方法检测控件是否被滑出屏幕外</p>
+<p><strong>其二</strong>: 用于获取控件可见区域的坐标, 这个坐标是相对于屏幕而言</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200518140750458.png" alt="在这里插入图片描述"></p>
+<p>坐标存放在了<code>Rect</code>对象中, 以参数的形式传入:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getGlobalVisibleRect(new Rect)</span><br></pre></td></tr></table></figure>
+
+<h3 id="getLocalVisibleRect"><a href="#getLocalVisibleRect" class="headerlink" title="getLocalVisibleRect"></a>getLocalVisibleRect</h3><p>这个方法和上面的<code>getGlobalVisibleRec</code>方法类似, 唯一区别是参考系不同, 这个方法参考系是控件本身</p>
+<p>以下是这两个方法的坐标打印:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/100911016491372.gif" alt="getRect"></p>
+<h3 id="getLocationOnScreen"><a href="#getLocationOnScreen" class="headerlink" title="getLocationOnScreen"></a>getLocationOnScreen</h3><p>获取控件相对于屏幕而言的坐标位置, 与可不可见无关</p>
+<h3 id="getLocationInWindow"><a href="#getLocationInWindow" class="headerlink" title="getLocationInWindow"></a>getLocationInWindow</h3><p>获取控件相对于父控件而言的坐标位置, 与可不可见无关</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200518144313585.png" alt="在这里插入图片描述"></p>
+<h3 id="坐标补充"><a href="#坐标补充" class="headerlink" title="坐标补充"></a>坐标补充</h3><p>我们在进行自定义控件绘制的时候, 总是容易被一些参数给绕的头晕脑涨, 什么<code>top right, left, bottom</code>, 四条边与屏幕的距离等等, 想想就觉得费劲, 再加上<code>Android</code>中坐标系和我们数学中的坐标系不一致 使得我们在进行计算的时候难免有点吃不消</p>
+<p>实际上对于一些规则的图形绘制, 比如矩形, 我们需要明白的一点, 那就是只需要两个点的坐标即可绘制出来, 也就是两个对角点</p>
+<p>那我们在进行图形绘制的时候, 将计算范围缩小, 焦点集中在两个对角坐标位置计算上即可</p>
+<p>这两个对角可以使左上角右下角, 也可以是左下角和右上角</p>
+<p>这样一想, 那么所谓的<code>left</code>和<code>top</code>实际就是左上角的<code>xy</code>坐标, 而<code>right</code>和 <code>bottom</code>就是右下角的坐标</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../284.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1621,300 +1931,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../276.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../276.html" itemprop="url">记录一次504 Gateway Time-out的解决</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-18T11:05:19+08:00">
-                2021-09-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>今早起来, 突然发现网站挂了, 直接报<code>504 Gateway Time-out</code></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210918111428739.png" alt="image-20210918111428739"></p>
-<h3 id="经过"><a href="#经过" class="headerlink" title="经过"></a>经过</h3><p>我立马联想是否是<code>docker</code>挂了或者数据库容器出了问题</p>
-<p>进入终端 使用<code>docker ps</code> 所有容器都在正常运行 没问题, 然后<code>docker logs --tail=10 mysql</code>数据库也没报错</p>
-<p>我怀疑是不是docker内部哪里卡住了, 于是<code>systemctl restart docker</code>立马重启<code>docker</code>, 然后重新访问网站 还是不行</p>
-<p>有点懵了, 到底哪里出了问题呢? 网上说是<code>Nginx</code>配置问题, 可是我<code>nginx</code>配置一直都没动过, 而且查看<code>nginx</code>容器日志也是正常, 难道是<code>docker</code>容器间通信不正常?</p>
-<p>紧接着我又进入<code>nginx</code>容器, 使用<code>nc -zv wordpress 80</code>指令进行容器间通信测试, 也是正常打通的</p>
-<p>这问题到底是出在哪了?</p>
-<p>难道真的只是超时?  我给的时间太短了不成? 于是乎 我干脆将<code>nginx</code>反向代理超时时间调大, 死马当活马医, 不试试怎么知道呢</p>
-<p>我将以下三行配置加入到代理块中:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">proxy_connect_timeout 300s;</span><br><span class="line">    proxy_send_timeout 300s;</span><br><span class="line">    proxy_read_timeout 300s;</span><br></pre></td></tr></table></figure>
-
-<p>具体配置如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">location /foo &#123;</span><br><span class="line">     proxy_pass http://xxx.xxx.xxx.xxx:8080/foo;</span><br><span class="line">     proxy_set_header Host $host;</span><br><span class="line">     proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">     </span><br><span class="line">     proxy_connect_timeout 300s;</span><br><span class="line">     proxy_send_timeout 300s;</span><br><span class="line">     proxy_read_timeout 300s;</span><br><span class="line">     break;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>然后重启<code>nginx</code>, 这时访问网站 次数<code>504 Gateway Time-out</code>消失了, 换成了<code>Error establishing a database connection</code></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210918111216604.png" alt="image-20210918111216604"></p>
-<p>我靠, 原来还是数据库的问题</p>
-<h3 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h3><p>我开始回忆, 前段时间刚进行<code>docker</code>跨服务器迁移, 昨天旧服务器刚好到期停机, 今天就突然访问不上了, 难道我的程序此时访问的还是原来旧服务器的数据库</p>
-<p>对了 我的源码目录是直接从旧服务器拷贝过来的, 虽然<code>docker</code>容器是新建的, 但是因为存在旧目录 所以<code>docker run</code>配置的数据库参数全部无法重写, 也就是说程序配置文件中的数据库连接参数没有被重写</p>
-<p>恍然大悟, 立马进入源程序目录找到配置文件打开查看, 果真如此, 然后将其修改为新的</p>
-<p>此时重新访问, 网站正常显示</p>
-<h1 id><a href="#" class="headerlink" title></a></h1><p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
-<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
-<p>微信公众号二维码如下:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../275.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../275.html" itemprop="url">推荐一个谷歌浏览器下的护眼小插件</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-16T12:05:19+08:00">
-                2021-09-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>作为IT工作者, 长时间对着电脑屏幕, 眼睛实在是疲惫不堪, 即便我将电脑屏幕亮度调至非常低 也无济于事</p>
-<p>唯独 夜间模式能稍加缓解, 但是浏览器依旧是白花花一片 太过扎眼, 于是乎找了个暗黑小插件, 就此拯救了我的双眼</p>
-<p>话不多说 如下:</p>
-<h3 id="DARK-READER"><a href="#DARK-READER" class="headerlink" title="DARK READER"></a>DARK READER</h3><p>名为<code>DARK READER</code>的插件, 配置如下:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210917122822225.png" alt></p>
-<p>效果如下:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210917123155838.png" alt="image-20210917123155838"></p>
-<h3 id="插件下载"><a href="#插件下载" class="headerlink" title="插件下载"></a>插件下载</h3><p><a href="https://chrome.google.com/webstore/detail/dark-reader/eimadpbcbfnmbkopoojfekhnkhdbieeh" target="_blank" rel="noopener">谷歌官方商店下载</a></p>
-<p>考虑到大部分国内用户无法访问谷歌网站, 这里给大家推荐两个国内下载站点:</p>
-<ol>
-<li><p><a href="https://chrome.zzzmh.cn/" target="_blank" rel="noopener">极简插件</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210917141518519.png" alt="image-20210917141518519"></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210917141441356.png" alt="image-20210917141441356"></p>
-</li>
-<li><p><a href="https://www.crxsoso.com/" target="_blank" rel="noopener">CRX搜搜</a></p>
-<p>不仅支持名称搜索, 还支持扩展地址搜索</p>
-<p>比如插件官方扩展地址：<code>https://chrome.google.com/webstore/detail/dhdgffkkebhmkfjojejmpbldmpobfkfo</code></p>
-<p><img src="https://cdn.jsdelivr.net/gh/youxiaohou/img/20210715161332.png" alt="img"></p>
-<p>根据名称关键字搜索下载:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/youxiaohou/img/20210715161537.png" alt="img"></p>
-</li>
-</ol>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
-<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
-<p>微信公众号二维码如下:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1965,7 +1981,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">385</span>
+                  <span class="site-state-item-count">387</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1978,7 +1994,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">119</span>
+                  <span class="site-state-item-count">120</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
