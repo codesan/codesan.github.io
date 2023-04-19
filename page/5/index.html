@@ -288,6 +288,1009 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../372.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../372.html" itemprop="url">使用frp进行内网穿透实现外网访问局域网中的服务器</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-20T17:04:19+08:00">
+                2022-09-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>之前给大家介绍过使用内网云实现内网穿透的方案, 一行指令搞定, 详见《<a href="https://code.newban.cn/371.html">使用内网云进行内网穿透实现外网访问局域网中的服务器</a>》</p>
+<p>今天给大家介绍如何使用<code>frp</code>实现内网穿透</p>
+<p><code>frp</code>是一个免费开源的内网穿透工具, 包含服务端(<code>frps</code>)和客户端( <code>frpc</code>)</p>
+<p><a href="https://github.com/fatedier/frp" target="_blank" rel="noopener">Github</a></p>
+<p>假如你自己有云服务器, 那么将服务端安装到具有公网ip的服务器中, 将客户端安装到内网的机器上, 即可实现内网穿透功能</p>
+<p>当然  如果你没有云服务也没有关系 网上有些热心肠的大佬们给我们提供了中转服务器 比如: <a href="https://freefrp.net/" target="_blank" rel="noopener">freefrp</a>:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220920172928529.png" alt="image-20220920172928529"></p>
+<p>而我们要做的仅仅就是在内网的机器上安装用于连接的客户端即可</p>
+<p>接下来我以本地的<code>Mac</code>电脑为例 充当内网机器 介绍使用方法</p>
+<h3 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h3><h4 id="http穿透"><a href="#http穿透" class="headerlink" title="http穿透"></a>http穿透</h4><ol>
+<li><p><strong>首先下载客户端程序</strong></p>
+<p><a href="https://github.com/fatedier/frp/releases" target="_blank" rel="noopener">点击下载</a></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220920173201984.png" alt="image-20220920173201984"></p>
+<p>由于是<code>Mac</code>系统 因此我们选择<code>Darwin_amd64</code>, 下载后解压:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220920174602538.png" alt="image-20220920174602538"></p>
+<p> 客户端只用<code>frpc</code>开头的文件, 其他的可以移除, </p>
+</li>
+<li><p><strong>修改配置文件</strong></p>
+<p>打开配置文件<code>frpc.ini</code>, 然后修改成以下内容:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr = frp.freefrp.net</span><br><span class="line">server_port = 7000</span><br><span class="line">token = freefrp.net</span><br><span class="line"></span><br><span class="line">[mac_http]</span><br><span class="line">type = http</span><br><span class="line">local_ip = 127.0.0.1</span><br><span class="line">local_port = 13000</span><br><span class="line">custom_domains = git.newban.cn</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220921101048772.png" alt="image-20220921101048772"></p>
+<p><strong>参数详解:</strong></p>
+<ul>
+<li><p>中括号中的名称可以自定义 但不能重复</p>
+</li>
+<li><p><strong>type</strong>: 表示连接类型, 支持<code>http/https</code> <code>udp</code>  <code>tcp</code>  等协议</p>
+</li>
+<li><p><strong>server_addr</strong>:服务器 IP 地址或者域名地址 </p>
+</li>
+<li><p>*<em>server_port *</em>:服务端口号</p>
+</li>
+<li><p><strong>token</strong>:服务端访问密码</p>
+</li>
+<li><p><strong>local_ip</strong>: 需要进行穿透的内网ip, 通常为<code>127.0.0.1</code> 如果使用虚拟机或者<code>docker</code> 建议改成局域网<code>ip</code></p>
+</li>
+<li><p><strong>local_port</strong>: 需要进行穿透的内网端口号</p>
+</li>
+<li><p><strong>custom_domains</strong>: 自定义域名 需要将域名解析到服务器地址 这样使用域名就能直接访问到内网程序了</p>
+</li>
+</ul>
+</li>
+</ol>
+<ol start="3">
+<li><p><strong>域名解析</strong></p>
+<p>将配置文件中的自定义域名以<code>CNAME</code>的方式解析到<code>frp.freefrp.net</code></p>
+</li>
+<li><p><strong>启动<code>frpc</code>客户端程序</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./frpc</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>浏览器访问</strong></p>
+<p>此时 我们通过域名就能直接在任意浏览器上访问到<code>127.0.0.1:3000</code></p>
+</li>
+<li><p><strong>多域名解析</strong> </p>
+<p>假如我们需要将多个不同域名同时解析到同一个内网程序, 那么只需增加一个新模块, 配置如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr = frp.freefrp.net</span><br><span class="line">server_port = 7000</span><br><span class="line">token = freefrp.net</span><br><span class="line"></span><br><span class="line">[mac_http]</span><br><span class="line">type = http</span><br><span class="line">local_ip = 127.0.0.1</span><br><span class="line">local_port = 13000</span><br><span class="line">custom_domains = git.newban.cn</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[mac_http2]</span><br><span class="line">type = http</span><br><span class="line">local_ip = 127.0.0.1</span><br><span class="line">local_port = 13000</span><br><span class="line">custom_domains = git.insoan.com</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<ol start="7">
+<li><p><strong>实现以<code>Web</code>的形式可视化配置客户端</strong></p>
+<p>只需在<code>common</code>的节点下配置<code>admin</code>参数即可, 如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr = frp.freefrp.net</span><br><span class="line">server_port = 7000</span><br><span class="line">token = freefrp.net</span><br><span class="line">admin_addr = 127.0.0.1  #客户端Web管理地址</span><br><span class="line">admin_port = 7122   #客户端Web管理端口</span><br><span class="line">admin_user = admin   #客户端Web管理用户名</span><br><span class="line">admin_pwd = 123456  #客户端Web管理密码</span><br></pre></td></tr></table></figure>
+
+<p>配置完后重启<code>frp</code>, 然后在浏览器输入<code>http://127.0.0.1:7122</code>, 即可以<code>Web</code>的形式监控当前正在穿透的程序:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220922115156138.png" alt="image-20220922115156138"></p>
+</li>
+</ol>
+<h4 id="ssh穿透"><a href="#ssh穿透" class="headerlink" title="ssh穿透"></a>ssh穿透</h4><ol>
+<li><p><strong>配置<code>TCP</code>连接</strong></p>
+<p>如果我们需要进行<code>ssh</code>访问, 那么我们需要在客户端配置<code>tcp</code>协议, 配置如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr = frp.freefrp.net</span><br><span class="line">server_port = 7000</span><br><span class="line">token = freefrp.net</span><br><span class="line"></span><br><span class="line">[mac_http]</span><br><span class="line">type = http</span><br><span class="line">local_ip = 127.0.0.1</span><br><span class="line">local_port = 13000</span><br><span class="line">custom_domains = git.newban.cn</span><br><span class="line"></span><br><span class="line">[mac_ssh]</span><br><span class="line">type = tcp</span><br><span class="line">local_ip = 127.0.0.1</span><br><span class="line">local_port = 22</span><br><span class="line">remote_port = 12323</span><br></pre></td></tr></table></figure>
+
+<p><strong>参数解析:</strong></p>
+<ul>
+<li><strong>remote_port</strong>: 服务器端口映射 意思就是将服务器的<code>12323</code>端口映射到内网的<code>22</code>端口</li>
+</ul>
+</li>
+<li><p><strong><code>ssh</code>访问</strong></p>
+<p>此时 我们在命令窗口执行以下指令就可以进行<code>ssh</code>连接了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 12323 root@frp.freefrp.net</span><br></pre></td></tr></table></figure>
+
+<p>由于我们之前将自定义域名以<code>CNAME</code>形式解析到了<code>frp.freefrp.net</code>, 所以 我们也可以用自定义域名进行连接, 如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 12323 root@git.newban.cn</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>至此 我们的内网穿透客户端配置就ok了, 相比内网云 使用<code>frpc</code>+<code>freefrp.net</code>中转服务器的模式进行内网穿透可以实现完全免费且稳定的服务</p>
+<p>下一章 给大家介绍《<a href="https://code.newban.cn/373.html">如何使用supervisor实现内网穿透持久化</a>》</p>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../371.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../371.html" itemprop="url">使用内网云进行内网穿透实现外网访问局域网中的服务器</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-20T12:04:19+08:00">
+                2022-09-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>有时候我可能会借助家里的电脑临时充当服务器供外网访问, 此时需要进行内网穿透才能实现</p>
+<p>网上偶然发现一个提供内网穿透服务的网站, 名为<a href="https://www.neiwangyun.net/" target="_blank" rel="noopener">内网云</a>:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220920162143938.png" alt="image-20220920162143938"></p>
+<p>如果是临时使用 那么完全免费, 付费的话5块钱一个月</p>
+<p>接下来给大家介绍 如何使用</p>
+<h3 id="使用指南"><a href="#使用指南" class="headerlink" title="使用指南"></a>使用指南</h3><h4 id="http映射"><a href="#http映射" class="headerlink" title="http映射"></a>http映射</h4><p>假设我的电脑上开了一个<code>Web</code>服务, 地址为<code>:http://localhost:3000</code>, 我们想实现外网访问到这个地址的内容, 此时我们可以在电脑的命令窗口中输入以下指令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -R 80:127.0.0.1:3000 sh@sh3.neiwangyun.net</span><br></pre></td></tr></table></figure>
+
+<p><strong>指令解析:</strong></p>
+<ul>
+<li><strong>ssh</strong>：<code>ssh</code>远程命令</li>
+<li><strong>-R：</strong>远程端口绑定</li>
+<li><strong>80：</strong>固定端口</li>
+<li><strong>127.0.0.1</strong>：固定的本机网络</li>
+<li><strong>3000：</strong>你需要转发的网络端口，自行更改</li>
+<li><strong>sh：</strong>默认匿名账号，不需要密码验证</li>
+<li><strong>sh3.neiwangyun.net：</strong>内网云服务器节点的地址，固定值</li>
+</ul>
+<p>简而言之 这句指令的意思就是将<code>sh3.neiwangyun.net</code>服务器的<code>80</code>端口转发到本地的<code>3000</code></p>
+<p>执行完毕后出现以下内容:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220920162759901.png" alt="image-20220920162759901"></p>
+<p><strong>结果解析：</strong></p>
+<ul>
+<li><strong>username</strong>:<code>sh</code>账号名称</li>
+<li><strong>type</strong>:<code>anonymous</code>账号类型</li>
+<li><strong>subdomain</strong>: <code>xxxxxxxxxx.neiwangyun.net</code> 子域名</li>
+<li><strong>bandwidth</strong>: <code>random</code> 网络带宽</li>
+<li><strong>expire_time</strong>: <code>random</code>过期时间</li>
+<li><strong>unid</strong>: 唯一识别码</li>
+<li><strong>http</strong>：<code>http</code>链接</li>
+<li><strong>https</strong>：<code>https</code>链接</li>
+<li><strong>ipport</strong>：直连用的<code>ip</code>和端口</li>
+<li><strong>remote_ip</strong>：客户端<code>ip</code>，服务器看到的连接者<code>IP</code></li>
+</ul>
+<p>此时 我们在浏览器中输入<code>http/https</code>的地址则可以访问到<code>http://localhost:3000</code>的内容</p>
+<h4 id="ssh映射"><a href="#ssh映射" class="headerlink" title="ssh映射"></a>ssh映射</h4><p>假如我们需要在外网中对家里的电脑进行<code>ssh</code>连接, 那么我们需要更改指令端口,如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -R 80:127.0.0.1:22 sh@sh3.neiwangyun.net</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220920164300687.png" alt="image-20220920164300687"></p>
+<p>执行完毕后  我们需要用<code>ipport</code>的值进行<code>ssh</code>访问, 如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh hostname@olveddnzffdhshsh3.neiwangyun.net:31258</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../370.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../370.html" itemprop="url">本地nginx反向代理localhost端口转发失败的解决方案</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-20T10:04:19+08:00">
+                2022-09-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>有时候为了方便 懒得开虚拟机直接将<code>nginx</code>部署在了本地, 在进行端口映射测试时可能会出现访问<code>502 Bad Getway</code>的问题</p>
+<p>我们先来分析一下<code>nginx</code>的配置:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">http&#123;</span><br><span class="line"></span><br><span class="line">upstream gitea&#123;</span><br><span class="line">server 127.0.0.1:13000;</span><br><span class="line">&#125;</span><br><span class="line">server&#123;</span><br><span class="line">        listen       80;</span><br><span class="line">    server_name localhost;</span><br><span class="line">    location / &#123;</span><br><span class="line">            proxy_redirect off;</span><br><span class="line">            proxy_set_header Host $host;</span><br><span class="line">            proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">            proxy_pass http://gitea;</span><br><span class="line">            break;</span><br><span class="line">                 &#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里我们将<code>127.0.0.1:13000</code>映射给了<code>localhost:80</code>, 如果我们在浏览器中输入<code>localhost</code>显然是无法访问的</p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>如果想要正常访问 需要将<code>127.0.0.1</code>改成局域网<code>ip</code>地址, 修改后的配置如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">http&#123;</span><br><span class="line"></span><br><span class="line">upstream gitea&#123;</span><br><span class="line">server 192.168.13.155:13000;</span><br><span class="line">&#125;</span><br><span class="line">server&#123;</span><br><span class="line">        listen       80;</span><br><span class="line">    server_name localhost;</span><br><span class="line">    location / &#123;</span><br><span class="line">            proxy_redirect off;</span><br><span class="line">            proxy_set_header Host $host;</span><br><span class="line">            proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">            proxy_pass http://gitea;</span><br><span class="line">            break;</span><br><span class="line">                 &#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>重启<code>nginx</code>使配置生效, 此时即可正常转发访问了</p>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../369.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../369.html" itemprop="url">关于使用ssh进行仓库clone端口号非22的解决办法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-19T18:04:19+08:00">
+                2022-09-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>我们在使用<code>docker</code>搭建私有<code>git</code>仓库时, 会将容器的<code>22</code>端口映射到宿主的其他端口上, 此时如果我们使用<code>ssh</code>地址进行仓库<code>clone</code>, 则会报错 提示<code>ssh: connect to host localhost port 22: Connection refused</code>:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220920121534132.png" alt="image-20220920121534132"></p>
+<p>假设映射到宿主的端口号为<code>10022</code>, 那么解决方案如下:</p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><ol>
+<li><p><strong>第一种 <code>clone</code>时指定端口号:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone ssh://git@localhost:10022/songjian/ggg.git</span><br></pre></td></tr></table></figure>
+
+<p>注意: 需要带上<code>ssh://</code>这个协议头</p>
+</li>
+<li><p><strong>第二种 在<code>.ssh</code>目录下的<code>config</code>文件中增加<code>port</code>字段指定端口访问:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Host localhost</span><br><span class="line">HostName localhost</span><br><span class="line">Port 10022</span><br><span class="line">PreferredAuthentications publickey</span><br><span class="line">IdentityFile ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
+
+<p>由于<code>git</code>默认<code>port</code>是<code>22</code>, 此时我们修改后则可以按照正常的形式进行仓库的克隆:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone git@localhost/songjian/ggg.git</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>第三种 使用<code>nginx</code>反向代理</strong></p>
+<p>在<code>nginx.conf</code>文件中配置如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">stream &#123;</span><br><span class="line">    upstream ssh-proxy &#123;</span><br><span class="line">      server 服务器ip:10022;</span><br><span class="line">    &#125;</span><br><span class="line">    server &#123;</span><br><span class="line">      listen 22;</span><br><span class="line">      proxy_pass ssh-proxy;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>配置好后, 直接正常形式<code>clone</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone git@localhost/songjian/ggg.git</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+</li>
+</ol>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../368.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../368.html" itemprop="url">使用Docker搭建基于gitea的私有git仓库</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-19T11:04:19+08:00">
+                2022-09-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>最近打算将一些私有仓库转移到自己服务器上, 以备不时之需, 目前免费开源的<code>Git</code>仓库框架有<code>Gitlab</code>和<code>Gitea</code>, 考虑到资源消耗问题, 果断选择了<code>Gitea</code></p>
+<p><a href="https://github.com/go-gitea/gitea" target="_blank" rel="noopener">Gitea的Github地址</a></p>
+<p>接下来分享我个人使用<code>Docker</code>快速搭建<code>Gitea</code>的过程</p>
+<h3 id="步骤如下"><a href="#步骤如下" class="headerlink" title="步骤如下"></a>步骤如下</h3><h4 id="安装gitea"><a href="#安装gitea" class="headerlink" title="安装gitea"></a>安装gitea</h4><ol>
+<li><p>搜索<code>gitea</code>镜像</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker search gitea</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>拉取<code>gitea</code>镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull gitea/gitea</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建并运行容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">docker run -id \</span><br><span class="line">--privileged=true \</span><br><span class="line">--restart=always \</span><br><span class="line">--name=c_gitea \</span><br><span class="line">-p 10022:22 \</span><br><span class="line">-p 13000:3000 \</span><br><span class="line">-v /root/app/gitea:/data \</span><br><span class="line">-h c_gitea \</span><br><span class="line"> gitea/gitea:latest</span><br></pre></td></tr></table></figure>
+
+<p><strong>参数详解:</strong></p>
+<ul>
+<li><strong>privileged</strong>: 是否授予容器<code>root</code>权限</li>
+<li><strong>restart</strong> : docker启动是是否自动启动容器</li>
+<li><strong>name</strong>: 表示容器别名</li>
+<li><code>-p 10022:22</code>: 容器暴露了<code>22</code>和<code>3000</code>端口 </li>
+<li><code>-v /root/app/gitea:/data</code>: 容器的<code>data</code>目录挂载到<code>/root/app/gitea</code></li>
+</ul>
+</li>
+<li><p>浏览器访问<code>gitea</code>配置页面</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://服务器ip:13000</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220919172350179.png" alt="image-20220919172350179"></p>
+<p>这里主要需要配置数据库以及域名 其他的保持默认即可</p>
+<p>首先数据库的话 这里有多种数据库可选, 考虑到资源消耗和移植方便 我选择<code>sqlite3</code></p>
+<p>那么在进行配置之前 我们需要先安装<code>sqlite3</code>来创建数据库文件</p>
+<p>依然使用<code>docker</code>快速安装:</p>
+</li>
+</ol>
+<h4 id="安装sqlite3"><a href="#安装sqlite3" class="headerlink" title="安装sqlite3"></a>安装<code>sqlite3</code></h4><ol>
+<li><p>拉取镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull nouchka/sqlite3</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建并运行容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">docker run -id \</span><br><span class="line">--restart=always \</span><br><span class="line">--name=c_sqlite \</span><br><span class="line">-p 1433:1433 \</span><br><span class="line">-v /root/app/gitea/sqlite:/root/db \</span><br><span class="line">-h c_sqlite \</span><br><span class="line">nouchka/sqlite3:latest</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>进入容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it c_sqlite bash</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<ol start="4">
+<li><p>进入容器后运行指令创建数据库</p>
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlite3 数据库名.db</span><br></pre></td></tr></table></figure>
+
+<p>   运行创建数据库指令时 <code>sqlite3</code>默认会在当前目录生成<code>db</code>文件, 所以执行前要确保当前目录为挂载目录,也就是<code>/root/db</code></p>
+<p>   <img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220919182016029.png" alt="image-20220919182016029"></p>
+<pre><code>执行`sqlite3`进入`SQL`状态, 此时我们输入`.database`可以查看并刷新已经创建的数据库文件 这一步关键 否则宿主挂载目录文件不更新</code></pre></li>
+<li><p>退出数据库</p>
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.quit</span><br></pre></td></tr></table></figure>
+
+<p>   <img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220919182305343.png" alt="image-20220919182305343"></p>
+<pre><code>此时我们在宿主的`/root/app/gitea/sqlite`可以查看到刚刚生成的数据库</code></pre></li>
+</ol>
+<h4 id="数据库关联"><a href="#数据库关联" class="headerlink" title="数据库关联"></a>数据库关联</h4><p>我们需要明白的是, 在<code>docker</code>中<code>gitea</code>容器是个独立的系统, 在配置页面中填写的路径皆为<code>gitea</code>容器内部路径, 而非宿主路径</p>
+<p>由于<code>gitea</code>容器的<code>/data</code>目录映射到了宿主的<code>/root/app/gitea</code>目录, 因此 我们需要将生成的<code>sqlite</code>数据库文件放置在宿主的<code>/root/app/gitea</code>目录下, 这样<code>gitea</code>容器才能访问到数据库文件</p>
+<p>这一点 我在<code>sqlite</code>容器创建时已经考虑到了, 所以将<code>sqlite</code>挂载目录设为了<code>/root/app/gitea/sqlite</code>, 从而免去了数据库文件的迁移</p>
+<p>此时 我只需在配置页面数据库路径一项填入<code>/data/sqlite/gitea.db</code>即可:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220920101539648.png" alt="image-20220920101539648"></p>
+<blockquote>
+<p>如果后期需要修改配置可以进入<code>/root/app/gitea/gitea/conf/app.ini</code> 进行修改, 每次修改后记得需要重启<code>gitea</code>容器才能生效</p>
+</blockquote>
+<p>配置完毕后 点击安装 </p>
+<p>紧接着自动跳转到登录页面, 此时我们注册一个新账号然后登录:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220920102423120.png" alt="image-20220920102423120"></p>
+<p>至此 我们的私有仓库就搭建完毕了, 如果需要节省资源, 可以将<code>sqlite</code>容器停止, 它的存在只是为了创建数据库 以及必要的时候进行数据自定义处理, 暂时不需要它保持运行状态</p>
+<h4 id="外部仓库同步"><a href="#外部仓库同步" class="headerlink" title="外部仓库同步"></a>外部仓库同步</h4><p><code>gitea</code>支持从外部仓库导入 支持以下常见厂商:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220920103201263.png" alt="image-20220920103201263"></p>
+<p>如果从<code>github</code> 导入 首先需要去<code>github</code>中申请一个<code>access token</code>      </p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220920104007824.png" alt="image-20220920104007824"></p>
+<p>当然我们也可以直接使用<code>clone</code>的形式进行迁移 无需<code>token</code>:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220920115211964.png" alt="image-20220920115211964"></p>
+<p>后面的就不多介绍了  </p>
+<h4 id="自定义域名"><a href="#自定义域名" class="headerlink" title="自定义域名"></a>自定义域名</h4><p>正常情况下我们可以通过地址<code>http://服务器公网IP:13000</code>来访问服务器, 如果需要配置自定义域名, 那么需要修改一些配置:</p>
+<p>首先域名端, 也就是域名解析需要指向服务器IP, 这点不做过多介绍 大家都明白</p>
+<p>另外就是服务端 </p>
+<p>由于我使用了<code>Nginx</code>进行反向代理, 并且给<code>docker</code>配置了桥接网络, 所以在<code>nginx.conf</code>文件中配置如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http&#123;</span><br><span class="line">upstream gitea&#123;</span><br><span class="line">server c_gitea:3000;</span><br><span class="line">&#125;</span><br><span class="line">server&#123;</span><br><span class="line">        listen       80;</span><br><span class="line">    server_name git.newban.cn;</span><br><span class="line">    location / &#123;</span><br><span class="line">            proxy_redirect off;</span><br><span class="line">            proxy_set_header Host $host;</span><br><span class="line">            proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">            proxy_pass http://gitea;</span><br><span class="line">            break;</span><br><span class="line">                 &#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过桥接网络 我们可以直接使用容器别名实现容器间的相互通信, 减少端口暴露的风险</p>
+<h3 id="gitea目录结构"><a href="#gitea目录结构" class="headerlink" title="gitea目录结构"></a>gitea目录结构</h3><p>数据库主要用于存放用户和仓库相关的配置数据</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220920112051764.png" alt="image-20220920112051764"></p>
+<p>而我们的代码主要是放在了本地磁盘的<code>/root/app/gitea/git</code>目录下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── git</span><br><span class="line">│   ├── lfs</span><br><span class="line">│   └── repositories</span><br><span class="line">├── gitea</span><br><span class="line">│   ├── attachments</span><br><span class="line">│   ├── avatars</span><br><span class="line">│   ├── conf</span><br><span class="line">│   ├── home</span><br><span class="line">│   ├── indexers</span><br><span class="line">│   ├── jwt</span><br><span class="line">│   ├── log</span><br><span class="line">│   ├── packages</span><br><span class="line">│   ├── queues</span><br><span class="line">│   ├── repo-archive</span><br><span class="line">│   ├── repo-avatars</span><br><span class="line">│   ├── sessions</span><br><span class="line">│   └── tmp</span><br><span class="line">├── sqlite</span><br><span class="line">│   └── gitea.db</span><br><span class="line">└── ssh</span><br><span class="line">    ├── ssh_host_dsa_key</span><br><span class="line">    ├── ssh_host_dsa_key.pub</span><br><span class="line">    ├── ssh_host_ecdsa_key</span><br><span class="line">    ├── ssh_host_ecdsa_key.pub</span><br><span class="line">    ├── ssh_host_ed25519_key</span><br><span class="line">    ├── ssh_host_ed25519_key.pub</span><br><span class="line">    ├── ssh_host_rsa_key</span><br><span class="line">    └── ssh_host_rsa_key.pub</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../367.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../367.html" itemprop="url">Android Studio关于插件市场Marketplace无法搜索的问题解决</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-17T18:04:19+08:00">
+                2022-09-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>有的小伙伴在进行插件搜索时可能会出现搜索空白的情况, 界面显示<code>Not Found</code></p>
+<p>此时 只需要设置一下国内代理即可:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220916162230660.png" alt="image-20220916162230660"></p>
+<p>进入代理设置, 勾选自动代理 并输入以下地址:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://mirrors.neusoft.edu.cn:80</span><br></pre></td></tr></table></figure>
+
+<p>重新搜索 OK</p>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../366.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -946,994 +1949,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../362.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../362.html" itemprop="url">一个快速实现创意的游戏开发工具，不止适合新手</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-16T17:04:19+08:00">
-                2022-09-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p> 我最近和朋友聊天，越发觉得但凡尝试过自行开发游戏的人，对开发工具应该都有相似的感受：UE4这类引擎上限非常高，但对于编程基础薄弱的人，可能不是第一选择；RPGmaker这一类工具我也用了一段时间，非常好上手，可惜2D画面有些简单。 </p>
-<p> 今天我也想分享一个不错的游戏开发工具，它比较能满足以下人群的需求，文章比较长，大家可以自行判断阅读：</p>
-<ul>
-<li><p>刚刚入门游戏开发的初学者</p>
-</li>
-<li><p>手头上有个游戏创意，想快速实现的人</p>
-</li>
-<li><p>希望快速验证游戏玩法和品质的人</p>
-<p>前两天我看到微博上介绍了一个叫罗布乐思（Roblox）的游戏引擎，据说它在全球范围内已经有1亿月活，超过400万的游戏开发者，和超过3000万的作品。</p>
-<p>虽然我猜测那是鹅厂做的一个推广，但还是有点好奇什么工具可以有这么高的月活量，所以试着用了三天，发现它有几个亮点。</p>
-</li>
-</ul>
-<h2 id="引擎非常简单易上手"><a href="#引擎非常简单易上手" class="headerlink" title="引擎非常简单易上手"></a><strong>引擎非常简单易上手</strong></h2><p>  这个引擎有多容易上手呢？简单到我在没看教程的前提下，就做出了一个游玩时长不到一分钟的横版跳跃小玩法，因为这个游戏<strong>大量的预设内容以及简单的脚本语言</strong>。</p>
-<p>  罗布乐思是一个有很多预设模块的3D引擎，比如我在这里展示的城市场景模板。</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/1280.jpeg" alt="6c505eea559516304660c4cee93d760d.jpg"></p>
-<p>   除了场景模板，编辑器里还有大量预设好的模型和效果。预设内容大大降低了制作游戏的时间和精力成本，假设你想做一个城市障碍跑酷小游戏，那么只需要打开城市模板，加入各种汽车、楼房甚至形状部件，就可以直接跑起来了。</p>
-<p>  当然，这些预设内容也是可以修改的，以这辆车为例，右上角的资源管理器显示，你可以控制的部分具体到某个车门、车窗以及乘客座位。再复杂点，你还可以实现对这辆车的加速速度、车轮扭矩、发动机动力等各种效果的控制。</p>
-<p>   如果你想做更多更复杂的玩法如捏脸、回合制、战棋等等，通过脚本就可以实现，官网的教程里也有对RPG类等级系统、任务线、武器刷新、NPC等各种内容的设置教程，连重生点也只需要单击就可以添加。</p>
-<p>  罗布乐思这个工具，可以说是把能简化的内容都帮你简化了一遍，非常友好。只要跟着教程走，很快你的游戏想法就能让人们玩儿上了。</p>
-<p>  并且，这个引擎用的脚本语言是lua。虽然相比起主流如C#，lua比较小众，但事实上它作为一个轻量小巧又五脏俱全的语言，概念简单，学起来是比较容易的。</p>
-<p>  对这一部分的实现有兴趣，可以到罗布乐思的创作者主页感受一下，在这里泡上一段时间，简单的游戏制作应该难不倒你。（指路<a href="https://developer.roblox.com/zh-cn/learn-roblox/all-tutorials）" target="_blank" rel="noopener">https://developer.roblox.com/zh-cn/learn-roblox/all-tutorials）</a></p>
-<h2 id="大量的免费美术资源"><a href="#大量的免费美术资源" class="headerlink" title="大量的免费美术资源"></a><strong>大量的免费美术资源</strong></h2><p>   在工具箱的“商店”里，有官方提供的大量免费美术资源，涵盖各种内容和类别。如果你在搜索框里输入“hair”，那么搜出来的不止是可以覆盖在部件表面上的超多种毛发材质，还有许多直接可以使用的发型贴图——一个换装小游戏的发型选择界面十分钟内就可以完成了。</p>
-<p>  老实说，我身边有不止一个朋友表示过，想参加游戏比赛或是做游戏，却因为缺乏美术资源或队友而难以实现。当然这个商店里的美术资源主要满足的是基本需求，胜在可以帮你快速地给自己的游戏套好一个皮，不至于光秃秃的。</p>
-<p>  对于在画面风格上有所追求的人，我在罗布乐思的中文论坛也看到有人做出过很不错的画面效果。</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/1280-20220915180720169.jpeg" alt="0ebf37e707b7b2ebb2ae1986777165e5.jpg">  这是开发者Joseph155用四个星期时间制作的《23号公寓》，这种画风和光影让我想到了《我的世界》和《模拟人生》。</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/1280-20220915180725532.jpeg" alt="e2018002457e89692e0244f6649e4c44.jpg"></p>
-<p>  这是我在罗布乐思网站发现的游戏《ROSES》，它的光影在网站里应该算非常优秀的了。按我的理解，这种效果能够通过插件实现，同时选项卡里可以直接管理插件，如此一来美术效果上自然可以有更多的实现空间。</p>
-<h2 id="没有服务器成本，还能一键发布多个平台"><a href="#没有服务器成本，还能一键发布多个平台" class="headerlink" title="没有服务器成本，还能一键发布多个平台"></a><strong>没有服务器成本，还能一键发布多个平台</strong></h2><p>  <strong>但我认为这个工具最重要的两个优势，是没有服务器成本——也就是能够零成本做联机游戏，以及一键多平台发布。</strong></p>
-<p>  由于这款工具的客户端和服务端是集成一体的，这使它不仅能够免费提供服务器，还能够免费负责容灾、运维等一系列网络端工作。</p>
-<p>  B站上有一位做独立游戏的Up主做了个试玩罗布乐思的视频，他只用一小时就做了个简单跑酷，发布之后，他还直接用PC和iPad登陆不同账号并联机游玩自己的游戏。</p>
-<p>（视频指路：<a href="https://www.bilibili.com/video/av76363666）" target="_blank" rel="noopener">https://www.bilibili.com/video/av76363666）</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/1280-20220915180732276.jpeg" alt="f57037c0d13350ce437145677d844bee.jpg">  也就是说，这个一小时做出来的小跑酷已经实现了联机功能，而且Up主并不需要操心服务器问题。这是非常节省人力精力的，以前我还泡在MC某著名私服的时候，运营团队有位负责网络的大神，因为熊孩子太多都被逼得退群两次，更别提搭服务器的成本了。</p>
-<p>  此外，根据我的理解和官网的说法，罗布乐思上的游戏可以只通过一个按键直接发布在PC、安卓、iOS，甚至是Xbox和VR平台的罗布乐思客户端，然后那些不同系统和设备上的玩家就可以直接玩到你的游戏。当然这应该只是海外的情况，国内如何我不是很确定。</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/1280-20220915180739021.jpeg" alt="34a991aac186784f75ed3d49b2b43739.jpg">  这也体现在测试选框里的一个功能上：点击模拟器就可以看到在不同主流设备上的模拟画面，这应该就是为了便于在各种设备上发布作品而设计的。做完之后直接点击发布，你会得到一个网址，任何人在浏览器上打开这个网址，或是在任何系统与设备的罗布乐思客户端上搜索游戏名，都能玩到这个游戏。</p>
-<p>  很明显，这完全省去了中间漫长痛苦的各平台打包过程，想想只是把游戏传个Steam就需要多久，还得分成不同的操作系统，移动设备上也没办法玩到——在这里只要点击一下发布。</p>
-<p>  有了这些已经设计好的功能，剩下的就只是好好把游戏创意实现出来，钻研一个真正好玩的玩法。依赖这款游戏的超高月活，游戏创意与玩法的质量会很容易得到验证。      </p>
-<p>  不过这工具虽然很实用，但在国内很少人知道，网上关于这个游戏的信息也很少。</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/1280-20220915180745323.jpeg" alt="bd9a253e5c04b243e1afe84cd4842bdc.jpg"> 所以我自行搜索过不少资料，发现YouTube上的个别Roblox视频能达到7000多万的播放量，社区（指路<a href="https://robloxforum.com/" target="_blank" rel="noopener">https://robloxforum.com</a>；<a href="https://devforum.roblox.com/" target="_blank" rel="noopener">https://devforum.roblox.com</a>）活跃程度也很高。</p>
-<p> 还有18岁高中生通过罗布乐思年收入上百万美元的新闻，这是17年的事儿了。</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/1280-20220915180751272.jpeg" alt="2b39017fd4866344361ddf595504bb9a.jpg"></p>
-<p>  但是我估计过不了多久，罗布乐思就会在国内变得更有知名度，因为那个所有游戏都躲不过的鹅厂已经找上门来了。很明显，罗布乐思很快就要进入中国市场了。</p>
-<p>  就看最近的新闻，它们推出了一个北极星计划，准备花3000万扶持创作者，另外还有技术和流量扶持，以及优先出海的名额；最近还有一个征集作品的创意比赛。只是这部分内容比较多，我也不太记得，有兴趣可以去搜一下。</p>
-<p>  我个人认为，如果大家都认可罗布乐思在开发游戏方面的实用性，接下来鹅厂又能好好做国内落地运营，未来这可能是一个很不错的社区。毕竟鹅厂要用心还是能做点东西出来的。当然，大家有别的想法欢迎留言讨论。</p>
-<p><strong>本文转载自:</strong> <a href="https://cowlevel.net/article/2084510" target="_blank" rel="noopener">奶牛关</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../360.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../360.html" itemprop="url">独立游戏开发者必备工具汇总</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-16T11:04:19+08:00">
-                2022-09-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>对于独立开发者而言, 使用一些免费且好用的工具相对来说会更加有利, 接下来我们围绕以下几点进行工具的汇总:</p>
-<ul>
-<li><strong>开源免费</strong>: 不用考虑版权问题 解决后顾之忧</li>
-<li><strong>跨平台</strong>: 可随时切换平台开发 这个不必多说</li>
-<li><strong>工具得好用</strong></li>
-</ul>
-<h3 id="工具汇总"><a href="#工具汇总" class="headerlink" title="工具汇总"></a>工具汇总</h3><ol>
-<li><p><strong>Krita</strong></p>
-<p>开源免费的绘画工具, <code>procreate</code>的替代品, 可绘画和制作逐帧动画</p>
-<p><a href="https://github.com/KDE/krita" target="_blank" rel="noopener">GitHub</a></p>
-<p><a href="https://krita.org/zh/" target="_blank" rel="noopener">官网</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915162224967.png" alt="image-20220915162224967"></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915161819097.png" alt="image-20220915161819097"></p>
-</li>
-<li><p><strong>Blender</strong></p>
-<p>这个大家都熟悉, 免费开源的三维图形图像软件，提供从建模、动画、材质、渲染、到音频处理、视频剪辑等一系列动画短片制作解决方案</p>
-<p><a href="https://github.com/blender/blender" target="_blank" rel="noopener">Github</a></p>
-<p><a href="https://www.blender.org/download/" target="_blank" rel="noopener">官网下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20211228145312330.png" alt="image-20211228145312330"></p>
-</li>
-<li><p><strong>Pixelorama</strong></p>
-<p>也是一款强大的像素画绘制工具, 基于<code>Godot</code>引擎的<code>GDScript</code>语言编写, 功能强大 软件跨平台, 可以说是<code>Godot</code>的完美搭档, 我猜想未来可能会将该工具直接集成进<code>Godot</code>内部</p>
-<p><a href="https://github.com/Orama-Interactive/Pixelorama" target="_blank" rel="noopener">Github</a></p>
-<p><a href="https://orama-interactive.itch.io/pixelorama" target="_blank" rel="noopener">官网</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915155142976.png" alt="image-20220915155142976"></p>
-<p>有<code>Web</code>在线版 也可以下载到本地使用:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915155311899.png" alt="image-20220915155311899"></p>
-</li>
-<li><p><strong>Godot</strong></p>
-<p>免费开源的轻量级游戏开发引擎, 麻雀虽小五脏俱全, 支持2D和3D游戏的开发, 内置<code>Tilemap</code>和2D骨骼, 中小型游戏完全胜任</p>
-<p><a href="https://godotengine.org/" target="_blank" rel="noopener">官网地址</a></p>
-<p><a href="https://github.com/godotengine/godot" target="_blank" rel="noopener">GitHub地址</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915162249596.png" alt="image-20220915162249596"></p>
-</li>
-<li><p><strong>虚幻引擎</strong></p>
-<p>如果要做大型3D游戏, 那么虚幻必然是首选, 它也是开源软件, 但是并不免费, 收入超过100万美金的部分按照5%来计算交费, 这样一来 对于个人而言 和免费无异</p>
-<p><a href="https://github.com/EpicGames/UnrealEngine" target="_blank" rel="noopener">Github</a>: 这个需要<a href="https://www.unrealengine.com/zh-CN/ue-on-github" target="_blank" rel="noopener">授权</a>才能访问</p>
-<p><a href="https://www.unrealengine.com/zh-CN" target="_blank" rel="noopener">点击进入官网</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915163612724.png" alt="image-20220915163612724"></p>
-</li>
-</ol>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../361.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../361.html" itemprop="url">使用Git同时将代码推送到多个仓库</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-16T11:04:19+08:00">
-                2022-09-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>随着<code>GitHub</code>的制裁, 我开始考虑将一些代码同步推送到国内的一些代码托管厂商, 比如<code>gitee</code>或者<code>codingnet</code></p>
-<p><code>gitee</code>可以直接对<code>github</code>上的仓库进行克隆和更新, 这一点还是比较方便的, 不过手动同步代码总是麻烦一些, 而且容易遗忘, 所以我们可以考虑在<code>push</code>的时候将代码同时推送到多个仓库</p>
-<p>具体实现如下:</p>
-<h3 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h3><ol>
-<li><p>首先定义一个仓库地址合集, 名字自定义, 我们将其命名为<code>all</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote add all git@github.com:xxx/xxx.git</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>然后将需要同时推送的仓库地址追加进入该合集中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote set-url --add all git@gitee.com:xxx/xxx.git</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>此时我们输入<code>git remote -v</code>可以查看当前仓库所有地址信息, 如下:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">all	git@github.com:xxx/xxx.git (fetch)</span></span><br><span class="line"><span class="meta">$</span><span class="bash">all	git@github.com:xxx/xxx.git (push)</span></span><br><span class="line"><span class="meta">$</span><span class="bash">all	git@gitee.com:xxx/xxx.git (push)</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>最后推送仓库到远程</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push all master</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>如果你想移除某个仓库合集</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote rm all</span><br></pre></td></tr></table></figure>
-
-
-
-</li>
-</ol>
-<h3 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h3><p>关于仓库地址的配置我们可以直接在 <code>.git/config</code> 查看,<code>git</code>默认合集名为<code>origin</code> </p>
-<p>如果你习惯了输入<code>git push origin master</code>来推送仓库, 那么我们可以直接打开<code>config</code>文件然后在<code>origin</code>合集下追加其他仓库的地址, 如下:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915173750105.png" alt="image-20220915173750105"></p>
-<p>保存后, 我们就可以使用啦 </p>
-<p>如果你担心文本输入出错, 也可以采用命令行的形式进行地址追加:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote set-url --add origin git@gitee.com:xxx/xxx.git</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../359.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../359.html" itemprop="url">使用netlify部署静态博客网站</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-15T11:04:19+08:00">
-                2022-09-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>最近我部署在<code>github</code>上的一个静态网站突然不能访问了, 排查一看原来是<code>github</code>账户被封禁了, 我想有可能是受到了最近俄罗斯制裁的影响, 因为这个账号我当初是用梯子注册的, 对方可能以为我是俄罗斯人</p>
-<p>问题找到之后 我决定暂时先不注册新<code>Github</code>账号了, 直接换成<code>netlify</code></p>
-<p><code>netlify</code>有很多优势:</p>
-<ul>
-<li>单账号不限制网站数量</li>
-<li>可直接从<code>github</code>或者<code>gitlab</code>仓库中拉取代码自动部署</li>
-<li>支持<code>HTTPS</code>访问</li>
-<li>国内访问速度不比<code>gitpages</code>差</li>
-</ul>
-<p>于是我直接将网站静态文件上传到了<code>netlify</code>, 关于部署的具体流程 详见如下:</p>
-<h3 id="开始使用"><a href="#开始使用" class="headerlink" title="开始使用"></a>开始使用</h3><p>首先登陆<code>netlify</code>网站并登录, 如果你的博客源码放在了<code>Github</code>上, 那么可以直接使用<code>Github</code>账号关联登录</p>
-<p><a href="https://app.netlify.com/" target="_blank" rel="noopener">点击进入netlify官网</a></p>
-<p>登录之后会出现以下面板, 我们点击<code>Add new site</code>按钮添加一个新站点:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915123216935.png" alt="image-20220915123216935"></p>
-<p>点击后出现多个选项:</p>
-<ul>
-<li><code>import an existing project</code>:表示从Github中的仓库中直接拉取代码</li>
-<li><code>start from a template</code>: 表示基于某个模板创建一个新的仓库</li>
-<li><code>Deploy manually</code>: 表示手动上传网站静态文件</li>
-</ul>
-<p>接下来 我以<code>hexo</code>博客为例, 介绍第一种和第三种的用法</p>
-<h3 id="第一种-import-an-existing-project"><a href="#第一种-import-an-existing-project" class="headerlink" title="第一种 import an existing project"></a>第一种 <code>import an existing project</code></h3><p>点击后进入仓库选择页面, 我们可以选择从指定的托管厂商拉取网站源码:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915121740890.png" alt="image-20220915121740890"></p>
-<p>由于我网站源码托管在了<code>Github</code>, 于是我点击<code>Github</code>选项, 进入到仓库选择页面:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915121922914.png" alt="image-20220915121922914"></p>
-<p>选择好后进入网站部署配置页面, 填入我们需要让<code>netlify</code>在拉取我们的仓库后进行的指令操作,<code>hexo g</code>生成静态文件 然后将生成的静态文件上传到<code>netlify</code>:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915122130743.png" alt="image-20220915122130743"></p>
-<p>填好后点击<code>Deploy site</code>, 然后<code>netlify</code>会自动拉取代码并部署网站</p>
-<p>紧接着 我们来到网站设置选项卡中配置自定义域名:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915122650516.png" alt="image-20220915122650516"></p>
-<p>需要将自定义域名以<code>CNAME</code>的方式解析到<code>xxxxx.netlify.app</code>, 如果你的域名是阿里云注册的, 直接去阿里云控台配置即可</p>
-<p>解析配置完毕后, <code>netlify</code>会自动给网站配置<code>SSL</code>证书实现域名<code>https</code>访问:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915122938054.png" alt="image-20220915122938054"></p>
-<p>此时 我们就可以使用域名正常访问我们的网站啦:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915123105502.png" alt="image-20220915123105502"></p>
-<h3 id="第三种-Deploy-manually"><a href="#第三种-Deploy-manually" class="headerlink" title="第三种 Deploy manually"></a>第三种 <code>Deploy manually</code></h3><p>这个就比较简单了, 点击后会进入到如下页面:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915123323777.png" alt="image-20220915123323777"></p>
-<p>我们只需将<code>public</code>文件夹拖拽到页面 即可自动上传部署</p>
-<p>上传完后回到<code>netlify</code>主页就能看到网站了, 然后进行自定义的域名配置即可正常访问 </p>
-<p>当然了 如果不用自定义域名 直接使用<code>netlify</code>提供的二级域名也能访问, 这个大家都明白 就不多赘述了</p>
-<h3 id="网站测速"><a href="#网站测速" class="headerlink" title="网站测速"></a>网站测速</h3><p>以下是国内访问测速图, 总体还不错 :</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915123913425.png" alt="image-20220915123913425"></p>
-<h3 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h3><p>经过此次账号封禁, 我开始担忧自己存放在<code>Github</code>上的数据安全性问题了, 万一国内开发者收到制裁  <code>Github</code>来个大扫除, 岂不是完蛋, 不过 这对于国内的代码托管厂商而言也许是个难得的机会</p>
-<p>所以我接下打算 将重要数据做个多地备份处理</p>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../358.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../358.html" itemprop="url">快速上手免费开源游戏引擎Godot</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-10T11:04:19+08:00">
-                2022-09-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p><code>Godot</code>是一款免费开源的游戏引擎, 其优点如下:</p>
-<ul>
-<li>免费开源</li>
-<li>体积小 非常轻量 而且功能齐全</li>
-<li>跨平台开发 支持<code>Windows</code>  <code>Mac</code>  <code>Linux</code>  <code>Android</code>甚至<code>Web在线开发</code></li>
-<li>脚本语言简单 语法和<code>python</code>类似</li>
-<li>游戏跨平台运行</li>
-<li>内置脚本编辑器 无需额外安装第三方编辑器 </li>
-</ul>
-<p>当然 它也有一定的劣势:</p>
-<ul>
-<li>对H5的支持不太好 不适合做页游</li>
-<li>不支持小程序</li>
-<li><code>2D</code>比较成熟 但<code>3D</code>相对<code>Unity</code>和<code>UE</code>而言弱一些</li>
-</ul>
-<p>总之 中小型的游戏开发  完全可以胜任</p>
-<p><a href="https://godotengine.org/" target="_blank" rel="noopener">官网地址</a></p>
-<p><a href="https://github.com/godotengine/godot" target="_blank" rel="noopener">GitHub地址</a></p>
-<p><a href="https://docs.godotengine.org/zh_CN/latest/" target="_blank" rel="noopener">官方中文文档</a></p>
-<h3 id="快速上手"><a href="#快速上手" class="headerlink" title="快速上手"></a>快速上手</h3><p>以下介绍针对有编程语言基础的同学食用</p>
-<p>我们知道所谓引擎 其实就是一团封装好的代码而已, 将一些常用且重复的逻辑进行抽取简化  方便开发者调用 从而提升游戏开发的效率</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220913144306654.png" alt="image-20220913144306654"></p>
-<p>在<code>Godot</code>中 每一个节点就是一个对象, 场景是一个节点 精灵也是一个节点 都是对象<strong>(如果你是<code>android</code>开发 我们可以将其看成是布局文件中的控件)</strong></p>
-<p>如果我们想在某个类中创建一个对象, 那么直接在该类中创建一个节点, 比如我们想在<code>Main</code>这个类中创建<code>Control</code>对象:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220913144722992.png" alt="image-20220913144722992"></p>
-<p>既然是对象, 那么肯定有继承关系 属性和方法, 我们可以从右侧检查器面板中看到继承关系以及本类和父类们的属性 :</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220913144543831.png" alt="image-20220913144543831"></p>
-<p>而右侧节点面板中的信号列表, 其实就相当于我们平常所说的监听回调:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220913145102898.png" alt="image-20220913145102898"></p>
-<p>如果需要查看该对象的方法以及方法说明, 我们可以直接在检查器面板中打开随时查看:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220913145406023.png" alt="image-20220913145406023"></p>
-<h3 id="Godot进阶"><a href="#Godot进阶" class="headerlink" title="Godot进阶"></a>Godot进阶</h3><ol>
-<li><p>使用场景自动加载的形式创建单例</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220914113325298.png" alt="image-20220914113325298"></p>
-</li>
-</ol>
-<h3 id="常用快捷键"><a href="#常用快捷键" class="headerlink" title="常用快捷键"></a>常用快捷键</h3><ol>
-<li><p>添加节点</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ctrl+A</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>全局搜索</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ctrl+shift+F</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>复制物体</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ctrl+D</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>播放动画</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shift+D</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>停止动画</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S</span><br></pre></td></tr></table></figure>
-
-
-
-</li>
-</ol>
-<h3 id="游戏导出"><a href="#游戏导出" class="headerlink" title="游戏导出"></a>游戏导出</h3><p>以导出Android包为例, 首先需要在编辑器设置中指定好<code>SDK</code>和签名路径:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220914114349233.png" alt="image-20220914114349233"></p>
-<p>签名可以用以下指令生成:</p>
-<figure class="highlight d"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">keytool -keyalg RSA -genkeypair -<span class="keyword">alias</span> 用户名 -keypass 密码 -keystore <span class="keyword">debug</span>.keystore -storepass 密码 -dname <span class="string">"CN=Android Debug,O=Android,C=US"</span> -validity <span class="number">9999</span> -deststoretype pkcs12</span><br></pre></td></tr></table></figure>
-
-<p>紧接着进入导出界面, 选择Android, 然后提示模板缺失, 此时我们点击管理模板:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220914114704962.png" alt="image-20220914114704962"></p>
-<p>然后点击下载模板:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220914114745522.png" alt="image-20220914114745522"></p>
-<p>这个模板文件 包含了所有支持平台的基础框架包:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220914115341762.png" alt="image-20220914115341762"></p>
-<p>此时 我们再次进入导出面板, 配置签名后点击导出项目就可以了:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220914115952330.png" alt="image-20220914115952330"></p>
-<p>其他平台导出方法可参考官方文档, 当然还有贴吧小伙伴的经验贴可参考:</p>
-<p><a href="https://tieba.baidu.com/p/6015825850" target="_blank" rel="noopener">跨平台导出参考</a></p>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../357.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../357.html" itemprop="url">JS读取本地json文件的方法汇总</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-05T11:04:19+08:00">
-                2022-09-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>对于单纯的静态网站而言, 我们有时候可能会直接将<code>json</code>数据放在本地, 此时涉及到<code>json</code>文件内容读取的问题</p>
-<p>假设<code>html</code>同级目录下有一个名为<code>data.json</code>的文件, 读取的方式有:</p>
-<h3 id="第一种-使用ajax"><a href="#第一种-使用ajax" class="headerlink" title="第一种 使用ajax"></a>第一种 使用ajax</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$.ajax(&#123;</span><br><span class="line">                url: <span class="string">"data.json"</span>,<span class="comment">//同文件夹下的json文件路径</span></span><br><span class="line">                type: <span class="string">"GET"</span>,<span class="comment">//请求方式为get</span></span><br><span class="line">                dataType: <span class="string">"json"</span>, <span class="comment">//返回数据格式为json</span></span><br><span class="line">                success: <span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;<span class="comment">//请求成功完成后要执行的方法 </span></span><br><span class="line">                    <span class="built_in">console</span>.log(data);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;)</span><br></pre></td></tr></table></figure>
-
-<h3 id="第二种-getJson"><a href="#第二种-getJson" class="headerlink" title="第二种 getJson"></a>第二种 getJson</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$.getJSON(<span class="string">"data.json"</span>, <span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">              <span class="built_in">console</span>.log(data)</span><br><span class="line">          &#125;);</span><br></pre></td></tr></table></figure>
-
-<h3 id="第三种-使用原生XMLHttpRequest"><a href="#第三种-使用原生XMLHttpRequest" class="headerlink" title="第三种 使用原生XMLHttpRequest"></a>第三种 使用原生XMLHttpRequest</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">var</span> url = <span class="string">"data.json"</span></span><br><span class="line"><span class="comment">// 申明一个XMLHttpRequest</span></span><br><span class="line"><span class="keyword">var</span> request = <span class="keyword">new</span> XMLHttpRequest();</span><br><span class="line"><span class="comment">// 设置请求方法与路径</span></span><br><span class="line">request.open(<span class="string">"get"</span>, url);</span><br><span class="line"><span class="comment">// 不发送数据到服务器</span></span><br><span class="line">request.send(<span class="literal">null</span>);</span><br><span class="line"><span class="comment">//XHR对象获取到返回信息后执行</span></span><br><span class="line">request.onload = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 解析获取到的数据</span></span><br><span class="line">    <span class="keyword">var</span> data = <span class="built_in">JSON</span>.parse(request.responseText);</span><br><span class="line">    <span class="built_in">console</span>.log(data)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h3><p>我们在进行本地代码测试的时候, 如果以双击的形式打开<code>html</code>, 会出现跨域问题, 浏览器控台报错如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Access to XMLHttpRequest at &apos;file:///Users/songjian/Desktop/data.json&apos; from origin &apos;null&apos; has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, chrome-extension, chrome-untrusted, https, isolated-app</span><br></pre></td></tr></table></figure>
-
-<p><strong>解决方法有两种:</strong></p>
-<ol>
-<li><p>第一种是给网页添加一个域名, 比如<code>localhost</code>, 我们可以使用<code>python</code>或者<code>nodejs</code>在本地启动一个服务, 这里以<code>python3</code>为例:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m http.server 8000</span><br></pre></td></tr></table></figure>
-
-<p>启动服务后, 浏览器输入<code>localhost:8000</code>, 即可正常获取到本地<code>json</code>数据</p>
-</li>
-<li><p>第二种是修改本地浏览器设置, 以<code>Windows</code>平台谷歌浏览器为例, 启动时添加参数<code>--allow-file-access-from-files</code></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/c8235f9d82ac126c8659f46c06bebb80.png" alt="20201223114910"></p>
-</li>
-</ol>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="../4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../4/">4</a><span class="page-number current">5</span><a class="page-number" href="../6/">6</a><span class="space">&hellip;</span><a class="page-number" href="../41/">41</a><a class="extend next" rel="next" href="../6/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="../4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../4/">4</a><span class="page-number current">5</span><a class="page-number" href="../6/">6</a><span class="space">&hellip;</span><a class="page-number" href="../42/">42</a><a class="extend next" rel="next" href="../6/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1979,7 +1999,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">407</span>
+                  <span class="site-state-item-count">413</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1992,7 +2012,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">123</span>
+                  <span class="site-state-item-count">126</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

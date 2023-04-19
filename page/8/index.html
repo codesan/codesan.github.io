@@ -288,6 +288,1000 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../342.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../342.html" itemprop="url">关于移动设备唯一标识的获取</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-13T11:04:19+08:00">
+                2022-07-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>我们在做移动端开发时, 不可避免地会遇到需要获取设备唯一标识的问题</p>
+<p>如果仅仅只需要给设备去重, 通常情况下我们可以考虑直接使用推送<code>SDK</code>生成的设备<code>Token</code>, 比如极光推送, 或者腾讯<code>TPNS</code>,  <code>App</code>重装后这个<code>token</code>可能会变,  但重复的概率极低  只是并不具备唯一性</p>
+<p>想要唯一性 以安卓设备为例, 其实有很多设备码可用, 比如<code>IMEI</code>, <code>MAC地址</code>等等, 但是为什么我们在实际应用中无法将它们用作唯一标识呢</p>
+<p>我们挨个来分析一下</p>
+<h3 id="IMEI"><a href="#IMEI" class="headerlink" title="IMEI"></a>IMEI</h3><p><code>Android中</code>也叫<code>DEVICE_ID</code>, 是移动电话的唯一设备码, 相当于手机的身份证, 具备唯一性</p>
+<p>但是:</p>
+<ul>
+<li>有通话功能的设备才有该码, 不是所有移动设备都具备拨号功能</li>
+<li>双卡双待会有两个<code>IMEI</code>值</li>
+<li>模拟器可以修改<code>IMEI</code></li>
+<li><code>Android10</code>以上无法获取<code>IMEI</code></li>
+</ul>
+<h3 id="网卡-Mac地址"><a href="#网卡-Mac地址" class="headerlink" title="网卡 Mac地址"></a>网卡 Mac地址</h3><p>其中包含硬件<code>MAC</code>地址和<code>WLAN MAC</code>地址(<code>BSSID</code>),  硬件<code>MAC</code>地址和硬件绑定, 具备唯一性 , 但是<code>WLAN MAC</code>地址通常是随机的 主要是为了避免隐私泄露, 每个热点在连接时会使用随机的地址</p>
+<p>可即便是硬件<code>Mac</code>也存在不足之处:</p>
+<ul>
+<li>有网卡的设备才有<code>Mac</code>地址, 不是所有设备都具备联网功能</li>
+<li><code>Mac</code>地址可以通过软件欺骗性修改 </li>
+</ul>
+<h3 id="蓝牙Mac地址"><a href="#蓝牙Mac地址" class="headerlink" title="蓝牙Mac地址"></a>蓝牙Mac地址</h3><p>和<code>WLAN Mac</code>一样具备唯一性</p>
+<p>但是:</p>
+<ul>
+<li>没有蓝牙的设备获取不到该值</li>
+<li>蓝牙需要保持开启状态才有值</li>
+</ul>
+<h3 id="ANDROID-ID"><a href="#ANDROID-ID" class="headerlink" title="ANDROID_ID"></a>ANDROID_ID</h3><p>官方推荐使用的设备码, 具备唯一性</p>
+<p>但是:</p>
+<ul>
+<li>设备恢复出厂设置 或者<code>ROOT</code>后 该值会改变</li>
+<li>国内定制系统的设备可能返回<code>null</code></li>
+<li><code>Android8</code>以下无法获取<code>Android_ID</code></li>
+</ul>
+<h3 id="PsuedoID"><a href="#PsuedoID" class="headerlink" title="PsuedoID"></a>PsuedoID</h3><p>该方式是通过拼接硬件信息获取到的，代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">//获得独一无二的Psuedo ID</span><br><span class="line">public static String getUniquePsuedoID() &#123;</span><br><span class="line">       String serial = null;</span><br><span class="line"></span><br><span class="line">       String m_szDevIDShort = &quot;35&quot; + </span><br><span class="line">            Build.BOARD.length()%10+ Build.BRAND.length()%10 + </span><br><span class="line"></span><br><span class="line">            Build.CPU_ABI.length()%10 + Build.DEVICE.length()%10 + </span><br><span class="line"></span><br><span class="line">            Build.DISPLAY.length()%10 + Build.HOST.length()%10 + </span><br><span class="line"></span><br><span class="line">            Build.ID.length()%10 + Build.MANUFACTURER.length()%10 + </span><br><span class="line"></span><br><span class="line">            Build.MODEL.length()%10 + Build.PRODUCT.length()%10 + </span><br><span class="line"></span><br><span class="line">            Build.TAGS.length()%10 + Build.TYPE.length()%10 + </span><br><span class="line"></span><br><span class="line">            Build.USER.length()%10 ; //13 位</span><br><span class="line"></span><br><span class="line">    try &#123;</span><br><span class="line">        serial = android.os.Build.class.getField(&quot;SERIAL&quot;).get(null).toString();</span><br><span class="line">       //API&gt;=9 使用serial号</span><br><span class="line">        return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();</span><br><span class="line">    &#125; catch (Exception exception) &#123;</span><br><span class="line">        //serial需要一个初始化</span><br><span class="line">        serial = &quot;serial&quot;; // 随便一个初始化</span><br><span class="line">    &#125;</span><br><span class="line">    //使用硬件信息拼凑出来的15位号码</span><br><span class="line">    return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();</span><br></pre></td></tr></table></figure>
+
+<p>最终会得到类似于这样的一串ID：<code>00000000-088ee-388eb-ffff-ffffe93ee2</code></p>
+<p>这种方案只能做到小范围内唯一</p>
+<p>因为:</p>
+<ul>
+<li>系统升级后 该值可能会变化</li>
+<li>同一批次出厂的设备可能出现值重复 </li>
+</ul>
+<p>总体来说 该方案可行性相对较高一些 重复的概率极低, 而且不需要获取用户权限</p>
+<p>但是依然不够唯一</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>以上所有的方案似乎都只是理论唯一, 真要用到实际产品中还是差了点, 如果非要准确一些可以考虑以下方案:</p>
+<h5 id="第一种"><a href="#第一种" class="headerlink" title="第一种"></a>第一种</h5><ul>
+<li><code>Android 8.0</code>以下 使用 <code>PsuedoID + DeviceId</code> 来判断设备唯一性</li>
+<li>Android 8.0及以上  使用<code>PsuedoID + ANDROID_ID</code>来判断设备唯一性</li>
+</ul>
+<h5 id="第二种"><a href="#第二种" class="headerlink" title="第二种"></a>第二种</h5><p>如果忽略大部分不能联网的设备, 可以使用<code>Mac</code>地址作为唯一标识, 由于<code>Android6.0</code>以上的版本无法获取<code>Mac</code>地址, 我们可以考虑从底层文件获取, <code>Mac</code>地址文件路径为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/sys/class/net/wlan0/address</span><br></pre></td></tr></table></figure>
+
+<p>具体代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">fun getMacAddr(): String &#123;</span><br><span class="line">    return try &#123;</span><br><span class="line">        loadFileAsString(&quot;/sys/class/net/wlan0/address&quot;)</span><br><span class="line">            .toUpperCase().substring(0, 17)</span><br><span class="line">    &#125; catch (e: IOException) &#123;</span><br><span class="line">        e.printStackTrace()</span><br><span class="line">        &quot;&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Throws(IOException::class)</span><br><span class="line">private fun loadFileAsString(filePath: String): String &#123;</span><br><span class="line">    val fileData = StringBuffer(1000)</span><br><span class="line">    val reader = BufferedReader(FileReader(filePath))</span><br><span class="line">    val buf = CharArray(1024)</span><br><span class="line">    var numRead = 0</span><br><span class="line">    while (reader.read(buf).also &#123; numRead = it &#125; != -1) &#123;</span><br><span class="line">        val readData = String(buf, 0, numRead)</span><br><span class="line">        fileData.append(readData)</span><br><span class="line">    &#125;</span><br><span class="line">    reader.close()</span><br><span class="line">    return fileData.toString()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="第三种"><a href="#第三种" class="headerlink" title="第三种"></a>第三种</h5><p>使用第三方设备唯一标识提供商, 比如<strong>数字联盟</strong>, 对于<code>Android</code>和<code>IOS</code>设备均适用</p>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../341.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../341.html" itemprop="url">Android TV 电视盒子开发之远程网络调试</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-12T11:04:19+08:00">
+                2022-07-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="硬件环境准备"><a href="#硬件环境准备" class="headerlink" title="硬件环境准备"></a>硬件环境准备</h3><p>一般电视盒子是不具备 <code>USB</code> 线调试功能 , 多数只能使用<code>adb</code>远程调试 , 国内的电视盒子提供一个 <code>USB</code> 的接口可以插 U 盘 ;</p>
+<p><code>USB</code>线调试 : 有些厂商提供了通过该接口进行 adb 调试的功能 , 如 小米 , 但是必须使用一根公对公的 <code>USB</code> 线 ;<br>( 国内的电视盒子一般要使用 <code>USB</code> 公对公接口 , 两头都是 <code>USB</code> 接口 , 有些电视没有该功能 )</p>
+<p>远程调试 : 开发者电脑 与 <code>Android TV</code> , 必须在同一个局域网中 , 才能进行远程调试 ; ( 远程调试的速度一般要低于 )</p>
+<h3 id="开启开发者模式"><a href="#开启开发者模式" class="headerlink" title="开启开发者模式"></a>开启开发者模式</h3><p>先到 <code>关于本机</code> 界面 , 启用开发者模式 , 选择 <code>关于本机 / 产品信息 / 软件版本</code> 点击多次 , 即可启用开发者模式 ;</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2hhbjEyMDIwMTI=,size_16,color_FFFFFF,t_70.png" alt="在这里插入图片描述"></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2hhbjEyMDIwMTI=,size_16,color_FFFFFF,t_70-20220712113006908.png" alt="在这里插入图片描述"></p>
+<p>在 <code>账户安全</code> 界面的 <code>ADB模式</code> 选择 <code>开启</code> 即可进行远程调试 ;</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2hhbjEyMDIwMTI=,size_16,color_FFFFFF,t_70-20220712113036212.png" alt="在这里插入图片描述"></p>
+<h3 id="查询-Android-电视局域网-IP-地址"><a href="#查询-Android-电视局域网-IP-地址" class="headerlink" title="查询 Android 电视局域网 IP 地址"></a>查询 Android 电视局域网 IP 地址</h3><p>进入设置界面 , 选择网络连接界面进入 ;</p>
+<p><img src="https://img-blog.csdnimg.cn/20210626094725370.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2hhbjEyMDIwMTI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>进入 <code>网络设置</code> 后 , 选择当前连接的 <code>WIFI</code>选项 , 进入 ;</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2hhbjEyMDIwMTI=,size_16,color_FFFFFF,t_70-20220712113110810.png" alt="在这里插入图片描述"></p>
+<p>此时就可以看到<code>Android TV</code> 的局域网 IP 地址 ;</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2hhbjEyMDIwMTI=,size_16,color_FFFFFF,t_70-20220712113121376.png" alt="在这里插入图片描述"></p>
+<h3 id="开启远程连接"><a href="#开启远程连接" class="headerlink" title="开启远程连接"></a>开启远程连接</h3><p>在上面得到安卓电视的 <code>IP</code> 地址是 <code>192.168.1.104</code> , 先<code>ping</code> 一下 , 查看是否能<code>ping</code> 通 ;</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2hhbjEyMDIwMTI=,size_16,color_FFFFFF,t_70-20220712113153166.png" alt="在这里插入图片描述"></p>
+<p>如果 <code>ping</code> 不通 , 说明 电脑 与 电视 , 网络连接不通 , 无法进行 <code>adb</code> 调试 , 此时需要排查问题 , 电脑是否网络通常 , 电视网络是否通常 , 电脑和电视是否在同一个局域网中 ;</p>
+<p>如果能<code>ping</code> 通 , 则使用 <code>adb connect</code> 命令 , 连接该远程设备 ;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb connect 192.168.1.104:5555   #5555可以省略</span><br></pre></td></tr></table></figure>
+
+<p>执行上述命令 , 即可通过网络连接 <code>adb</code> 调试 ;</p>
+<p>使用<code>adb devices</code>命令 , 可以查看当前使用 adb 调试的设备 ;</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20210626100614623.png" alt="在这里插入图片描述"></p>
+<p>在<code>Android Studio</code> 中也可以看到该电视盒子 , 并且打印电视盒子的相关日志 , 向电视盒子中部署程序 , 跟使用 USB 调试手机一样 ;</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2hhbjEyMDIwMTI=,size_16,color_FFFFFF,t_70-20220712113228773.png" alt="在这里插入图片描述"></p>
+<p>以上远程调试方法不仅针对<code>AndroidTV</code>, 对于<code>Android</code>手机也是一样的流程</p>
+<h3 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h3><ol>
+<li><p>如果出现连接不上的情况  可能是设备<code>tcpip</code>模式未开启, 可以执行以下指令开启:</p>
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb -s 设备名 tcpip 5555</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果依然无法连接, 那么有可能是安卓设备没有开启<code>adb</code>远程调试或者端口未开放</p>
+<p>我们可以通过<code>shel</code>l查看安卓设备<code>5555</code>端口是否开启, 指令如下:</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb -s 设备名 shell netstat -ntlp | grep 55</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/5a2a2c8cccbb41b383246163afd97df7.png" alt="img"></p>
+</li>
+<li><p>如果端口没有开启, 则运行以下指令开启:</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb -s 设备名 shell setprop service.adb.tcp.port 5555</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>另外  如果要通过<code>shell</code>查看设备<code>ip</code>, 可以运行以下指令:</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb -s 设备名 shell ifconfig</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<pre><code>或者
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb -s 设备名 shell netcfg</span><br></pre></td></tr></table></figure></code></pre><ol start="5">
+<li><p>最后 断开设备连接</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb disconnect 192.168.1.104:5555</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+</li>
+</ol>
+<p><strong>本文转载自</strong>:  <a href="https://blog.csdn.net/shulianghan/article/details/118241238" target="_blank" rel="noopener">https://blog.csdn.net/shulianghan/article/details/118241238</a></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../340.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../340.html" itemprop="url">Mac快速开启http本地服务共享文件</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-11T11:04:19+08:00">
+                2022-07-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>有时候我们可能需要用手机访问电脑上的文件, 或者用手机测试电脑上编写的程序</p>
+<p>此时 在同一个<code>wifi</code>网络的前提下我们可以这么做:</p>
+<h3 id="第一种-使用python"><a href="#第一种-使用python" class="headerlink" title="第一种 使用python"></a>第一种 使用python</h3><p>直接使用自带<code>python</code>工具开启<code>http</code>服务, 首先打开终端, 进入需要共享的目录,然后运行以下代码即可:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m SimpleHTTPServer  <span class="number">8000</span></span><br></pre></td></tr></table></figure>
+
+<p>如果是<code>python3</code>, 则将<code>SimpleHTTPServer</code>改成<code>http.server</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m http.server <span class="number">8000</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220711144617056.png" alt="image-20220711144617056"></p>
+<p>紧接着就可以在浏览器上访问了: 在地址栏输入<code>http://127.0.0.1:8000/</code>或者<code>http://localhost:8000/</code></p>
+<h5 id="局域网设备访问"><a href="#局域网设备访问" class="headerlink" title="局域网设备访问"></a>局域网设备访问</h5><p>如果局域网内其他设备访问, 则需要先获取到<code>Mac</code>的局域网<code>Ip</code>, 我们可以从系统偏好设置中的网络选项中查看到<code>IP</code>地址:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220711145144222.png" alt="image-20220711145144222"></p>
+<p>然后使用<code>http://局域网ip:8000</code>这个地址就可以供其他设备访问啦</p>
+<h3 id="第二种-使用Apache"><a href="#第二种-使用Apache" class="headerlink" title="第二种 使用Apache"></a>第二种 使用Apache</h3><h5 id="服务开启"><a href="#服务开启" class="headerlink" title="服务开启"></a>服务开启</h5><p><code>Mac</code>本身自带了<code>Apache</code>服务, 我们无需另外安装, 直接开启即可, 打开终端输入以下指令开启:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apachectl start</span><br></pre></td></tr></table></figure>
+
+<p>打开服务后, 浏览器输入以下地址即可访问:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1</span><br><span class="line"></span><br><span class="line">或者</span><br><span class="line"></span><br><span class="line">http://localhost/</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/c55e4df1cd8b78d32f275946ca4077c4.png" alt="img"></p>
+<p>出现以上页面表示服务启动成功</p>
+<p>此时 <code>Apache</code>默认的服务器根目录在：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Library/WebServer/Documents</span><br></pre></td></tr></table></figure>
+
+<p>我们可以将需要共享的文件存放到该目录下, 比如我存放了一张名为<code>111.gif</code>的图片, 那么访问<code>http://127.0.0.1/111.gif</code>即可查看该图</p>
+<h5 id="Apache配置目录浏览"><a href="#Apache配置目录浏览" class="headerlink" title="Apache配置目录浏览"></a>Apache配置目录浏览</h5><p>可是上面这种操作并不符合我们的预期, 我们想要输入地址后直接列出该目录下的所有文件</p>
+<p>这需要对<code>Apache</code>配置文件中进行修改, 其配置文件路径为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/apache2/</span><br></pre></td></tr></table></figure>
+
+<p>文件名为<code>httpd.conf</code>, 修改之前建议大家进行一次备份</p>
+<p>打开该文件,  在<code>Options</code> 后面追加一句<code>Indexes</code></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220711151550133.png" alt="image-20220711151550133"></p>
+<p>重启<code>apache</code>服务后, 浏览器输入地址就能查看目录了</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220711151755973.png" alt="image-20220711151755973"></p>
+<p>每次更改了配置, 需要重启服务才能生效, 重启指令如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//重启apache:    </span><br><span class="line">sudo apachectl restart</span><br></pre></td></tr></table></figure>
+
+<h5 id="Apache其他配置"><a href="#Apache其他配置" class="headerlink" title="Apache其他配置"></a>Apache其他配置</h5><ol>
+<li><p><strong>更改服务根目录</strong></p>
+<p>搜索<code>DocumentRoot</code>关键字</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220711152308158.png" alt="image-20220711152308158"></p>
+</li>
+<li><p><strong>更改访问端口</strong></p>
+<p>搜索<code>ServerName</code>关键字, 去掉改行注释, 然后改为<code>ServerName localhost:端口号</code>或者<code>ServerName 127.0.0.1:端口号</code></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220711152426884.png" alt="image-20220711152426884"></p>
+</li>
+<li><p><strong>开启对<code>PHP</code>的支持</strong></p>
+<p>搜索<code>LoadModule</code>, 去掉<code>php7</code>注释</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220711152834896.png" alt="image-20220711152834896"></p>
+</li>
+</ol>
+<h5 id="局域网设备访问-1"><a href="#局域网设备访问-1" class="headerlink" title="局域网设备访问"></a>局域网设备访问</h5><p><code>Apache</code>默认开启的是<code>80</code>端口,  因此直接<code>http://局域网ip</code>访问即可</p>
+<h5 id="服务关闭"><a href="#服务关闭" class="headerlink" title="服务关闭"></a>服务关闭</h5><p>服务一旦开启 每次电脑启动后<code>Apache</code>都会自动跟着开启</p>
+<p>平常不用的时候我们可以关闭服务, 减少资源消耗, 关闭指令如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//关闭apache:    </span><br><span class="line">sudo apachectl stop</span><br></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>两种方式, 各有各的好处, <code>apache</code>的强大是毋庸置疑的, 如果只是任意文件夹共享, 直接使用<code>python</code>的方法会更加方便一些</p>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../339.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../339.html" itemprop="url">Mac识别二维码 无需安装第三放应用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-09T11:04:19+08:00">
+                2022-07-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>我们在浏览网页的时候经常会碰到二维码扫描需求, 一般情况下 我们会考虑将二维码图片发送到手机上 然后用手机识别    或者干脆装个第三方扫码软件</p>
+<p>为了方便 (主要是懒)  接下来给大家介绍一种使用<code>Safari</code>浏览器二维码识别的方法</p>
+<h3 id="具体操作"><a href="#具体操作" class="headerlink" title="具体操作"></a>具体操作</h3><h5 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a>第一步</h5><p>选中要识别的二维码图片，把它拖到<code>Safar浏览器</code>打开。</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20220708154220.png" alt></p>
+<h5 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a>第二步</h5><p>随后右键点击二维码，选择<code>在新标签页中打开...</code></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20220708154248.png" alt></p>
+<p>新标签页中打开的就是二维码中的内容</p>
+<p>是不是很简单 赶紧试试吧~</p>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../338.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../338.html" itemprop="url">img标签随机获取高质量图片</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-09T09:04:19+08:00">
+                2022-07-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>博主打算为自己在vps上挂载的服务, 建立一个导航页, 于是写一个静态页面, 贴了几个超链接</p>
+<p>后来, 感觉不美观, 就放了几张图片</p>
+<p>服务器存储的图片看了几遍就看腻了, 于是找了一个高质量图片的api, 每次打开导航页都能看到随机的封面</p>
+<h3 id="开源图片api的使用"><a href="#开源图片api的使用" class="headerlink" title="开源图片api的使用"></a>开源图片api的使用</h3><ul>
+<li><p>我想获得<code>300*300</code>, 关于<code>book</code>和<code>library</code>的图片” </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://source.unsplash.com/300x300/?book,library</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将随机图片嵌入到html中 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=&quot;https://source.unsplash.com/300x300/?book,library&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+
+</li>
+</ul>
+<h3 id="随机封面效果展示"><a href="#随机封面效果展示" class="headerlink" title="随机封面效果展示"></a>随机封面效果展示</h3><ul>
+<li>第一次打开:</li>
+</ul>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/1620.png" alt="img"></p>
+<ul>
+<li>第二次打开</li>
+</ul>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/1620-20220708113914217.png" alt="img"></p>
+<ul>
+<li>第三次打开</li>
+</ul>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/1620-20220708114509494.png" alt="img"></p>
+<ul>
+<li>第N次打开…</li>
+</ul>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/1620-20220708113921160.png" alt="img"></p>
+<h3 id="随机封面测试地址-页面每次刷新，都能看到不同的封面"><a href="#随机封面测试地址-页面每次刷新，都能看到不同的封面" class="headerlink" title="随机封面测试地址(页面每次刷新，都能看到不同的封面)"></a>随机封面测试地址(页面每次刷新，都能看到不同的封面)</h3><p>页面部分源码:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;section <span class="class"><span class="keyword">class</span></span>=<span class="string">"clearfix"</span>&gt;</span><br><span class="line">        &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"item"</span>&gt;</span><br><span class="line">            &lt;a href=<span class="string">"http://git.zhaoolee.com"</span>&gt;</span><br><span class="line">                &lt;img src=<span class="string">"https://source.unsplash.com/300x300/?program"</span> alt=<span class="string">""</span>&gt;</span><br><span class="line">                &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"item-title"</span>&gt;私有Git仓库&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">            &lt;/</span>a&gt;</span><br><span class="line">        &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">        &lt;div class="item"&gt;</span></span><br><span class="line"><span class="regexp">            &lt;a href="http:/</span><span class="regexp">/cloud.zhaoolee.com"&gt;</span></span><br><span class="line"><span class="regexp">                &lt;img src="https:/</span><span class="regexp">/source.unsplash.com/</span><span class="number">300</span>x300/?<span class="built_in">document</span><span class="string">" alt="</span><span class="string">"&gt;</span></span><br><span class="line"><span class="string">                &lt;div class="</span>item-title<span class="string">"&gt;私有云网盘&lt;/div&gt;</span></span><br><span class="line"><span class="string">            &lt;/a&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">        &lt;div class="</span>item<span class="string">"&gt;</span></span><br><span class="line"><span class="string">            &lt;a href="</span>https:<span class="comment">//www.jianshu.com/u/c5d047065c42"&gt;</span></span><br><span class="line">                &lt;img src=<span class="string">"https://source.unsplash.com/300x300/?book,library"</span> alt=<span class="string">""</span>&gt;</span><br><span class="line">                &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"item-title"</span>&gt;简书主页&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">            &lt;/</span>a&gt;</span><br><span class="line">        &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">    </span></span><br><span class="line"><span class="regexp">        &lt;div class="item"&gt;</span></span><br><span class="line"><span class="regexp">            &lt;a href="https:/</span><span class="regexp">/github.com/</span>zhaoolee<span class="string">"&gt;</span></span><br><span class="line"><span class="string">                &lt;img src="</span>https:<span class="comment">//source.unsplash.com/300x300/?github" alt=""&gt;</span></span><br><span class="line">                &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"item-title"</span>&gt;Github主页&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">            &lt;/</span>a&gt;</span><br><span class="line">        &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">    </span></span><br><span class="line"><span class="regexp">        &lt;div class="item"&gt;</span></span><br><span class="line"><span class="regexp">            &lt;a href=""&gt;</span></span><br><span class="line"><span class="regexp">                &lt;img src="https:/</span><span class="regexp">/source.unsplash.com/</span><span class="number">300</span>x300/?cartoon<span class="string">" alt="</span><span class="string">"&gt;</span></span><br><span class="line"><span class="string">                &lt;div class="</span>item-title<span class="string">"&gt;在线爬虫(建设中)&lt;/div&gt;</span></span><br><span class="line"><span class="string">            &lt;/a&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        &lt;div class="</span>item<span class="string">"&gt;</span></span><br><span class="line"><span class="string">            &lt;a href="</span><span class="string">"&gt;</span></span><br><span class="line"><span class="string">                &lt;img src="</span>https:<span class="comment">//source.unsplash.com/300x300/?beauty" alt=""&gt;</span></span><br><span class="line">                &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"item-title"</span>&gt;资源分享(建设中)&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">            &lt;/</span>a&gt;</span><br><span class="line">        &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">    &lt;/</span>section&gt;</span><br><span class="line">&lt;<span class="regexp">/body&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结:"></a>小结:</h3><ul>
+<li>使用随机化开源图片封面, 能让我们每次打开页面都有惊喜.</li>
+<li>对于刚刚接触前端的小伙伴, 使用开源的图片库, 能让你的页面更加丰富多彩, 提升学习的兴趣.</li>
+<li>对于前端老司机,可以获取定制化的开源图片, 提升页面展示效果.</li>
+<li>如果你对图片的质量有极致的追求,<a href="https://source.unsplash.com/" target="_blank" rel="noopener">https://source.unsplash.com</a> 提供了丰富的接口参数设置,可以定制化随机图片的范围, 当然也可以在<a href="http://unsplash.com/" target="_blank" rel="noopener">unsplash.com</a> 注册一个账号, 订阅特别主题的图片</li>
+</ul>
+<p><strong>本文转载自</strong>: <a href="https://cloud.tencent.com/developer/article/1344365?from=15425" target="_blank" rel="noopener">https://cloud.tencent.com/developer/article/1344365?from=15425</a></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../336.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../336.html" itemprop="url">给Hexo添加Github贡献日历图</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-08T16:04:19+08:00">
+                2022-07-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="图示"><a href="#图示" class="headerlink" title="图示"></a>图示</h3><h5 id="样式一"><a href="#样式一" class="headerlink" title="样式一"></a>样式一</h5><p><img src="https://github-readme-stats.vercel.app/api?username=songjianzaina" alt="Zfour&#39;s github stats"></p>
+<h5 id="样式二"><a href="#样式二" class="headerlink" title="样式二"></a>样式二</h5><p><img src="https://ghchart.rshah.org/newbanh" alt></p>
+<h5 id="样式三"><a href="#样式三" class="headerlink" title="样式三"></a>样式三</h5><p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NDU4MDA3Ng==,size_16,color_FFFFFF,t_70.png" alt="小冰的插件效果"></p>
+<p>接下来给大家介绍它们的实现方法</p>
+<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><h5 id="第一种"><a href="#第一种" class="headerlink" title="第一种"></a>第一种</h5><p>只需将<code>username</code>的值设置为你的<code>github</code>用户名即可:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://github-readme-stats.vercel.app/api?username=github用户名</span><br></pre></td></tr></table></figure>
+
+<p>然后以图片的形式进行加载:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">![](https://github-readme-stats.vercel.app/api?username=github用户名)</span><br></pre></td></tr></table></figure>
+
+<p>如果是放置在<code>html</code>中, 替换用户名后 拷贝以下代码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=&quot;https://github-readme-stats.vercel.app/api?username=github用户名&quot; referrerpolicy=&quot;no-referrer&quot; &quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>项目GitHub: <a href="https://github.com/anuraghazra/github-readme-stats" target="_blank" rel="noopener">github-readme-stats</a></p>
+<h5 id="第二种"><a href="#第二种" class="headerlink" title="第二种"></a>第二种</h5><p>和第一种类似, 尾部改成<code>github</code>用户名即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://ghchart.rshah.org/github用户名</span><br></pre></td></tr></table></figure>
+
+<p>然后以图片的形式进行加载:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">![](https://ghchart.rshah.org/github用户名)</span><br></pre></td></tr></table></figure>
+
+<p>如果是放置在<code>html</code>中, 替换用户名后 拷贝以下代码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=&quot;https://ghchart.rshah.org/github用户名&quot;  referrerpolicy=&quot;no-referrer&quot; &quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>项目GitHub: <a href="https://github.com/2016rshah/githubchart-api" target="_blank" rel="noopener">githubchart-api</a></p>
+<h5 id="第三种"><a href="#第三种" class="headerlink" title="第三种"></a>第三种</h5><p>这种是以<code>hexo</code>插件的形式实现, 具体步骤如下:</p>
+<ol>
+<li><p>安装插件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i hexo-githubcalendar --save</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>hexo根目录下的config文件添加如下配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"># Ice Kano Plus_in</span><br><span class="line"># Hexo Github Canlendar</span><br><span class="line"># Author: Ice Kano</span><br><span class="line"># Modify: Lete乐特</span><br><span class="line">githubcalendar:</span><br><span class="line">  enable: true</span><br><span class="line">  enable_page: /</span><br><span class="line">  user: 你的github用户名</span><br><span class="line">  layout:</span><br><span class="line">    type: id</span><br><span class="line">    name: recent-posts</span><br><span class="line">    index: 0</span><br><span class="line">  githubcalendar_html: &apos;&lt;div class=&quot;recent-post-item&quot; style=&quot;width:100%;height:auto;padding:10px;&quot;&gt;&lt;div id=&quot;github_loading&quot; style=&quot;width:10%;height:100%;margin:0 auto;display: block&quot;&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;  viewBox=&quot;0 0 50 50&quot; style=&quot;enable-background:new 0 0 50 50&quot; xml:space=&quot;preserve&quot;&gt;&lt;path fill=&quot;#d0d0d0&quot; d=&quot;M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z&quot; transform=&quot;rotate(275.098 25 25)&quot;&gt;&lt;animateTransform attributeType=&quot;xml&quot; attributeName=&quot;transform&quot; type=&quot;rotate&quot; from=&quot;0 25 25&quot; to=&quot;360 25 25&quot; dur=&quot;0.6s&quot; repeatCount=&quot;indefinite&quot;&gt;&lt;/animateTransform&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div id=&quot;github_container&quot;&gt;&lt;/div&gt;&lt;/div&gt;&apos;</span><br><span class="line">  pc_minheight: 280px</span><br><span class="line">  mobile_minheight: 0px</span><br><span class="line">  color: &quot;[&apos;#ebedf0&apos;, &apos;#fdcdec&apos;, &apos;#fc9bd9&apos;, &apos;#fa6ac5&apos;, &apos;#f838b2&apos;, &apos;#f5089f&apos;, &apos;#c4067e&apos;, &apos;#92055e&apos;, &apos;#540336&apos;, &apos;#48022f&apos;, &apos;#30021f&apos;]&quot;</span><br><span class="line">  api: https://python-github-calendar-api.vercel.app/api</span><br><span class="line">  # api: https://python-gitee-calendar-api.vercel.app/api</span><br><span class="line">  calendar_js: https://cdn.jsdelivr.net/gh/Zfour/hexo-github-calendar@1.21/hexo_githubcalendar.js</span><br><span class="line">  plus_style: &quot;&quot;</span><br></pre></td></tr></table></figure>
+
+<p>将<code>user</code>属性修改为你的<code>github</code>用户名即可,</p>
+<ul>
+<li><p>其他属性用法可参见《<a href="https://zfe.space/post/hexo-githubcalendar.html" target="_blank" rel="noopener">教程：hexo-githubcalendar 插件 1.0</a>》</p>
+</li>
+<li><p>涉及主题: <a href="https://github.com/jerryc127/hexo-theme-butterfly" target="_blank" rel="noopener">hexo-theme-butterfly</a></p>
+</li>
+<li><p>插件GitHub: <a href="https://github.com/Zfour/hexo-github-calendar" target="_blank" rel="noopener">hexo-github-calendar</a></p>
+</li>
+</ul>
+</li>
+</ol>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../337.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -895,994 +1889,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../332.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../332.html" itemprop="url">关于Markdown图表绘制</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-03T09:04:19+08:00">
-                2022-07-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>写作时难免会有图表绘制需求 比如下面几种</p>
-<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><h5 id="第一种样式时序图"><a href="#第一种样式时序图" class="headerlink" title="第一种样式时序图"></a>第一种样式时序图</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Alice -&gt; Bob:Hello Bob, How are you?</span><br><span class="line">Note right of Bob: Bob thinks</span><br><span class="line">Bob -&gt; Alice: I am good thanks!</span><br></pre></td></tr></table></figure>
-
-<h5 id="第二种样式时序图"><a href="#第二种样式时序图" class="headerlink" title="第二种样式时序图"></a>第二种样式时序图</h5><pre class="mermaid"> sequenceDiagram
-    participant Alice
-    participant Bob
-    Alice->John: Hello John, how are you?
-    loop Healthcheck
-            John->John: Fight against hypochondria
-    end
-    Note right of John: Rational thoughts <br>prevail...
-    John-->Alice: Great!
-    John->Bob: How about you?
-    Bob-->John: Jolly good!</pre>
-
-<h5 id="甘特图"><a href="#甘特图" class="headerlink" title="甘特图"></a>甘特图</h5><pre class="mermaid">  gantt
-    dateFormat  YYYY-MM-DD
-    title Adding GANTT diagram functionality to mermaid
-    section A section
-    Completed task            :done,    des1, 2014-01-06,2014-01-08
-    Active task               :active,  des2, 2014-01-09, 3d
-    Future task               :         des3, after des2, 5d
-    Future task2               :         des4, after des3,6d</pre>
-<h5 id="上下流程图"><a href="#上下流程图" class="headerlink" title="上下流程图"></a>上下流程图</h5><pre class="mermaid">graph TD;
-            A-->B;
-            A-->C;
-            B-->D;
-            C-->D;</pre>
-
-<h5 id="左右流程图"><a href="#左右流程图" class="headerlink" title="左右流程图"></a>左右流程图</h5><pre class="mermaid">graph LR;
-
-律动乐器-->律动+氛围乐器-->律动+鼓组贝斯-->律动+鼓组贝斯+氛围乐器;
-铺底+氛围-->铺底+氛围+律动-->铺底+氛围+律动+鼓组贝斯-->追加间奏乐器;</pre>
-
-<h5 id="自定义style的流程图"><a href="#自定义style的流程图" class="headerlink" title="自定义style的流程图"></a>自定义style的流程图</h5><pre class="mermaid">graph LR;
-    id1(Start)-->id2(Stop)
-    style id1 fill:#f9f,stroke:#333,stroke-width:4px
-    style id2 fill:#bbf,stroke:#f66,stroke-width:2px,color:#fff,stroke-dasharray: 5 5</pre>
-
-<h5 id="各种形状的流程图"><a href="#各种形状的流程图" class="headerlink" title="各种形状的流程图"></a>各种形状的流程图</h5>
-<pre class="mermaid">graph  TD;
-    A[/Christmas\]--> B[\This is the text in the box\]-->
-     C[\Go shopping/]-->D[/This is the text in the box/]-->E{{This is the text in the box}}-->F{This is the text in the box}-->G>This is the text in the box]-->H((This is the text in the circle))-->J(This is the text in the box)</pre>
-
-<h3 id="语法实现"><a href="#语法实现" class="headerlink" title="语法实现"></a>语法实现</h3><p><strong>时序图demo代码：</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">    &lt;pre class=&quot;mermaid&quot;&gt;    sequenceDiagram</span><br><span class="line">    participant Alice</span><br><span class="line">    participant Bob</span><br><span class="line">    Alice-&gt;John: Hello John, how are you?</span><br><span class="line">    loop Healthcheck</span><br><span class="line">            John-&gt;John: Fight against hypochondria</span><br><span class="line">    end</span><br><span class="line">    Note right of John: Rational thoughts &lt;br/&gt;prevail...</span><br><span class="line">    John--&gt;Alice: Great!</span><br><span class="line">    John-&gt;Bob: How about you?</span><br><span class="line">    Bob--&gt;John: Jolly good!&lt;/pre&gt;</span><br><span class="line">**甘特图demo代码：**</span><br></pre></td></tr></table></figure>
-
-<pre><code>&lt;pre class=&quot;mermaid&quot;&gt;    gantt
-dateFormat  YYYY-MM-DD
-title Adding GANTT diagram functionality to mermaid
-section A section
-Completed task            :done,    des1, 2014-01-06,2014-01-08
-Active task               :active,  des2, 2014-01-09, 3d
-Future task               :         des3, after des2, 5d
-Future task2               :         des4, after des3, 5d
-section Critical tasks
-Completed task in the critical line :crit, done, 2014-01-06,24h
-Implement parser and jison          :crit, done, after des1, 2d
-Create tests for parser             :crit, active, 3d
-Future task in critical line        :crit, 5d
-Create tests for renderer           :2d
-Add to mermaid                      :1d&lt;/pre&gt;</code></pre><p><strong>流程图demo代码：</strong></p>
-<pre><code>    &lt;pre class=&quot;mermaid&quot;&gt;    graph TD;
-            A--&gt;B;
-            A--&gt;C;
-            B--&gt;D;
-            C--&gt;D;&lt;/pre&gt;
-
-### 总结
-
-以上只是列举其中几种 , 除此之外还可以绘制饼状图 状态图 类图 需求图等等
-
-更多技巧可以参考`mermaid`文档: 《[mermaid官方文档](https://mermaid-js.github.io/mermaid/#/flowchart)》
-
-
-
-
-
-**本文为作者原创转载时请注明出处 谢谢**
-
-![](https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png)
-
-*[乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站](https://code.newban.cn/)*
-
-</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../327.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../327.html" itemprop="url">关于Git查看提交修改的文件列表</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-06-28T09:04:19+08:00">
-                2022-06-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="1-查看最后一次提交记录的修改文件信息"><a href="#1-查看最后一次提交记录的修改文件信息" class="headerlink" title="1.查看最后一次提交记录的修改文件信息"></a>1.查看最后一次提交记录的修改文件信息</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git show --raw</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-查看指定commit-id对应修改文件列表"><a href="#2-查看指定commit-id对应修改文件列表" class="headerlink" title="2.查看指定commit id对应修改文件列表"></a>2.查看指定commit id对应修改文件列表</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git show --raw commit_id</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git show --raw 2f80f1c8bb2cb8e91d22ad38480b681c194f6518</span><br></pre></td></tr></table></figure>
-
-<h4 id="3-查看所有提交记录的修改文件信息"><a href="#3-查看所有提交记录的修改文件信息" class="headerlink" title="3.查看所有提交记录的修改文件信息"></a>3.查看所有提交记录的修改文件信息</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log --stat</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log --name-only</span><br></pre></td></tr></table></figure>
-
-<h4 id="4-查看所有修改相关的commit-ID和comment信息"><a href="#4-查看所有修改相关的commit-ID和comment信息" class="headerlink" title="4.查看所有修改相关的commit ID和comment信息"></a>4.查看所有修改相关的commit ID和comment信息</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log --pretty=oneline</span><br></pre></td></tr></table></figure>
-
-<h4 id="5-查询指定author的修改信息"><a href="#5-查询指定author的修改信息" class="headerlink" title="5.查询指定author的修改信息"></a>5.查询指定author的修改信息</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log --author=jack.li</span><br></pre></td></tr></table></figure>
-
-<h4 id="6-查看指定author在指定时间修改信息"><a href="#6-查看指定author在指定时间修改信息" class="headerlink" title="6.查看指定author在指定时间修改信息"></a>6.查看指定author在指定时间修改信息</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ git log --pretty=&quot;%h - %s&quot; --author=&apos;Junio C Hamano&apos; --since=&quot;2008-10-01&quot; \</span><br><span class="line">   --before=&quot;2008-11-01&quot; --no-merges -- t/</span><br><span class="line">5610e3b - Fix testcase failure when extended attributes are in use</span><br><span class="line">acd3b9e - Enhance hold_lock_file_for_&#123;update,append&#125;() API</span><br><span class="line">f563754 - demonstrate breakage of detached checkout with symbolic link HEAD</span><br><span class="line">d1a43f2 - reset --hard/read-tree --reset -u: remove unmerged new paths</span><br><span class="line">51a94af - Fix &quot;checkout --track -b newbranch&quot; on detached HEAD</span><br><span class="line">b0ad11e - pull: allow &quot;git pull origin $something:$current_branch&quot; into an unborn branch</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../331.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../331.html" itemprop="url">从found.000中恢复数据 某个文件夹突然不见了</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-06-03T09:04:19+08:00">
-                2022-06-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h3><ul>
-<li>本文是问题解决后编写的，解决顺序已经尽力按照我记得的编写。希望能给遇到此问题的朋友一份参考。</li>
-<li>因涉及数据此等重要性的东西，建议还是看完全文再操作。在理解了我的解决思路之后，并且觉得我的方案有用方可尝试。切勿在你解决无望的时候，看到本文以为是发现新大陆，然后盲目操作导致数据丢失得不偿失！（因为我搜索过关于<code>found.000</code>的相关，有些人说用数据恢复软件，有些人说这个文件恢复不了，还有人提问该文件夹能不能删除诸如此类）</li>
-<li>但是你还是想尝试，可以尝试复制一份<code>found.000</code>出来，在别的盘上或者电脑上对该文件夹进行操作。（切勿在源路径操作，方便你实在不行的情况下拿去维修）或者你对自己非常有信心，就在源路径下操作吧（因为我也不知道复制出来能不能恢复😂）。</li>
-<li>本文更多的是提供思路，实际操作需要的一些诸如命令行操作，文件夹提权等需要大家自行百度。<h3 id="问题说明（此时我的电脑上是没有found-000这个文件的）"><a href="#问题说明（此时我的电脑上是没有found-000这个文件的）" class="headerlink" title="问题说明（此时我的电脑上是没有found.000这个文件的）"></a>问题说明（此时我的电脑上是没有found.000这个文件的）</h3>某天我的D盘下的“资料”文件夹突然不见了。<br>当时我的思路是：</li>
-</ul>
-<ol>
-<li><p>该文件夹被病毒隐藏了？</p>
-</li>
-<li><p>我之前误删了？</p>
-</li>
-</ol>
-<h4 id="初步解决方案"><a href="#初步解决方案" class="headerlink" title="初步解决方案"></a>初步解决方案</h4><p>通过问题排查（查看隐藏文件+受保护的文件），发现思路1是错误的。</p>
-<p>那接下来就是怎么验证误删？因为该文件夹比较大，删除的情况下会提示放入不了回收站，要直接删除吗？所以回收站没有我的删除记录。然后思路2的解决方法是进PE使用数据恢复软件（如：Recuva，金山数据恢复）查看有没有相关痕迹，结果发现没有“资料“文件夹被删除的相关痕迹（着急解决问题，没想到截图）。（进不进PE没多大关系，但可能是因为我进PE恢复数据导致重启电脑的时候进行磁盘检查，然后我的电脑上才有<code>found.000</code>）</p>
-<p>经过以上的方案，还是不行之后。我剩下的思路只有装杀软看看。但是，我没有装，因为接下来的操作我也是第一次遇到。</p>
-<p>无意中，我使用 <code>everything</code> 软件进行搜索”资料”的时候，通过搜索结果看到我的文件还是存在的。忘记截图了，但我记得结果是xxx资料 <code>D:\资料\xxx</code>。当时我看到我的文件夹存在的时候很开心，马上右键打开所在路径，结果提示：请检查你的路径，没有该路径之类的话。（当时我一脸懵圈。<code>everything</code>可以搜索到，难道是<code>everything</code>之前的索引还存在？这个结果只是一个假象？）</p>
-<ul>
-<li><code>everything</code>的结果说明了什么？（我此时相信我的文件夹还是存在的）说明了我的文件夹还是存在的。没有被数据恢复软件没有检索到是因为我的文件夹根本没有被删除啊。但是不知道为什么就是看不到它了（注意，此时并不是隐藏，因为常规的查看隐藏文件方式已经不起作用了，我的理解是，因为某个原因，系统对”资料“这个文件夹的索引没有了）<h4 id="可行的解决方案"><a href="#可行的解决方案" class="headerlink" title="可行的解决方案"></a>可行的解决方案</h4></li>
-<li><em>step1: 确保你的硬盘里有found.000*</em><br>因为我成功解决问题的基础是有这个文件。所以只需要在重启的时候进行磁盘检查，让系统重新找回对这个文件夹的索引。（如果你的电脑此时有这个文件跳过这一步）</li>
-</ul>
-<p><strong>step2: 存在 found.000后</strong><br>使用<code>everything</code> 搜索一下丢失文件夹的关键字。如下：可以看到我的资料都在这个文件夹下。</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTE4OTc0MTE=,size_16,color_FFFFFF,t_70.png" alt="在这里插入图片描述"></p>
-<p><strong>step3: 进入文件夹</strong></p>
-<p>于是我马上右键打开所在路径，我的天！进来了。我试了一下打开 <code>pdf</code> ，是可以打开的。我马上复制一份到别的盘打开，是可以打开的！于是我慢慢一步一步点上一级路径跳转，是可以访问的。可是当我点击<code>dir0001.chk</code>之后提示错误了。（具体提示的错误我忘记了）</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTE4OTc0MTE=,size_16,color_FFFFFF,t_70-20220701114831592.png" alt="在这里插入图片描述"></p>
-<p><strong>step4: 从文件浏览器进入found.000</strong></p>
-<p>因为<code>step3</code>: 倒着进不了上一级路径。此时我想能不能正着进入该路径，于是我从文件夹点进去，提示权限不足，此时对文件夹提权就好了。</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTE4OTc0MTE=,size_16,color_FFFFFF,t_70-20220701114845374.png" alt="在这里插入图片描述"></p>
-<p>进入后，发现如下：（写下此文的时候我已经忘记相关弹窗提示，但是我记得我第一次提权进入该文件夹的时候没有这么多东西的，我是进行了<code>step5</code>才看到下图如此完整的文件夹）</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTE4OTc0MTE=,size_16,color_FFFFFF,t_70-20220701114857321.png" alt="在这里插入图片描述"></p>
-<p><strong>step5: 从bash进入dir0001.chk</strong></p>
-<p>在<code>step4</code>我说明了我第一次进入<code>found.000</code>文件夹是没有什么东西的。于是我的思路是：无论如何都要进入<code>单片机</code>的上一级目录（我原本保存的路径就是<code>D:\资料\单片机</code>），所以虽然不能进入<code>found.000</code>，但是只要我进入”单片机“上一级目录就可以对我之前的数据全部复制保存。</p>
-<ul>
-<li><p>怎么操作？很简单，当时我想到的是从命令行看能不能进入，于是有下图：</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTE4OTc0MTE=,size_16,color_FFFFFF,t_70-20220701114917729.png" alt="在这里插入图片描述"></p>
-</li>
-</ul>
-<p>奇怪的是，我从命令行进入<code>单片机</code>的上一级目录之后，我就可以正着进<code>found.000</code>文件夹，并且还能看到比较多的文件夹了。才有了<code>step4</code>的第二张截图。然后也有了下面的截图。</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTE4OTc0MTE=,size_16,color_FFFFFF,t_70-20220701114927261.png" alt="在这里插入图片描述"></p>
-<p>经过我的发现，之前的数据并不是全都在<code>dir0001.chk</code>中，在<code>found000</code>文件下的其他<code>dirxxxx.chk</code>都保存了我之前的资料。大家不放心每个文件夹都点开看看吧！</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
-<li>想办法让电脑中存在 <code>found.000</code>（通过重启后进行磁盘检查）</li>
-<li>想办法进入<code>found.000</code>（通过命令行，必要时结合 <code>everything</code>）</li>
-<li>事后我想，是不是一开始就可以通过 命令行 进入该文件夹了？即使不能正着进去，我也可以通过 everything 打开所在路径之后再通过命令行进入，然后通过<code>cp</code>命令直接复制到别的盘保存。</li>
-<li>同时，我成功恢复数据感觉也是很多的机缘巧合，比如，如果我不进PE恢复数据，是不是就没有磁盘检查了，也就没有生成<code>found.000</code>，我可能就还不能解决此问题了！</li>
-</ol>
-<p><strong>本文转载自</strong>: <a href="https://blog.csdn.net/u011897411/article/details/106879852" target="_blank" rel="noopener">https://blog.csdn.net/u011897411/article/details/106879852</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt> </p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../330.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../330.html" itemprop="url">记录关于移动硬盘文件丢失的找回过程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-06-01T09:04:19+08:00">
-                2022-06-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>由于居家办公需要, 经常使用移动硬盘来回在公司和宿舍之间进行大文件拷贝, 某一天突然发现硬盘中的文件夹消失不见, 而空间占用依然存在</p>
-<p>难道是文件被隐藏了?  检查一番之后发现不是</p>
-<p>当时我就慌了 因为消失的都是重要文件, 于是赶紧百度</p>
-<p><strong>搜索一阵之后, 我推测可能是不同系统兼容性错误导致的磁盘坏道</strong></p>
-<p>因为公司的电脑是Mac系统 宿舍的电脑是Windows系统, 而我的硬盘格式是NTFS, Mac本身是不兼容该格式的, 加上我使用了<code>Omi NTFS</code>这个工具进行桥接中转 硬盘出现点问题 似乎是情理之中</p>
-<p>既然发现了问题所在, 那就需要解决 尽可能地将文件恢复回来</p>
-<p><strong>而我第一时间想到的便是进行磁盘修复, 当我在Windows平台中对硬盘进行修复之后, 丢失的文件夹确实出现了 但是却变成了一个未知文件 无法打开</strong></p>
-<p>这就有点坑了</p>
-<p>无奈之下我停止了对该硬盘进行文件写入操作, 免得操作频繁导致后期无法恢复</p>
-<p>于是将该硬盘放置了一段时间, 直到有一天我需要从硬盘中未被破坏的文件夹里面找寻一些资料, 顺带使用了<code>everything</code>软件检索, 突然获得了意外惊喜, <code>everything</code>检索到了丢失文件夹中的资料</p>
-<p>这意味着文件依然存在于移动硬盘中, 可能是被迁移到了某个隐藏文件中</p>
-<p><strong>我利用<code>everything</code>找到了丢失文件所在目录, 名为<code>found.000</code></strong></p>
-<p>这个<code>found.000</code>目录是隐藏目录, 即便开启显示隐藏文件夹功能也是看不到的, 而且这个目录需要管理员权限才能对里面的文件进行拷贝移动操作</p>
-<p>既然目录找到了 那么恢复文件就不难了</p>
-<h4 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h4><ol>
-<li><p>打开管理员<code>cmd</code>窗口, 进入到<code>found.000</code>目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">F:    //进入移动硬盘盘符</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd found.000   //打开隐藏文件</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>列出当前目录下所有文件夹和文件(包含隐藏文件夹)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dir /A *</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>移动文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">move 需要移动的文件或文件夹名 目标文件夹名</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<p>被恢复的目录中可能会存在一些隐藏目录, 为了确保所有文件都恢复, 需要仔细检查</p>
-<p>网上有位小伙伴也碰到了和我类似的问题, 大家有兴趣的可以参考一番:</p>
-<p>《<a href="https://code.newban.cn/331.html">【问题记录】从found.000中恢复数据（某个文件夹突然不见了）</a>》</p>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../329.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../329.html" itemprop="url">Windows平台下cmd常用命令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-05-29T09:04:19+08:00">
-                2022-05-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="常用命令如下"><a href="#常用命令如下" class="headerlink" title="常用命令如下"></a>常用命令如下</h3><ol>
-<li><p>进入某个盘符</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">盘符名:</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>打开文件夹</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd 文件夹名</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>回退到上一层目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd ..</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>进入根目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd\</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>列出当前目录下所有文件夹(不含隐藏文件夹)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dir</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>列出当前目录下所有文件夹(包含隐藏文件夹)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dir  /A:H</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>列出当前目录下所有文件夹和文件(包含隐藏文件夹)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dir /A *</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>移动文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">move 需要移动的文件或文件夹名 目标文件夹名</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>拷贝当前目录下所有文件到D盘</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">copy * &quot;d:\&quot;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>更改文件属性 </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">attrib 文件名 -H </span><br><span class="line">attrib 文件名 +H </span><br><span class="line">attrib 文件名 -A </span><br><span class="line">attrib 文件名 +A </span><br><span class="line">attrib 文件名 -R </span><br><span class="line">attrib 文件名 +R </span><br><span class="line">attrib 文件名 -S </span><br><span class="line">attrib 文件名 +S</span><br></pre></td></tr></table></figure>
-
-<p><strong>注释:</strong></p>
-<ul>
-<li>H: 表示隐藏属性</li>
-<li>A: 表示存档属性</li>
-<li>R: 表示只读属性</li>
-<li>S: 表示系统属性</li>
-</ul>
-<p>加号表示添加 减号表示移除</p>
-</li>
-</ol>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../328.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../328.html" itemprop="url">Window10如何设置只允许某个程序联网</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-05-28T09:04:19+08:00">
-                2022-05-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>最近由于疫情原因不得不远程办公 宿舍有台笔记本 用于连接公司的电脑 由于平常在宿舍不怎么用电脑上网 所以没有装宽带 索性使用手机热点 </p>
-<p>考虑到居家办公时长的不确定性 在使用热点上网之前 我打开了win10自带的流量计费功能 </p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220505180406577.png" alt></p>
-<p>这个功能可以限制系统后台程序偷跑流量 从而达到节省流量的目的 </p>
-<p>毕竟 流量不便宜 </p>
-<p>我已经做好了打持久战的准备</p>
-<p>当我愉快的玩耍一会儿后 闲暇之余看了一下流量消耗 差点没让我喷血</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220505180514353.png" alt></p>
-<p>这虚幻居然给我偷跑流量 我明明没有启动这个应用啊 都不知道啥时候跑起来的 想想我远程软件也才用了几十兆流量而已  顿时气不打一处来</p>
-<p>看来这个流量计费功能也不太好使呀 第三方应用它管不了 </p>
-<p>于是我开始想 能不能只让我这个TeamView联网 而其他应用的禁止联网呢？  为了解决这个问题 我特地百度了一番 经过亲自尝试 最后得出了以下方案:</p>
-<p><strong>使用防火墙功能 阻止所有应用程序联网 然后对需要联网的应用开白名单即可</strong></p>
-<p>具体步骤如下:</p>
-<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><h4 id="第一步-开启防火墙功能"><a href="#第一步-开启防火墙功能" class="headerlink" title="第一步  开启防火墙功能"></a>第一步  开启防火墙功能</h4><p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220505180829771.png" alt></p>
-<p>这里 我将专用网络防火墙打开  并且将热点改成专用网络</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220505181607206.png" alt></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220505181300659.png" alt></p>
-<h4 id="第二步-阻止所有应用联网"><a href="#第二步-阻止所有应用联网" class="headerlink" title="第二步 阻止所有应用联网"></a>第二步 阻止所有应用联网</h4><p>我们进入防火墙高级设置页面:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220505181836588.png" alt></p>
-<p>然后进入属性设置, 将专用配置文件选项下的出站连接改为阻止:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220505182029775.png" alt></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220505182122456.png" alt></p>
-<p>这样就实现了阻止所有应用联网的目的 </p>
-<h4 id="第三步-对需要联网的应用单独开启白名单"><a href="#第三步-对需要联网的应用单独开启白名单" class="headerlink" title="第三步 对需要联网的应用单独开启白名单"></a>第三步 对需要联网的应用单独开启白名单</h4><p>新建一个出站规则 选择相应的应用程序 并允许联网:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220505182502208.png" alt></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220505182533260.png" alt></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220505182614723.png" alt></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220505182709992.png" alt></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220505182818106.png" alt></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220505182915890.png" alt></p>
-<p>点击完成 </p>
-<p>此时TeamView可以联网了  而其他的应用则不能联网  </p>
-<p>接下来 可以放心大胆的连上热点了  不用担心流量偷跑的问题</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>是教训 也是经验  </p>
-<p>当我写完这篇文章时 我的气也基本消了  因为我又收获了一个小经验  没有什么比这个更让我满足的了</p>
-<p>希望这个经验能帮助到你</p>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="../7/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../7/">7</a><span class="page-number current">8</span><a class="page-number" href="../9/">9</a><span class="space">&hellip;</span><a class="page-number" href="../41/">41</a><a class="extend next" rel="next" href="../9/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="../7/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../7/">7</a><span class="page-number current">8</span><a class="page-number" href="../9/">9</a><span class="space">&hellip;</span><a class="page-number" href="../42/">42</a><a class="extend next" rel="next" href="../9/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1928,7 +1939,7 @@ Add to mermaid                      :1d&lt;/pre&gt;</code></pre><p><strong>流�
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">407</span>
+                  <span class="site-state-item-count">413</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1941,7 +1952,7 @@ Add to mermaid                      :1d&lt;/pre&gt;</code></pre><p><strong>流�
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">123</span>
+                  <span class="site-state-item-count">126</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
