@@ -288,6 +288,570 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../396.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../396.html" itemprop="url">SpringBoot实现自动生成接口文档</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-04-06T10:04:19+08:00">
+                2023-04-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>需要使用<code>knife4j</code>这个框架来实现我们的需求, 这里我使用的是<code>Gradle</code>构建环境, 具体步骤如下</p>
+<h3 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h3><ol>
+<li><p><strong>添加依赖</strong></p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation <span class="string">"com.github.xiaoymin:knife4j-spring-boot-starter:2.0.9"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>定义配置类</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableSwagger2WebMvc</span></span><br><span class="line"><span class="keyword">open</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfiguration</span> : <span class="type">WebMvcConfigurer&#123;</span></span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">addResourceHandlers</span><span class="params">(registry: <span class="type">ResourceHandlerRegistry</span>?)</span></span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建Docket存入容器，Docket代表一个接口文档</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">open</span> <span class="function"><span class="keyword">fun</span> <span class="title">webApiConfig</span><span class="params">()</span></span>: Docket? &#123;</span><br><span class="line">        <span class="keyword">return</span> Docket(DocumentationType.SWAGGER_2) <span class="comment">// 创建接口文档的具体信息</span></span><br><span class="line">            .apiInfo(webApiInfo()) <span class="comment">// 创建选择器，控制哪些接口被加入文档</span></span><br><span class="line">            .select() <span class="comment">// 指定@ApiOperation标注的接口被加入文档</span></span><br><span class="line">            .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation::<span class="class"><span class="keyword">class</span>.<span class="title">java</span>))</span></span><br><span class="line">            .build()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建接口文档的具体信息，会显示在接口文档页面中</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">webApiInfo</span><span class="params">()</span></span>: ApiInfo? &#123;</span><br><span class="line">        <span class="keyword">return</span> ApiInfoBuilder() <span class="comment">// </span></span><br><span class="line">            .title(<span class="string">"文档标题"</span>) <span class="comment">// </span></span><br><span class="line">            .description(<span class="string">"文档描述"</span>) </span><br><span class="line">            .version(<span class="string">"1.0"</span>)<span class="comment">// 版本</span></span><br><span class="line">            .contact(Contact(<span class="string">"联系人信息"</span>, <span class="string">"http://baidu.com"</span>, <span class="string">"baidu@qq.com"</span>)) <span class="comment">// 版权</span></span><br><span class="line">            .license(<span class="string">"版权地址"</span>) </span><br><span class="line">            .licenseUrl(<span class="string">"http://www.baidu.com"</span>)</span><br><span class="line">            .build()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>给<code>Controller</code>添加文档注解</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Api(tags = [<span class="meta-string">"文件管理"</span>])</span></span><br><span class="line"><span class="meta">@ApiSupport(author = <span class="meta-string">"开发者名称"</span>, order = 1)</span></span><br><span class="line"><span class="meta">@CrossOrigin</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(<span class="meta-string">"/file"</span>)</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FileController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> service: FileService</span><br><span class="line">    <span class="meta">@ApiOperation(value = <span class="meta-string">"文件上传"</span>, notes = <span class="meta-string">"这是注释"</span>)</span></span><br><span class="line">    <span class="meta">@PostMapping(value = [<span class="meta-string">"/upload"</span>])</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">uploadFile</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="meta">@RequestParam(value = <span class="meta-string">"file"</span>, required = true)</span> file: <span class="type">MultipartFile</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span></span>: BaseEntity&lt;String&gt; &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">val</span> url = service.uploadFile(file)</span><br><span class="line">            BaseEntity(<span class="keyword">data</span> = url)</span><br><span class="line">        &#125; <span class="keyword">catch</span> (e: Exception) &#123;</span><br><span class="line">            BaseEntity(code = <span class="number">505</span>, msg = e.message.orEmpty(), <span class="keyword">data</span> = <span class="string">""</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>在application.yml</code>配置文件中对<code>knife4j</code>进行相关配置</strong></p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">knife4j:</span></span><br><span class="line"><span class="attr">  enable:</span> <span class="literal">true</span> <span class="comment">#开启文档自动生成功能</span></span><br><span class="line"><span class="attr">  production:</span> <span class="literal">false</span> <span class="comment"># 生产版本时 无权限访问</span></span><br><span class="line"><span class="attr">  basic:</span> <span class="comment"># 设置访问密码</span></span><br><span class="line"><span class="attr">    enable:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">    username:</span> <span class="string">abc</span></span><br><span class="line"><span class="attr">    password:</span> <span class="number">123</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>运行工程, 查看文档</strong></p>
+<p>浏览器输入<code>http://ip:端口/doc.html</code>查看自动生成的文档, 如下:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20230410114636451.png" alt="image-20230410114636451"></p>
+</li>
+</ol>
+<h3 id="文档参考"><a href="#文档参考" class="headerlink" title="文档参考"></a>文档参考</h3><p>官方文档: <a href="https://doc.xiaominfo.com/" target="_blank" rel="noopener">点击进入</a></p>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../395.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../395.html" itemprop="url">SSH链接失败提示REMOTE HOST IDENTIFICATION HAS CHANGED</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-04-05T10:04:19+08:00">
+                2023-04-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>昨天在使用<code>Git</code>推送代码的时候, 莫名其妙突然报错,提示:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@</span><br><span class="line">@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @</span><br><span class="line">@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@</span><br><span class="line">IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!</span><br><span class="line">Someone could be eavesdropping on you right now (man-in-the-middle attack)!</span><br><span class="line">It is also possible that the RSA host key has just been changed.</span><br><span class="line">The fingerprint for the RSA key sent by the remote host is SHA256:uNiVztksCsDhcc0u9e8BujQXVUpKZIDTMc</span><br><span class="line">Please contact your system administrator.</span><br><span class="line">Add correct host key in /root/.ssh/known_hosts to get rid of this message.</span><br><span class="line">Offending key in /root/.ssh/known_hosts:3</span><br></pre></td></tr></table></figure>
+
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><ol>
+<li><p>第一种 直接删除<code>.ssh</code>目录下的<code>known_hosts</code>文件</p>
+</li>
+<li><p>第二种 修改<code>.ssh</code>目录下的<code>config</code>配置文件, 添加如下配置:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">StrictHostKeyChecking no  # 不进行主机检查</span><br><span class="line">UserKnownHostsFile /dev/null #不保存在known_hosts中</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>第三种 只删除<code>known_hosts</code>文件中对应<code>ip</code>的相关<code>rsa</code>信息</p>
+</li>
+</ol>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../394.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../394.html" itemprop="url">使用Python语言进行硬件开发</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-04-03T10:04:19+08:00">
+                2023-04-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p><a href="https://cool-js.com/admin/introduce.htm" target="_blank" rel="noopener">cool-admin V6.0</a>开始接入了物联网开发，默认集成了MQTT服务。在这个万物互联的时代，我们多掌握一种技能就多一分优势。</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/show.gif" alt="Show"></p>
+<h3 id="选型"><a href="#选型" class="headerlink" title="选型"></a>选型</h3><p>目前市面上大多数开发物联网的都是c系列的语言，但是随着硬件性能的提升其实我们对编程语言的选择已经慢慢趋向于考虑好用、方便、简单，而不是性能。</p>
+<p>对于没接触过c语言的开发者，他们大部分习惯用<code>java</code>、<code>php</code>、<code>go</code>、<code>python</code>等比较上层的语言，学c的话花的时间可能比较久。因此综合cool的粉丝和其他考虑，我们选用 <a href="https://micropython.org/" target="_blank" rel="noopener">MicroPython</a>来作为我们开发物联网的语言，使用起来和python几乎无差别。</p>
+<p><code>python</code>做为一门工具语言，是很多开发着需要去掌握的！！！</p>
+<h3 id="MicroPython"><a href="#MicroPython" class="headerlink" title="MicroPython"></a>MicroPython</h3><p><code>MicroPython</code>是一种基于<code>Python</code>的精简版嵌入式操作系统，它能够在小型的嵌入式系统中运行<code>Python</code>解释器。MicroPython支持各种硬件平台，包括单片机，<code>Wi-Fi</code>模块，以及其他各种嵌入式设备。</p>
+<p><code>MicroPython</code>被设计成轻量级的、高效的，并且可以非常容易地与各种传感器、执行器和其他外部硬件设备进行通信。它支持许多标准Python库，同时还具有一些专门为嵌入式设备设计的库和工具。</p>
+<p><code>MicroPython</code>的目标是提供一个方便的<code>Python</code>环境，可以让开发人员在嵌入式设备上轻松地编写代码，并且可以直接在设备上运行代码，而不需要在外部计算机上编译或调试代码。</p>
+<p><code>MicroPython</code>可以通过串口或者<code>Wi-Fi</code>连接进行编程和调试，还可以使用<code>MicroPython</code>的交互式REPL环境（Read-Eval-Print-Loop）来进行快速原型开发。同时，<code>MicroPython</code>还支持<code>Python 3</code>语法，并且具有自动垃圾回收功能，这使得编写代码更加简单和高效。</p>
+<h3 id="硬件设备"><a href="#硬件设备" class="headerlink" title="硬件设备"></a>硬件设备</h3><p>对比了市面上很多种设备，最终选用<code>Esp32</code>，来作为我们的硬件设备，它有以下特点(看不懂的同学不要着急，大概了解就行)：</p>
+<ol>
+<li><strong>高性能</strong>：<code>ESP32</code>拥有两个<code>Tensilica LX6</code>内核，主频高达240MHz，能够提供高性能的计算能力，可以处理复杂的算法和任务。</li>
+<li><strong>低功耗</strong>：<code>ESP32</code>的功耗非常低，它具有多种节能模式，可以延长电池寿命，从而使其成为无线传感器、物联网设备和移动设备的理想选择。</li>
+<li><strong>内置<code>Wi-Fi</code>和蓝牙</strong>：<code>ESP32</code>具有内置的<code>Wi-Fi</code>和蓝牙模块，支持多种无线协议和标准，可以实现快速、稳定的网络通信，从而扩展了应用场景。</li>
+<li><strong>丰富的外设</strong>：<code>ESP32</code>集成了多个外设，包括多个通用输入输出口、<code>ADC</code>、<code>DAC</code>、<code>PWM</code>、<code>SPI</code>、<code>I2C</code>、<code>UART</code>、定时器等，可以满足不同应用的需求。</li>
+<li><strong>安全性</strong>：<code>ESP32</code>支持多种安全特性，包括加密算法、安全引导和安全存储，可以保证系统的安全性。</li>
+<li><strong>易于开发</strong>：<code>ESP32</code>可以使用<code>Arduino</code>、<code>MicroPython</code>、<code>JavaScript</code>等多种编程语言进行开发，同时还有丰富的开发工具和社区支持，可以方便快速地进行原型设计和开发。</li>
+</ol>
+<p>总的来说，<code>ESP32</code>硬件具有高性能、低功耗、内置无线通信、丰富的外设、安全性高和易于开发等优点，可以满足各种物联网和嵌入式应用的需求。</p>
+<p><img src="https://cool-js.com/iot/esp32.png" alt="Eps32"></p>
+<h3 id="资源"><a href="#资源" class="headerlink" title="资源"></a>资源</h3><ul>
+<li>一个模拟开发板的网站，支持<code>Esp32</code>和<code>MicroPython</code>：<a href="https://wokwi.com/" target="_blank" rel="noopener">https://wokwi.com/open in new window</a></li>
+<li>一个入门学习错的教程：<a href="https://doc.itprojects.cn/0006.zhishi.esp32/02.doc/index.html#/" target="_blank" rel="noopener">https://doc.itprojects.cn/0006.zhishi.esp32/02.doc/index.html#/open in new window</a></li>
+<li>制作定制电路板：<a href="https://www.jlc.com/" target="_blank" rel="noopener">https://www.jlc.com/open in new window</a></li>
+</ul>
+<h3 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h3><p>除了<code>MicroPython</code>之外, 目前还有<a href="https://gitee.com/Lyon1998/pikapython" target="_blank" rel="noopener">pikapython</a></p>
+<p>具体文档: <a href="http://pikascript.com/" target="_blank" rel="noopener">点击进入</a></p>
+<p><strong>本文转载自</strong>: <a href="https://cool-js.com/iot/introduce.html" target="_blank" rel="noopener">COOL-JS</a></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../392.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../392.html" itemprop="url">AI和硬件开发</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-04-02T10:04:19+08:00">
+                2023-04-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>国内有不少已经接入<code>ChatGPT</code>相关<code>API</code>并做成了独立<code>Web</code>形式的网站, 比如</p>
+<p><a href="https://talkai.cc/" target="_blank" rel="noopener">https://talkai.cc/</a></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20230404145647933.png" alt="image-20230404145647933"></p>
+<p>想尝鲜的可以体验一下</p>
+<h3 id="AI和硬件"><a href="#AI和硬件" class="headerlink" title="AI和硬件"></a>AI和硬件</h3><p>AI归根结底还是一个软件, 未来必须结合硬件才能大展拳脚, 更进一步</p>
+<p>所以硬件开发在接下来的时间里会有一个迅速的进步</p>
+<p>以前我们所谓的智能家居, 其实还是相对简陋了一些, 只不过是从原来的机械控制转变成了数字控制, 但实际操作还是离不开人</p>
+<p>未来有AI的参与, 那智能家居才算是真正意义上的智能, AI就是生活管家</p>
+<h3 id="硬件开发"><a href="#硬件开发" class="headerlink" title="硬件开发"></a>硬件开发</h3><p>关于硬件开发 涉及的技术点不少 比如单片机知识  汇编语言 C语言等等</p>
+<p>在20年的时候有幸录过一套汇编语言相关的视频, 该套视频全部上传至B站供大家免费观看</p>
+<p><strong>《程序员进阶之三大架构汇编语言入门视频教程-胖薯出品》</strong></p>
+<ul>
+<li>录制时间 2020年12月14日</li>
+<li>B站:<a href="https://www.bilibili.com/video/BV1CK411u76E/" target="_blank" rel="noopener">点击跳转</a></li>
+<li>网易云课堂: <a href="https://study.163.com/course/introduction/1211547802.htm" target="_blank" rel="noopener">点击跳转</a></li>
+</ul>
+<p>更多教程可前往 <a href="https://shop.newban.cn/" target="_blank" rel="noopener">有瓣杂货铺</a></p>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../391.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1060,800 +1624,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../386.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../386.html" itemprop="url">Godot游戏开发之如何将图片铺满整个背景</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-30T10:04:19+08:00">
-                2022-09-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><p>当前素材库中只有一张小草地图片, 如下:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/GrassBackground.png" alt="GrassBackground"></p>
-<p>如何将其铺满整个背景, 得到如下效果:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930152341903.png" alt="image-20220930152341903"></p>
-<p>我们可能第一时间会想到使用<code>Tilemap</code>, 不过手动绘制相对来说有些费时间, 在<code>Godot</code>中我们有更好的方法可以实现</p>
-<h3 id="实现方式一"><a href="#实现方式一" class="headerlink" title="实现方式一"></a>实现方式一</h3><p>使用<code>Sprite+图片repeat</code>的方式实现</p>
-<ol>
-<li><p>首先创建一个<code>Sprite</code>节点</p>
-</li>
-<li><p>将草地图片添加至该节点的<code>Texture</code>属性上</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930153243013.png" alt="image-20220930153243013"></p>
-</li>
-<li><p>启用<code>Region</code>属性</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930153318292.png" alt="image-20220930153318292"></p>
-</li>
-<li><p>在纹理区域框选需要进行<code>repeat</code>的区域</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930153401635.png" alt="image-20220930153401635"></p>
-</li>
-<li><p>选中草地文件 然后在导入面板开启重复功能, 最后点击重新导入</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930153526042.png" alt="image-20220930153526042"></p>
-</li>
-<li><p>此时我们在纹理区域拉伸选框, 则可以对草地小图片进行重复并铺满整个背景</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930153638246.png" alt="image-20220930153638246"></p>
-</li>
-</ol>
-<h3 id="实现方式二"><a href="#实现方式二" class="headerlink" title="实现方式二"></a>实现方式二</h3><p>使用<code>TextureRect</code>+<code>Tile</code>实现</p>
-<ol>
-<li><p>创建<code>TextureRect</code>节点</p>
-</li>
-<li><p>将图片拖拽至该节点的<code>Texture</code>属性上</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930154030277.png" alt="image-20220930154030277"></p>
-</li>
-<li><p><code>Stretch Mode</code>属性选择<code>Tile</code></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930154057353.png" alt="image-20220930154057353"></p>
-</li>
-<li><p>此时拉伸图片则自动重复</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930154121259.png" alt="image-20220930154121259"></p>
-</li>
-</ol>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../385.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../385.html" itemprop="url">使用brew安装程序是提示No such file or directory @ rb_sysopen</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-29T15:04:19+08:00">
-                2022-09-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="原因一"><a href="#原因一" class="headerlink" title="原因一"></a>原因一</h3><p>使用国内镜像而该镜像未完全同步 导致包找不到</p>
-<p><strong>解决方法:</strong></p>
-<p>临时去除镜像即可:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> HOMEBREW_BOTTLE_DOMAIN=<span class="string">''</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="原因二"><a href="#原因二" class="headerlink" title="原因二"></a>原因二</h3><p>依赖程序缺失 </p>
-<p><strong>解决方法:</strong></p>
-<p>需要进行单独安装, 比如报错<code>Error: No such file or directory @ rb_sysopen - xxxxxxxc–jasper</code>, 此时单独安装<code>jasper</code>:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install jasper</span><br></pre></td></tr></table></figure>
-
-<p>安装完后 再次运行之前的安装之前的指令即可</p>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../384.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../384.html" itemprop="url">使用xmake交叉编译生成各个平台可执行程序</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-29T12:04:19+08:00">
-                2022-09-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="xmake介绍"><a href="#xmake介绍" class="headerlink" title="xmake介绍"></a>xmake介绍</h3><p><code>xmake</code> 是一个基于 <code>Lua</code> 的轻量级跨平台构建工具，使用 <code>xmake.lua</code>维护项目构建, 相当于是<code>cmake</code>的增强版, 其优点如下:</p>
-<ul>
-<li>简单易用</li>
-<li>能够像 <code>Make/Ninja</code> 那样可以直接编译项目</li>
-<li>可以像<code>CMake/Meson</code> 那样生成工程文件</li>
-<li>内置的包管理系统来帮助用户解决 <code>C/C++</code>依赖库的集成使用问题</li>
-<li>可以实现跟<code>C/C++</code>进行混合编译</li>
-<li>编译速度也是非常的快，可以跟<code>Ninja</code>持平</li>
-<li>简化了交叉编译</li>
-</ul>
-<p><a href="https://xmake.io/#/zh-cn/about/introduction" target="_blank" rel="noopener">官方文档</a></p>
-<p><a href="https://github.com/xmake-io/xmake" target="_blank" rel="noopener">GITHUB</a></p>
-<h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3><ul>
-<li><p><strong>编译宿主平台</strong>: MAC</p>
-</li>
-<li><p><strong>交叉编译目标平台</strong>: Linux, Windows, IOS, Android ….</p>
-</li>
-</ul>
-<ol>
-<li><p>下载<code>xmake</code></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash &lt;(curl -fsSL https://xmake.io/shget.text -k)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>测试<code>c</code>代码准备 文件取名为<code>main</code></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>** argv)</span></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello World!\n"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ol>
-<ol start="3">
-<li><p>在源码目录下新建<code>xmake.lua</code>文件 </p>
-<p>并加入以下配置</p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">add_rules(<span class="string">"mode.debug"</span>, <span class="string">"mode.release"</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 编译项目名称</span></span><br><span class="line">target(<span class="string">"main"</span>)</span><br><span class="line">		<span class="comment">-- 指定编译形式 可执行文件 还是静态库or动态库</span></span><br><span class="line">    set_kind(<span class="string">"binary"</span>)</span><br><span class="line">    <span class="comment">-- 指定需要参与编译的源码文件</span></span><br><span class="line">    add_files(<span class="string">"src/main/c/main.c"</span>)</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<p>编译前的环境准备好了,那接下来 咱们挨个来实现目标平台的可执行文件生成</p>
-<h3 id="生成phone平台程序"><a href="#生成phone平台程序" class="headerlink" title="生成phone平台程序"></a>生成phone平台程序</h3><ol>
-<li><p><strong>下载<code>xcode</code></strong></p>
-<p>直接应用市场下载</p>
-</li>
-<li><p><strong>给<code>xmake</code>指定编译目标平台</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmake f -p iphoneos</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>编译程序</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmake build main</span><br></pre></td></tr></table></figure>
-
-<p>编译成功后 可以在<code>build</code>目录中找到对应的可执行文件</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220929172751417.png" alt="image-20220929172751417"></p>
-</li>
-</ol>
-<h3 id="生成Mac平台的程序"><a href="#生成Mac平台的程序" class="headerlink" title="生成Mac平台的程序"></a>生成Mac平台的程序</h3><ol>
-<li><p><strong>给<code>xmake</code>指定编译目标平台</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmake f -p macosx</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>编译程序</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmake build main</span><br></pre></td></tr></table></figure>
-
-<p>编译成功后 可以在<code>build</code>目录中找到对应的可执行文件</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220929173058827.png" alt="image-20220929173058827"></p>
-</li>
-<li><p><strong>执行程序</strong></p>
-<p>由于编译宿主平台刚好是<code>Mac</code> 所以我们可以直接执行程序</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmake run main</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220929173203142.png" alt="image-20220929173203142"></p>
-</li>
-</ol>
-<h3 id="生成Windows平台程序"><a href="#生成Windows平台程序" class="headerlink" title="生成Windows平台程序"></a>生成Windows平台程序</h3><ol>
-<li><p><strong>下载<code>mingw-w64</code></strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install mingw-w64</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>给<code>xmake</code>指定编译目标平台</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmake f -p mingw</span><br></pre></td></tr></table></figure>
-
-<p>或者使用图形化界面配置</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmake f --menu</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/68747470733a2f2f786d616b652e696f2f6173736574732f696d672f696e6465782f6d656e75636f6e662e706e67.png" alt="img"></p>
-<p>配置完后 我们查看<code>xmake</code>的配置显示当前平台为<code>mingw</code>:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930102409815.png" alt="image-20220930102409815"></p>
-</li>
-<li><p><strong>编译程序</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmake build main</span><br></pre></td></tr></table></figure>
-
-<p>编译成功后  我们可以在<code>build</code>目录下找到生成的<code>exe</code>可执行文件:<img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930101946291.png" alt="image-20220930101946291"></p>
-</li>
-<li><p><strong>关于mingw内部编译器</strong></p>
-<p>我们打印编译信息会发现<code>mingw</code>内部采用的是<code>gcc</code>编译工具</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930102723811.png" alt="image-20220930102723811"></p>
-</li>
-</ol>
-<h3 id="生成Android平台程序"><a href="#生成Android平台程序" class="headerlink" title="生成Android平台程序"></a>生成Android平台程序</h3><ol>
-<li><p><strong>下载NDK</strong></p>
-<p><a href="https://developer.android.google.cn/ndk/downloads/" target="_blank" rel="noopener">点击进入下载页面</a></p>
-</li>
-<li><p><strong>给<code>xmake</code>指定编译目标平台</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmake f -p android --ndk=ndk路径</span><br></pre></td></tr></table></figure>
-
-<p>此时我们查看<code>xmake</code>配置显示当前编译平台为<code>android</code>:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930101224522.png" alt="image-20220930101224522"></p>
-</li>
-<li><p><strong>编译程序</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmake build main</span><br></pre></td></tr></table></figure>
-
-<p>编译成功后  可以在编译目录查看到生成的可执行文件</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220930101319392.png" alt="image-20220930101319392"></p>
-</li>
-</ol>
-<h3 id="xmake常用指令"><a href="#xmake常用指令" class="headerlink" title="xmake常用指令"></a>xmake常用指令</h3><ol>
-<li><p><strong>重置配置</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmake f -c</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>指定交叉编译工具</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">xmake f --toolchain=clang</span><br><span class="line">或者</span><br><span class="line">xmake f --toolchain=gcc</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>查看当前工程信息和xmake信息</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmake show</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>编译过程中查看完整的编译选项</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmake -rv</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>查看当前配置</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmake config -v</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220929181646806.png" alt="image-20220929181646806"></p>
-</li>
-<li><p><strong>卸载<code>xmake</code></strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xmake update --uninstall</span><br></pre></td></tr></table></figure>
-
-
-
-</li>
-</ol>
-<h3 id="常见问题汇总"><a href="#常见问题汇总" class="headerlink" title="常见问题汇总"></a>常见问题汇总</h3><ol>
-<li><p>交叉编译报错 <code>unknown platform for xcode!</code></p>
-<p>解决方案: 卸载<code>xmake</code>重装</p>
-</li>
-</ol>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../383.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../383.html" itemprop="url">C/C++交叉编译各个平台可执行程序</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-29T10:04:19+08:00">
-                2022-09-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>目前主流的平台有:</p>
-<ul>
-<li>Windows</li>
-<li>Mac</li>
-<li>Linux</li>
-<li>Android</li>
-<li>IOS</li>
-</ul>
-<p>当<code>C/C++</code>程序写好后 如何快速在当前平台编译出各个平台的可执行文件 </p>
-<p>现在比较成熟的方案有:</p>
-<ul>
-<li>利用<code>docker</code>容器编译</li>
-<li>利用<code>cmake</code>构建交叉编译环境</li>
-</ul>
-<h3 id="利用docker容器编译"><a href="#利用docker容器编译" class="headerlink" title="利用docker容器编译"></a>利用<code>docker</code>容器编译</h3><p>基于<code>GCC</code>套件, 可实现对<code>Android</code>, <code>Linux</code>, <code>Windows</code>, <code>Web</code>平台的交叉编译, 详细介绍如下:</p>
-<ul>
-<li><p><strong>dockcross/base</strong></p>
-<p>Base image for other toolchain images. From Debian Jessie with GCC, make, autotools, CMake, Ninja, Git, and Python.</p>
-</li>
-<li><p><strong>dockcross/android-arm</strong></p>
-<p>The Android NDK standalone toolchain for the arm architecture.</p>
-</li>
-<li><p><strong>dockcross/android-arm64</strong></p>
-<p>The Android NDK standalone toolchain for the arm64 architecture.</p>
-</li>
-<li><p><strong>dockcross/linux-arm64</strong></p>
-<p> Cross compiler for the 64-bit ARM platform on Linux, also known as AArch64.</p>
-</li>
-<li><p><strong>dockcross/linux-armv5</strong></p>
-<p> Linux armv5 cross compiler toolchain for legacy devices like the Parrot AR Drone.</p>
-</li>
-<li><p><strong>dockcross/linux-armv5-musl</strong></p>
-<p> Linux armv5 cross compiler toolchain using <a href="https://www.musl-libc.org/" target="_blank" rel="noopener">musl</a> as base “libc”.</p>
-</li>
-<li><p><strong>dockcross/linux-armv6</strong></p>
-<p> Linux ARMv6 cross compiler toolchain for the Raspberry Pi, etc.</p>
-</li>
-<li><p><strong>dockcross/linux-armv7</strong></p>
-<p> Generic Linux armv7 cross compiler toolchain.</p>
-</li>
-<li><p><strong>dockcross/linux-armv7a</strong></p>
-<p> Toolchain configured for ARMv7-A used in Beaglebone Black single board PC with TI SoC AM3358 on board, Cortex-A8.</p>
-</li>
-<li><p><strong>dockcross/linux-mipsel</strong></p>
-<p> Linux mipsel cross compiler toolchain for little endian MIPS GNU systems.</p>
-</li>
-<li><p><strong>dockcross/linux-mips</strong></p>
-<p> Linux mips cross compiler toolchain for big endian 32-bit hard float MIPS GNU systems.</p>
-</li>
-<li><p><strong>dockcross/linux-s390x</strong></p>
-<p> Linux s390x cross compiler toolchain for S390X GNU systems.</p>
-</li>
-<li><p><strong>dockcross/linux-ppc64le</strong></p>
-<p> Linux PowerPC 64 little endian cross compiler toolchain for the POWER8, etc. Important: Due to Issue #430, automatic build of newer images has been disabled.</p>
-</li>
-<li><p><strong>dockcross/linux-x64</strong></p>
-<p> Linux x86_64 / amd64 compiler. Since the Docker image is natively x86_64, this is not actually a cross compiler.</p>
-</li>
-<li><p><strong>dockcross/linux-x86</strong></p>
-<p> Linux i686 cross compiler.</p>
-</li>
-<li><p><strong>dockcross/manylinux2014-x64</strong></p>
-<p> Docker <a href="https://github.com/pypa/manylinux" target="_blank" rel="noopener">manylinux2014</a> image for building Linux x86_64 / amd64 <a href="http://pythonwheels.com/" target="_blank" rel="noopener">Python wheel packages</a>. It includes Python 3.5, 3.6, 3.7, 3.8, and 3.9. Also has support for the dockcross script, and it has installations of CMake, Ninja, and  <a href="http://scikit-build.org/" target="_blank" rel="noopener">scikit-build</a>. For CMake, it sets MANYLINUX2014 to “TRUE” in the toolchain.</p>
-</li>
-<li><p><strong>dockcross/manylinux2014-x86</strong></p>
-<p> Docker <a href="https://github.com/pypa/manylinux" target="_blank" rel="noopener">manylinux2014</a> image for building Linux i686 <a href="http://pythonwheels.com/" target="_blank" rel="noopener">Python wheel packages</a>. It includes Python 3.5, 3.6, 3.7, 3.8, and 3.9. Also has support for the dockcross script, and it has installations of CMake, Ninja, and  <a href="http://scikit-build.org/" target="_blank" rel="noopener">scikit-build</a>. For CMake, it sets MANYLINUX2014 to “TRUE” in the toolchain.</p>
-</li>
-<li><p><strong>dockcross/manylinux2014-aarch64</strong></p>
-<p> Docker <a href="https://github.com/pypa/manylinux" target="_blank" rel="noopener">manylinux2014</a> image for building Linux aarch64 / arm64 <a href="http://pythonwheels.com/" target="_blank" rel="noopener">Python wheel packages</a>. It includes Python 3.5, 3.6, 3.7, 3.8, and 3.9. Also has support for the dockcross script, and it has installations of CMake, Ninja, and  <a href="http://scikit-build.org/" target="_blank" rel="noopener">scikit-build</a>. For CMake, it sets MANYLINUX2014 to “TRUE” in the toolchain.</p>
-</li>
-<li><p><strong>dockcross/manylinux2010-x64</strong></p>
-<p> Docker <a href="https://github.com/pypa/manylinux" target="_blank" rel="noopener">manylinux2010</a> image for building Linux x86_64 / amd64 <a href="http://pythonwheels.com/" target="_blank" rel="noopener">Python wheel packages</a>. It includes Python 2.7, 3.4, 3.5, 3.6, 3.7 and 3.8. Also has support for the dockcross script, and it has installations of CMake, Ninja, and  <a href="http://scikit-build.org/" target="_blank" rel="noopener">scikit-build</a>. For CMake, it sets MANYLINUX2010 to “TRUE” in the toolchain.</p>
-</li>
-<li><p><strong>dockcross/manylinux2010-x86</strong></p>
-<p> Docker <a href="https://github.com/pypa/manylinux" target="_blank" rel="noopener">manylinux2010</a> image for building Linux i686 <a href="http://pythonwheels.com/" target="_blank" rel="noopener">Python wheel packages</a>. It includes Python 2.7, 3.4, 3.5, 3.6, 3.7 and 3.8. Also has support for the dockcross script, and it has installations of CMake, Ninja, and  <a href="http://scikit-build.org/" target="_blank" rel="noopener">scikit-build</a>. For CMake, it sets MANYLINUX2010 to “TRUE” in the toolchain.</p>
-</li>
-<li><p><strong>dockcross/manylinux1-x64</strong></p>
-<p> Docker <a href="https://github.com/pypa/manylinux/tree/manylinux1" target="_blank" rel="noopener">manylinux1</a> image for building Linux x86_64 / amd64 <a href="http://pythonwheels.com/" target="_blank" rel="noopener">Python wheel packages</a>. It includes Python 2.7, 3.4, 3.5, 3.6, 3.7 and 3.8. Also has support for the dockcross script, and it has installations of CMake, Ninja, and  <a href="http://scikit-build.org/" target="_blank" rel="noopener">scikit-build</a>. For CMake, it sets MANYLINUX1 to “TRUE” in the toolchain.</p>
-</li>
-<li><p><strong>dockcross/manylinux1-x86</strong></p>
-<p> Docker <a href="https://github.com/pypa/manylinux/tree/manylinux1" target="_blank" rel="noopener">manylinux1</a> image for building Linux i686 <a href="http://pythonwheels.com/" target="_blank" rel="noopener">Python wheel packages</a>. It includes Python 2.7, 3.4, 3.5, 3.6, 3.7 and 3.8. Also has support for the dockcross script, and it has installations of CMake, Ninja, and [ <a href="http://scikit-build.org/" target="_blank" rel="noopener">scikit-build</a>](http:// <a href="http://scikit-build.org/" target="_blank" rel="noopener">scikit-build</a>.org/). For CMake, it sets MANYLINUX1 to “TRUE” in the toolchain.</p>
-</li>
-<li><p><strong>dockcross/web-wasm</strong></p>
-<p> The Emscripten WebAssembly/asm.js/JavaScript cross compiler.</p>
-</li>
-<li><p><strong>dockcross/windows-static-x64</strong></p>
-<p> 64-bit Windows cross-compiler based on  <a href="https://mxe.cc/" target="_blank" rel="noopener">MXE/MinGW-w64</a>  with win32 threads and static linking.</p>
-</li>
-<li><p><strong>dockcross/windows-static-x64-posix</strong></p>
-<p> 64-bit Windows cross-compiler based on  <a href="https://mxe.cc/" target="_blank" rel="noopener">MXE/MinGW-w64</a>  with posix threads and static linking.</p>
-</li>
-<li><p><strong>dockcross/windows-static-x86</strong></p>
-<p> 32-bit Windows cross-compiler based on  <a href="https://mxe.cc/" target="_blank" rel="noopener">MXE/MinGW-w64</a>  with win32 threads and static linking.</p>
-</li>
-<li><p><strong>dockcross/windows-shared-x64</strong></p>
-<p> 64-bit Windows cross-compiler based on  <a href="https://mxe.cc/" target="_blank" rel="noopener">MXE/MinGW-w64</a>  with win32 threads and dynamic linking.</p>
-</li>
-<li><p><strong>dockcross/windows-shared-x64-posix</strong></p>
-<p> 64-bit Windows cross-compiler based on  <a href="https://mxe.cc/" target="_blank" rel="noopener">MXE/MinGW-w64</a>  with posix threads and dynamic linking.</p>
-</li>
-<li><p><strong>dockcross/windows-shared-x86</strong></p>
-<p> 32-bit Windows cross-compiler based on  <a href="https://mxe.cc/" target="_blank" rel="noopener">MXE/MinGW-w64</a>  with win32 threads and dynamic linking.</p>
-</li>
-</ul>
-<p>具体使用可参见<a href="https://github.com/cicerops/dockcross" target="_blank" rel="noopener">Github</a></p>
-<h3 id="使用cmake构建交叉编译环境"><a href="#使用cmake构建交叉编译环境" class="headerlink" title="使用cmake构建交叉编译环境"></a>使用<code>cmake</code>构建交叉编译环境</h3><p>首先我们需要下载<code>cmake</code>构建工具</p>
-<p>然后下载用于交叉编译的套件</p>
-<p>以<code>Mac</code>平台为例, 如果我需要编译各个平台的可执行文件, 那么首先需要下载能在<code>Mac</code>平台运行的目标平台编译包, 比如:</p>
-<ul>
-<li><p><code>android</code>平台:下载 <code>Mac</code>平台可运行的<code>NDK</code> (基于<code>clang</code>)</p>
-</li>
-<li><p><code>ios</code>平台: 下载<code>iphoneos SDK</code>, xcode自带 我们只需下载<code>xcode</code>即可 (基于<code>clang</code>)</p>
-</li>
-<li><p><code>windows</code>平台:下载<code>MinGW</code> 或者 <a href="https://mxe.cc/" target="_blank" rel="noopener">MXE/MinGW-w64</a> (基于<code>GCC</code>)</p>
-</li>
-<li><p><code>Linux</code>平台:如 <code>arm/x86-Linux-gnueabi</code>套件(基于<code>GCC</code>)</p>
-</li>
-</ul>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1904,7 +1674,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">413</span>
+                  <span class="site-state-item-count">417</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1987,7 +1757,7 @@
 
 
 
-  <script type="text/javascript" src="js/src/mermaid.min.js"></script>
+  <script type="text/javascript" async src="js/src/mermaid.min.js"></script>
   <script>
   if (window.mermaid) {
         var mermaid_config = {

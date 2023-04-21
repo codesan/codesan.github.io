@@ -288,6 +288,778 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../257.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../257.html" itemprop="url">测试服务器端口是否打通的若干种方法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-01T11:02:19+08:00">
+                2021-09-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>有时候我们会碰到服务端程序连接不上的情况, 要么是<code>ip</code>有问题 要么是端口有问题</p>
+<p><code>ip</code>我们可以使用<code>ping</code>的方式检测是否正常</p>
+<p>那么端口检测 可以通过以下几种方式检测:</p>
+<h3 id="1-使用ssh"><a href="#1-使用ssh" class="headerlink" title="1.使用ssh"></a>1.使用ssh</h3><p>我们知道 连接服务器环境直接使用<code>ssh</code>指令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh  用户名@ip -p 端口</span><br></pre></td></tr></table></figure>
+
+<p>示例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh  root@117.21.33.45 -p 22</span><br></pre></td></tr></table></figure>
+
+<p>那么我们可以利用<code>ssh</code>来测试 端口通与不通</p>
+<p>比如测试端口<code>5900</code>是否打通:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -v root@117.21.33.45 -p 5900 //-v表示打印连接日志</span><br></pre></td></tr></table></figure>
+
+<p>如果连接日志中出现<code>Connection established.</code>字样表示端口是通的, 否则不通</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901113602398.png" alt="image-20210901113602398"></p>
+<h3 id="2-使用wget"><a href="#2-使用wget" class="headerlink" title="2.使用wget"></a>2.使用wget</h3><p><code>wget</code>是<code>linux</code>下的下载工具，需要先安装.</p>
+<p>用法: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget ip:port</span><br></pre></td></tr></table></figure>
+
+<p>如果端口存在 则连接成功:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901114002996.png" alt="image-20210901114002996"></p>
+<p>否则 连接失败:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901114035402.png" alt="image-20210901114035402"></p>
+<h3 id="3-使用telnet"><a href="#3-使用telnet" class="headerlink" title="3.使用telnet"></a>3.使用telnet</h3><p><code>telnet</code>是<code>windows</code>平台自带指令，<code>windows</code>机器可以直接用 如果是<code>linux</code>机器，需要先安装<code>telnet</code>.</p>
+<p>用法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">telnet ip port</span><br></pre></td></tr></table></figure>
+
+<p>如果端口存在 则连接成功:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901114244225.png" alt="image-20210901114244225"></p>
+<p>否则连接失败:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901114304583.png" alt="image-20210901114304583"></p>
+<h3 id="4-使用nc"><a href="#4-使用nc" class="headerlink" title="4.使用nc"></a>4.使用nc</h3><p><code>nc</code>是<code>netcat</code>的简写 是一个非常强大的网络工具</p>
+<p>直接使用以下指令即可测试端口是否打通:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -zv 服务器ip 端口</span><br></pre></td></tr></table></figure>
+
+<p>nc的能力除此之外 它还可以:</p>
+<ul>
+<li>模拟服务端侦听指定端口</li>
+<li>模拟客户端对服务端进行连接</li>
+<li>机器之间传输文件</li>
+<li>机器之间网络测速 </li>
+</ul>
+<h5 id="模拟服务端和客户端"><a href="#模拟服务端和客户端" class="headerlink" title="模拟服务端和客户端"></a>模拟服务端和客户端</h5><p>我们在使用阿里云服务器的时候, 除了要在服务器给应用部署端口之外 还需要再阿里云后台安全组中开放端口映射 这样外网才能对服务器程序进行访问</p>
+<p>有时候 我们仅仅是需要测试安全组策略是否打通, 假设我们在安全组中配置外网<code>4001</code>端口映射到服务器<code>80</code>端口, 这个时候我们可以在服务端模拟一个<code>80</code>侦听端口:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -l 80</span><br></pre></td></tr></table></figure>
+
+<p>然后外网主机同样使用<code>nc</code>进行模拟访问:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -zv 服务器ip 4001</span><br></pre></td></tr></table></figure>
+
+<p>当然你想使用<code>telnet</code>模拟客户端也可以:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">telnet 服务器ip 4001</span><br></pre></td></tr></table></figure>
+
+<p>如果连接成功 表示端口策略打通 连接拒绝则不通 倘若连接超时 有可能服务端程序有问题 </p>
+<h3 id="5-使用traceroute"><a href="#5-使用traceroute" class="headerlink" title="5.使用traceroute"></a>5.使用<code>traceroute</code></h3><p><code>traceroute</code>可以用来探测主机和目标机的路由节点, 同样可以用来检测端口是否打通 </p>
+<p>用法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">traceroute -n ip -p 端口</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-使用nmap"><a href="#6-使用nmap" class="headerlink" title="6. 使用nmap"></a>6. 使用<code>nmap</code></h3><p><code>nmap</code>可以扫描机器端口</p>
+<p>用法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap ip -p 端口</span><br></pre></td></tr></table></figure>
+
+<p>以下状态表示扫描成功:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901121229352.png" alt="image-20210901121229352"></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../254.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../254.html" itemprop="url">linux中安装vscode实现在线IDE远程开发</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-31T18:02:19+08:00">
+                2021-08-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>一台服务器, 一个浏览器 就能实现远程随时随地开发, 无论是在公司 家里 出差 甚至在地铁使用手机</p>
+<p>接下来介绍两种在线IDE的实现方式:</p>
+<h3 id="第一种-使用docker模式"><a href="#第一种-使用docker模式" class="headerlink" title="第一种 使用docker模式"></a>第一种 使用docker模式</h3><p>首先服务端需要安装Docker环境, 然后拉取相关镜像, 步骤如下:</p>
+<ol>
+<li><p>拉取镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull codercom/code-server</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建并启动容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">docker run -id \</span><br><span class="line">-u root \</span><br><span class="line">-p 4001:4000 \</span><br><span class="line">-p 8443:8080 \</span><br><span class="line">--name=code_server \</span><br><span class="line">-e PASSWORD=1234 \</span><br><span class="line">-h code_server \</span><br><span class="line">-v $PWD/coder:/home/coder \</span><br><span class="line">codercom/code-server</span><br></pre></td></tr></table></figure>
+
+<p>参数说明:</p>
+<ul>
+<li><strong>-u root 表示启用root用户权限 这一步很关键 不然很多文件无法操作</strong></li>
+<li><strong>-p 8443：8080 将容器的8080端口映射到主机的8443端口 用于浏览器访问</strong></li>
+<li><strong>-p 4001:4000  将容器的4000端口映射到主机的4001端口 用于开发过程中代码修改后实时更新查看</strong></li>
+<li><strong>-e PASSWORD=1234 设置远程登录密码</strong></li>
+<li><strong>-v  $PWD/coder:/home/coder将主机中当前目录挂载到容器</strong></li>
+<li><strong>-h 设置容器的hostname</strong> </li>
+<li><strong>–name=code_server 给容器取个名称</strong></li>
+<li><strong>$PWD表示当前所在目录</strong></li>
+</ul>
+</li>
+</ol>
+<p>容器成功启动后, 直接在浏览器地址栏输入服务端ip和<code>8443</code>端口即可进入<code>ide</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://ip:8443</span><br></pre></td></tr></table></figure>
+
+<p>输入密码后:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901153731968.png" alt="image-20210901153731968"></p>
+<h5 id="远程登录密码修改"><a href="#远程登录密码修改" class="headerlink" title="远程登录密码修改"></a>远程登录密码修改</h5><p><code>code-server</code>中有一个配置文件<code>config.yaml</code>里面存储着登录密码 端口等相关信息:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">bind-addr: 127.0.0.1:8080</span><br><span class="line">auth: password</span><br><span class="line">password: 1234</span><br><span class="line">cert: false</span><br></pre></td></tr></table></figure>
+
+<p>该配置文件路径为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/root/.config/code-server/config.yaml</span><br></pre></td></tr></table></figure>
+
+<p>直接对该文件进行修改即可</p>
+<p>为了方便随时修改配置文件, 我们在启动容器的时候可以对容器配置文件进行挂载:</p>
+<p>首先将配置文件拷贝至宿主机中:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker cp code_server:/root/.config/code-server/config.yaml $PWD/config</span><br></pre></td></tr></table></figure>
+
+<p>然后创建并启动容器:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">docker run -id \</span><br><span class="line">-u root \</span><br><span class="line">-p 4001:4000 \</span><br><span class="line">-p 8443:8080 \</span><br><span class="line">--name=code_server \</span><br><span class="line">-e PASSWORD=1234 \</span><br><span class="line">-h code_server \</span><br><span class="line">-v $PWD/config/config.yaml:/root/.config/code-server/config.yaml \</span><br><span class="line">-v $PWD/coder:/home/coder \</span><br><span class="line">codercom/code-server</span><br></pre></td></tr></table></figure>
+
+<p>这样 直接在宿主机中修改配置文件就可以了</p>
+<h3 id="第二种-使用第三方服务"><a href="#第二种-使用第三方服务" class="headerlink" title="第二种 使用第三方服务"></a>第二种 使用第三方服务</h3><p>第一种方式相对来说比较吃系统资源, 除此之外我们还可以使用第三方的在线IDE服务, 比如使用<code>coding.net</code>提供的<code>CloudStudio</code>工作空间</p>
+<p>其实就是在线<code>vscode</code>, 长这样:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901165231064.png" alt="image-20210901165231064"></p>
+<p><code>CloudStudio</code>提供了多种环境预设模板, 非常方便, 省下了安装环境的时间</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901165820056.png" alt="image-20210901165820056"></p>
+<p>而且还支持预览调试:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/run-react-preview.png" alt="预览窗口"></p>
+<p><code>coding.net</code>提供两种服务器环境:</p>
+<ul>
+<li><strong>一种是官方免费的服务器</strong>: 每天4个小时的使用时间 机器性能还不错 使劲造</li>
+<li><strong>一种的使用自己的服务器</strong>: 没有时间限制</li>
+</ul>
+<p>看个人需求了, 如果临时测试用的话 用免费的就行, 如果开发重心转移到远程的话 建议还是使用自己的服务器:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901170414332.png" alt="image-20210901170414332"></p>
+<p>可以通过<code>ssh</code>或者用户名密码的方式连接我们自己的服务器:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901170155859.png" alt="image-20210901170155859"></p>
+<p>相比第一种<code>Docker</code>自建<code>IDE</code>, 从体验和便捷度上来说完胜</p>
+<p>而且IDE本身程序是托管于<code>coding.net</code>, 不占用我们服务器资源, 对于小型服务器的用户而言, 优先考虑采用<code>CloudStudio</code></p>
+<p>唯一让人感觉坑爹的是<code>coding.net</code>改版太频繁, 没过几周估计你连入口都找不到</p>
+<h4 id="阿里云在线IDE"><a href="#阿里云在线IDE" class="headerlink" title="阿里云在线IDE"></a>阿里云在线IDE</h4><p>现在阿里云也推出了<code>Web</code>在线编辑器,名叫 <code>DevStudio</code>和<code>CloudStudio</code>类似:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220916140455968.png" alt="image-20220916140455968"></p>
+<p>针对<code>Java</code>语言, 阿里云这边使用的是在线<code>Idea</code>, 这对<code>Java</code>开发者而言算是非常便利了</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220916140732637.png" alt="image-20220916140732637"></p>
+<p>目前<code>DevStudio</code> 公测周期是<code>2021 年 6 月 23 日 ~ 2022 年 12 月 30 日</code>, 估计公测结束后就开始收费了  坑~</p>
+<h4 id="国外的在线IDE"><a href="#国外的在线IDE" class="headerlink" title="国外的在线IDE"></a>国外的在线IDE</h4><p>名为<code>codesandbox</code>, 支持多平台, 云端协作, <code>Github</code>仓库拉取等</p>
+<p>官网: <a href="https://codesandbox.io/" target="_blank" rel="noopener">点击进入</a></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20230418152244210.png" alt="image-20230418152244210"></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../255.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../255.html" itemprop="url">docker中安装ubuntu桌面环境</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-31T18:02:19+08:00">
+                2021-08-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>使用<code>docker</code>, 总会碰到需要桌面环境的时候, 这里介绍<code>docker</code>中安装<code>ubuntu</code>桌面环境的方法, 非常方便, 只需要一个浏览器就能访问</p>
+<h3 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h3><ol>
+<li><p>拉取镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull dorowu/ubuntu-desktop-lxde-vnc</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建并启动容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker run -id \</span><br><span class="line">-p 6080:80 \</span><br><span class="line">-p 8900:5900 \</span><br><span class="line">-e VNC_PASSWORD=1234 \</span><br><span class="line">--name=c_desktop \</span><br><span class="line">-h c_desktop \</span><br><span class="line">-v $PWD/dev/shm:/dev/shm \</span><br><span class="line">dorowu/ubuntu-desktop-lxde-vnc</span><br></pre></td></tr></table></figure>
+
+<p>参数说明:</p>
+<ul>
+<li><strong>-p 6080：80 将容器的80端口映射到主机的6080端口 用于浏览器访问</strong></li>
+<li><strong>-p 8900：5900 将容器的5900端口映射到主机的8900端口 用于vnc客户端访问</strong></li>
+<li><strong>-e VNC_PASSWORD=1234 设置远程登录密码</strong></li>
+<li><strong>-v $PWD/dev/shm:/dev/shm将主机中当前目录挂载到容器</strong></li>
+<li><strong>-h 设置容器的hostname</strong> </li>
+<li><strong>–name=c_desktop 给容器取个名称</strong></li>
+<li><strong>$PWD表示当前所在目录</strong></li>
+</ul>
+</li>
+</ol>
+<p>容器运行成功后, 接下来可以通过两种方式进入ubuntu桌面:</p>
+<h3 id="第一种-浏览器访问"><a href="#第一种-浏览器访问" class="headerlink" title="第一种 浏览器访问"></a>第一种 浏览器访问</h3><p>在浏览器地址栏输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://容器ip:6080</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901102900618.png" alt="image-20210901102900618"></p>
+<p>然后输入密码即可进入</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901103136185.png" alt="image-20210901103136185"></p>
+<h3 id="第二种-使用VNC客户端访问"><a href="#第二种-使用VNC客户端访问" class="headerlink" title="第二种 使用VNC客户端访问"></a>第二种 使用VNC客户端访问</h3><p>地址栏输入目标<code>ip</code>和端口, 注意这里端口是8900而不是6080</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901145352885.png" alt="image-20210901145352885"></p>
+<p>输入密码登录后长这样:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901145321808.png" alt="image-20210901145321808"></p>
+<p>另外 如果你主机端使用的是<code>mac</code>平台, 还可以直接使用其自带的屏幕共享工具充当<code>VNC</code>工具使</p>
+<p>全局搜索<code>Screen Sharing</code> :</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901105353641.png" alt="image-20210901105353641"></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901145607320.png" alt="image-20210901145607320"></p>
+<p>输入密码登录后界面:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901145708985.png" alt="image-20210901145708985"></p>
+<p>相比使用<code>vnc</code>客户端, <code>Mac</code>自带的工具虽然方便 但是流畅度会弱一些</p>
+<h3 id="特别注意"><a href="#特别注意" class="headerlink" title="特别注意"></a>特别注意</h3><p><code>vnc</code>连接端口默认是<code>5900</code>我们在外网映射的时候不建议直接使用<code>5900</code>端口映射, 可能会出现连接不上的情况, 本文采用的是<code>8900</code></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../253.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../253.html" itemprop="url">给Multipass容器安装桌面环境</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-31T17:02:19+08:00">
+                2021-08-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p><code>linux</code>环境下的桌面程序多达十几种, 比较流行的有<code>Unity</code>、<code>Gnome3</code>、<code>kde</code>、<code>mate</code>、<code>xfce</code>、<code>lxde</code></p>
+<p>我们来看看它们分别都长什么样:</p>
+<p><strong>Unity:</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/841693-20180305010017582-310753998.png" alt="img"></p>
+<p><strong>Gnome2:</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/841693-20180305005834169-1731748738.png" alt="img"></p>
+<p><strong>Gnome3:</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/841693-20180305005812083-619129357.png" alt="img"></p>
+<p><strong>KDE:</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/841693-20180305010144808-1350683214.png" alt="img"></p>
+<p><strong>mate:</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/111835zdvcddj8pmd7wp87.jpg" alt="ubuntu_mate_1510"></p>
+<p><strong>xfce:</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/841693-20180305010336904-1794804327.png" alt="img"></p>
+<p><strong>lxde:</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/841693-20180305010502862-1164967659.png" alt="img"></p>
+<p>不过上面这前四个体量都不小, 对于寄生于主机的小容器系统而言, 我希望找一个轻量简洁满足正常功能的桌面即可</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/841693-20180305010638218-1272553780.png" alt="img"></p>
+<p>于是在<code>lxde</code>和<code>xfec</code>之中进行选择 最后我选择了<code>xfec</code></p>
+<h3 id="xfec安装步骤"><a href="#xfec安装步骤" class="headerlink" title="xfec安装步骤"></a><code>xfec</code>安装步骤</h3><ol>
+<li><p>更新源</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装<code>Xfce</code>桌面程序</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install xfce4</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<p>   安装过程中会让你选择显示管理器, 选择<code>gdm3</code>即可</p>
+<p>   <img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210831172358907.png" alt="image-20210831172358907"></p>
+<ol start="3">
+<li><p>安装<code>VNCServer</code> 用于远程桌面连接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install tightvncserver</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动vnc服务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vncserver</span><br></pre></td></tr></table></figure>
+
+<p>提示我们输入访问密码:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901175901616.png" alt="image-20210901175901616"></p>
+<p>这里的密码用于接下来的远程登录用</p>
+</li>
+</ol>
+<h3 id="开始远程访问"><a href="#开始远程访问" class="headerlink" title="开始远程访问"></a>开始远程访问</h3><h5 id="第一种-vnc客户端访问模式"><a href="#第一种-vnc客户端访问模式" class="headerlink" title="第一种 vnc客户端访问模式"></a>第一种 <code>vnc</code>客户端访问模式</h5><p><code>Mac</code>平台可直接执行以下指令安装:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install Caskroom/cask/vnc-viewer</span><br></pre></td></tr></table></figure>
+
+<p>或者下载安装包:</p>
+<p><a href="https://url97.ctfile.com/f/21042697-511264719-a281de" target="_blank" rel="noopener">点击下载</a>（访问密码：312306）</p>
+<p>安装<code>vnc</code>客户端后在地址栏输入目标<code>ip</code>和端口, 端口默认为<code>5901</code></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901180352068.png" alt="image-20210901180352068"></p>
+<p>输入密码登录后发现只有灰屏幕:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901180441212.png" alt="image-20210901180441212"></p>
+<p>接下来我们需要配置一下<code>vncserver</code>的环境:</p>
+<ol>
+<li><p>首先关闭<code>vncserver</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vncserver -kill :1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改前对配置文件进行备份</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp ~/.vnc/xstartup ~/.vnc/xstartup.bak</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改配置文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim ~/.vnc/xstartup</span><br></pre></td></tr></table></figure>
+
+<p>内容替换为如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">xrdb $HOME/.Xresources</span><br><span class="line">startxfce4 &amp;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改配置文件权限</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x ~/.vnc/xstartup</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重新启动<code>vnc</code>服务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vncserver</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>最后重新连接远程桌面, 如下:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20210901181507448.png" alt="image-20210901181507448"></p>
+<h5 id="第二种-浏览器访问模式"><a href="#第二种-浏览器访问模式" class="headerlink" title="第二种 浏览器访问模式"></a>第二种 浏览器访问模式</h5><p>具体参考:</p>
+<p>《<a href="https://code.newban.cn/260.html">如何使用Web浏览器访问Ubuntu环境下的vnc桌面</a>》</p>
+<h3 id="指令补充"><a href="#指令补充" class="headerlink" title="指令补充"></a>指令补充</h3><ol>
+<li><p>如果你需要设置<code>vncserver</code>开机自启动:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start vncserver@:1.service &amp;&amp; systemctl enable vncserver@:1.service</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>你想查看<code>vnserver</code>服务是否开启:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">systemctl status vncserver@:.service</span><br><span class="line"></span><br><span class="line">或者</span><br><span class="line">systemctl is-enabled vncserver@.service</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>你想重启<code>vncserver</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart vncserver@:1.service</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>你想设置<code>vnc</code>分辨率:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vncserver -geometry 1280x1024</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>你想修改<code>vncserver</code>登录密码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vncpasswd</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+</li>
+</ol>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
+<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
+<p>微信公众号二维码如下:</p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../252.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1387,754 +2159,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../246.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../246.html" itemprop="url">Android开发中实现全局数据共享的几种方式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-17T17:02:19+08:00">
-                2021-08-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>这里的数据并不是指单纯的字面值数据, 字面值数据我们可以使用数据库实现, 但是如果我们需要将一些变量, 对象设置成全局共享 那么有以下几种方式</p>
-<ul>
-<li>静态变量/常量</li>
-<li>单例</li>
-<li>枚举</li>
-<li>后台服务</li>
-</ul>
-<h4 id="静态变量-常量"><a href="#静态变量-常量" class="headerlink" title="静态变量/常量"></a>静态变量/常量</h4><p>既可以存储字面值数据, 也可以存储引用型数据</p>
-<h4 id="单例"><a href="#单例" class="headerlink" title="单例"></a>单例</h4><p>全局唯一的对象实例, 这个不必多说</p>
-<h4 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h4><p>由静态常量/变量延伸而来, jdk早期版本不支持枚举, 都是使用静态常量替代</p>
-<p>枚举使用相对静态常量更加方便 </p>
-<h4 id="后台服务"><a href="#后台服务" class="headerlink" title="后台服务"></a>后台服务</h4><p>属于Android独有, 四大组件之一, 可以利用service维护一个全局唯一对象或者变量</p>
-<p>由于Service自带Context对象, 因此在需要使用到Context的场景下推荐使用Service来实现全局数据共享, 避免内存泄露</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><a href="https://space.bilibili.com/485691562" target="_blank" rel="noopener">B站入口</a></p>
-<p><a href="https://code.newban.cn/0.html">打赏通道</a></p>
-<p>微信公众号二维码如下:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../245.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../245.html" itemprop="url">Web中关于转发和重定向的区别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-16T11:02:19+08:00">
-                2021-08-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="转发"><a href="#转发" class="headerlink" title="转发"></a>转发</h3><p>服务端内部页面的跳转, 只作用于服务器内部, 和浏览器无关</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MDAwMTEyNQ==,size_16,color_FFFFFF,t_70.png" alt="在这里插入图片描述"></p>
-<p><strong>特点</strong>:</p>
-<ul>
-<li><p>地址栏不发生变化，显示的是上一个页面的地址</p>
-</li>
-<li><p>请求次数：只有1次请求</p>
-</li>
-<li><p>请求域中数据不会丢失</p>
-</li>
-</ul>
-<p><strong>关键方法</strong>:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">request.getRequestDispatcher(&quot;/jump_ad&quot;).forward(request, response)</span><br></pre></td></tr></table></figure>
-
-<p><strong>示例</strong>:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">@CrossOrigin</span><br><span class="line">@RestController</span><br><span class="line">class JumpControllor &#123;</span><br><span class="line"></span><br><span class="line">    @Autowired</span><br><span class="line">    lateinit var shortService: ShortKeyService</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @GetMapping(&quot;/test&quot;)</span><br><span class="line">    fun test(</span><br><span class="line">        response: HttpServletResponse,</span><br><span class="line">        request: HttpServletRequest</span><br><span class="line">    ) &#123;</span><br><span class="line">                request.getRequestDispatcher(&quot;/jump_ad&quot;).forward(request, response)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    @GetMapping(&quot;/jump_ad&quot;)</span><br><span class="line">    fun jumpAd(request: HttpServletRequest,response: HttpServletResponse) &#123;</span><br><span class="line">        response.writer.println(&quot;哈哈哈&quot;)</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="转发-1"><a href="#转发-1" class="headerlink" title="转发"></a>转发</h3><p>浏览器端的页面跳转, 同时作用于浏览器和服务端</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MDAwMTEyNQ==,size_16,color_FFFFFF,t_70-20210816111205564.png" alt="在这里插入图片描述"></p>
-<p><strong>特点</strong>:</p>
-<ul>
-<li>地址栏：显示新的地址</li>
-<li>请求次数：2次</li>
-<li>请求域中的数据会丢失，因为是2次请求</li>
-</ul>
-<p><strong>关键方法</strong>:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">response.sendRedirect(&quot;新地址&quot;)</span><br></pre></td></tr></table></figure>
-
-<p><strong>示例</strong>:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">@CrossOrigin</span><br><span class="line">@RestController</span><br><span class="line">class JumpControllor &#123;</span><br><span class="line"></span><br><span class="line">    @Autowired</span><br><span class="line">    lateinit var shortService: ShortKeyService</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @GetMapping(&quot;/test&quot;)</span><br><span class="line">    fun test(</span><br><span class="line">        response: HttpServletResponse,</span><br><span class="line">        request: HttpServletRequest</span><br><span class="line">    ) &#123;</span><br><span class="line">        response.sendRedirect(&quot;http://www.baidu.com&quot;)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../243.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../243.html" itemprop="url">Javascript中click点击事件的若干种种写法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-16T10:51:19+08:00">
-                2021-08-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="第一种"><a href="#第一种" class="headerlink" title="第一种"></a>第一种</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Javascript中点击事件方法一<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn"</span>&gt;</span>click<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">var</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">"btn"</span>);</span></span><br><span class="line"><span class="actionscript">        btn.onclick=<span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="actionscript">            alert(<span class="string">"hello world"</span>);</span></span><br><span class="line">        &#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>移除事件:</strong></p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">btn.onclick=<span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
-
-<h4 id="第二种"><a href="#第二种" class="headerlink" title="第二种"></a>第二种</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Javascript中点击事件方法二<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn"</span>&gt;</span>click<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">var</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">"btn"</span>);</span></span><br><span class="line"><span class="actionscript">        btn.addEventListener(<span class="string">'click'</span>,<span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="actionscript">            alert(<span class="string">"hello wrold"</span>);</span></span><br><span class="line"><span class="actionscript">        &#125;,<span class="literal">false</span>)</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="第三种"><a href="#第三种" class="headerlink" title="第三种"></a>第三种</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Javascript中点击事件方法三<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="actionscript">        <span class="function"><span class="keyword">function</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="actionscript">            alert(<span class="string">"hello world"</span>);</span></span><br><span class="line">        &#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn"</span> <span class="attr">onclick</span>=<span class="string">"test()"</span>&gt;</span>click<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="第四种"><a href="#第四种" class="headerlink" title="第四种"></a>第四种</h4><p>模拟触发事件:</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>usually function<span class="tag">&lt;/<span class="name">title</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span> </span><br><span class="line"><span class="actionscript"><span class="function"><span class="keyword">function</span> <span class="title">load</span><span class="params">()</span></span>&#123; </span></span><br><span class="line"><span class="actionscript">  <span class="comment">//下面两种方法效果是一样的 </span></span></span><br><span class="line"><span class="javascript"> <span class="built_in">document</span>.getElementById(<span class="string">"target"</span>).onclick(); </span></span><br><span class="line"><span class="javascript">  <span class="built_in">document</span>.getElementById(<span class="string">"target"</span>).click(); </span></span><br><span class="line">&#125; </span><br><span class="line"><span class="actionscript"><span class="function"><span class="keyword">function</span> <span class="title">test</span><span class="params">()</span></span>&#123; </span></span><br><span class="line"><span class="actionscript">  alert(<span class="string">"test"</span>); </span></span><br><span class="line">&#125; </span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span> <span class="attr">onload</span>=<span class="string">"load()"</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"target"</span> <span class="attr">onclick</span>=<span class="string">"test()"</span>&gt;</span>test<span class="tag">&lt;/<span class="name">button</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../244.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../244.html" itemprop="url">数据库操作之多表联合查询sql语句</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-12T16:14:19+08:00">
-                2021-08-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="表准备"><a href="#表准备" class="headerlink" title="表准备"></a>表准备</h4><p>假设数据库有两张表 名为<code>person</code>和<code>city</code></p>
-<p>表<code>person</code>字段如下:</p>
-<table>
-<thead>
-<tr>
-<th>id</th>
-<th>name</th>
-<th>c_id</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td>张三</td>
-<td>1</td>
-</tr>
-<tr>
-<td>2</td>
-<td>李四</td>
-<td>2</td>
-</tr>
-<tr>
-<td>3</td>
-<td>王五</td>
-<td>5</td>
-</tr>
-</tbody></table>
-<p>表<code>city</code>字段如下</p>
-<table>
-<thead>
-<tr>
-<th>id</th>
-<th>city</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td>北京</td>
-</tr>
-<tr>
-<td>2</td>
-<td>上海</td>
-</tr>
-<tr>
-<td>3</td>
-<td>广州</td>
-</tr>
-</tbody></table>
-<h4 id="多表合一查询"><a href="#多表合一查询" class="headerlink" title="多表合一查询"></a>多表合一查询</h4><ol>
-<li><strong>第一种</strong></li>
-</ol>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> xxx,xxx <span class="keyword">from</span> 表<span class="number">1</span>，表<span class="number">2</span> <span class="keyword">where</span> 表<span class="number">1.</span>xxx=表<span class="number">2.</span>xxx</span><br></pre></td></tr></table></figure>
-
-<p>示例:</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">name</span>, city <span class="keyword">from</span> person, city <span class="keyword">where</span> name.c_id = city.id;</span><br></pre></td></tr></table></figure>
-
-<p>查询结果:</p>
-<table>
-<thead>
-<tr>
-<th>city</th>
-<th>name</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>北京</td>
-<td>张三</td>
-</tr>
-<tr>
-<td>上海</td>
-<td>李四</td>
-</tr>
-</tbody></table>
-<ol start="2">
-<li><strong>第二种 使用 <code>join</code></strong></li>
-</ol>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> xxx,xxx <span class="keyword">from</span> 表<span class="number">1</span> <span class="keyword">inner</span> <span class="keyword">join</span> 表<span class="number">2</span> <span class="keyword">on</span> 表<span class="number">1.</span>xxx=表<span class="number">2.</span>xxx</span><br></pre></td></tr></table></figure>
-
-<p>示例:</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">name</span>, city <span class="keyword">from</span> person <span class="keyword">inner</span> <span class="keyword">join</span> city <span class="keyword">on</span> name.c_id = city.id;</span><br></pre></td></tr></table></figure>
-
-<p>查询结果和第一种一致</p>
-<h4 id="根据一张表字段查询另外一张表"><a href="#根据一张表字段查询另外一张表" class="headerlink" title="根据一张表字段查询另外一张表"></a>根据一张表字段查询另外一张表</h4><ol>
-<li>查询所属北京的都有哪些人</li>
-</ol>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 嵌套查询方式</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">name</span></span><br><span class="line"><span class="keyword">from</span> person </span><br><span class="line"><span class="keyword">where</span> c_id = ( <span class="keyword">select</span> <span class="keyword">id</span>  <span class="keyword">from</span> city  <span class="keyword">where</span> city = <span class="string">'北京'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#或者非嵌套查询方式</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">name</span></span><br><span class="line"><span class="keyword">from</span> person p, city c</span><br><span class="line"><span class="keyword">where</span> p.c_id = c.id <span class="keyword">and</span> c.city= <span class="string">'北京'</span></span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li><code>like</code>关键字查询姓张的有多少人</li>
-</ol>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(<span class="keyword">distinct</span>(<span class="keyword">name</span>)) </span><br><span class="line">  <span class="keyword">from</span> person</span><br><span class="line">  <span class="keyword">where</span> <span class="keyword">name</span> <span class="keyword">like</span> <span class="string">'张%'</span>;</span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li><code>in</code>嵌套查询 判断查询的表达式是否在多个值的列表中</li>
-</ol>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">name</span> </span><br><span class="line"><span class="keyword">from</span> person </span><br><span class="line"><span class="keyword">where</span> c_id <span class="keyword">in</span> ( <span class="keyword">select</span> <span class="keyword">id</span> <span class="keyword">from</span> city);</span><br></pre></td></tr></table></figure>
-
-<ol start="4">
-<li><code>some</code>部分匹配查询 如果在一系列比较中，有些值为True，那么结果就为True</li>
-</ol>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">name</span> </span><br><span class="line"><span class="keyword">from</span> person </span><br><span class="line"><span class="keyword">where</span> c_id = <span class="keyword">some</span> ( <span class="keyword">select</span> <span class="keyword">id</span> <span class="keyword">from</span> city);</span><br></pre></td></tr></table></figure>
-
-<ol start="5">
-<li><code>all</code>全部匹配查询 如果一系列的比较都为true，那么结果才能为true</li>
-</ol>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#大于以下返回的所有id，此结果才为True，此结果才返回</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">name</span> </span><br><span class="line"><span class="keyword">from</span> person </span><br><span class="line"><span class="keyword">where</span> c_id &gt; <span class="keyword">all</span> ( <span class="keyword">select</span> <span class="keyword">id</span> <span class="keyword">from</span> city);</span><br></pre></td></tr></table></figure>
-
-<ol start="6">
-<li><code>exists</code>嵌套查询 如果子查询有结果集返回，那么就为True 一旦找到第一个匹配的记录后，就马上停止查找</li>
-</ol>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * </span><br><span class="line"><span class="keyword">from</span> person </span><br><span class="line"><span class="keyword">where</span> <span class="keyword">exists</span> ( <span class="keyword">select</span> * <span class="keyword">from</span> city);</span><br></pre></td></tr></table></figure>
-
-<p>子查询必定返回true的三种情况:</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#第一种select 1</span></span><br><span class="line"><span class="keyword">select</span> * </span><br><span class="line"><span class="keyword">from</span> person </span><br><span class="line"><span class="keyword">where</span> <span class="keyword">exists</span> ( <span class="keyword">select</span> <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">#第二种select 0</span></span><br><span class="line"><span class="keyword">select</span> * </span><br><span class="line"><span class="keyword">from</span> person </span><br><span class="line"><span class="keyword">where</span> <span class="keyword">exists</span> ( <span class="keyword">select</span> <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">#第三种select null</span></span><br><span class="line"><span class="keyword">select</span> * </span><br><span class="line"><span class="keyword">from</span> person </span><br><span class="line"><span class="keyword">where</span> <span class="keyword">exists</span> ( <span class="keyword">select</span> <span class="literal">null</span>);</span><br></pre></td></tr></table></figure>
-
-<h4 id="根据子查询结果充当临时表进行查询"><a href="#根据子查询结果充当临时表进行查询" class="headerlink" title="根据子查询结果充当临时表进行查询"></a>根据子查询结果充当临时表进行查询</h4><ol>
-<li>子查询是一种嵌套查询，将一个查询用小括号包围起来，然后作为下一个查询的结果，<strong>子查询必须有别名</strong> ,一般用于二次或多次筛查。</li>
-</ol>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> nan.id <span class="keyword">FROM</span> (<span class="keyword">SELECT</span> <span class="keyword">name</span>,c_id <span class="keyword">FROM</span> person <span class="keyword">WHERE</span> <span class="keyword">id</span>=<span class="number">2</span>) <span class="keyword">AS</span> <span class="keyword">nan</span> <span class="keyword">WHERE</span> c_id = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
-
-<h4 id="关于join的特殊用法"><a href="#关于join的特殊用法" class="headerlink" title="关于join的特殊用法"></a>关于<code>join</code>的特殊用法</h4><ul>
-<li><strong>JOIN</strong>: 如果表中有至少一个匹配，则返回行</li>
-<li><strong>LEFT JOIN</strong>: 即使右表中没有匹配，也从左表返回所有的行</li>
-<li><strong>RIGHT JOIN</strong>: 即使左表中没有匹配，也从右表返回所有的行</li>
-<li><strong>FULL JOIN</strong>: 只要其中一个表中存在匹配，就返回行 </li>
-</ul>
-<p><strong>LEFT JOIN示例:</strong></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">name</span>, city <span class="keyword">from</span> person <span class="keyword">left</span> <span class="keyword">join</span> city <span class="keyword">on</span> name.c_id = city.id;</span><br></pre></td></tr></table></figure>
-
-<p>返回结果:</p>
-<table>
-<thead>
-<tr>
-<th>city</th>
-<th>name</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>北京</td>
-<td>张三</td>
-</tr>
-<tr>
-<td>上海</td>
-<td>李四</td>
-</tr>
-<tr>
-<td></td>
-<td>王五</td>
-</tr>
-</tbody></table>
-<p><strong>RIGHT JOIN示例:</strong></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">name</span>, city <span class="keyword">from</span> person <span class="keyword">right</span> <span class="keyword">join</span> city <span class="keyword">on</span> name.c_id = city.id;</span><br></pre></td></tr></table></figure>
-
-<p>返回结果:</p>
-<table>
-<thead>
-<tr>
-<th>city</th>
-<th>name</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>北京</td>
-<td>张三</td>
-</tr>
-<tr>
-<td>上海</td>
-<td>李四</td>
-</tr>
-<tr>
-<td>广州</td>
-<td></td>
-</tr>
-</tbody></table>
-<p><strong>FULL JOIN示例:</strong></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">name</span>, city <span class="keyword">from</span> person <span class="keyword">full</span> <span class="keyword">join</span> city <span class="keyword">on</span> name.c_id = city.id;</span><br></pre></td></tr></table></figure>
-
-<p>返回结果:</p>
-<table>
-<thead>
-<tr>
-<th>city</th>
-<th>name</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>北京</td>
-<td>张三</td>
-</tr>
-<tr>
-<td>上海</td>
-<td>李四</td>
-</tr>
-<tr>
-<td>广州</td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td>王五</td>
-</tr>
-</tbody></table>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2185,7 +2209,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">413</span>
+                  <span class="site-state-item-count">417</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2268,7 +2292,7 @@
 
 
 
-  <script type="text/javascript" src="js/src/mermaid.min.js"></script>
+  <script type="text/javascript" async src="js/src/mermaid.min.js"></script>
   <script>
   if (window.mermaid) {
         var mermaid_config = {

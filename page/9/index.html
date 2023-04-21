@@ -288,6 +288,626 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../337.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../337.html" itemprop="url">解决图片的防盗链导致图片显示不出来</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-08T09:04:19+08:00">
+                2022-07-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>你平常有可能将图片存放到<code>github</code>、<code>gitee</code> 或者博客园  简书等等地方, 供静态博客使用, 除了<code>github</code>之外 大部分国内的网站都设置了图片防盗链</p>
+<p>如果直接使用会导致图片无法显示</p>
+<p>解决防盗链的问题其实也非常简单</p>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>在<code>html</code>的<code>head</code>标签中添加如下代码即可:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta name=&quot;referrer&quot; content=&quot;never&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>如果你只想处理某部分图片, 可以针对性设置, 比如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=&quot;xxxx.jpg&quot; referrerPolicy=&quot;no-referrer&quot; /&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="批量替换图片域名"><a href="#批量替换图片域名" class="headerlink" title="批量替换图片域名"></a>批量替换图片域名</h3><p>偶尔图床CDN挂了需要更换域名, 一些文章存放在数据库,比如<code>wordpress</code>网站  为了方便 可以采用<code>js</code>动态替换的方式, 将以下代码拷贝到<code>html</code>中即可 </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">let</span> context = <span class="built_in">Array</span>.prototype.map.call(<span class="built_in">document</span>.images, (event) =&gt; &#123;</span><br><span class="line">          event.src = event.src.replace(<span class="string">"cdn.jsdelivr.net/gh/xxx/xxx"</span>, <span class="string">"raw.fastgit.org/xxx/xxx/master"</span>)</span><br><span class="line">        </span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">  &lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>另外还可以动态添加<code>meta</code>标签</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> addMeta = <span class="function">(<span class="params">name, content</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> meta = <span class="built_in">document</span>.createElement(<span class="string">'meta'</span>);</span><br><span class="line">  meta.content = content;</span><br><span class="line">  meta.name = name;</span><br><span class="line">  <span class="built_in">document</span>.getElementsByTagName(<span class="string">'head'</span>)[<span class="number">0</span>].appendChild(meta);</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line">addMeta(</span><br><span class="line">    <span class="string">'referrer'</span>,</span><br><span class="line">    <span class="string">'never'</span>,</span><br><span class="line">  );</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../335.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../335.html" itemprop="url">Android锁屏息屏状态下弹出界面</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-07T16:04:19+08:00">
+                2022-07-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>最近公司客户端项目需要支持锁屏息屏状态下弹出应用界面, 类似于微信来电显示, 实现方法很简单, 如下:</p>
+<h3 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h3><h5 id="第一步-在清单文件中添加休眠唤醒和解锁权限"><a href="#第一步-在清单文件中添加休眠唤醒和解锁权限" class="headerlink" title="第一步 在清单文件中添加休眠唤醒和解锁权限"></a>第一步 在清单文件中添加休眠唤醒和解锁权限</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;uses-permission android:name=&quot;android.permission.DISABLE_KEYGUARD&quot; /&gt;</span><br><span class="line">&lt;uses-permission android:name=&quot;android.permission.WAKE_LOCK&quot; /&gt;</span><br></pre></td></tr></table></figure>
+
+<h5 id="第二步-在需要弹出显示的Activity的onCreate方法中添加相应flag代码"><a href="#第二步-在需要弹出显示的Activity的onCreate方法中添加相应flag代码" class="headerlink" title="第二步 在需要弹出显示的Activity的onCreate方法中添加相应flag代码"></a>第二步 在需要弹出显示的<code>Activity</code>的<code>onCreate</code>方法中添加相应<code>flag</code>代码</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">       getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED <span class="comment">//锁屏显示</span></span><br><span class="line">               | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD <span class="comment">//解锁</span></span><br><span class="line">               | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON <span class="comment">//保持屏幕不息屏</span></span><br><span class="line">               | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);<span class="comment">//点亮屏幕</span></span><br><span class="line">     </span><br><span class="line">     setContentView(R.layout.activity_main);</span><br><span class="line">     </span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="第三步-触发Activity启动"><a href="#第三步-触发Activity启动" class="headerlink" title="第三步 触发Activity启动"></a>第三步 触发Activity启动</h5><p>比如推送触发  后台<code>Service</code>触发  或者<code>IM</code>长连接信令触发等等</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">openActivity</span><span class="params">(Context context, String msg)</span> </span>&#123;</span><br><span class="line">Intent intent = <span class="keyword">new</span> Intent(context, MainActivity.class)ialarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);</span><br><span class="line">       context.startActivity(intent);</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="完毕"><a href="#完毕" class="headerlink" title="完毕"></a>完毕</h5><p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../334.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../334.html" itemprop="url">关于Github加速方法总结</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-07T09:04:19+08:00">
+                2022-07-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>最近网站大部分图片访问变慢, 原因出在<code>jsdelivr</code>加速失效, 为此我更换了CDN域名, 顺带总结一下<code>github</code>加速小技巧</p>
+<h3 id="GitHub访问加速"><a href="#GitHub访问加速" class="headerlink" title="GitHub访问加速"></a>GitHub访问加速</h3><h5 id="1-使用镜像访问"><a href="#1-使用镜像访问" class="headerlink" title="1. 使用镜像访问"></a>1. 使用镜像访问</h5><p>这相当于是克隆版的 GitHub , 网站的内容和 GitHub 是完整同步, 可以在这个网站里面进行下载克隆等操作, 镜像地址如下:</p>
+<ul>
+<li><a href="https://hub.fastgit.org/" target="_blank" rel="noopener">https://hub.fastgit.org</a></li>
+</ul>
+<p><strong>使用示范:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/typecho/typecho</span><br><span class="line"></span><br><span class="line">可以改成</span><br><span class="line"></span><br><span class="line">https://hub.fastgit.xyz/typecho/typecho</span><br></pre></td></tr></table></figure>
+
+<h5 id="2-修改Host文件加速"><a href="#2-修改Host文件加速" class="headerlink" title="2.修改Host文件加速"></a>2.修改Host文件加速</h5><p>首先需要获取对应域名实际ip地址, 可以通过以下网站查询:</p>
+<ul>
+<li><p><a href="https://www.itdog.cn/" target="_blank" rel="noopener">https://www.itdog.cn/</a></p>
+</li>
+<li><p><a href="https://www.ipaddress.com/" target="_blank" rel="noopener">https://www.ipaddress.com/</a></p>
+</li>
+</ul>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220707154831063.png" alt="image-20220707154831063"></p>
+<p>需要查询的地址有:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"># 基本地址</span><br><span class="line">&apos;github.com&apos;,</span><br><span class="line">&apos;gist.github.com&apos;,</span><br><span class="line">&apos;assets-cdn.github.com&apos;,</span><br><span class="line">&apos;raw.githubusercontent.com&apos;,</span><br><span class="line">&apos;gist.githubusercontent.com&apos;,</span><br><span class="line">&apos;cloud.githubusercontent.com&apos;,</span><br><span class="line">&apos;camo.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars0.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars1.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars2.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars3.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars4.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars5.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars6.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars7.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars8.githubusercontent.com&apos;,</span><br><span class="line">&apos;avatars.githubusercontent.com&apos;,</span><br><span class="line">&apos;github.githubassets.com&apos;,</span><br><span class="line">&apos;user-images.githubusercontent.com&apos;,</span><br><span class="line">&apos;codeload.github.com&apos;,</span><br><span class="line">&apos;favicons.githubusercontent.com&apos;,</span><br><span class="line">&apos;api.github.com&apos;</span><br></pre></td></tr></table></figure>
+
+<p>一个一个查询太过麻烦, 可以使用python脚本快速批量获取, 代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env python</span><br><span class="line"># coding:utf-8</span><br><span class="line"> </span><br><span class="line">import socket</span><br><span class="line"></span><br><span class="line">def output_hosts():</span><br><span class="line">    domains = [&apos;github.com&apos;,</span><br><span class="line">                &apos;gist.github.com&apos;,</span><br><span class="line">                &apos;assets-cdn.github.com&apos;,</span><br><span class="line">                &apos;raw.githubusercontent.com&apos;,</span><br><span class="line">                &apos;gist.githubusercontent.com&apos;,</span><br><span class="line">                &apos;cloud.githubusercontent.com&apos;,</span><br><span class="line">                &apos;camo.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars0.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars1.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars2.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars3.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars4.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars5.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars6.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars7.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars8.githubusercontent.com&apos;,</span><br><span class="line">                &apos;avatars.githubusercontent.com&apos;,</span><br><span class="line">                &apos;github.githubassets.com&apos;,</span><br><span class="line">                &apos;user-images.githubusercontent.com&apos;,</span><br><span class="line">                &apos;codeload.github.com&apos;,</span><br><span class="line">                &apos;favicons.githubusercontent.com&apos;,</span><br><span class="line">                &apos;api.github.com&apos;</span><br><span class="line">                ]</span><br><span class="line">    </span><br><span class="line">    with open(&apos;hosts.txt&apos;, &apos;w&apos;) as f:</span><br><span class="line">        f.write(&apos;```\n&apos;)</span><br><span class="line">        f.write(&apos;# GitHub Start \n&apos;)</span><br><span class="line">        for domain in domains:</span><br><span class="line">            print(&apos;Querying ip for domain %s&apos;%domain)</span><br><span class="line">            ip = socket.gethostbyname(domain)</span><br><span class="line">            print(ip)</span><br><span class="line">            f.write(&apos;%s %s\n&apos;%(ip, domain))</span><br><span class="line">        f.write(&apos;# GitHub End \n&apos;) </span><br><span class="line">        f.write(&apos;```\n&apos;)</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">    </span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    output_hosts()</span><br></pre></td></tr></table></figure>
+
+<p>执行脚本后, 得到如下结果:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"># GitHub Start </span><br><span class="line">140.82.121.3  github.com</span><br><span class="line">140.82.121.3  gist.github.com</span><br><span class="line">185.199.110.153 assets-cdn.github.com</span><br><span class="line">185.199.108.133 raw.githubusercontent.com</span><br><span class="line">185.199.111.133 gist.githubusercontent.com</span><br><span class="line">185.199.110.133 cloud.githubusercontent.com</span><br><span class="line">185.199.111.133 camo.githubusercontent.com</span><br><span class="line">185.199.111.133 avatars0.githubusercontent.com</span><br><span class="line">185.199.110.133 avatars1.githubusercontent.com</span><br><span class="line">185.199.111.133 avatars2.githubusercontent.com</span><br><span class="line">185.199.109.133 avatars3.githubusercontent.com</span><br><span class="line">185.199.108.133 avatars4.githubusercontent.com</span><br><span class="line">185.199.111.133 avatars5.githubusercontent.com</span><br><span class="line">185.199.109.133 avatars6.githubusercontent.com</span><br><span class="line">185.199.109.133 avatars7.githubusercontent.com</span><br><span class="line">185.199.110.133 avatars8.githubusercontent.com</span><br><span class="line">185.199.108.133 avatars.githubusercontent.com</span><br><span class="line">185.199.111.154 github.githubassets.com</span><br><span class="line">185.199.109.133 user-images.githubusercontent.com</span><br><span class="line">140.82.112.9 codeload.github.com</span><br><span class="line">185.199.110.133 favicons.githubusercontent.com</span><br><span class="line">192.30.255.116 api.github.com</span><br><span class="line"># GitHub End</span><br></pre></td></tr></table></figure>
+
+<p>将以上内容拷贝到系统Host文件中即可, 不同操作系统host文件所在路径不一样:</p>
+<ol>
+<li><strong>Windows系统</strong>：修改<code>C:\Windows\System32\drivers\etc\hosts</code>文件</li>
+</ol>
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 网络刷新</span><br><span class="line">ipconfig /flushdns</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><p><strong>Linux系统</strong>：修改<code>C:\Windows\System32\drivers\etc\hosts</code>文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 网络刷新</span><br><span class="line">systemctl restart network</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="仓库Clone下载加速"><a href="#仓库Clone下载加速" class="headerlink" title="仓库Clone下载加速"></a>仓库Clone下载加速</h3><h5 id="1-将仓库克隆到Gitee"><a href="#1-将仓库克隆到Gitee" class="headerlink" title="1. 将仓库克隆到Gitee"></a>1. 将仓库克隆到Gitee</h5><p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220707151023271.png" alt="image-20220707151023271"></p>
+<h5 id="2-使用Fast-GitHub浏览器插件"><a href="#2-使用Fast-GitHub浏览器插件" class="headerlink" title="2.使用Fast-GitHub浏览器插件"></a>2.使用Fast-GitHub浏览器插件</h5><p><a href="https://github.com/fhefh2015/Fast-GitHub" target="_blank" rel="noopener">Fast-GitHub</a></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220707151433012.png" alt="image-20220707151433012"></p>
+<h5 id="3-第三方网站解析加速"><a href="#3-第三方网站解析加速" class="headerlink" title="3.第三方网站解析加速"></a>3.第三方网站解析加速</h5><p><a href="http://toolwa.com/github/" target="_blank" rel="noopener">Toolwa</a></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220707151746721.png" alt="image-20220707151746721"></p>
+<p><a href="https://github.com/hunshcn/gh-proxy" target="_blank" rel="noopener">gh-proxy</a></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220707152513916.png" alt="image-20220707152513916"></p>
+<p><a href="https://ghproxy.com/" target="_blank" rel="noopener">Ghproxy</a></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220707155957192.png" alt="image-20220707155957192"></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220707160024075.png" alt="image-20220707160024075"></p>
+<h3 id="Raw资源加速"><a href="#Raw资源加速" class="headerlink" title="Raw资源加速"></a>Raw资源加速</h3><h5 id="1-使用fastgit"><a href="#1-使用fastgit" class="headerlink" title="1. 使用fastgit"></a>1. 使用fastgit</h5><p>将<code>raw.githubusercontent.com</code>替换成<code>raw.fastgit.org</code></p>
+<p>使用示例</p>
+<p>实际上<code>fastgit</code>功能很丰富, 几乎囊括了<code>github</code>所有. 具体如下表:</p>
+<p><strong>反代列表</strong></p>
+<table>
+<thead>
+<tr>
+<th>站源</th>
+<th>地址</th>
+<th>缓存</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>github.com</td>
+<td>hub.fastgit.xyz</td>
+<td>无</td>
+</tr>
+<tr>
+<td>raw.githubusercontent.com</td>
+<td>raw.fastgit.org</td>
+<td>无</td>
+</tr>
+<tr>
+<td>github.githubassets.com</td>
+<td>assets.fastgit.org</td>
+<td>无</td>
+</tr>
+<tr>
+<td>customer-stories-feed.github.com</td>
+<td>customer-stories-feed.fastgit.org</td>
+<td>480 分钟</td>
+</tr>
+<tr>
+<td>Github Download</td>
+<td>download.fastgit.org</td>
+<td>480 分钟</td>
+</tr>
+<tr>
+<td>GitHub Archive</td>
+<td>archive.fastgit.org</td>
+<td>无</td>
+</tr>
+</tbody></table>
+<p><a href="https://fastgit.org/" target="_blank" rel="noopener">fastgit官网</a></p>
+<h5 id="2-使用ghproxy"><a href="#2-使用ghproxy" class="headerlink" title="2.使用ghproxy"></a>2.使用ghproxy</h5><p>在<code>https://raw.githubusercontent.com</code>地址前面添加<code>https://ghproxy.com/</code></p>
+<p>比如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://ghproxy.com/https://raw.githubusercontent.com/stilleshan/ServerStatus/master/Dockerfile</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../333.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../333.html" itemprop="url">Hexo NexT 主题渲染 Mermaid 绘图</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-05T09:04:19+08:00">
+                2022-07-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>由于我的Hexo博客中的Next主题是旧版, 并不支持<code>mermaid</code>, 因此需要手动配置, 步骤如下</p>
+<h3 id="配置步骤"><a href="#配置步骤" class="headerlink" title="配置步骤"></a>配置步骤</h3><h5 id="第一步-安装-mermaid-插件"><a href="#第一步-安装-mermaid-插件" class="headerlink" title="第一步 安装 mermaid 插件"></a>第一步 安装 mermaid 插件</h5><p>在博客的根目录下，执行以下命令安装 <code>hexo-filter-mermaid-diagrams</code> 插件</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install hexo-filter-mermaid-diagrams --save</span><br></pre></td></tr></table></figure>
+
+<h5 id="第二步-NexT-启用-Mermaid"><a href="#第二步-NexT-启用-Mermaid" class="headerlink" title="第二步 NexT 启用 Mermaid"></a>第二步 NexT 启用 Mermaid</h5><p>打开 NexT 主题的 <code>_config.yml</code> 配置文件，添加以下代码：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Mermaid tag</span></span><br><span class="line"><span class="attr">mermaid:</span></span><br><span class="line"><span class="attr">  enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="comment"># Available themes: default | dark | forest | neutral</span></span><br><span class="line"><span class="attr">  theme:</span> <span class="string">default</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="第三步-添加script脚本"><a href="#第三步-添加script脚本" class="headerlink" title="第三步 添加script脚本"></a>第三步 添加<code>script</code>脚本</h5><p>打开<code>next/layout/_partials/footer.swig</code>文件, 添加以下代码:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123;% <span class="keyword">if</span> theme.mermaid.enable %&#125;</span><br><span class="line">  &lt;script type=<span class="string">"text/javascript"</span> src=<span class="string">'https://unpkg.com/mermaid@9.0.0/dist/mermaid.min.js'</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line">  &lt;script&gt;</span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">window</span>.mermaid) &#123;</span><br><span class="line">        <span class="keyword">var</span> mermaid_config = &#123;</span><br><span class="line">            startOnLoad: <span class="literal">true</span>,</span><br><span class="line">            theme: <span class="string">'&#123;&#123;theme.mermaid.theme&#125;&#125;'</span>,</span><br><span class="line">            flowchart:&#123;</span><br><span class="line">                useMaxWidth: <span class="literal">false</span>,</span><br><span class="line">                htmlLabels: <span class="literal">true</span></span><br><span class="line">            &#125;                </span><br><span class="line">        &#125;</span><br><span class="line">        mermaid.initialize(mermaid_config);</span><br><span class="line">  &#125;</span><br><span class="line">  &lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp">  &#123;% endif %&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="至此-配置完毕"><a href="#至此-配置完毕" class="headerlink" title="至此 配置完毕"></a>至此 配置完毕</h3><hr>
+<h3 id="js本地引用"><a href="#js本地引用" class="headerlink" title="js本地引用"></a>js本地引用</h3><p>如果你打算将<code>js</code>文件存放在本地, 可以将<code>js</code>文件放置到<code>next/source/js/src</code>目录下, 那么<code>script</code>脚本改成如下即可:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123;% <span class="keyword">if</span> theme.mermaid.enable %&#125;</span><br><span class="line">  &lt;script type=<span class="string">"text/javascript"</span> src=<span class="string">'js/src/mermaid.min.js'</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line">  &lt;script&gt;</span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">window</span>.mermaid) &#123;</span><br><span class="line">        <span class="keyword">var</span> mermaid_config = &#123;</span><br><span class="line">            startOnLoad: <span class="literal">true</span>,</span><br><span class="line">            theme: <span class="string">'&#123;&#123;theme.mermaid.theme&#125;&#125;'</span>,</span><br><span class="line">            flowchart:&#123;</span><br><span class="line">                useMaxWidth: <span class="literal">false</span>,</span><br><span class="line">                htmlLabels: <span class="literal">true</span></span><br><span class="line">            &#125;                </span><br><span class="line">        &#125;</span><br><span class="line">        mermaid.initialize(mermaid_config);</span><br><span class="line">  &#125;</span><br><span class="line">  &lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp">  &#123;% endif %&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../332.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1258,724 +1878,6 @@ Add to mermaid                      :1d&lt;/pre&gt;</code></pre><p><strong>流�
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../326.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../326.html" itemprop="url">说说移动设备的各种标识码（DeviceID, IMEI, UUID, UDID, OAID, IDFA, GAID</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-04-25T09:04:19+08:00">
-                2022-04-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h3><ul>
-<li><p><strong>Device ID</strong>：设备ID。</p>
-</li>
-<li><p><strong>IMEI</strong>：（International Mobile Equipment Identity）国际移动设备标识的缩写。是由15位数字组成的“电子串号”，它与每台手机一一对应，每个IMEI在世界上都是唯一的。</p>
-</li>
-<li><p><strong>MEID</strong>：(Mobile Equipment Identifier) 移动设备识别码是CDMA手机的身份识别码，也是每台CDMA手机或通讯平板唯一的识别码。</p>
-</li>
-<li><p><strong>IDFA</strong>：（Identifier For Advertising）iOS独有的广告标识符。</p>
-</li>
-<li><p><strong>UDID</strong>：（Unique Device Identifier）唯一设备标识码。</p>
-</li>
-<li><p><strong>UUID</strong>：（Universally Unique Identifier）通用唯一识别码。目前最广泛应用的UUID，是微软公司的全局唯一标识符GUID。其目的是让分布式系统中的所有元素，都能有唯一的辨识信息，而不需要通过中央控制端来做辨识信息的指定。</p>
-</li>
-<li><p><strong>OAID</strong>：(Open Anonymous Device Identifier) 开放匿名设备标识符。</p>
-</li>
-<li><p><strong>GAID</strong>：Google Advertising ID。</p>
-</li>
-</ul>
-<h3 id="详细介绍"><a href="#详细介绍" class="headerlink" title="详细介绍"></a>详细介绍</h3><p><strong>（1）Device ID</strong></p>
-<p>设备ID，具有唯一性。其中又包括IMEI 和 MEID/ESN。一般情况我们获取手机的DeviceId也就是手机的IMEI码。</p>
-<p><strong>（2）IMEI</strong></p>
-<p>GSM设备返回的，并且是写在主板上的，重装APP不会改变IMEI。</p>
-<p>Android：Android 6.0以上系统需要用户授予read_phone_state权限（弹窗授权），如果用户拒绝就无法获得。但是Andorid Q（10.0）版本，将无法获取IMEI，出于用户隐私等一系列安全问题的考虑。将用其他匿名标识符代替，比如OAID。</p>
-<p>IOS：iOS 5 之后被禁止。</p>
-<p>IMEI是联通、移动手机的标识，MEID是电信手机的标识。</p>
-<p>IMEI可以在在移动设备上查询到，一般来说一个双卡手机不止一个IMEI值，全网通双卡手机有两个IMEI和一个MEID。</p>
-<p><strong>（3）MEID</strong></p>
-<p>在手机键盘直接键入*#06#可获得。</p>
-<p>MEID/ESN：CDMA设备返回的，一般不使用。</p>
-<p><strong>（4）mac地址</strong></p>
-<p>硬件标识符，包括WiFi mac地址和蓝牙mac地址。</p>
-<p>Android：Android 6.0之后被禁止，若获取则会被判定为有害应用。</p>
-<p>IOS：iOS 7 之后被禁止（同时禁止的还有OpenUDID）。</p>
-<p><strong>（5）UDID</strong></p>
-<p>用来标示设备的唯一性，由40个字符的字母和数字组成 。</p>
-<p>Android：获取UUID后，写入.so文件生成UDID。即使APP重装，值也不变，除非root手机（普通用户做不到）。</p>
-<p>IOS：iOS 6 之后被禁止获取系统原生的UDID，但可以通过uuid，写入到钥匙串中，从而获得自定义的UDID（非系统原生），即使用户重装APP，只要每次都取这个钥匙串返回，就是不变的。</p>
-<p>OpenUDID：是一个替代 UDID 的第三发解决方案。缺点是如果你完全删除全部带有 OpenUDID SDK 包的 App（比如恢复系统等），那么 OpenUDID 会重新生成，而且和之前的值会不同，相当于新设备。</p>
-<p><strong>（6）UUID</strong></p>
-<p>APP重装后会改变。</p>
-<p><strong>（7）IDFA</strong></p>
-<p>IDFA 是苹果 iOS 6 开始新增的广告标识符，用于给开发者跟踪广告效果用的，可以简单理解为 iPhone 的设备临时身份证，说是临时身份证是因为它允许用户更换，IDFA 存储在用户 iOS 系统上，同一设备上的应用获取到的 IDFA 是相同的。iOS 用户可以通过（设置程序 -&gt; 通用 -&gt; 还原 -&gt; 还原位置与隐私）更换 IDFA，iOS 10 系统开始提供禁止广告跟踪功能，用户勾选这个功能后，应用程序将无法读取到设备的 IDFA。（在统计唯一用户的时候，IDFA 的可变性会造成部分用户的重复统计。）</p>
-<p>适用于对外：例如广告推广，换量等跨应用的用户追踪等。</p>
-<p>总结：iOS 6 时面世，可以监控广告效果，同时保证用户设备不被APP追踪的折中方案。可能发生变化，如系统重置、在设置里还原广告标识符。用户可以在设置里打开“限制广告跟踪”。</p>
-<p><strong>（8）OAID</strong></p>
-<p>APP类广告效果追踪需要使用到用户的设备标识进行广告点击和转化效果的匹配，而安卓系统当前强依赖于IMEI的获取，上面提到Andorid Q（10.0）版本后，将无法获取IMEI。基于此背景，进行广告投放的效果追踪，需要能够替代及补充IMEI的设备标识。</p>
-<p>目前OAID作为目前市场主流的归因补充标识，OAID是由中国信息通讯研究院号召，移动安全联盟推行的安卓设备标识，在无法获取设备号情况下可以使用该标识进行数据匹配，目前主流厂商均已在新版本系统中支持该标识的获取，具有权威性。OAID可以理解为是国内联合推出的广告标识。</p>
-<p>与IDFA类似，对于OAID 用户也可以手动在设置中通过重置广告标识符更换OAID或者“限制广告跟踪”。</p>
-<p>与OAID相关的设备标识体系中拥有四种设备标识：</p>
-<p><strong>（9）GAID</strong></p>
-<p>Google推出的广告标识，与IDFA类似。在装了google play service的安卓手机上，才可以获取到GAID。</p>
-<p>广告id是用户特殊的，独特的，可重置的广告id，由Google Play Service 提供，它为用户更好的控制，为开发人员提供简单、标准的系统继续使用你的应用程序，它用于广告目的的匿名标示符和或者重置其标示符或者退出以利益为基础的Google Play的应用程序。</p>
-<p>主要用于广告定向，并且和IDFA一样 对于GAID 用户也可以自己设置禁止广告跟踪。</p>
-<p>整理，借鉴了多个地方的资料，有不准确的欢迎指出！</p>
-<h2 id="用户唯一标识"><a href="#用户唯一标识" class="headerlink" title="用户唯一标识"></a>用户唯一标识</h2><h3 id="为什么要建设用户唯一标识"><a href="#为什么要建设用户唯一标识" class="headerlink" title="为什么要建设用户唯一标识"></a>为什么要建设用户唯一标识</h3><p>如何区分某个用户就是他这个用户，而不是另一个用户，在数据埋点中，是一个非常重要的事情。因为如果做不到用户的唯一识别，那凡是涉及到用户的数据都将是错的（比如用户量、新增用户数、活跃用户数等等）。所以建设用户唯一标识，尤为重要。</p>
-<h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>设计埋点字段的时候，有两个字段是一定要包括的，即<strong>设备ID和用户ID</strong>。这两个字段应该纳入通用字段，每个埋点的事件都必须要集成收集。</p>
-<p><strong>（1）设备ID</strong></p>
-<p>使用相应的算法，生成一个设备ID，以唯一识别用户的终端设备。不同终端的设备ID，其生成算法规则不一样，以下列举不同终端的设备ID的生成规则：</p>
-<p><strong>AndroidApp</strong></p>
-<p>安卓系统历经多次升级，对权限控制越来越严格，唯一识别手机的方法也在发生变化。下面整理一下安卓系统适合做设备唯一标识符的几个标识符，以及其特性：</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-bdfd76a24b27bacfa59a775788289cb8_1440w.jpg" alt="img"></p>
-<p>从表格中看出，IMEI是最适合做设备唯一标识的，奈何获取IMEI需要授予权限且Android 10以后不再开放IMEI的权限。综合起来，安卓系统中，应该按照<strong>IMEI -&gt;OAID -&gt; ANDROID_ID</strong>的顺序生成设备ID。即先获取IMEI号，获取不到IMEI时获取OAID，获取不到OAID时，再获取ANDROID_ID，然后使用相关算法生成设备ID。</p>
-<p><strong>IOS App</strong></p>
-<p>苹果系统，可用于识别唯一设备的标识不多，如下图。综合起来，苹果系统生成设备ID的标识符顺序应该是<strong>IDFA -&gt; IDFV -&gt;UDID</strong>，即先获取IDFA，获取不到在获取IDFV，获取不到IDFV时，再获取UDID，然后使用相关算法生成一个设备ID。</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-c40480adcc3be9c92803c2be424f3216_1440w.jpg" alt="img"></p>
-<p><strong>Web网站</strong></p>
-<p>Web网站，使用cookie_id作为设备ID，并存储在浏览器的cookie中。</p>
-<p><strong>微信小程序</strong></p>
-<p>通常做法使用openid作为设备ID，当然也可以自己生产一个ID，作为设备ID。如果用过openid作为设备ID，需要注意微信小程序的冷启动问题（<strong>获取 openid 是一个异步的操作，所以会导致数据上报的时候，可能还没获取到openid，这就是导致设备ID为空</strong>）。</p>
-<p><strong>2）用户ID</strong></p>
-<p>用户ID，即用户在业务产品注册的用户账号。</p>
-<p>收集到设备ID和用户ID后，就要想办法将设备ID和用户ID关联起来，也即用户唯一标识建模，详见下文。</p>
-<h2 id="用户唯一标识建设"><a href="#用户唯一标识建设" class="headerlink" title="用户唯一标识建设"></a>用户唯一标识建设</h2><p>设计一个字段，比如就叫<strong>distinct_id</strong>（设备ID命名为device_id，用户ID命名为user_id）这个字段用于识别唯一用户。凡是统计用户相关的数据时，都以<strong>distinct_id</strong>作为用户的唯一区别标识。下面，以具体案例进行阐述。</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-d563301707deda4e26447ead14f2ffe8_1440w.jpg" alt="img"></p>
-<p><strong>步骤说明：</strong></p>
-<ol>
-<li>小明在一部手机上启动了app。该手机的device_id为x1，此时生成一个dsitinct_id为d1；</li>
-<li>小明在这个手机上用账号u1进行登录。此时device_id为x1，user_id为u1，dsitinct_id为d1；</li>
-<li>小明继续在这手机上使用app。此时device_id为x1，user_id为u1，dsitinct_id为d1；</li>
-<li>小明退出自己的账号，继续使用app。此时仍然device_id为x1，user_id为u1，dsitinct_id为d1；</li>
-<li>小明把手机给了小花，小花用自己的账号u2登录app。此时u2去关联x1，因为x1已经与u1关联，故关联失败。所以重新生成一个distinct_id为d2来标识此用户（u2）；</li>
-<li>小花继续使用app。此时device_id为x1，user_id为u2，dsitinct_id为d2；</li>
-<li>小明换了部新手机，使用app。此时device_id为一个新的x2，后台生成一个新的dsitinct_id为d3；</li>
-<li>小明在新手机上，使用账号u1登录了app。此时u1去关联x2，因为x2之前没有与账号关联过，所以关联成功，但是u1已经有一个dsitinct_id为d1，所以此时的dsitinct_id仍然为d1；</li>
-<li>小明继续在新手机上使用app。此时device_id为x2，user_id为u1，dsitinct_id为d1。</li>
-</ol>
-<p><strong>此时三个字段的映射关系为：</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-3be07ad5528d0c9da5b5660ae163bc64_1440w.jpg" alt="img"></p>
-<p><strong>（1）后续修复</strong></p>
-<p><strong>事件字段修复</strong></p>
-<p>小明换新手机后，在登录前，系统给分配的dsitinct_id为d3，不符合实际情况，故要将在新手机上登录前的dsitinct_id修复为d1。如下：</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-144aa57bb74452d0e5f619bb9722c364_1440w.jpg" alt="img"></p>
-<p><strong>映射表修复</strong></p>
-<p>1）删除d3与x2的映射关系</p>
-<p>2）将x2添加到d1的device_id_list字段</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/v2-17b54bc2d25400c36551bea6b695d04c_1440w.jpg" alt="img"></p>
-<p><strong>本文转载自:</strong> <a href="https://zhuanlan.zhihu.com/p/395387972" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/395387972</a> </p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../325.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../325.html" itemprop="url">PC端快速下载视频网站的视频</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-04-20T09:04:19+08:00">
-                2022-04-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>有时候在逛B站或者看QQ音乐MV的时候 有把视频下载到本地的需求</p>
-<p>网上有很多针对特定网站视频的解析工具, 比如针对B站的有:</p>
-<ul>
-<li><p><a href="https://bilibili.iiilab.com/" target="_blank" rel="noopener">B站视频在线解析</a> </p>
-</li>
-<li><p><a href="https://github.com/FlySelfLog/downkyi/releases" target="_blank" rel="noopener">Downkyi下载姬</a></p>
-</li>
-<li><p><a href="http://client.jijidown.com/" target="_blank" rel="noopener">唧唧下载器</a></p>
-</li>
-</ul>
-<p>对于我这种只是偶尔下载个视频的懒人而言, 为了下载一个视频单独安装一个软件, 实在是不太能接受  自然是优先选择在线解析的方案</p>
-<p>但是 大部分在线解析网站都是针对某一个或者某几个主流的视频网站进行解析处理, 如果碰上冷门网站 那就有些尴尬了</p>
-<p>今天给大家介绍一个非常简单实用, 并且对所有视频网站都通用的一个方法, 只需要一个浏览器就能快速获取视频源地址</p>
-<h3 id="原料准备"><a href="#原料准备" class="headerlink" title="原料准备"></a>原料准备</h3><ul>
-<li>浏览器 (本文以谷歌浏览器为例)</li>
-<li>电脑 </li>
-</ul>
-<h3 id="开始抓取"><a href="#开始抓取" class="headerlink" title="开始抓取"></a>开始抓取</h3><ol>
-<li><p>第一步打开浏览器 将视频地址填入地址栏</p>
-</li>
-<li><p>按F12进入开发者选项 选择移动设备浏览模式 对Media进行过滤 然后F5刷新页面</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220424112429767.png" alt="image-20220424112429767"></p>
-</li>
-<li><p>拷贝视频文件路径 直接浏览器下载或者第三方软件下载</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220424112609595.png" alt="image-20220424112609595"></p>
-</li>
-</ol>
-<p>博主对B站和QQ音乐进行了测试, 均能获取到原视频地址, 如果没有出现地址, 建议多刷新几次试试, 一般都没有问题</p>
-<p>很多在线视频解析的原理也就是这么一回事 </p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>上面这种方法 相信有很多人都知道, 但如果你不是做技术的, 可能就不太清楚了, 希望本文能帮到大家</p>
-<p>另外 如果你有批量下载视频的需求, 该方法就有些费劲了, 这种情况建议大家使用软件进行解析下载</p>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../324.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../324.html" itemprop="url">Android腾讯IM快速集成流程和注意事项</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-04-01T09:04:19+08:00">
-                2022-04-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>最近项目集成了及时通信业务, 采用的是腾讯IM</p>
-<p>首先是SDK的快速集成, 步骤如下:</p>
-<h3 id="第一步-安装依赖包"><a href="#第一步-安装依赖包" class="headerlink" title="第一步  安装依赖包"></a>第一步  安装依赖包</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation <span class="string">'com.tencent.imsdk:imsdk-plus:5.6.1200'</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="第二步-初始化SDK-需要用到appid"><a href="#第二步-初始化SDK-需要用到appid" class="headerlink" title="第二步 初始化SDK (需要用到appid)"></a>第二步 初始化SDK (需要用到appid)</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">V2TIMManager.getInstance()</span><br><span class="line">            .initSDK(<span class="keyword">this</span>, <span class="string">"这里填写appid"</span>, V2TIMSDKConfig().apply &#123;</span><br><span class="line">                logLevel = V2TIMSDKConfig.V2TIM_LOG_INFO</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">            &#125;, <span class="keyword">object</span> : V2TIMSDKListener() &#123;</span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onConnecting</span><span class="params">()</span></span> &#123;</span><br><span class="line">                    Log.i(<span class="string">"KIM"</span>, <span class="string">"正在连接到腾讯云服务器"</span>)</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onConnectSuccess</span><span class="params">()</span></span> &#123;</span><br><span class="line">                    Log.i(<span class="string">"KIM"</span>, <span class="string">"已经成功连接到腾讯云服务器"</span>)</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onConnectFailed</span><span class="params">(code: <span class="type">Int</span>, error: <span class="type">String</span>?)</span></span> &#123;</span><br><span class="line">                    Log.i(<span class="string">"KIM"</span>, <span class="string">"连接腾讯云服务器失败 <span class="variable">$code</span>  <span class="variable">$error</span>"</span>)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;)</span><br></pre></td></tr></table></figure>
-
-<h3 id="第三步-登录IM"><a href="#第三步-登录IM" class="headerlink" title="第三步 登录IM"></a>第三步 登录IM</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">V2TIMManager.getInstance().login(</span><br><span class="line">                <span class="string">"这里填当前用户id"</span>,</span><br><span class="line">                <span class="string">"这里填登录密钥 从后台获取"</span>,<span class="keyword">object</span> : V2TIMCallback &#123;</span><br><span class="line">                    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onSuccess</span><span class="params">()</span></span> &#123;</span><br><span class="line">                        Log.i(TAG, <span class="string">"登录成功"</span>)</span><br><span class="line">             </span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onError</span><span class="params">(code: <span class="type">Int</span>, desc: <span class="type">String</span>?)</span></span> &#123;</span><br><span class="line">                        Log.i(TAG, <span class="string">"登录失败 <span class="variable">$code</span> <span class="variable">$desc</span>"</span>)</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;)</span><br></pre></td></tr></table></figure>
-
-<h3 id="第四步-加入群聊房间-如果是单聊可以跳过该步骤"><a href="#第四步-加入群聊房间-如果是单聊可以跳过该步骤" class="headerlink" title="第四步 加入群聊房间 (如果是单聊可以跳过该步骤)"></a>第四步 加入群聊房间 (如果是单聊可以跳过该步骤)</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">V2TIMManager.getInstance().joinGroup(<span class="string">"这里填房间号 从后台获取"</span>, <span class="string">""</span>, <span class="keyword">object</span> : V2TIMCallback &#123;</span><br><span class="line">            <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onSuccess</span><span class="params">()</span></span> &#123;</span><br><span class="line">                Log.i(TAG, <span class="string">"加入群组成功"</span>)</span><br><span class="line">                </span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onError</span><span class="params">(code: <span class="type">Int</span>, desc: <span class="type">String</span>?)</span></span> &#123;</span><br><span class="line">                Log.i(TAG, <span class="string">"加入群组失败 <span class="variable">$code</span> <span class="variable">$desc</span>"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br></pre></td></tr></table></figure>
-
-<h3 id="第五步-接收消息"><a href="#第五步-接收消息" class="headerlink" title="第五步 接收消息"></a>第五步 接收消息</h3><p><strong>如果业务不涉及音视频传输:</strong></p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">V2TIMManager.getInstance().addSimpleMsgListener(<span class="keyword">object</span> :</span><br><span class="line">        V2TIMSimpleMsgListener() &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 对应 sendGroupCustomMessage</span></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onRecvGroupCustomMessage</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            msgID: <span class="type">String</span>?,</span></span></span><br><span class="line"><span class="function"><span class="params">            groupID: <span class="type">String</span>?,</span></span></span><br><span class="line"><span class="function"><span class="params">            sender: <span class="type">V2TIMGroupMemberInfo</span>?,</span></span></span><br><span class="line"><span class="function"><span class="params">            customData: <span class="type">ByteArray</span>?</span></span></span><br><span class="line"><span class="function"><span class="params">        )</span></span> &#123;</span><br><span class="line">            <span class="keyword">super</span>.onRecvGroupCustomMessage(msgID, groupID, sender, customData)</span><br><span class="line">   		Log.i(TAG, <span class="string">"接收群聊自定义消息"</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 对应 sendGroupTextMessage</span></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onRecvGroupTextMessage</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            msgID: <span class="type">String</span>?,</span></span></span><br><span class="line"><span class="function"><span class="params">            groupID: <span class="type">String</span>?,</span></span></span><br><span class="line"><span class="function"><span class="params">            sender: <span class="type">V2TIMGroupMemberInfo</span>?,</span></span></span><br><span class="line"><span class="function"><span class="params">            body: <span class="type">String</span>?</span></span></span><br><span class="line"><span class="function"><span class="params">        )</span></span> &#123;</span><br><span class="line"></span><br><span class="line">            Log.i(TAG, <span class="string">"接收群聊文本消息 <span class="variable">$body</span>"</span>)</span><br><span class="line">       </span><br><span class="line">        &#125;</span><br><span class="line">          <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onRecvC2CTextMessage</span><span class="params">(msgID: <span class="type">String</span>?, sender: <span class="type">V2TIMUserInfo</span>?, text: <span class="type">String</span>?)</span></span> &#123;</span><br><span class="line">            <span class="keyword">super</span>.onRecvC2CTextMessage(msgID, sender, text)</span><br><span class="line">         Log.i(TAG, <span class="string">"接收单聊文本消息 <span class="variable">$text</span>"</span>)</span><br><span class="line">          &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onRecvC2CCustomMessage</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            msgID: <span class="type">String</span>?,</span></span></span><br><span class="line"><span class="function"><span class="params">            sender: <span class="type">V2TIMUserInfo</span>?,</span></span></span><br><span class="line"><span class="function"><span class="params">            customData: <span class="type">ByteArray</span>?</span></span></span><br><span class="line"><span class="function"><span class="params">        )</span></span> &#123;</span><br><span class="line">            <span class="keyword">super</span>.onRecvC2CCustomMessage(msgID, sender, customData)</span><br><span class="line">           Log.i(TAG, <span class="string">"接收单聊自定义消息 "</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">          </span><br><span class="line">    &#125;)</span><br></pre></td></tr></table></figure>
-
-<p><strong>如果业务涉及音视频传输:</strong></p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">V2TIMManager.getMessageManager().addAdvancedMsgListener( <span class="keyword">object</span> : V2TIMAdvancedMsgListener() &#123;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onRecvNewMessage</span><span class="params">(msg: <span class="type">V2TIMMessage</span>?)</span></span> &#123;</span><br><span class="line">            Log.i(TAG, <span class="string">"收到消息类型<span class="subst">$&#123;msg?.elemType&#125;</span> "</span>)</span><br><span class="line"> </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br></pre></td></tr></table></figure>
-
-<h3 id="第六步-发送消息"><a href="#第六步-发送消息" class="headerlink" title="第六步 发送消息"></a>第六步 发送消息</h3><p><strong>如果业务不涉及音视频传输:</strong></p>
-<ol>
-<li><p>单聊 (分为文本消息和自定义消息)</p>
-<ul>
-<li><p>文本消息</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">V2TIMManager.getInstance().sendC2CTextMessage(<span class="string">"这里填需要发送的文本"</span>,</span><br><span class="line">            <span class="string">"这里填对方的登录id"</span>,</span><br><span class="line">            V2TIM_PRIORITY_HIGH,</span><br><span class="line">            <span class="keyword">object</span> : V2TIMValueCallback&lt;V2TIMMessage&gt; &#123;</span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onSuccess</span><span class="params">(t: <span class="type">V2TIMMessage</span>?)</span></span> &#123;</span><br><span class="line">                    Log.i(TAG, <span class="string">"发送单聊文本消息成功"</span>)</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onError</span><span class="params">(code: <span class="type">Int</span>, desc: <span class="type">String</span>?)</span></span> &#123;</span><br><span class="line">                    Log.i(TAG, <span class="string">"发送单聊文本消息失败 <span class="variable">$code</span> <span class="variable">$desc</span>"</span>)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>自定义消息</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">V2TIMManager.getInstance().sendC2CCustomMessage(<span class="string">"这里填需要发送的自定义消息 格式为字节数组"</span>,</span><br><span class="line">            <span class="string">"这里填对方的登录id"</span>,</span><br><span class="line">            V2TIM_PRIORITY_HIGH,</span><br><span class="line">            <span class="keyword">object</span> : V2TIMValueCallback&lt;V2TIMMessage&gt; &#123;</span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onSuccess</span><span class="params">(t: <span class="type">V2TIMMessage</span>?)</span></span> &#123;</span><br><span class="line">                    Log.i(TAG, <span class="string">"发送单聊自定义消息成功"</span>)</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onError</span><span class="params">(code: <span class="type">Int</span>, desc: <span class="type">String</span>?)</span></span> &#123;</span><br><span class="line">                    Log.i(TAG, <span class="string">"发送单聊自定义消息失败 <span class="variable">$code</span> <span class="variable">$desc</span>"</span>)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;)</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-</li>
-</ul>
-</li>
-</ol>
-<ol start="2">
-<li><p>群聊 (分为文本消息和自定义消息)</p>
-<ul>
-<li><p>文本消息</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">V2TIMManager.getInstance().sendGroupTextMessage(<span class="string">"这里填需要发送的文本"</span>,</span><br><span class="line">            <span class="string">"这里填群聊房间id"</span>,</span><br><span class="line">            V2TIM_PRIORITY_HIGH,</span><br><span class="line">            <span class="keyword">object</span> : V2TIMValueCallback&lt;V2TIMMessage&gt; &#123;</span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onSuccess</span><span class="params">(t: <span class="type">V2TIMMessage</span>?)</span></span> &#123;</span><br><span class="line">                    Log.i(TAG, <span class="string">"发送群文本消息成功"</span>)</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onError</span><span class="params">(code: <span class="type">Int</span>, desc: <span class="type">String</span>?)</span></span> &#123;</span><br><span class="line">                    Log.i(TAG, <span class="string">"发送群文本消息失败 <span class="variable">$code</span> <span class="variable">$desc</span>"</span>)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;)</span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ul>
-</li>
-</ol>
-<ul>
-<li><p>自定义消息</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">V2TIMManager.getInstance().sendGroupCustomMessage(<span class="string">"这里填需要发送的自定义消息 格式为字节数组"</span>,</span><br><span class="line">            <span class="string">"这里填群聊房间id"</span>,</span><br><span class="line">            V2TIM_PRIORITY_HIGH,</span><br><span class="line">            <span class="keyword">object</span> : V2TIMValueCallback&lt;V2TIMMessage&gt; &#123;</span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onSuccess</span><span class="params">(t: <span class="type">V2TIMMessage</span>?)</span></span> &#123;</span><br><span class="line">                    Log.i(TAG, <span class="string">"发送群自定义消息成功"</span>)</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onError</span><span class="params">(code: <span class="type">Int</span>, desc: <span class="type">String</span>?)</span></span> &#123;</span><br><span class="line">                    Log.i(TAG, <span class="string">"发送群自定义消息失败 <span class="variable">$code</span> <span class="variable">$desc</span>"</span>)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;)</span><br></pre></td></tr></table></figure>
-
-
-
-
-</li>
-</ul>
-<p><strong>如果业务涉及音视频传输:</strong></p>
-<p>该方法支持音视频图片 文本和自定义消息</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">V2TIMManager.getMessageManager().sendMessage()</span><br></pre></td></tr></table></figure>
-
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><p>这里的坑主要在于消息的收发, 官方给的API比较多, 单聊和群聊串在一块, 看文档有时容易懵, 这里对收发消息的使用做了一个总结, 如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">* IM群聊和单聊的消息收发走的是同一套  总共分为两种需求:</span><br><span class="line">* 第一种: 不涉及音视频 只涉及字符串传输 那么监听消息使用addSimpleMsgListener 发消息使用sendC2C(Group)TextMessage和sendC2C(Group)CustomMessage</span><br><span class="line">* 第二种: 涉及音视频等复杂消息传递 那么监听消息使用addAdvancedMsgListener 发消息使用V2TIMManager.getMessageManager().sendMessage()</span><br><span class="line">*</span><br><span class="line">* 注意: setGroupListener不是监听的群聊消息 而是对群组相关的事件监听 比如群创建通知 公告等等</span><br></pre></td></tr></table></figure>
-
-<h3 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h3><p><a href="https://cloud.tencent.com/document/product/269/44498" target="_blank" rel="noopener">腾讯IM集成文档</a></p>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../323.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../323.html" itemprop="url">Android集成支付宝支付以及沙箱环境测试注意事项</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-03-01T09:04:19+08:00">
-                2022-03-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>现在很多App都涉及到支付, 毕竟开发APP目的是为了盈利嘛, 通常我们会在App中同时集成支付宝和微信支付, 方便用户消费</p>
-<h3 id="集成相关"><a href="#集成相关" class="headerlink" title="集成相关"></a>集成相关</h3><p>支付宝的集成相对简单, 前端无需添加<code>APPID</code>和密钥, 签名部分在在后端完成,只要确保应用签名和开发平台填入的保持一致就行,  不像微信不仅要配置<code>APPID</code>, 还要添加<code>WXEntryActivity</code> ,此外包名也必须匹配 少一个都不行</p>
-<p>当然两者都需要在开发平台填入一个应用签名, 格式为<code>MD5</code></p>
-<h3 id="沙箱环境"><a href="#沙箱环境" class="headerlink" title="沙箱环境"></a>沙箱环境</h3><p>当我们<code>SDK</code>集成完毕, 后台接口也调好后, 开始测试支付, 那么问题来了, 支付可是得花钱的呀, 为了解决这个问题, 支付宝官方给我们提供了一个沙箱环境的支付宝, 方便开发测试</p>
-<p>简而言之就是提供了一个测试用的支付宝账号, 里面有很多钱, 可以随便花, 哈哈, 不过仅限于测试</p>
-<p>这个测试账号不能直接登录我们平常用的支付宝App, 需要下载一个沙箱用的支付宝App</p>
-<p> 这里提供了沙箱支付宝App下载地址</p>
-<p><a href="https://sandbox.alipaydev.com/user/downloadApp.htm" target="_blank" rel="noopener">沙箱支付宝App下载</a></p>
-<h3 id="沙箱测试"><a href="#沙箱测试" class="headerlink" title="沙箱测试"></a>沙箱测试</h3><p>安装完毕后登录沙箱账号, 看看你的应用能否调起支付</p>
-<p>此时你会发现支付宝调不起来 ,如果返回错误码4000, 那么就是没有检测到沙箱支付宝App</p>
-<p>此时 需要在支付<code>Activity</code>中开启沙箱环境, 代码如下:</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">    <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">    EnvUtils.setEnv(EnvUtils.EnvEnum.SANDBOX)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>如果依然无效, 那么大概率是后台签名出了问题, 后台网关需要改成沙箱环境地址</p>
-<h3 id="支付宝H5支付"><a href="#支付宝H5支付" class="headerlink" title="支付宝H5支付"></a>支付宝H5支付</h3><p>当用户手机上未安装支付宝app时也需要支持支付功能的话, 可以采用H5页面支付方案, 此时需要在清单文件中声明相应<code>Activity</code>,如下:</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--        支付宝客户端未安装时使用H5页面  --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">activity</span></span></span><br><span class="line"><span class="tag">          <span class="attr">android:name</span>=<span class="string">"com.alipay.sdk.app.H5PayActivity"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">android:exported</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">android:theme</span>=<span class="string">"@android:style/Theme.Translucent.NoTitleBar"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">activity</span></span></span><br><span class="line"><span class="tag">          <span class="attr">android:name</span>=<span class="string">"com.alipay.sdk.app.H5AuthActivity"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">android:exported</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">android:theme</span>=<span class="string">"@android:style/Theme.Translucent.NoTitleBar"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>该功能可选, 如果不需要可不添加</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>支付宝集成归纳如下:</p>
-<ul>
-<li>前端无需配置APPID, 只需确保<strong>应用签名</strong>正确 包名不一样也能正常调起</li>
-<li>沙箱测试, 前端需要使用<code>EnvUtils</code>开启沙箱环境</li>
-<li>沙箱支付宝登录使用开发后台提供的买家账号登录, 用于支付</li>
-</ul>
-<p>微信支付集成归纳如下:</p>
-<ul>
-<li><p>前端需要配置<strong>APPID和密钥</strong> 同时<strong>包名</strong>和<strong>应用签名</strong>需要正确</p>
-</li>
-<li><p>还需要再创建一个<code>WXEntryActivity</code>, 并在清单文件中注册</p>
-<p>清单文件中可以考虑使用<code>activity-alias</code> 实现多合一注册, 示例如下</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">  <span class="tag">&lt;<span class="name">activity-alias</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:name</span>=<span class="string">"$&#123;applicationId&#125;.wxapi.WXPayEntryActivity"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:exported</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:targetActivity</span>=<span class="string">"WeiXinHandlerActivity"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:theme</span>=<span class="string">"@android:style/Theme.Translucent.NoTitleBar"</span> /&gt;</span>   </span><br><span class="line"><span class="tag">&lt;<span class="name">activity-alias</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:name</span>=<span class="string">"$&#123;applicationId&#125;.wxapi.WXEntryActivity"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:exported</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:targetActivity</span>=<span class="string">"WeiXinHandlerActivity"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:theme</span>=<span class="string">"@android:style/Theme.Translucent.NoTitleBar"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><p>从<code>Android11</code>开始, 涉及到一个软件可见性适配问题, 也就是说调起第三方应用时需要在清单文件中声明其对应的包名, 否则无法调起支付, 具体代码如下:</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">queries</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">package</span> <span class="attr">android:name</span>=<span class="string">"com.eg.android.AlipayGphone"</span> /&gt;</span> <span class="comment">&lt;!-- 支付宝 --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">package</span> <span class="attr">android:name</span>=<span class="string">"hk.alipay.wallet"</span> /&gt;</span> <span class="comment">&lt;!-- AlipayHK --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">package</span> <span class="attr">android:name</span>=<span class="string">"com.tencent.mm"</span> /&gt;</span> <span class="comment">&lt;!-- 微信支付 --&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">package</span> <span class="attr">android:name</span>=<span class="string">"com.sina.weibo"</span> /&gt;</span> <span class="comment">&lt;!-- 微博 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">queries</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">application</span></span></span><br><span class="line"><span class="tag">  <span class="attr">...</span></span></span><br></pre></td></tr></table></figure>
-
-<p>《<a href="https://open.weixin.qq.com/cgi-bin/announce?action=getannouncement&key=11600155960jI9EY&version=&lang=&token=" target="_blank" rel="noopener">Android 11 系统策略更新</a>》</p>
-<h3 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h3><p><a href="https://opendocs.alipay.com/open/54/104509" target="_blank" rel="noopener">支付宝支付客户端 DEMO&amp;SDK下载</a></p>
-<p><a href="https://opendocs.alipay.com/open/204/105296" target="_blank" rel="noopener">支付宝支付集成文档</a></p>
-<p><a href="https://developers.weixin.qq.com/doc/oplatform/Mobile_App/Access_Guide/Android.html" target="_blank" rel="noopener">微信支付安卓接入指南</a></p>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2026,7 +1928,7 @@ Add to mermaid                      :1d&lt;/pre&gt;</code></pre><p><strong>流�
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">413</span>
+                  <span class="site-state-item-count">417</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2109,7 +2011,7 @@ Add to mermaid                      :1d&lt;/pre&gt;</code></pre><p><strong>流�
 
 
 
-  <script type="text/javascript" src="js/src/mermaid.min.js"></script>
+  <script type="text/javascript" async src="js/src/mermaid.min.js"></script>
   <script>
   if (window.mermaid) {
         var mermaid_config = {
