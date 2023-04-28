@@ -288,6 +288,1115 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../123.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../123.html" itemprop="url">使用nginx部署django项目需要注意的问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-23T17:42:15+08:00">
+                2020-09-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="首先配置nginx-conf文件"><a href="#首先配置nginx-conf文件" class="headerlink" title="首先配置nginx.conf文件"></a>首先配置nginx.conf文件</h3><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">worker_processes</span>  <span class="number">1</span><span class="string">;</span></span><br><span class="line"><span class="string">events</span> <span class="string">&#123;</span></span><br><span class="line">        <span class="string">worker_connections</span>  <span class="number">1024</span><span class="string">;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">http&#123;</span></span><br><span class="line">	<span class="string">server&#123;</span></span><br><span class="line">        <span class="string">listen</span> <span class="number">80</span><span class="string">;</span></span><br><span class="line">        <span class="string">server_name</span> <span class="string">py.newban.cn;</span>   <span class="comment">#</span></span><br><span class="line">        <span class="string">root</span> <span class="string">/usr/share/nginx/html/blog;</span></span><br><span class="line">        <span class="string">index</span> <span class="string">index.html;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">server&#123;</span></span><br><span class="line">    <span class="string">listen</span> <span class="number">80</span><span class="string">;</span></span><br><span class="line">    <span class="string">server_name</span> <span class="string">blog.newban.cn;</span>   <span class="comment">#</span></span><br><span class="line">    <span class="string">root</span> <span class="string">/usr/share/nginx/html/blog2;</span></span><br><span class="line">    <span class="string">index</span> <span class="string">index.html;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> <span class="comment">#反向代理部分</span></span><br><span class="line"><span class="string">upstream</span> <span class="string">my.blog&#123;</span> <span class="comment">#部署django 名称不能使用下滑线分割比如my_blog 否则报错</span></span><br><span class="line">	<span class="string">server</span> <span class="number">118.10</span><span class="number">.25</span><span class="number">.17</span><span class="string">:8000</span> <span class="string">weight=1;</span></span><br><span class="line">	<span class="comment">#负载均衡 随机访问 权重1：1 各占50%</span></span><br><span class="line">	<span class="string">server</span> <span class="number">118.10</span><span class="number">.25</span><span class="number">.17</span><span class="string">:8001</span>  <span class="string">weight=1;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">server&#123;</span></span><br><span class="line">    <span class="string">listen</span> <span class="number">80</span><span class="string">;</span></span><br><span class="line">    <span class="string">server_name</span> <span class="string">py.insoan.com;</span>   <span class="comment">#</span></span><br><span class="line">	<span class="string">location</span> <span class="string">/</span> <span class="string">&#123;</span></span><br><span class="line">         <span class="string">proxy_pass</span> <span class="attr">http://my.blog;</span></span><br><span class="line">        <span class="string">index</span> <span class="string">index.html;</span></span><br><span class="line">		<span class="string">&#125;</span></span><br><span class="line">	<span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="问题1-DisallowedHost-at"><a href="#问题1-DisallowedHost-at" class="headerlink" title="问题1 DisallowedHost at /"></a>问题1 DisallowedHost at /</h3><p>使用 nginx 部署django时，会出现下面的错误</p>
+<ol>
+<li>首先使用的域名不符合 RFC 1034/1035.规范时，会出现下面的错误（如包含下划线）</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DisallowedHost at /Invalid HTTP_HOST header: <span class="string">'learning_log.cent.com'</span>. The domain name provided <span class="keyword">is</span> <span class="keyword">not</span> valid according to RFC <span class="number">1034</span>/<span class="number">1035.</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>解决方式：</li>
+</ol>
+<p>修改域名，去除下划线，即将 learning_log.cent.com 修改成 llog.cent.com</p>
+<ol start="3">
+<li>再重新访问出现另外一个错误</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">invalid http_host header</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>解决方式</li>
+</ol>
+<p>将 setting.py 的 ALLOWED_HOSTS = [] 修改成 ALLOWED_HOSTS = [‘*’]</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../125.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../125.html" itemprop="url">docker部署Django项目</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-23T14:38:50+08:00">
+                2020-09-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h1><p>已经写好了一个Django项目，需要将这个项目用docker封装一个镜像，使用k8s发布！</p>
+<p>在封装并运行的过程中，发现了很多问题，这里会一一介绍！</p>
+<h1 id="二、时区问题"><a href="#二、时区问题" class="headerlink" title="二、时区问题"></a>二、时区问题</h1><p>采用的是镜像是 ubuntu:16.04 默认的时区是UTC，比中国时间，晚了8个小时！</p>
+<p>那么因此，需要将默认的时区给覆盖掉！</p>
+<p>默认是没有安装 tzdata，因此没有 /usr/share/zoneinfo 目录！</p>
+<p>安装tzdata，使用命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install -y tzdata</span><br></pre></td></tr></table></figure>
+
+<p> 设置时区为 上海，使用以下命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TZ=Asia/Shanghai</span><br><span class="line">ln -snf /usr/share/zoneinfo/$TZ /etc/localtime &amp;&amp; echo $TZ &gt; /etc/timezone</span><br></pre></td></tr></table></figure>
+
+<h1 id="三、中文乱码问题"><a href="#三、中文乱码问题" class="headerlink" title="三、中文乱码问题"></a>三、中文乱码问题</h1><p>默认的系统编码是ascii，因此不支持中文！</p>
+<p>需要安装 locales 软件包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install -y locales</span><br></pre></td></tr></table></figure>
+
+<p>设置utf-8编码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">locale-gen en_US.UTF-8</span><br></pre></td></tr></table></figure>
+
+<p>设置全局变量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">LANG en_US.UTF-8</span><br><span class="line">LANGUAGE en_US:en</span><br><span class="line">LC_ALL en_US.UTF-8</span><br></pre></td></tr></table></figure>
+
+<p>设置utf-8编码之后，那么在python的print命令，就可以输出中文了，而不会提示</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&apos;ascii&apos; codec can&apos;t encode characters in position 8-50: ordinal not in range(128)</span><br></pre></td></tr></table></figure>
+
+<p>在python文件头部，记得增加一行代码，指定utf-8编码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># coding: utf-8</span><br></pre></td></tr></table></figure>
+
+<h1 id="四、任务计划问题"><a href="#四、任务计划问题" class="headerlink" title="四、任务计划问题"></a>四、任务计划问题</h1><h2 id="启动问题"><a href="#启动问题" class="headerlink" title="启动问题"></a>启动问题</h2><p>在ubuntu:16.04 的镜像中，默认是没有cron包的，所以需要手动安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install -y cron</span><br></pre></td></tr></table></figure>
+
+<p>那么启动任务计划时，不能使用命令 /etc/init.d/cron start 以及 service cron start</p>
+<p>在dockerfile中，会启动不成功的。</p>
+<p><strong>必须使用 /usr/sbin/cron 命令，才能启动成功！</strong></p>
+<h2 id="添加问题"><a href="#添加问题" class="headerlink" title="添加问题"></a>添加问题</h2><p>一般来讲，添加任务计划，直接修改 /etc/crontab 文件即可。</p>
+<p>在dockerfile 中，不能使用echo EOF 等命令修改/etc/crontab文件</p>
+<p><strong>必须使用 sed 命令修改/etc/crontab文件，才能成功！</strong></p>
+<p>如果需要在最后一行添加任务计划，可以使用以下命令：</p>
+<p>语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;$a需要添加的内容&apos; 文件名</span><br></pre></td></tr></table></figure>
+
+<p>比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &apos;$a* * * * * root python3 /messagecenter/cron/voc_receipt.py&apos; /etc/crontab</span><br></pre></td></tr></table></figure>
+
+<h1 id="五、封装Django项目镜像"><a href="#五、封装Django项目镜像" class="headerlink" title="五、封装Django项目镜像"></a>五、封装Django项目镜像</h1><p> 新建空目录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir /opt/messagecenter</span><br></pre></td></tr></table></figure>
+
+<p>目录结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">./</span><br><span class="line">├── dockerfile</span><br><span class="line">├── messagecenter.tar</span><br><span class="line">├── run.sh</span><br><span class="line">└── sources.list</span><br></pre></td></tr></table></figure>
+
+<p><strong>dockerfile</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu:16.04</span><br><span class="line"># 修改更新源为阿里云</span><br><span class="line">ADD sources.list /etc/apt/sources.list</span><br><span class="line">ADD messagecenter.tar /</span><br><span class="line"># 时区为上海</span><br><span class="line">ENV TZ Asia/Shanghai</span><br><span class="line"></span><br><span class="line"># 设置时区,设置utf-8编码,安装django,添加任务计划</span><br><span class="line">RUN apt-get update &amp;&amp; apt-get install -y tzdata locales python3-pip cron &amp;&amp; apt-get clean all &amp;&amp; \</span><br><span class="line">    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime &amp;&amp; echo $TZ &gt; /etc/timezone &amp;&amp; \</span><br><span class="line">    locale-gen en_US.UTF-8 &amp;&amp; \</span><br><span class="line">    pip3 install django requests</span><br><span class="line"></span><br><span class="line"># 解决中文乱码问题</span><br><span class="line">#RUN locale-gen en_US.UTF-8</span><br><span class="line">ENV LANG en_US.UTF-8</span><br><span class="line">ENV LANGUAGE en_US:en</span><br><span class="line">ENV LC_ALL en_US.UTF-8</span><br><span class="line"></span><br><span class="line">EXPOSE 8000</span><br><span class="line"># 添加启动脚本</span><br><span class="line">ADD run.sh .</span><br><span class="line">RUN chmod 755 run.sh</span><br><span class="line">ENTRYPOINT [ &quot;/run.sh&quot;]</span><br></pre></td></tr></table></figure>
+
+<p><strong>messagecenter.tar</strong> 这个是Django项目，已经打成tar包了。在dockerfile中，执行ADD命令时，会自动解压tar包</p>
+<p><strong>run.sh</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line"># 启动任务计划</span><br><span class="line">/usr/sbin/cron</span><br><span class="line"></span><br><span class="line"># 最后一行增加任务计划</span><br><span class="line">sed -i &apos;$a* * * * * root python3 /messagecenter/cron/voc_receipt.py&apos; /etc/crontab</span><br><span class="line"></span><br><span class="line"># 启动django项目</span><br><span class="line">cd /messagecenter/</span><br><span class="line">python3 manage.py runserver 0.0.0.0:8000</span><br></pre></td></tr></table></figure>
+
+<p>在Django项目中，有一个python脚本，需要每分钟执行一次！</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial main restricted</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-updates main restricted</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial universe</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-updates universe</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-updates multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ xenial-backports main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu xenial-security main restricted</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu xenial-security universe</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu xenial-security multiverse</span><br></pre></td></tr></table></figure>
+
+<p>生成镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t messagecenter /opt/messagecenter</span><br></pre></td></tr></table></figure>
+
+<p>启动镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -it -p 8000:8000 messagecenter</span><br></pre></td></tr></table></figure>
+
+<p>访问页面：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.0.162:8000</span><br></pre></td></tr></table></figure>
+
+<p>就可以访问Django的默认页面了！</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../142.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../142.html" itemprop="url">使用nginx反向代理后如何获取客户端ip</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-23T14:38:50+08:00">
+                2020-09-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="一、nginx-反向代理"><a href="#一、nginx-反向代理" class="headerlink" title="一、nginx 反向代理"></a>一、nginx 反向代理</h4><p>nginx反向代理后，在应用中取得的ip都是反向代理服务器的ip，取得的域名也是反向代理配置的url的域名，解决该问题，需要在nginx反向代理配置中添加一些配置信息，目的将客户端的真实ip和域名传递到应用程序中。</p>
+<p><strong>nginx反向代理配置时，一般会添加下面的配置：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`proxy_set_header Host $host;``proxy_set_header X-Real-IP $remote_addr;``proxy_set_header REMOTE-HOST $remote_addr;``proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;`</span><br></pre></td></tr></table></figure>
+
+<p><strong>1. proxy_set_header X-real-ip $remote_addr;</strong></p>
+<p>这句话之前已经解释过，有了这句就可以在web服务器端获得用户的真实ip</p>
+<p>但是，实际上要获得用户的真实ip，不是只有这一个方法，下面我们继续看。</p>
+<p><strong>2.  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</strong></p>
+<p>我们先看看这里有个X-Forwarded-For变量，这是一个squid开发的，用于识别通过HTTP代理或负载平衡器原始IP一个连接到Web服务器的客户机地址的非rfc标准，如果有做X-Forwarded-For设置的话,每次经过proxy转发都会有记录,格式就是client1, proxy1, proxy2,以逗号隔开各个地址，由于他是非rfc标准，所以默认是没有的，需要强制添加，在默认情况下经过proxy转发的请求，在后端看来远程地址都是proxy端的ip 。也就是说在默认情况下我们使用request.getAttribute(“X-Forwarded-For”)获取不到用户的ip，如果我们想要通过这个变量获得用户的ip，我们需要自己在nginx添加如下配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br></pre></td></tr></table></figure>
+
+<p>意思是增加一个$proxy_add_x_forwarded_for到X-Forwarded-For里去，注意是增加，而不是覆盖，当然由于默认的X-Forwarded-For值是空的，所以我们总感觉X-Forwarded-For的值就等于$proxy_add_x_forwarded_for的值，实际上当你搭建两台nginx在不同的ip上，并且都使用了这段配置，那你会发现在web服务器端通过request.getAttribute(“X-Forwarded-For”)获得的将会是客户端ip和第一台nginx的ip。</p>
+<p><strong>那么$proxy_add_x_forwarded_for又是什么？</strong></p>
+<p>$proxy_add_x_forwarded_for变量包含客户端请求头中的”X-Forwarded-For”，与$remote_addr两部分，他们之间用逗号分开。</p>
+<p>举个例子，有一个web应用，在它之前通过了两个nginx转发，<a href="http://www.linuxidc.com" target="_blank" rel="noopener">www.linuxidc.com</a> 即用户访问该web通过两台nginx。</p>
+<p>在第一台nginx中,使用 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</p>
+<p>现在的$proxy_add_x_forwarded_for变量的”X-Forwarded-For”部分是空的，所以只有$remote_addr，而$remote_addr的值是用户的ip，于是赋值以后，X-Forwarded-For变量的值就是用户的真实的ip地址了。</p>
+<p>到了第二台nginx，使用 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</p>
+<p>现在的$proxy_add_x_forwarded_for变量，X-Forwarded-For部分包含的是用户的真实ip，$remote_addr部分的值是上一台nginx的ip地址，于是通过这个赋值以后现在的X-Forwarded-For的值就变成了“用户的真实ip，第一台nginx的ip”，这样就清楚了吧。</p>
+<p>最后我们看到还有一个$http_x_forwarded_for变量，这个变量就是X-Forwarded-For，由于之前我们说了，默认的这个X-Forwarded-For是为空的，所以当我们直接使用proxy_set_header X-Forwarded-For $http_x_forwarded_for时会发现，web服务器端使用request.getAttribute(“X-Forwarded-For”)获得的值是null。如果想要通过request.getAttribute(“X-Forwarded-For”)获得用户ip，就必须先使用proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;这样就可以获得用户真实ip。</p>
+<h4 id="二、Java获取客户端真实IP地址"><a href="#二、Java获取客户端真实IP地址" class="headerlink" title="二、Java获取客户端真实IP地址"></a>二、Java获取客户端真实IP地址</h4><p>在JSP里，获取客户端的IP地址的方法是：request.getRemoteAddr（），这种方法在大部分情况下都是有效的。但是在通过了Apache，Squid等反向代理软件就不能获取到客户端的真实IP地址了。</p>
+<p>如果使用了反向代理软件，将<a href="http://192.168.1.110：2046/" target="_blank" rel="noopener">http://192.168.1.110：2046/</a> 的URL反向代理为 <a href="http://www.javapeixun.com.cn" target="_blank" rel="noopener">http://www.javapeixun.com.cn</a> / 的URL时，用request.getRemoteAddr（）方法获取的IP地址是：127.0.0.1　或　192.168.1.110，而并不是客户端的真实IP。</p>
+<p>经过代理以后，由于在客户端和服务之间增加了中间层，因此服务器无法直接拿到客户端的IP，服务器端应用也无法直接通过转发请求的地址返回给客户端。但是在转发请求的HTTP头信息中，增加了X－FORWARDED－FOR信息。用以跟踪原有的客户端IP地址和原来客户端请求的服务器地址。当我们访问<a href="http://www.javapeixun.com.cn" target="_blank" rel="noopener">http://www.javapeixun.com.cn</a> /index.jsp/ 时，其实并不是我们浏览器真正访问到了服务器上的index.jsp文件，而是先由代理服务器去访问<a href="http://192.168.1.110：2046/index.jsp" target="_blank" rel="noopener">http://192.168.1.110：2046/index.jsp</a> ，代理服务器再将访问到的结果返回给我们的浏览器，因为是代理服务器去访问index.jsp的，所以index.jsp中通过request.getRemoteAddr（）的方法获取的IP实际上是代理服务器的地址，并不是客户端的IP地址。</p>
+<p><strong>于是可得出获得客户端真实IP地址的方法一：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`public` `String getRemortIP(HttpServletRequest request) &#123; ``  ``if` `(request.getHeader(``&quot;x-forwarded-for&quot;``) == ``null``) &#123; ``    ``return` `request.getRemoteAddr(); ``  ``&#125; ``  ``return` `request.getHeader(``&quot;x-forwarded-for&quot;``); ``&#125;`</span><br></pre></td></tr></table></figure>
+
+<p>可是当我访问<a href="http://www.5a520.cn" target="_blank" rel="noopener">http://www.5a520.cn</a> /index.jsp/ 时，返回的IP地址始终是unknown，也并不是如上所示的127.0.0.1　或　192.168.1.110了，而我访问<a href="http://192.168.1.110：2046/index.jsp" target="_blank" rel="noopener">http://192.168.1.110：2046/index.jsp</a> 时，则能返回客户端的真实IP地址，写了个方法去验证。原因出在了Squid上。squid.conf 的配制文件　forwarded_for 项默认是为on，如果 forwarded_for 设成了 off 　则：X-Forwarded-For： unknown</p>
+<p><strong>于是可得出获得客户端真实IP地址的方法二：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`public` `String getIpAddr(HttpServletRequest request) &#123; ``  ``String ip = request.getHeader(``&quot;x-forwarded-for&quot;``); ``  ``if``(ip == ``null` `|| ip.length() == ``0` `|| ``&quot;unknown&quot;``.equalsIgnoreCase(ip)) &#123; ``    ``ip = request.getHeader(``&quot;Proxy-Client-IP&quot;``); ``  ``&#125; ``  ``if``(ip == ``null` `|| ip.length() == ``0` `|| ``&quot;unknown&quot;``.equalsIgnoreCase(ip)) &#123; ``    ``ip = request.getHeader(``&quot;WL-Proxy-Client-IP&quot;``); ``  ``&#125; ``  ``if``(ip == ``null` `|| ip.length() == ``0` `|| ``&quot;unknown&quot;``.equalsIgnoreCase(ip)) &#123; ``    ``ip = request.getRemoteAddr(); ``  ``&#125; ``  ``return` `ip; ``&#125;`</span><br></pre></td></tr></table></figure>
+
+<p>可是，如果通过了多级反向代理的话，X-Forwarded-For的值并不止一个，而是一串Ｉｐ值，究竟哪个才是真正的用户端的真实IP呢？</p>
+<p>答案是取X-Forwarded-For中第一个非unknown的有效IP字符串。</p>
+<p>如：X-Forwarded-For：192.168.1.110， 192.168.1.120， 192.168.1.130， 192.168.1.100用户真实IP为： 192.168.1.110</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../126.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../126.html" itemprop="url">mysql百万数据字符串匹配查询速度优化之覆盖索引法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-23T14:34:28+08:00">
+                2020-09-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="什么是“索引覆盖”？"><a href="#什么是“索引覆盖”？" class="headerlink" title="什么是“索引覆盖”？"></a>什么是“索引覆盖”？</h2><p>简单来的说，就是让查询的字段（包括where子句中的字段），都是索引字段。索引覆盖的好处是什么？好处是极大的、极大的、极大的提高查询的效率！重要的说三遍！</p>
+<p><strong>特别说明：</strong></p>
+<ol>
+<li>where条件中如果使用like关键词，即使字段是索引中的，也不构成索引覆盖。</li>
+<li>单个字段的索引，对于搜索单个where条件有较好的效果。但索引覆盖需要使用多字列索引。</li>
+</ol>
+<p>假设创建一个zaho_user表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> CREATE TABLE `zaho_user` (</span><br><span class="line"> `u_id` int(11) NOT NULL AUTO_INCREMENT,</span><br><span class="line"> `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,</span><br><span class="line"> `u_name` varchar(20) NOT NULL DEFAULT &apos;&apos; COMMENT &apos;用户名&apos;,</span><br><span class="line"> `u_sex` tinyint(4) NOT NULL DEFAULT &apos;1&apos; COMMENT &apos;性别&apos;,</span><br><span class="line"> `u_desc` varchar(200) NOT NULL DEFAULT &apos;&apos; COMMENT &apos;介绍&apos;</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT &apos;用户表&apos;;</span><br></pre></td></tr></table></figure>
+
+<p>这里我们创建一个索引：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter table `zaho_user` add index (`u_name`,`insert_time`,`u_sex`);</span><br></pre></td></tr></table></figure>
+
+<p>那么，我们执行如下查询时，效率将会非常高：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select `u_name`,`insert_time` from `zaho_user` where `u_sex`=1</span><br></pre></td></tr></table></figure>
+
+<p>例子中的三个字段：<code>u_name</code>,<code>insert_time</code>,<code>u_sex</code>创建了一个多列索引，而SQL查询时形成了索引覆盖。 在百万数据量匹配查询时速度提升非常可观</p>
+<h3 id="网站速度优化"><a href="#网站速度优化" class="headerlink" title="网站速度优化"></a>网站速度优化</h3><p>为什么网站访问很慢, 想优化可以参考以下方式, 优先级由高到低:</p>
+<ol>
+<li><strong>数据库位置优化 (优先采用内网访问而非外网)</strong></li>
+<li><strong>硬盘优化 (优先固态硬盘)</strong></li>
+<li><strong>SQL语句优化</strong></li>
+<li><strong>服务器硬件和外网带宽升级</strong></li>
+<li><strong>应用代码优化</strong></li>
+<li><strong>定期重启mysql 连接优化 (亲测效果明显)</strong> </li>
+</ol>
+<h3 id="网站维护记录"><a href="#网站维护记录" class="headerlink" title="网站维护记录"></a>网站维护记录</h3><p>本人有一个博客采集站, 内置文章3万左右, 访问和渲染速度非常快, 后来爬取文章增量到6万左右, 感觉网站速度明显变慢, 起初以为是内容过多导致, 可是也才6万就这么慢了那百万数据岂不没法玩了</p>
+<p>我甚至在想 可能是服务器配置以及博客程序有限导致的 也没再管它</p>
+<p>直到有一天 数据库容器挂了 , 重启数据库后, 网站恢复访问, 速度竟惊人地变快, 和最开始没两样, 于是乎我否断了之前的猜测, 之前速度慢有可能仅仅是数据库连接过多 垃圾缓存导致的</p>
+<p>因此 定期重启数据库 似乎可以纳入我的定时任务计划中 </p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../2.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../2.html" itemprop="url">使用docker部署redis</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-18T17:02:33+08:00">
+                2020-09-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="部署Redis"><a href="#部署Redis" class="headerlink" title="部署Redis"></a>部署Redis</h2><ol>
+<li>搜索redis镜像</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker search redis</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>拉取redis镜像</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull redis</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>创建容器 设置端口映射</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -id --name=c_redis -p 6379:6379 redis:5.0</span><br></pre></td></tr></table></figure>
+
+<p> 使用外部机器连接redis</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.redis-cli.exe -h 192.168.149.135 -p 6379</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../124.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../124.html" itemprop="url">使用docker部署nginx</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-18T16:14:19+08:00">
+                2020-09-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="部署nginx"><a href="#部署nginx" class="headerlink" title="部署nginx"></a>部署nginx</h2><ol>
+<li>搜索nginx镜像</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker search nginx</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>拉取nginx镜像</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull nginx</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>创建容器 设置端口映射</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 在/root目录下创建nginx目录用于存储nginx数据信息</span><br><span class="line">mkdir ~/nginx</span><br><span class="line">cd ~/nginx</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>创建nginx配置文件 否则下一步会报错</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir conf</span><br><span class="line">cd conf</span><br><span class="line">touch nginx.conf</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>在<code>nginx.conf</code>配置文件中添加以下配置信息（如果配置信息不对会导致无法正常启动）</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">worker_processes  1;</span><br><span class="line">events &#123;</span><br><span class="line">        worker_connections  1024;</span><br><span class="line">&#125;</span><br><span class="line">http&#123;</span><br><span class="line">server&#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name your_server_name;   #erverName</span><br><span class="line">    root /usr/share/nginx/html;</span><br><span class="line">    index index.html;</span><br><span class="line">&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li>创建并运行容器</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker run -id \</span><br><span class="line">-p 80:80 \</span><br><span class="line">--name=c_nginx \</span><br><span class="line">-h c_nginx \</span><br><span class="line">-v $PWD/conf/nginx.conf:/etc/nginx/nginx.conf \</span><br><span class="line">-v $PWD/logs:/var/log/nginx \</span><br><span class="line">-v $PWD/html:/usr/share/nginx/html \</span><br><span class="line">nginx:latest</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>参数说明<ul>
+<li><strong>-p 80：80 将容器的80端口映射到主机的80端口</strong></li>
+<li><strong>-v $PWD/conf/nginx.conf:/etc/nginx/nginx.conf <br>-v $PWD/logs:/var/log/nginx <br>-v $PWD/html:/usr/share/nginx/html \ 将主机中当前目录挂载到容器</strong></li>
+<li><strong>-h 设置容器的hostname</strong> </li>
+<li><strong>$PWD表示当前所在目录</strong></li>
+<li><strong>–name</strong>:表示容器别名, 但凡是两个杠都需要带=</li>
+</ul>
+</li>
+</ul>
+<h4 id="关于配置文件的修改"><a href="#关于配置文件的修改" class="headerlink" title="关于配置文件的修改"></a>关于配置文件的修改</h4><p>配置文件一旦修改需要重启<code>nginx</code>才生效,  重启前建议提前测试一下配置文件语法是否存在问题, 可以进入容器中, 执行以下指令进行测试:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -t</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220920144752833.png" alt="image-20220920144752833"></p>
+<p>除了借助<code>docker</code>重启容器外, 还可以在容器内部直接执行<code>nginx</code>指令实现重载:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
+
+<h4 id="附带配置文件内容参考"><a href="#附带配置文件内容参考" class="headerlink" title="附带配置文件内容参考"></a>附带配置文件内容参考</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br></pre></td><td class="code"><pre><span class="line">#主模块指令，指定Nginx Worker进程运行用户以及用户组</span><br><span class="line">user  nginx;</span><br><span class="line">#主模块指令，指定Nginx要开启的进程数，建议设置成和cpu的数量相等</span><br><span class="line">worker_processes  1;</span><br><span class="line">#主模块指令，定义全局错误日志文件；日志级别：debug、info、notice、warn、error、crit</span><br><span class="line">error_log  /var/log/nginx/error.log warn;</span><br><span class="line">#主模块指令，指定进程pid的存储文件位置</span><br><span class="line">pid        /var/run/nginx.pid;</span><br><span class="line">#事件指令，设定Nginx的工作模式及连接数上限</span><br><span class="line">events &#123;</span><br><span class="line">    #指定Nginx的工作模式；Nginx工作模式：select、poll、kqueue、epoll、rtsig和/dev/poll</span><br><span class="line">    use  epoll; #epoll工作模式是首选</span><br><span class="line">    #定义Nginx每个进程的最大连接数，默认是1024</span><br><span class="line">    worker_connections  1024;</span><br><span class="line">&#125;</span><br><span class="line">#HTTP服务器配置</span><br><span class="line">http &#123;</span><br><span class="line">    #主模块指令，实现对配置文件所包含的文件的设定，可以减少主配置文件的复杂度</span><br><span class="line">    include       mime.types;</span><br><span class="line">    #HTTP核心模块指令，默认类型为二进制流</span><br><span class="line">    default_type  application/octet-stream;</span><br><span class="line">    #设定日志格式</span><br><span class="line">    log_format  main  &apos;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &apos;</span><br><span class="line">                      &apos;$status $body_bytes_sent &quot;$http_referer&quot; &apos;</span><br><span class="line">                      &apos;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&apos;;</span><br><span class="line">    #定义全局的日志文件</span><br><span class="line">    access_log  /var/log/nginx/access.log  main;</span><br><span class="line">    #指定Nginx是否调用sendfile函数（zero copy方式）来输出文件，对于普通应用，必须设为on,</span><br><span class="line">    #注：如果用来进行下载等应用磁盘IO重负载应用，可设置为off，以平衡磁盘与网络I/O处理速度，降低系统的uptime.</span><br><span class="line">    sendfile        on;</span><br><span class="line">    #防止网络阻塞</span><br><span class="line">    #tcp_nopush     on;</span><br><span class="line">    #连接超时时间</span><br><span class="line">    keepalive_timeout  65;</span><br><span class="line"> </span><br><span class="line">一、Web服务器</span><br><span class="line">------------------------------------------------------------------------------------------------</span><br><span class="line">    #server虚拟主机配置</span><br><span class="line">    server &#123;</span><br><span class="line">        #监听端口号</span><br><span class="line">        listen       80;</span><br><span class="line">        #域名：可有多个，支持种类：通配符名称、正则表达式名称、IP、localhost、其他(_、@)</span><br><span class="line">        server_name  *.example.org;</span><br><span class="line">                     ~^(www\.)?(.+)$;</span><br><span class="line">                     101.200.149.141;</span><br><span class="line">                     ...</span><br><span class="line">                     localhost;</span><br><span class="line">                     _;</span><br><span class="line">        #location URL匹配配置</span><br><span class="line">		#配置根目录转发到本机目录位置</span><br><span class="line">		location / &#123;</span><br><span class="line">            root /usr/share/nginx/project_1/dist;</span><br><span class="line">            index index.html index.htm;  # 主页现寻找index.html，如果没有index.html，再寻找index.htm</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        error_page 404 /404.html;</span><br><span class="line"> </span><br><span class="line">        location = /40x.html &#123;</span><br><span class="line">        &#125;</span><br><span class="line">        error_page 500 502 503 504 /50x.html;</span><br><span class="line"> </span><br><span class="line">        location = /50x.html &#123;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">二、反向代理（配置SSL证书，http转发到https）</span><br><span class="line">------------------------------------------------------------------------------------------------</span><br><span class="line">   #web-http</span><br><span class="line">    server &#123;</span><br><span class="line">        listen       80;</span><br><span class="line">        server_name  www.xxxxxx.com;</span><br><span class="line">        rewrite ^(.*)$ https://$&#123;server_name&#125;$1 permanent;#将80端口的访问转发到443端口</span><br><span class="line">    &#125;</span><br><span class="line">    #web-https</span><br><span class="line">    server &#123;</span><br><span class="line">        listen       443 ssl;</span><br><span class="line">        server_name  www.xxxxxx.com;</span><br><span class="line">        #ssl on;  #需要注释，命令过时（1.15.0版本以后）</span><br><span class="line">        #配置证书的路径</span><br><span class="line">        ssl_certificate   cert/2547204_www.xxxxxx.com.pem; #使用相对路线，放在nginx目录下，绝对路径报错</span><br><span class="line">        ssl_certificate_key  cert/2547204_www.xxxxxx.com.key;</span><br><span class="line">        #ssl_session_cache    shared:SSL:1m;</span><br><span class="line">        ssl_session_timeout  10m;</span><br><span class="line"> </span><br><span class="line">		#配置根目录转发到相应端口(例，82端口）使用单机服务</span><br><span class="line">        location / &#123;</span><br><span class="line">            proxy_pass http://172.241.27.9:82; #nginx and tomcat 在同一台机器，使用http链接</span><br><span class="line">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">            proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">            proxy_set_header X-Forwarded-Port $server_port;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        error_page 404 /404.html;</span><br><span class="line">		</span><br><span class="line">        location = /40x.html &#123;</span><br><span class="line">		</span><br><span class="line">        &#125;</span><br><span class="line">        error_page 500 502 503 504 /50x.html;</span><br><span class="line"> </span><br><span class="line">        location = /50x.html &#123;</span><br><span class="line">		</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">三、负载均衡</span><br><span class="line">------------------------------------------------------------------------------------------------</span><br><span class="line">    #设定负载均衡的服务器列表</span><br><span class="line">    #1.轮询（默认）：</span><br><span class="line">    #每个请求按时间顺序逐一分配到不同的后端服务器，如果某台服务器宕机将被自动剔除，使用户访问不受影响</span><br><span class="line">    upstream myapp1 &#123;</span><br><span class="line">        #i.down表示当前的server暂时不参与负载均衡；</span><br><span class="line">        server 192.168.8.1:28 down;</span><br><span class="line">        #ii.backup：预留的备份机器。</span><br><span class="line">        server 192.168.8.2:80 backup;</span><br><span class="line">        server 192.168.8.3:80;</span><br><span class="line">    &#125;</span><br><span class="line">    #2.Weight权重：</span><br><span class="line">    #指定轮询权值，Weight值越大，分配到的访问机率越高，主要用于后端每个服务器性能不均的情况下</span><br><span class="line">    upstream myapp2 &#123;</span><br><span class="line">        server 192.168.8.1:28 weight=5;</span><br><span class="line">        server 192.168.8.2:80  weight=1;</span><br><span class="line">        server 192.168.8.3:80  weight=6;</span><br><span class="line">    &#125;</span><br><span class="line">    #3.ip_hash：</span><br><span class="line">    #每个请求按访问IP的hash结果分配，自同一个IP的访客固定访问一个后端服务器，有效解决了动态网页存在的session共享问题；</span><br><span class="line">    upstream myapp3 &#123;</span><br><span class="line">        ip_hash;</span><br><span class="line">        server 192.168.8.1:28;</span><br><span class="line">        server 192.168.8.2:80;</span><br><span class="line">        #iii.max_fails允许请求失败的次数，默认1。当超过最大次数时，返回proxy_next_upstream 模块定义的错误；</span><br><span class="line">        #iv.fail_timeout在经历了max_fails次失败后，暂停服务的时间。max_fails可以和fail_timeout一起使用。</span><br><span class="line">        server 192.168.8.3:80  max_fails=6 fail_timeout=20s;</span><br><span class="line">        server 192.168.8.4:80;</span><br><span class="line">    &#125;</span><br><span class="line">    #4.fair：更加智能的负载均衡算法。依据页面大小和加载时间长短智能地进行负载均衡，根据后端服务器的响应时间来分配请求，响应时间短的优先分配。</span><br><span class="line">    #  注：Nginx本身是不支持fair，如果需要使用这种调度算法，必须下载Nginx的upstream_fair模块。</span><br><span class="line">    #5.url_hash：按访问url的hash结果来分配请求，使每个url定向到同一个后端服务器，可以进一步提高后端缓存服务器的效率。</span><br><span class="line">    #  注：Nginx本身是不支持url_hash，如果需要使用这种调度算法，必须安装Nginx的hash软件包。</span><br><span class="line"> </span><br><span class="line">    server &#123;</span><br><span class="line">        listen 80;</span><br><span class="line">        server_name  www.hanxiaozhang.xyz;</span><br><span class="line">        location / &#123;</span><br><span class="line">            proxy_pass http://myapp1;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><p>如果对<code>Nginx</code>配置文件进行了修改操作, 需要重启<code>Nginx</code>容器才能生效</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../127.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../127.html" itemprop="url">使用docker部署wordpress</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-18T16:14:19+08:00">
+                2020-09-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="部署wordpress"><a href="#部署wordpress" class="headerlink" title="部署wordpress"></a>部署wordpress</h2><ol>
+<li>搜索wordpress镜像</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker search wordpress</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>拉取wordpress镜像</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull wordpress</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>使用Nginx进行反向代理</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http&#123;</span><br><span class="line">upstream wordpress_sex&#123;</span><br><span class="line">server 119.33.15.174:7778;</span><br><span class="line">&#125;</span><br><span class="line">server&#123;</span><br><span class="line">        listen       80;</span><br><span class="line">    server_name sex.newban.cn;</span><br><span class="line">    location / &#123;</span><br><span class="line">            proxy_redirect off;</span><br><span class="line">            proxy_set_header Host $host;</span><br><span class="line">            proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">            proxy_pass http://wordpress_sex;</span><br><span class="line">            break;</span><br><span class="line">                 &#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="4">
+<li>创建并运行容器</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">docker run -id \</span><br><span class="line">--name=wordpress_sex \</span><br><span class="line">-p 7778:80 \</span><br><span class="line">-h wordpress_sex \</span><br><span class="line">-v /root/songjian/wordpress/sex_www:/var/www/html \</span><br><span class="line">-e WORDPRESS_DB_HOST=119.33.15.174:3306 \</span><br><span class="line">-e WORDPRESS_DB_USESR=root \</span><br><span class="line">-e WORDPRESS_DB_PASSWORD=songjian \</span><br><span class="line">-e WORDPRESS_DB_NAME=wordpress_sex \</span><br><span class="line">-d wordpress:latest</span><br></pre></td></tr></table></figure>
+
+<h4 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h4><ul>
+<li><p><strong>WORDPRESS_DB_HOST</strong>         数据库主机地址（默认为与其 link 的 mysql 容器的 IP 和 3306 端口：）</p>
+</li>
+<li><p><strong>WORDPRESS_DB_USER</strong>         数据库用户名（默认为 root）</p>
+</li>
+<li><p><strong>WORDPRESS_DB_PASSWORD</strong>     数据库密码（默认为与其 link 的 mysql 容器提供的 MYSQL_ROOT_PASSWORD 变量的值）</p>
+</li>
+<li><p><strong>WORDPRESS_DB_NAME</strong>         数据库名（默认为 wordpress）</p>
+</li>
+<li><p><strong>WORDPRESS_TABLE_PREFIX</strong>     数据库表名前缀（默认为空，您可以从该变量覆盖 wp-config.php 中的配置）</p>
+<p><strong>如果 WORDPRESS_DB_NAME 变量指定的数据库不存在时，那么 wordpress容器在启动时就会自动尝试创建该数据库，</strong></p>
+</li>
+</ul>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../143.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -736,1109 +1845,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../1.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../1.html" itemprop="url">Linux Crontab 命令安装和使用教程：在 VPS 上设置定时任务</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-18T13:20:02+08:00">
-                2020-09-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="一、Crontab-命令安装教程"><a href="#一、Crontab-命令安装教程" class="headerlink" title="一、Crontab 命令安装教程"></a><strong>一、Crontab 命令安装教程</strong></h2><p>首先检查一下 Crontab 是否安装：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -l</span><br></pre></td></tr></table></figure>
-
-<p>如果没报错，就是已经安装好了，一般来说系统都会自带。</p>
-<p>如果没安装，进行安装：</p>
-<p>CentOS：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install vixie-cron</span><br><span class="line">yum install crontabs</span><br></pre></td></tr></table></figure>
-
-<p>Ubuntu：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install cron</span><br></pre></td></tr></table></figure>
-
-<h2 id="二、Crontab-命令使用教程"><a href="#二、Crontab-命令使用教程" class="headerlink" title="二、Crontab 命令使用教程"></a><strong>二、Crontab 命令使用教程</strong></h2><p>命令格式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab [-u user] file crontab [-u user] [ -e | -l | -r ]</span><br></pre></td></tr></table></figure>
-
-<p>是不是觉得怪复杂的，其实一般来说其实就三个命令：</p>
-<ul>
-<li>列出所有定时任务：<code>crontab -l</code></li>
-<li>编辑所有定时任务：<code>crontab -e</code></li>
-<li>删除所有定时任务：<code>crontab -r</code></li>
-</ul>
-<p>使用 crontab -l 可以列出所有的定时任务，一行一个任务，一般来说，每行的格式如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">分 时 日 月 星期 要运行的命令</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>第 1 列：分钟，取值范围：0～59</li>
-<li>第 2 列：小时，取值范围：0～23（0表示子夜）</li>
-<li>第 3 列：日，取值范围：1～31</li>
-<li>第 4 列：月，取值范围：1～12</li>
-<li>第 5 列：星期，取值范围：0～7（0 和 7 表示星期天）</li>
-<li>第 6 列：要运行的命令</li>
-</ul>
-<p>对于每一列，有如下几种表示方法：</p>
-<ul>
-<li>*：每单位（比如每分钟，每小时）</li>
-<li>具体数字：就是具体的时间或者日期</li>
-<li>取值范围：比如 3 – 5，就是从 3 到 5 的所有值都取</li>
-<li>*/数字：比如 */2，就是每 2 分钟或者每 2 天之类的意思</li>
-</ul>
-<p>下面看几个例子：</p>
-<p>实例 1：每 1 分钟执行一次 myCommand</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* * * * * myCommand</span><br></pre></td></tr></table></figure>
-
-<p>实例 2：每小时的第 3 和第 15 分钟执行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3,15 * * * * myCommand</span><br></pre></td></tr></table></figure>
-
-<p>实例 3：在上午 8 点到 11 点的第 3 和第 15 分钟执行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3,15 8-11 * * * myCommand</span><br></pre></td></tr></table></figure>
-
-<p>实例 4：每隔两天的上午 8 点到 11 点的第 3 和第 15 分钟执行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3,15 8-11 */2  *  * myCommand</span><br></pre></td></tr></table></figure>
-
-<p>实例 5：每周一上午 8 点到 11 点的第 3 和第 15 分钟执行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3,15 8-11 * * 1 myCommand</span><br></pre></td></tr></table></figure>
-
-<p>实例 6：每晚的 21:30 重启 smb</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">30 21 * * * /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p>实例 7：每月 1、10、22 日的 4 : 45 重启 smb</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">45 4 1,10,22 * * /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p>实例 8：每周六、周日的 1 : 10 重启 smb</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">10 1 * * 6,0 /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p>实例 9：每天 18 : 00 至 23 : 00 之间每隔 30 分钟重启 smb</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0,30 18-23 * * * /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p>实例 10：每星期六的晚上 11 : 00 pm 重启 smb</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 23 * * 6 /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p>实例 11：每一小时重启 smb</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 */1 * * * /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p>实例 12：晚上 11 点到早上 7 点之间，每隔一小时重启 smb</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 23-7 * * * /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p>实例 13：5小时后 每一小时重启 smb</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 5/1 * * * /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p><strong>错误示例</strong>:</p>
-<p>如果你想定一个每天两点执行的任务:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 2 * * * /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p>但不能写成:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* 2 * * * /etc/init.d/smb restart</span><br></pre></td></tr></table></figure>
-
-<p>这种写法表示每天两点开始每分钟执行一次任务, 可能会陷入嵌套重复执行的问题</p>
-<h3 id="配置完后-最后启动定时任务"><a href="#配置完后-最后启动定时任务" class="headerlink" title="配置完后 最后启动定时任务"></a>配置完后 最后启动定时任务</h3><p>ubuntu下启动、停止与重启cron:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$sudo /etc/init.d/cron start</span><br><span class="line">$sudo /etc/init.d/cron stop</span><br><span class="line">$sudo /etc/init.d/cron restart</span><br><span class="line">$sudo service cron status# 查看当前cron服务运行状态</span><br></pre></td></tr></table></figure>
-
-<h4 id="定时任务备份"><a href="#定时任务备份" class="headerlink" title="定时任务备份"></a>定时任务备份</h4><p>可以使用这种方法在$HOME目录中对crontab文件做一备份:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ crontab -l &gt; $HOME/mycron</span><br></pre></td></tr></table></figure>
-
-<h3 id="问题排查"><a href="#问题排查" class="headerlink" title="问题排查"></a>问题排查</h3><p><strong>1. 启动cron 报错：</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cron: can&apos;t lock /var/run/crond.pid, otherpid may be 4187: Resource temporarily unavailable</span><br></pre></td></tr></table></figure>
-
-<p><strong>解决方案：</strong></p>
-<p>依次执行以下三个命令</p>
-<p>删除pid 重新加载配置 重启启动cron</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /var/run/crond.pid</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cron reload</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cron restart</span><br></pre></td></tr></table></figure>
-
-<p><strong>2.任务不执行 日志不打印</strong></p>
-<p>指令必须以绝对路径开头 比如:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* */2 * * *  /usr/bin/python3  /root/xxx/xxx.py &gt;&gt;/root/xxx/mylog_$(date +\%Y-\%m-\%d-\%H:\%M:\%S).log 2&gt;&amp;1</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../5.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../5.html" itemprop="url">利用 IntelliJ IDEA 远程连接服务器并做ftp上传</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-18T13:11:33+08:00">
-                2020-09-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>对于windows用户来说上传文件到服务器有很多资源可以利用,例如xshell,xftp等可视化进行服务器的管控,但是对于mac的小伙伴来说现在找一个替代xshell的不是很好找,要么不好用要么用起来比较繁琐.小编发现idea自带ssh连接,也可以通过idea进行文件管理上传至服务器.</p>
-<p>打开idea可以单独设置一个空包作为服务器管理,只需要把要上传的文件放到包里面即可.</p>
-<p><strong>idea &gt;&gt; Tools &gt;&gt; Deployment &gt;&gt; Configuration 进入到配置页面</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200918131554.png" alt></p>
-<p><strong>点击加号出现配置服务器信息.我们选择sftp文件上传模式,名称为为当前上产服务器设置的别名</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200918131613.png" alt></p>
-<p>录入必要信息:</p>
-<ul>
-<li><p>SFTP host 服务器地址.</p>
-</li>
-<li><p>Port.     端口号</p>
-</li>
-<li><p>Root path  默认上传路径</p>
-</li>
-<li><p>User name 登录服务器用户名</p>
-</li>
-<li><p>Auth type 授权方式,这里小编采用密码授权模式</p>
-</li>
-<li><p>Password. 登录服务器密码</p>
-</li>
-</ul>
-<p>录入完必要信息以后可以点击Test SFTP connection进行连接测试</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200918131521.png" alt></p>
-<p><strong>通过 Tools &gt;&gt; Start SSH 进行ssh远程连接,点击后会出现配置好的ssh信息,选择即可</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200918131628.png" alt></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200918131646.png" alt></p>
-<p>链接成功后在idea的Terminal中可以看到链接成功的信息</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200918131702.png" alt></p>
-<p><strong>通过Configuration 下选择配置好的ssh服务器进入Mappings文件夹 可以配置上传路径和本地文件存放路径</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200918131750.png" alt></p>
-<p><strong>配置完以后 通过项目右键可以看到一个上传到服务器按钮点击即可把要上传的文件上传至服务器</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200918131716.png" alt></p>
-<p><strong>上传后的效果.</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200918131808.png" alt></p>
-<p>至此通过idea远程链接ssh并上传文件至服务器配置完毕.需要的小伙伴们可以去使用啦</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../6.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../6.html" itemprop="url">Linux关于日期时间显示输出</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-18T12:23:57+08:00">
-                2020-09-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>1、输出当前年月日</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> $(date +%F)</span><br><span class="line">2014-02-21</span><br></pre></td></tr></table></figure>
-
-<p>或者</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo $(date +\%Y-\%m-\%d)</span><br><span class="line">2014-02-21</span><br></pre></td></tr></table></figure>
-
-<p>2、输出当前时间(时分)</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> $(date +%R)</span><br><span class="line">12:45</span><br></pre></td></tr></table></figure>
-
-<p>3、输出当前时间(时分秒)</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> $(date +%T)</span><br><span class="line">12:52:51</span><br></pre></td></tr></table></figure>
-
-<p>4、输出星期</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> $(date +%A)</span><br><span class="line">星期五</span><br></pre></td></tr></table></figure>
-
-<h3 id="5、组合输出日期时间"><a href="#5、组合输出日期时间" class="headerlink" title="5、组合输出日期时间"></a>5、组合输出日期时间</h3><p>5.1输出年月日</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> $(date +%Y/%m/%d)</span><br><span class="line">2014/02/21</span><br><span class="line">%Y参数: 年</span><br><span class="line">%m参数: 月</span><br><span class="line">%d参数: 日</span><br></pre></td></tr></table></figure>
-
-<p>5.2输出时分秒</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> $(date +%H:%M:%S)</span><br><span class="line">12:50:44</span><br><span class="line">%H参数: 时</span><br><span class="line">%M参数: 分</span><br><span class="line">%S参数: 秒</span><br></pre></td></tr></table></figure>
-
-<p>5.3输出年月日时分秒</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> $(date +%F%n%T)</span><br><span class="line">2014-02-21 12:56:46</span><br><span class="line">%n参数: 空格</span><br><span class="line">%F参数: 年月日</span><br><span class="line">%T参数: 时分秒</span><br></pre></td></tr></table></figure>
-
-<p>或者</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> $(date +\%Y-\%m-\%d-%H:%M:%S)</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../137.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../137.html" itemprop="url">如何创建Xposed模块工程进行代码hook</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-15T19:55:32+08:00">
-                2020-09-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="快速搭建模块工程"><a href="#快速搭建模块工程" class="headerlink" title="快速搭建模块工程"></a>快速搭建模块工程</h1><ol>
-<li><strong>第一步 使用Android Studio创建空工程</strong></li>
-<li><strong>第二步 导入依赖</strong></li>
-</ol>
-<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">compileOnly <span class="string">'de.robv.android.xposed:api:53'</span></span><br><span class="line">compileOnly <span class="string">'de.robv.android.xposed:api:53:sources'</span></span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li><strong>在AndroidManifest.xml清单文件application节点下加入以下代码</strong></li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta-data</span><br><span class="line">          android:name=<span class="string">"xposedmodule"</span></span><br><span class="line">          android:value=<span class="string">"true"</span> /&gt;</span><br><span class="line">      &lt;meta-data</span><br><span class="line">          android:name=<span class="string">"xposeddescription"</span></span><br><span class="line">          android:value=<span class="string">"Xposed模块初体验"</span> /&gt;</span><br><span class="line">      &lt;meta-data</span><br><span class="line">          android:name=<span class="string">"xposedminversion"</span></span><br><span class="line">          android:value=<span class="string">"53"</span> /&gt;</span><br></pre></td></tr></table></figure>
-
-<ol start="4">
-<li><strong>创建Hook逻辑类,该类继承自IXposedHookLoadPackage,示例如下:</strong></li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HookTest</span> <span class="keyword">implements</span> <span class="title">IXposedHookLoadPackage</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleLoadPackage</span><span class="params">(XC_LoadPackage.LoadPackageParam lpparam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        XposedBridge.log(<span class="string">"HOOK初体验："</span> + lpparam.processName + <span class="string">":"</span> + lpparam.packageName);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ol start="5">
-<li><strong>在assets目录下创建xposed_init文件并将Hook逻辑类引用路径填入,比如:</strong></li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">com.example.test.HookTest</span><br></pre></td></tr></table></figure>
-
-<ol start="6">
-<li><strong>编译并运行至装有xposed容器app的设备中即可, 重启设备生效</strong></li>
-</ol>
-<h4 id="注-以上操作成功的前提是你需要一台拥有root权限的手机或者模拟器-并已经安装了xposed安装器"><a href="#注-以上操作成功的前提是你需要一台拥有root权限的手机或者模拟器-并已经安装了xposed安装器" class="headerlink" title="注:以上操作成功的前提是你需要一台拥有root权限的手机或者模拟器,并已经安装了xposed安装器"></a>注:以上操作成功的前提是你需要一台拥有root权限的手机或者模拟器,并已经安装了xposed安装器</h4><p><strong>搭建本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../9.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../9.html" itemprop="url">apk反汇编工具apktool问题集锦</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-15T19:55:32+08:00">
-                2020-09-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Apktool的基本使用"><a href="#Apktool的基本使用" class="headerlink" title="Apktool的基本使用"></a>Apktool的基本使用</h2><p><strong>解包指令:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apktool d [apk文件] -o [解包存放路径]</span><br></pre></td></tr></table></figure>
-
-<p>如果使用的是jar包,则:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar apktool.jar d [apk文件] -o [解包存放路径]</span><br></pre></td></tr></table></figure>
-
-<p><strong>打包指令:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">apktool b [源码目录] -o [apk文件]</span><br><span class="line">或者</span><br><span class="line">java -jar apktool.jar  b [源码目录] -o [apk文件]</span><br></pre></td></tr></table></figure>
-
-<p><strong>签名指令:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jarsigner -verbose -keystore [签名文件] -signedjar [签名后的apk 可自定义文件名] [需要签名的apk]  [签名文件的别名]</span><br></pre></td></tr></table></figure>
-
-<h3 id="温馨提示"><a href="#温馨提示" class="headerlink" title="温馨提示"></a>温馨提示</h3><p>由于apk在反编译后进行回编时容易出现各种异常情况, 建议解包后立马进行装包测试,以免白费功夫!</p>
-<h2 id="问题1-DexBackedDexFile-NotADexFile"><a href="#问题1-DexBackedDexFile-NotADexFile" class="headerlink" title="问题1 DexBackedDexFile$NotADexFile"></a>问题1 DexBackedDexFile$NotADexFile</h2><p><strong>apktool反编apk时报错:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">org.jf.dexlib2.dexbacked.DexBackedDexFile$NotADexFile: Not a valid dex magic value: cf 77 4c c7 9b 21 01 cd</span><br></pre></td></tr></table></figure>
-
-<p> 提示很明显，就是非法Dex，这是因为apk里有加密过后的dex文件，比如有些apk的assets目录下有加密后的Dex文件，添加<code>–only-main-classes</code>参数即可 </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apktool d ~/tmp/test.apk -o /tmp/test --only-main-classes</span><br></pre></td></tr></table></figure>
-
-<h2 id="apktool打包时找不到打包后的apk文件"><a href="#apktool打包时找不到打包后的apk文件" class="headerlink" title="apktool打包时找不到打包后的apk文件"></a>apktool打包时找不到打包后的apk文件</h2><p>新版的apktool需要加上 -o 参数, 否则只编译不输出apk 文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apktool b ~/tmp/test -o /tmp/test.apk</span><br></pre></td></tr></table></figure>
-
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../10.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../10.html" itemprop="url">Android Studio：如何使用Android Studio与夜神模拟器开发调试</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-15T18:45:22+08:00">
-                2020-09-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="使用Android-Studio与夜神模拟器开发调试："><a href="#使用Android-Studio与夜神模拟器开发调试：" class="headerlink" title="使用Android Studio与夜神模拟器开发调试："></a>使用Android Studio与夜神模拟器开发调试：</h2><p>（1）运行夜神模拟器，</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200915184734.png" alt></p>
-<p>（2）打开命令行窗口，</p>
-<p>（3）打开到夜神安装目录（如cd D:\Program Files\NOX\Nox\bin），</p>
-<p>（4）执行命令：nox_adb.exe connect 127.0.0.1:62001，连接模拟器，</p>
-<p>（5）若Android Studio连接不上夜神，重启模拟器即可。</p>
-<p>4、这时在Android Studio窗口上点击run ‘app’(或shift+F10)</p>
-<p>会发现弹出的窗口如下所示：</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20200915184707.png" alt></p>
-<p>点击OK即可在模拟器上运行app</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../11.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../11.html" itemprop="url">python requests库添加自定义cookies的方法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-14T22:08:27+08:00">
-                2020-09-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>一般的情况使用requests.Session()方法就可以解决cookies问题，但是在途中添加cookie遇到了一些问题。</p>
-<h3 id="第一种："><a href="#第一种：" class="headerlink" title="第一种："></a>第一种：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">session = requests.Session()</span><br><span class="line">session.cookies[&apos;cookie&apos;] = &apos;cookie-value&apos;12</span><br></pre></td></tr></table></figure>
-
-<p>功能：可以添加cookie，不会清除原cookie<br>缺点：不能设置path，domain等参数</p>
-<h3 id="第二种："><a href="#第二种：" class="headerlink" title="第二种："></a>第二种：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">session = requests.Session()</span><br><span class="line">session.cookies.set(&apos;cookie-name&apos;, &apos;cookie-value&apos;, path=&apos;/&apos;, domain=&apos;.abc.com&apos;)12</span><br></pre></td></tr></table></figure>
-
-<p>功能：设置path、domain等参数。<br>缺点：清楚原来的cookies</p>
-<h3 id="第三种："><a href="#第三种：" class="headerlink" title="第三种："></a>第三种：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">session = requests.Session()</span><br><span class="line">requests.utils.add_dict_to_cookiejar(session.cookies, cookie_dict)12</span><br></pre></td></tr></table></figure>
-
-<p>功能：可以添加cookie，不会清除原cookie<br>缺点：不能设置path，domain等参数</p>
-<h3 id="第四种："><a href="#第四种：" class="headerlink" title="第四种："></a>第四种：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">session = requests.Session()</span><br><span class="line">c = requests.cookies.RequestsCookieJar()</span><br><span class="line">c.set(&apos;cookie-name&apos;, &apos;cookie-value&apos;, path=&apos;/&apos;, domain=&apos;.abc.com&apos;)</span><br><span class="line">session.cookies.update(c)1234</span><br></pre></td></tr></table></figure>
-
-<p>功能：既能添加cookies，还能添加path，domain等参数。</p>
-<h3 id="cookie的path和domain属性"><a href="#cookie的path和domain属性" class="headerlink" title="cookie的path和domain属性"></a>cookie的path和domain属性</h3><ol>
-<li>domain表示的是cookie所在的域，默认为请求的地址，如网址为<a href="http://www.test.com/test/test.aspx，那么domain默认为www.test.com。而跨域访问，如域A为t1.test.com，域B为t2.test.com，那么在域A生产一个令域A和域B都能访问的cookie就要将该cookie的domain设置为.test.com；如果要在域A生产一个令域A不能访问而域B能访问的cookie就要将该cookie的domain设置为t2.test.com。" target="_blank" rel="noopener">www.test.com/test/test.aspx，那么domain默认为www.test.com。而跨域访问，如域A为t1.test.com，域B为t2.test.com，那么在域A生产一个令域A和域B都能访问的cookie就要将该cookie的domain设置为.test.com；如果要在域A生产一个令域A不能访问而域B能访问的cookie就要将该cookie的domain设置为t2.test.com。</a></li>
-<li>path表示cookie所在的目录，asp.net默认为/，就是根目录。在同一个服务器上有目录如下：/test/,/test/cd/,/test/dd/，现设一个cookie1的path为/test/，cookie2的path为/test/cd/，那么test下的所有页面都可以访问到cookie1，而/test/和/test/dd/的子页面不能访问cookie2。这是因为cookie能让其path路径下的页面访问。</li>
-<li>浏览器会将domain和path都相同的cookie保存在一个文件里，cookie间用*隔开。</li>
-<li>含值键值对的cookie：以前一直用的是nam=value单键值对的cookie，一说到含多个子键值对的就蒙了。现在总算弄清楚了。含多个子键值对的cookie格式是name=key1=value1&amp;key2=value2。可以理解为单键值对的值保存一个自定义的多键值字符串，其中的键值对分割符为&amp;，当然可以自定义一个分隔符，但用asp.net获取时是以&amp;为分割符。</li>
-</ol>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="../30/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../30/">30</a><span class="page-number current">31</span><a class="page-number" href="../32/">32</a><span class="space">&hellip;</span><a class="page-number" href="../43/">43</a><a class="extend next" rel="next" href="../32/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="../30/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="../../">1</a><span class="space">&hellip;</span><a class="page-number" href="../30/">30</a><span class="page-number current">31</span><a class="page-number" href="../32/">32</a><span class="space">&hellip;</span><a class="page-number" href="../44/">44</a><a class="extend next" rel="next" href="../32/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1884,7 +1895,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">424</span>
+                  <span class="site-state-item-count">431</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
