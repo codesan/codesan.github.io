@@ -90,14 +90,14 @@
 <meta property="og:site_name" content="乱码三千 – 分享实用IT技术">
 <meta property="og:description" content="寄存器CPU除了有控制器、运算器还有寄存器。其中寄存器的作用就是进行数据的临时存储。  CPU的运算速度是非常快的，为了性能CPU在内部开辟一小块临时存储区域，并在进行运算时先将数据从内存复制到这一小块临时存储区域中，运算时就在这一小快临时存储区域内进行。我们称这一小块临时存储区域为寄存器。  对于arm64系的CPU来说， 如果寄存器以x开头则表明的是一个64位的寄存器，如果以w开头则表明是一个">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201221150846.png">
-<meta property="og:image" content="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201222145318.png">
-<meta property="og:image" content="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png">
-<meta property="og:updated_time" content="2022-07-07T10:00:49.990Z">
+<meta property="og:image" content="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20201221150846.png">
+<meta property="og:image" content="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20201222145318.png">
+<meta property="og:image" content="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png">
+<meta property="og:updated_time" content="2023-07-11T02:28:07.010Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="汇编语言之ARM64汇编">
 <meta name="twitter:description" content="寄存器CPU除了有控制器、运算器还有寄存器。其中寄存器的作用就是进行数据的临时存储。  CPU的运算速度是非常快的，为了性能CPU在内部开辟一小块临时存储区域，并在进行运算时先将数据从内存复制到这一小块临时存储区域中，运算时就在这一小快临时存储区域内进行。我们称这一小块临时存储区域为寄存器。  对于arm64系的CPU来说， 如果寄存器以x开头则表明的是一个64位的寄存器，如果以w开头则表明是一个">
-<meta name="twitter:image" content="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201221150846.png">
+<meta name="twitter:image" content="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20201221150846.png">
 
 
 
@@ -485,7 +485,7 @@
 <li>CPSR的低8位（包括I、F、T和M[4：0]）称为控制位，程序无法修改,除非CPU运行于特权模式下,程序才能修改控制位!</li>
 <li>N、Z、C、V均为条件码标志位。它们的内容可被算术或逻辑运算的结果所改变，并且可以决定某条指令是否被执行!意义重大!</li>
 </ul>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201221150846.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20201221150846.png" alt></p>
 <h3 id="N（Negative）标志"><a href="#N（Negative）标志" class="headerlink" title="N（Negative）标志"></a>N（Negative）标志</h3><blockquote>
 <p>CPSR的第31位是 N，符号标志位。它记录相关指令执行后,其结果是否为负.如果为负 N = 1,如果是非负数 N = 0.</p>
 </blockquote>
@@ -498,7 +498,7 @@
 <p>CPSR的第29位是C，进位标志位。一般情况下,进行<strong>无符号数</strong>的运算。<br> 加法运算：当运算结果产生了进位时（无符号数溢出），C=1，否则C=0。<br> 减法运算（包括CMP）：当运算时产生了借位时（无符号数溢出），C=0，否则C=1。</p>
 </blockquote>
 <p>   对于位数为N的无符号数来说，其对应的二进制信息的最高位，即第N - 1位，就是它的最高有效位，而假想存在的第N位，就是相对于最高有效位的更高位。如下图所示：</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20201222145318.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20201222145318.png" alt></p>
 <h3 id="进位"><a href="#进位" class="headerlink" title="进位"></a>进位</h3><p>   我们知道，当两个数据相加的时候，有可能产生从最高有效位想更高位的进位。比如两个32位数据：0xaaaaaaaa + 0xaaaaaaaa,将产生进位。由于这个进位值在32位中无法保存，我们就只是简单的说这个进位值丢失了。其实CPU在运算的时候，并不丢弃这个进位制，而是记录在一个特殊的寄存器的某一位上。ARM下就用C位来记录这个进位值。比如，下面的指令</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mov w0,<span class="comment">#0xaaaaaaaa；0xa 的二进制是 1010</span></span><br><span class="line">adds w0,w0,w0； 执行后 相当于 1010 &lt;&lt; 1 进位1（无符号溢出） 所以C标记 为 1</span><br><span class="line">adds w0,w0,w0； 执行后 相当于 0101 &lt;&lt; 1 进位0（无符号没溢出） 所以C标记 为 0</span><br><span class="line">adds w0,w0,w0； 重复上面操作</span><br><span class="line">adds w0,w0,w0</span><br></pre></td></tr></table></figure>
 
@@ -524,7 +524,7 @@
 <li>常量区:只读</li>
 </ul>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
       
@@ -664,7 +664,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">431</span>
+                  <span class="site-state-item-count">434</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

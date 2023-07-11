@@ -288,6 +288,545 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../223.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../223.html" itemprop="url">使用Clang编译C程序在安卓设备中执行</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-01T16:39:19+08:00">
+                2021-02-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>由于<code>Android NDK</code>从r18开始就已经抛弃GCC,转而将Clang当作默认编译器，因此我们直接使用NDK工具包进行编译</p>
+</blockquote>
+<h2 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h2><ul>
+<li>安卓模拟器</li>
+<li><code>android-ndk-r19c</code></li>
+</ul>
+<h2 id="实验步骤"><a href="#实验步骤" class="headerlink" title="实验步骤"></a>实验步骤</h2><p> <strong>第一步 源码编写</strong></p>
+<p>新建<code>test.c</code>文件</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;  </span></span></span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello world!\n"</span>);  </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> <strong>第二步 源码编译</strong></p>
+<p>在<code>android-ndk-r19c</code>目录下<code>toolchains</code>文件夹中的<code>llvm</code>文件夹即为<code>clang</code>编译工具包</p>
+<p>在<code>llvm</code>的子目录<code>bin</code>下存放这针对各个架构的clang编译器，由于模拟器是ARM架构，这里我们使用<code>armv7a-linux-androideabi23-clang</code></p>
+<p>在命令窗口执行如下指令：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">armv7a-linux-androideabi23-clang test.c -o test</span><br></pre></td></tr></table></figure>
+
+<p> 由于clang已经指定了Android23版本的SDK，这里无需要像GCC那样指定<code>-static</code>编译</p>
+<p><strong>第三步 将编译后的可执行文件传至安卓设备</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb push test /data/</span><br></pre></td></tr></table></figure>
+
+<p> <strong>第四步 执行文件</strong></p>
+<p>直接在控制台输入文件名即可执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./test</span><br></pre></td></tr></table></figure>
+
+<p>如果提示权限拒绝,那么</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 test</span><br></pre></td></tr></table></figure>
+
+<h2 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h2><p><strong>如果C语言和汇编语言混合开发</strong>，同样也可使用clang编译：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">armv7a-linux-androideabi23-clang aaa.s test.c -o test</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../222.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../222.html" itemprop="url">xcode中三种编译器的区别</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-01T15:39:19+08:00">
+                2021-02-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>在xcode中有三种编译器供我们选择，分别是GCC、LLVM GCC、LLVM compliler </p>
+</blockquote>
+<h2 id="三者区别"><a href="#三者区别" class="headerlink" title="三者区别"></a>三者区别</h2><ul>
+<li><strong>GCC</strong> ：是一套由 <code>GNU</code> 开发的编程语言编译器。<code>Linux/Unix</code>操作系统的标准编译器。编译前端和后端皆使用<code>GCC</code></li>
+<li><strong>LLVM GCC</strong>：编译前端使用<code>GCC</code>，后端使用<code>LLVM</code></li>
+<li><strong>LLVM compliler</strong> ：编译前端使用<code>Clang</code>，后端使用<code>LLVM</code></li>
+</ul>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20210201154646.png" alt></p>
+<h2 id="为什么存在三种编译器"><a href="#为什么存在三种编译器" class="headerlink" title="为什么存在三种编译器"></a>为什么存在三种编译器</h2><p>苹果公司最开始使用<code>GCC</code>编译器</p>
+<p>为了实现对 <strong>Objective-C</strong> 新特性的支持，苹果公司结合<code>LLVM</code>改进<code>GCC</code>，从而衍生出了一个<code>GCC</code>分支，也就是<strong>LLVM GCC</strong></p>
+<p>由于<strong>LLVM GCC</strong>的笨重和局限性,苹果公司从零开始开发了一套自己的编译前端系统<strong>Clang</strong>,配合<strong>LLVM</strong>,就有了<strong>LLVM GCC</strong></p>
+<h2 id="Clang的优势"><a href="#Clang的优势" class="headerlink" title="Clang的优势"></a>Clang的优势</h2><p>相比<code>GCC</code>而言:</p>
+<ul>
+<li>编译速度快,占用内存小</li>
+<li>模块化设计,易于扩展,易于IDE集成</li>
+<li>错误提示人性化</li>
+<li>产出小</li>
+</ul>
+<p>值得一提的是,<code>Android NDK</code>从<code>r18</code>开始就已经抛弃<code>GCC</code>,转而采用<code>Clang</code>编译,<code>Clang</code>未来可期</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../221.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../221.html" itemprop="url">原生ARM环境中使用的编译工具集介绍</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-01T15:14:19+08:00">
+                2021-02-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>这里说原生ARM环境指的是由ARM公司官方提供的的ARM编译工具集，主要包括以下几个工具：</p>
+<ul>
+<li><p><strong>armclang</strong>:  用于编译 c ,c++, GNU assembly language的源代码,不能编译ARM汇编代码</p>
+</li>
+<li><p><strong>armasm</strong>：汇编器, 只能编译 arm汇编代码</p>
+</li>
+<li><p><strong>armlink</strong>:  链接器，用来将目标代码，链接成可执行程序</p>
+</li>
+<li><p><strong>armar</strong>:  打包，将目标代码打包成一个库</p>
+</li>
+<li><p><strong>fromelf</strong>： 将可执行程序，转换为其他的镜像文件。</p>
+<p>以下是编译流程</p>
+</li>
+</ul>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20210201153724.png" alt></p>
+<p>  这个编译器，<strong>和ARM-GCC编译器最大的区别</strong>在于，这个工具是要<strong>收费</strong>的，而ARM-GCC是不用收费的。</p>
+<h2 id="ArmClang编译器的参数介绍"><a href="#ArmClang编译器的参数介绍" class="headerlink" title="ArmClang编译器的参数介绍"></a>ArmClang编译器的参数介绍</h2><p> <strong>1、<code>–target</code>选项</strong></p>
+<p>必选项,指定使用哪一种ARM指令集进行编译。只有两个选项：</p>
+<ul>
+<li><p><strong>–target=aarch64-arm-none-eabi</strong>  : 指定使用aarch64</p>
+</li>
+<li><p><strong>–target=arm-arm-none-eabi</strong>    : 指定使用aarch32</p>
+</li>
+</ul>
+<p><strong>2、<code>–mcpu</code>选项</strong></p>
+<p>通过指定特定的处理器型号进行编译。当指定了target，可以不指定这个。</p>
+<p>如：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">–mcpu=cortex-a53   <span class="comment">#表示 指定处理器是cortex-a53，</span></span><br></pre></td></tr></table></figure>
+
+<p>如果要查看指定target下支持的处理器型号,可使用<code>–mcpu=list</code>指令选项,如下:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">armclang –target=aarch64-arm-none-eabi  –mcpu=list <span class="comment">#查看 aarch64下支持的处理器</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20210201153644.png" alt></p>
+<p> <strong>3、–march选项</strong></p>
+<p>指定编译时针对哪一个架构进行编译。</p>
+<p>可以使用<code>armclang –target= aarch64-arm-none-eabi -march=list</code> 查看aarch64下支持的架构，可以看出对于aarch64，总共支持3种架构。</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20210201153606.png" alt></p>
+<p>而aarch32下支持的架构就多了，从armv6-armv8。</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20210201153554.png" alt></p>
+<p> <strong>4、<code>-g</code>选项</strong></p>
+<p>表示编译器编译的时候，加上调试信息</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">armclang –target=aarch64-arm-none-eabi -g test.c</span><br></pre></td></tr></table></figure>
+
+<p> <strong>5、<code>-Olevel</code>选项</strong></p>
+<p>  优化等级，level越高，优化等级越高。</p>
+<ul>
+<li><p>-O0表示没有优化。</p>
+</li>
+<li><p>-Os表示减小代码密度，平衡代码大小和代码速度。</p>
+</li>
+<li><p>-Omax表示针对该target，使用最大的优化。</p>
+</li>
+</ul>
+<p><strong>6、<code>-marm -mthumb</code>选项</strong></p>
+<p> <code>-marm</code>表示A32指令集  ， <code>-mthumb</code>表示T32指令集</p>
+<p><strong>7、<code>-Wpedantic</code>选项</strong></p>
+<p>显示警告信息</p>
+<p><strong>8、<code>-S</code>选项</strong></p>
+<p>将c代码，或者.S代码，预处理，生成.s代码。</p>
+<p><strong>9、<code>-c</code>选项</strong></p>
+<p>只编译不链接，生成中间目标代码（.o）</p>
+<p>例子：</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20210201153541.png" alt></p>
+<h2 id="ArmAsm汇编器的参数介绍"><a href="#ArmAsm汇编器的参数介绍" class="headerlink" title="ArmAsm汇编器的参数介绍"></a>ArmAsm汇编器的参数介绍</h2><p><strong>1、<code>-I</code>选项</strong></p>
+<p>指定搜索目录</p>
+<p><strong>2、<code>–cpu</code>选项</strong></p>
+<p>指定的指令集</p>
+<p>如  <code>–cpu=8-A.64</code>  ,  指定armv8架构的64bit的指令集</p>
+<p><strong>3、<code>-g</code>选项</strong></p>
+<p>汇编，加上调试信息</p>
+<p><strong>4、<code>–predefine</code>选项</strong></p>
+<p>定义一个宏，传递给汇编代码中使用。</p>
+<p>例子：</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20210201153527.png" alt></p>
+<h2 id="Armlink连接器参数介绍"><a href="#Armlink连接器参数介绍" class="headerlink" title="Armlink连接器参数介绍"></a>Armlink连接器参数介绍</h2><p>链接器，用来链接各个.o文件，得到最终的elf。</p>
+<p><strong>1、<code>–ro_base</code>选项</strong></p>
+<p>指定RO段的起始地址</p>
+<p><strong>2、<code>–rw_base</code>选项</strong></p>
+<p>指定RW段的起始地址</p>
+<p><strong>3、<code>–zi_base</code>选项</strong></p>
+<p>指定bss段的起始地址</p>
+<p><strong>4、<code>–map  –symbols</code>选项</strong></p>
+<p>显示生成镜像的memory map，以及symbols信息</p>
+<p><strong>5、<code>–scatter</code>选项</strong></p>
+<p>指定链接脚本</p>
+<p><strong>6、<code>–output</code>选项</strong></p>
+<p>指定生成的文件</p>
+<p><strong>7、诊断信息</strong></p>
+<p>诊断信息的选项：</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20210201153513.png" alt></p>
+<p><strong>8、不使用链接脚本</strong></p>
+<p>使用<code>armlink</code>链接<code>init.o</code> 和 <code>main.o</code>，生成可执行文件。</p>
+<p>其中：</p>
+<ul>
+<li><p>代码段起始地址是0，</p>
+</li>
+<li><p>数据段起始地址是0x400000，</p>
+</li>
+<li><p>bss段的起始地址是0x405000。</p>
+</li>
+</ul>
+<p><code>init.o</code>的init段，作为生成可执行文件的最开始段。</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20210201153501.png" alt></p>
+<p><strong>9、使用链接脚本</strong></p>
+<p>以下是使用链接脚本来进行链接。</p>
+<p>下图中，链接脚本的格式。</p>
+<p>外面指定LR1，是一个大段，从地址0x0000-0x2000。在这个RL1段，包括3个小段</p>
+<ul>
+<li><strong>ER_RO</strong>： 只读段，从0地址开始。其中<code>init.o</code>的INIT段作为这个段的开始，其他段放置在这个段的后面</li>
+<li><strong>ER_RW</strong>:  可读可写段，从0x400000开始</li>
+<li><strong>ER_ZI</strong>:  bss段，从0x405000开始</li>
+</ul>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20210201153448.png" alt></p>
+<p><strong>10、#pragma pack（n）</strong></p>
+<p>#pragma用来指定打包数据时，各个数据的空间占据。</p>
+<p>!<img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20210201153437.png" alt></p>
+<p>对于char型，占用1个字节， 对于short型，占用2个字节， 对于int型，占用4个字节。</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20210201153417.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20210201153400.png" alt></p>
+<h2 id="fromelf工具介绍"><a href="#fromelf工具介绍" class="headerlink" title="fromelf工具介绍"></a>fromelf工具介绍</h2><p>反汇编工具。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fromelf  –text  –c  –a  elf文件  -o  文本文件</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../219.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -393,7 +932,7 @@
 <p>使用<code>arm-none-linux-gnueabi</code>生成的可执行文件约为620KB</p>
 </blockquote>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -525,7 +1064,7 @@
 
 <p>如果是<code>x86</code>的<code>cpu</code>,既可以运行<code>x86</code>的可执行文件,也可执行<code>ARM</code>架构的程序,具体的参考<code>prop</code>中对应的<code>abi</code></p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -715,7 +1254,7 @@
 <p>为了解决这个问题，我们因此采用<code>arm-linux-androideabi</code>，这里面的<code>gdbserver</code>可以正常运行</p>
 <p>上面的例子中使用的NDKr17的版本</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -864,7 +1403,7 @@
 <p>执行的过程简单说就是最终需要生成一个名为test的文件，这个文件需要<code>main.o</code>和<code>channle.o</code>，于是继续往下执行，然后通过命令<code>gcc -c main.c -o main.o</code>得到了<code>main.o</code>文件，同理再得到<code>channle.o</code>文件，最后通过命令<code>gcc main.o channle.o -o test</code>进行链接最终就会得到一个名为test的可执行文件了。</p>
 <p>上面的代码在<code>linux</code>的命令窗口下输入<code>make</code>命令就可以执行了，最终会生成一个<code>test</code>的可执行文件。 如果需要清除生成的中间<code>.o</code>文件，输入<code>make clean</code>就可以全部清除了。</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1051,7 +1590,7 @@
 </ol>
 <p>以上三种方法相比较，第一中方法编译时需要所有文件重新编译，而第二种方法可以只重新编译修改的文件，未修改的文件不用重新编译 ,第三种方法适用于文件较多依赖关系复杂的工程编译</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1187,7 +1726,7 @@
 <li>6个16位段寄存器，例如：cs，ds，等</li>
 </ul>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1334,675 +1873,7 @@
 <h2 id="GCC工具链"><a href="#GCC工具链" class="headerlink" title="GCC工具链"></a>GCC工具链</h2><p>一个程序从代码编译到机器执行,中间需要经历很多步骤,比如从预编译,编译,到汇编和连接, 这一系列环环相扣过程中涉及到的GNU工具集,称之为GCC工具链</p>
 <p>在windows平台中,我们有许多的图形化IDE可以选择,一般编译工具链都集成进了软件内部,无需开发者关心,但是在Linux平台,基本以命令行的方式进行操作,那么对于开发者来说,需要了解每个工具的作用和具体使用方法</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../212.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../212.html" itemprop="url">汇编语言之GNU ARM</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-25T16:14:19+08:00">
-                2021-01-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="什么是GNU"><a href="#什么是GNU" class="headerlink" title="什么是GNU"></a>什么是GNU</h2><p>GNU最开始其实是一个<strong>操作系统</strong>,旨为打造一个开源免费自由的操作系统,目前操作系统还在完善中</p>
-<p><strong>GNU计划</strong>: 最初目标是创建一套完全自由的操作系统GNU 和相应的软件</p>
-<p><strong>GCC</strong> :（GNU Compiler Collection）GNU编译器套件,GNU提供的一整套的工具集,这套工具集中包含了汇编器,编译器和链接器,二进制转换,调试工具等</p>
-<p><strong>GCC优势</strong>:</p>
-<ul>
-<li>免费开源</li>
-<li>贴近系统底层,功能强大,灵活性高</li>
-<li>跨平台，方便<a href="https://code.newban.cn/201.html">交叉编译</a></li>
-</ul>
-<p><strong>GCC劣势</strong>:</p>
-<ul>
-<li>工具基本采用命令行方式,学习和使用门槛较高</li>
-</ul>
-<p>接下来我们要学习的就是GNU计划众多的产物之一<strong>GNU FOR ARM</strong></p>
-<h2 id="汇编器与指令集"><a href="#汇编器与指令集" class="headerlink" title="汇编器与指令集"></a>汇编器与指令集</h2><ol>
-<li><p><strong>什么是汇编器</strong></p>
-<p>将汇编语言翻译成机器码的工具</p>
-</li>
-<li><p><strong>什么是编译器</strong></p>
-<p>将高级语言翻译成机器语言或者汇编语言的工具</p>
-</li>
-<li><p><strong>汇编器和编译器的区别</strong></p>
-<p>汇编器的服务对象是汇编语言,编译器的服务对象是高级语言</p>
-</li>
-<li><p><strong>汇编器和汇编语法伪指令的关系</strong></p>
-<p>不同的CPU对应不同的指令集 ,不同的汇编器对应不同的伪指令集和汇编语法。</p>
-<p>每种汇编器都可以有自己的伪指令集和自己的语法</p>
-</li>
-</ol>
-<p>使用不同的汇编器汇编同一个cpu架构的汇编代码,所对应的指令绝对是一致的,但伪指令各有千秋</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">;使用ARM官方的汇编器</span><br><span class="line">  	AREA test, CODE</span><br><span class="line">	mov R3,#5</span><br><span class="line">    END		</span><br><span class="line">    </span><br><span class="line">;使用GNU的汇编器</span><br><span class="line">    .text    ;伪指令</span><br><span class="line">    mov R3,#5   ;传送指令皆为mov</span><br><span class="line">    .end</span><br></pre></td></tr></table></figure>
-
-<h2 id="常见的汇编器"><a href="#常见的汇编器" class="headerlink" title="常见的汇编器"></a>常见的汇编器</h2><ul>
-<li><strong>MASM汇编器</strong>:微软旗下专为<strong>x86架构</strong>打造的一款汇编器,支持8086汇编和win32汇编</li>
-<li><strong>GNU汇编器</strong> : 简称为<strong>GAS</strong>,是GNU旗下的一款免费开源跨平台汇编器其子集中包含了支持多种架构的汇编器,比如<code>GNU FOR ARM</code>就是单独面向ARM架构的汇编器,此外还有<code>GNU FOR X86</code>等</li>
-<li><strong><a href="https://www.nasm.us/pub/nasm/releasebuilds/2.14.03rc2/win64/" target="_blank" rel="noopener">NASM汇编器</a></strong>: 是一款面向<strong>x86架构</strong>的汇编器,支持8086汇编和win32汇编,同时可跨平台, 免费开源</li>
-<li><strong>ARMASM汇编器</strong>:ARM官方原生的汇编器,集成在了ADS工具上,适用于<strong>ARM架构</strong>,我们也一般称之为<strong>ADS汇编器</strong></li>
-</ul>
-<h2 id="两种ARM汇编器的各自用途"><a href="#两种ARM汇编器的各自用途" class="headerlink" title="两种ARM汇编器的各自用途"></a>两种ARM汇编器的各自用途</h2><ul>
-<li><strong>ARMASM汇编器</strong>:一般用于windows平台</li>
-<li><strong>GAS汇编器</strong>:支持windows平台和linux平台，方便跨平台<a href="https://code.newban.cn/201.html">交叉编译</a></li>
-</ul>
-<p>由于移动设备如<strong>安卓和iphone</strong>底层都是采用GNU的编译环境，我们如果要进行移动端的开发，那么势必需要掌握GNU ARM, 同时和ADS和KEIL收费工具相比,GUN工具全部免费,方便开发者进行使用</p>
-<blockquote>
-<p>如果你是从事android开发,有兴趣可以去翻NDK r17以下版本的库,里面用的编译工具就是GCC</p>
-</blockquote>
-<h2 id="GNU-ARM开发环境搭建"><a href="#GNU-ARM开发环境搭建" class="headerlink" title="GNU ARM开发环境搭建"></a>GNU ARM开发环境搭建</h2><p>我们需要准备以下两个工具:</p>
-<ol>
-<li><strong>GCC编译套件</strong></li>
-<li><strong>安卓模拟器</strong></li>
-</ol>
-<p>GCC编译套件根据cpu架构和操作系统的不同,又分为了很多子类:</p>
-<ul>
-<li><strong>纯ARM裸机</strong>: 对应<code>arm-none-eabi</code>工具包</li>
-<li><strong>ARM架构+Linux操作系统</strong>:对应<code>arm-none-linux-eabi</code>工具包</li>
-</ul>
-<p>由于接下来我们选择在安卓模拟器上进行开发学习,因此我们选择<code>arm-none-linux-eabi</code>这套工具来进行代码的编译</p>
-<p><a href="https://code.newban.cn/202.html">工具下载</a></p>
-<p><a href="https://code.newban.cn/215.html">GCC工具的具体使用</a></p>
-<h2 id="伪指令和伪操作"><a href="#伪指令和伪操作" class="headerlink" title="伪指令和伪操作"></a>伪指令和伪操作</h2><ol>
-<li><p>注释</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@我是注释</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>段的声明</p>
-<ul>
-<li><p>代码段</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.text</span><br><span class="line">	@代码</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>数据段</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.data</span><br><span class="line">	@代码</span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ul>
-</li>
-</ol>
-<ul>
-<li><p>自定义一个段</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.section .pangshu @定义一个名为.panghsu的段</span><br></pre></td></tr></table></figure>
-
-
-
-
-</li>
-</ul>
-<ol start="3">
-<li><p>函数或者标签的声明</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fun:  @在GNU环境中标签后面需要加冒号,而原生环境则不用</span><br><span class="line">	mov R0,#4</span><br><span class="line">	bx lr</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>数据的声明</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.byte @定义单字节数据，例如：.byte 0x14；</span><br><span class="line">.short @定义双字节数据，例如：.short 0x1000；</span><br><span class="line">.long @定义四字节数据，例如：.long 0x10001000；</span><br><span class="line">.quad @定义8字节，如：.quad 0x1234567890abcd；</span><br><span class="line">.float @定义浮点数，如：.float 0f-314159265358979323846264338327/95028841971.693993751E-40 @ -pi</span><br><span class="line"></span><br><span class="line">@字符串定义</span><br><span class="line">.string “abcd”, “efgh”, “hello!”</span><br><span class="line">.asciz “qwer”, “sun”, “world!”</span><br><span class="line">.ascii “welcome/0”</span><br><span class="line">@需要注意的是：.ascii伪操作定义的字符串需要自行添加结尾字符’/0’。</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>数据的批量定义</p>
-<ul>
-<li><p>格式如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.rept @重复次数</span><br><span class="line">  @数据定义代码</span><br><span class="line">.endr @结束重复定义</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>示例</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.rept 3</span><br><span class="line">.byte 0x23</span><br><span class="line">.endr</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>关于align</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">.global _start</span><br><span class="line">_start:</span><br><span class="line">    mov r0, #0x12</span><br><span class="line">	</span><br><span class="line">    .byte 0x12</span><br><span class="line">    .byte 0x34</span><br><span class="line"></span><br><span class="line">    ;.align 后跟为0，1，2或者不跟参数时都当作是4字节对齐</span><br><span class="line">.align </span><br><span class="line">    .byte 0x56</span><br><span class="line"></span><br><span class="line">    ; 2^3次方，8字节对齐</span><br><span class="line">.align 3</span><br><span class="line">    .word 0x1</span><br><span class="line">	</span><br><span class="line">    ; 2^5次访，32字节对齐</span><br><span class="line">.align 5</span><br><span class="line">    .word 0x2	</span><br><span class="line">	</span><br><span class="line">    ; 填充0x12345678，直到16字节对齐</span><br><span class="line">.balignl 16,0x12345678	</span><br><span class="line"></span><br><span class="line">    ;字符串</span><br><span class="line">    .ascii &quot;abc123&quot;</span><br><span class="line">	</span><br><span class="line">.align	</span><br><span class="line">    ;.ascii和.asciz的区别是，.asciz会在字符串后自动添加结束符\0. </span><br><span class="line">    .asciz &quot;def456&quot;</span><br><span class="line"></span><br><span class="line">    mov r0, #0xab</span><br><span class="line">	</span><br><span class="line">    ;.balign[wl] align, fill_value, max_padding</span><br><span class="line">.align</span><br><span class="line">    ; .balign 后跟的align参数必须为2的次方，否则会报错，按字节填充， fill_value要为字节</span><br><span class="line">.balign 8, 0x12</span><br><span class="line"></span><br><span class="line">    ; .balignw 按2字节填充</span><br><span class="line">.balignw 8, 0x3456	</span><br><span class="line"></span><br><span class="line">    ; .balignl 按4字节填充</span><br><span class="line">.balignl 8, 0xabcdef01</span><br></pre></td></tr></table></figure>
-
-<p>反汇编后的结果：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">00000000</span> &lt;_start&gt;:</span><br><span class="line">   <span class="number">0</span>:	e3a00012 	mov	r0, #<span class="number">18</span></span><br><span class="line">   <span class="number">4</span>:	<span class="number">3412</span>      	.<span class="keyword">short</span>	<span class="number">0x3412</span>              <span class="comment">// .byte 0x12 和 .byte 0x34</span></span><br><span class="line">   <span class="number">6</span>:	<span class="number">0000</span>      	.<span class="keyword">short</span>	<span class="number">0x0000</span>              <span class="comment">// .align 引起的填充</span></span><br><span class="line">   <span class="number">8</span>:	<span class="number">00000056</span> 	andeq	r0, r0, r6, asr r0  <span class="comment">// .byte 0x56</span></span><br><span class="line">   c:	e1a00000 	nop			; (mov r0, r0)  <span class="comment">// .align 3 8字节对齐</span></span><br><span class="line">  <span class="number">10</span>:	<span class="number">00000001</span> 	.word	<span class="number">0x00000001</span>          <span class="comment">// .word 0x1</span></span><br><span class="line">  <span class="number">14</span>:	e1a00000 	nop			; (mov r0, r0)  <span class="comment">// .align 5 ,32字节对齐</span></span><br><span class="line">  <span class="number">18</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">1</span>c:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">20</span>:	<span class="number">00000002</span> 	.word	<span class="number">0x00000002</span>          <span class="comment">// .word 0x2	</span></span><br><span class="line">  <span class="number">24</span>:	<span class="number">12345678</span> 	.word	<span class="number">0x12345678</span>          <span class="comment">// .balignl 16,0x12345678,填充0x12345678，直到16字节对齐</span></span><br><span class="line">  <span class="number">28</span>:	<span class="number">12345678</span> 	.word	<span class="number">0x12345678</span></span><br><span class="line">  <span class="number">2</span>c:	<span class="number">12345678</span> 	.word	<span class="number">0x12345678</span></span><br><span class="line">  <span class="number">30</span>:	<span class="number">31636261</span> 	.word	<span class="number">0x31636261</span>          <span class="comment">// .ascii "abc123"</span></span><br><span class="line">  <span class="number">34</span>:	<span class="number">3332</span>      	.<span class="keyword">short</span>	<span class="number">0x3332</span></span><br><span class="line">  <span class="number">36</span>:	<span class="number">0000</span>      	.<span class="keyword">short</span>	<span class="number">0x0000</span></span><br><span class="line">  <span class="number">38</span>:	<span class="number">34666564</span> 	.word	<span class="number">0x34666564</span>          <span class="comment">// .asciz "def456"</span></span><br><span class="line">  <span class="number">3</span>c:	<span class="number">3635</span>      	.<span class="keyword">short</span>	<span class="number">0x3635</span></span><br><span class="line">  <span class="number">3</span>e:	<span class="number">00</span>          	.byte	<span class="number">0x00</span></span><br><span class="line">  <span class="number">3f</span>:	e3a000ab 	mov	r0, #<span class="number">171</span>	; <span class="number">0xab</span>      <span class="comment">// mov r0, #0xab, 这里就不对齐了</span></span><br><span class="line">  <span class="number">43</span>:	<span class="number">00</span>          	.byte	<span class="number">0x00</span></span><br><span class="line">  <span class="number">44</span>:	<span class="number">12121212</span> 	.word	<span class="number">0x12121212</span>          <span class="comment">// .balign 8, 0x12</span></span><br><span class="line">  <span class="number">48</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">4</span>c:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">50</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">54</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">58</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">5</span>c:	e1a00000 	nop			; (mov r0, r0)</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<h2 id="指令和伪指令的区别"><a href="#指令和伪指令的区别" class="headerlink" title="指令和伪指令的区别"></a>指令和伪指令的区别</h2><ul>
-<li><p><strong>指令</strong>: 有与之对应的机器码,能被cpu所识别,和编译器无关</p>
-</li>
-<li><p><strong>伪指令</strong>:没有与之对应的机器码,无法被cpu识别,只能被编译器识别,不同编译器伪指令不一样</p>
-<p>不同的CPU对应不同的指令集；不同的汇编器对应不同的语法和伪指令集 </p>
-</li>
-</ul>
-<p>例子:ARM原生编译器和GNU FOR ARM</p>
-<h2 id="两种汇编器语法对比一览表"><a href="#两种汇编器语法对比一览表" class="headerlink" title="两种汇编器语法对比一览表"></a>两种汇编器语法对比一览表</h2><table>
-<thead>
-<tr>
-<th>GNU ARM汇编</th>
-<th>ADS ARM汇编</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>“@”或“/<em>…</em>/”</td>
-<td>“;”</td>
-</tr>
-<tr>
-<td>.include</td>
-<td>GET</td>
-</tr>
-<tr>
-<td>.equ</td>
-<td>EQU</td>
-</tr>
-<tr>
-<td>.global</td>
-<td>EXPORT</td>
-</tr>
-<tr>
-<td>.extern</td>
-<td>IMPORT</td>
-</tr>
-<tr>
-<td>.long</td>
-<td>DCD</td>
-</tr>
-<tr>
-<td>.end</td>
-<td>END</td>
-</tr>
-<tr>
-<td>entry:</td>
-<td>ENTRY</td>
-</tr>
-<tr>
-<td>.text</td>
-<td>AREA Init,CODE,READONLY</td>
-</tr>
-<tr>
-<td>.data</td>
-<td>AREA Block,DATA,READWRITE</td>
-</tr>
-<tr>
-<td>.macro</td>
-<td>MACRO</td>
-</tr>
-<tr>
-<td>.endm</td>
-<td>MEND</td>
-</tr>
-</tbody></table>
-<h2 id="汇编语言和C语言交互"><a href="#汇编语言和C语言交互" class="headerlink" title="汇编语言和C语言交互"></a>汇编语言和C语言交互</h2><h4 id="1-引入其他源文件函数"><a href="#1-引入其他源文件函数" class="headerlink" title="1.引入其他源文件函数"></a>1.引入其他源文件函数</h4><p>使用<code>import</code>或者<code>extern</code>伪指令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">;使用import伪指令</span><br><span class="line">AREA code, CODE</span><br><span class="line">import fun1         ;导入其他源文件中名为fun1的函数</span><br><span class="line">END</span><br><span class="line"></span><br><span class="line">;使用extern伪指令</span><br><span class="line">AREA code, CODE</span><br><span class="line">extern fun1       </span><br><span class="line">END</span><br></pre></td></tr></table></figure>
-
-<p><strong>两者区别:</strong></p>
-<ul>
-<li><code>import</code>:不管当前文件是否使用该引入的函数,该标签都会加入当前文件符号表,即为静态引用</li>
-<li><code>extern</code>:只有当前文件使用了该函数,才会将此标签加入符号表,即为动态引用</li>
-</ul>
-<h4 id="2-导出当前源文件中函数供其他文件访问"><a href="#2-导出当前源文件中函数供其他文件访问" class="headerlink" title="2.导出当前源文件中函数供其他文件访问"></a>2.导出当前源文件中函数供其他文件访问</h4><p>使用<code>export</code>或者<code>global</code>伪指令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">;使用import伪指令</span><br><span class="line">AREA code, CODE</span><br><span class="line">export fun         ;导出fun函数供其他源文件使用</span><br><span class="line"></span><br><span class="line">fun </span><br><span class="line">	mov R0,#4</span><br><span class="line">	bx lr</span><br><span class="line">END</span><br></pre></td></tr></table></figure>
-
-<h4 id="3-外链汇编之C语言调汇编函数"><a href="#3-外链汇编之C语言调汇编函数" class="headerlink" title="3.外链汇编之C语言调汇编函数"></a>3.外链汇编之C语言调汇编函数</h4><p>第一步,在汇编原文件中将函数暴露出来给供外部调用,使用<code>export</code>或者<code>global</code>伪指令:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">AREA code, CODE</span><br><span class="line">export arm_strcpy  ;或者使用global</span><br><span class="line"></span><br><span class="line">arm_strcpy</span><br><span class="line">loop </span><br><span class="line">	ldrb R4,[R0],#1 ;如果使用ldr 那么将偏移值改成4</span><br><span class="line">	cmp R4,#0</span><br><span class="line">	beq over</span><br><span class="line">	strb R4,[R1],#1</span><br><span class="line">	b loop</span><br><span class="line">over	</span><br><span class="line">END</span><br></pre></td></tr></table></figure>
-
-<p>第二步,在C文件中引用汇编中的函数,C文件中只能使用<code>extern</code>伪指令:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">extern arm_strcpy(char *src,char*des);</span><br><span class="line"></span><br><span class="line">int main2()&#123;</span><br><span class="line">	char *a=&quot;hello pangshu&quot;;</span><br><span class="line">	char b[64];</span><br><span class="line">	arm_strcpy(a,b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="4-外链汇编之汇编调c语言函数"><a href="#4-外链汇编之汇编调c语言函数" class="headerlink" title="4.外链汇编之汇编调c语言函数"></a>4.外链汇编之汇编调c语言函数</h4><p>第一步,在C文件中编写好函数</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">c_sum</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> a+b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>第二步, 在汇编文件中引入函数,使用<code>import</code>或者<code>extern</code>伪指令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AREA code, CODE</span><br><span class="line">import c_sum  </span><br><span class="line"></span><br><span class="line">mov R0,#1 ;第一个参数</span><br><span class="line">mov R1,#2 ;第二个参数</span><br><span class="line"></span><br><span class="line">END</span><br></pre></td></tr></table></figure>
-
-<p>第三步, 使用BL指令调用函数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AREA code, CODE</span><br><span class="line">import c_sum  </span><br><span class="line"></span><br><span class="line">mov R0,#1 ;第一个参数</span><br><span class="line">mov R1,#2 ;第二个参数</span><br><span class="line">BL c_sum</span><br><span class="line">END</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>在ARM中函数参数使用R0~R3这三个寄存器来进行传递,最多传递4个参数,超过4个参数使用栈进行处理,函数返回值通过R0进行传递</p>
-</blockquote>
-<h4 id="5-内嵌汇编"><a href="#5-内嵌汇编" class="headerlink" title="5.内嵌汇编"></a>5.内嵌汇编</h4><p>GNU内嵌汇编,格式如下:</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main2</span><span class="params">()</span></span>&#123;</span><br><span class="line">	__asm__(           <span class="comment">//大括号改成中括号</span></span><br><span class="line">	<span class="string">"mov R5,#0x00000005\n"</span>   <span class="comment">//汇编指令需要使用引号包裹，多条语句之间使用回车换行符进行分隔</span></span><br><span class="line">	<span class="string">"mov R6,#0x00000005"</span></span><br><span class="line">	);  <span class="comment">//需要以分号结尾</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="学习工具"><a href="#学习工具" class="headerlink" title="学习工具"></a>学习工具</h2><ul>
-<li>在线ARM汇编编辑器:<a href="https://azm.azerialabs.com/" target="_blank" rel="noopener">https://azm.azerialabs.com/</a></li>
-</ul>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../211.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../211.html" itemprop="url">视频帧率和码率对视频质量和文件大小的影响</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-24T16:14:19+08:00">
-                2021-01-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>我们从<strong>画面流畅度</strong>,<strong>画面清晰度</strong>,和<strong>视频文件体积</strong>三个方面进行分析:</p>
-<h2 id="帧率-FPS"><a href="#帧率-FPS" class="headerlink" title="帧率(FPS)"></a>帧率(FPS)</h2><p><strong>指每秒显示图像的张数</strong></p>
-<p>比如30帧,表示每秒显示30张图像</p>
-<p><strong>帧率越大,画面越流畅,帧率越小,画面越卡顿</strong>,如果低到1帧/秒,那么就相当于一个幻灯片了</p>
-<p><strong>帧率不会影响到画面的清晰度,只会影响画面的流畅度和文件的体积</strong>,帧率越大,视频对应的体积越大</p>
-<h2 id="分辨率-resolution"><a href="#分辨率-resolution" class="headerlink" title="分辨率(resolution)"></a>分辨率(resolution)</h2><p><strong>指像素点分布密度</strong></p>
-<p>比如24寸的显示器,设置1920x1080的分辨率,那就是横向由1920个像素点构成,纵向由1080个像素点构成,也就是说在屏幕尺寸固定的情况下,<strong>分辨率越高,画面越清晰细腻,反之,画面越模糊</strong></p>
-<p><strong>分辨率不会影响画面的流畅度,只会影响画面的清晰度和文件的体积</strong>,分辨率越大,视频体积越大</p>
-<h2 id="码率-Bitrate"><a href="#码率-Bitrate" class="headerlink" title="码率(Bitrate)"></a>码率(Bitrate)</h2><p><strong>指每秒传输的数据位数</strong>,单位kbps 即千位每秒 ,这里的位指的是二进制位</p>
-<p>基本的算法是:</p>
-<ul>
-<li><p>每秒传输的数据量=码率/8 </p>
-</li>
-<li><p>视频文件体积=码率/8x视频时长(s) =每秒传输的数据量*视频时长(s)</p>
-</li>
-</ul>
-<p>比如500Kbps,也就是每秒传输62K大小的数据, 假如按照帧率30fps进行计算,那么每张图片大小约为2kb大小</p>
-<p>也就是说视频时长和固定的情况下,<strong>码率越高,文件体积越大,同时视频显示的有效像素越多</strong>,视频更加接近原始分辨率,反之,码率越低,文件体积越小,但是视频能显示的有效像素就越少,原本1080p的分辨率,每帧图像至少需要占用20k的数据量,但是码率过低每帧只能分配2K的量,此时像素点显示不全,就会造成视频模糊不清晰</p>
-<p>因此,码率若是过低,再高的分辨率都拯救不了画质,反而会适得其反, </p>
-<p>事实上,低码率环境下,低分辨率画面要比高分辨率画面更加清晰</p>
-<p><strong>码率不会影响画面的流畅度,但是会影响画面的清晰度和文件的体积</strong></p>
-<h2 id="我们的需求"><a href="#我们的需求" class="headerlink" title="我们的需求"></a>我们的需求</h2><p>我们一般<strong>追求高清流畅的画质,同时文件体积尽可能小</strong>,那么该如何找到帧率 码率和分辨率三者的平衡点呢?</p>
-<p>首先在我们录制视频的时候,<strong>屏幕的分辨率一般是固定的</strong>,随着不同的电脑分辨率也不同(当然你要手动调整也行)</p>
-<p>其次,为了保证视频的流畅度我们一般将<strong>帧率设置在25fps</strong>以上</p>
-<p>那么我们想减小视频的体积的话,只能从码率入手了, 找到一个画质能接受,体积小的平衡点</p>
-<p>比如1980x1080的分辨率,我使用500kbps左右的码率,差不多可以接受,OBS在录制时默认也是在这个码率内来回波动</p>
-<p>以下是常见分辨率和码率之间平衡参考表:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20210124171800.png" alt></p>
-<p><strong>举例</strong>:如果要想百分百还原1080p HQ的画质,至少需要5.76Mkpbs码率的支撑,如果是直播的话需要至少9M的宽带才能稳定传输对应的数据量,否则画面卡顿</p>
-<p>直播中,在分辨率和网速一定的情况下,我们会适当降低码率,牺牲部分清晰度的来保证视频的流畅性</p>
-<p>如果网速不行又希望画面还清晰流畅,那么就降低拍摄的分辨率,同时降低数据传输量也就是码率值,当然分辨率降低之后所谓的视频清晰度也只是相对的,凡事总有取舍</p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../210.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../210.html" itemprop="url">关于mysql崩溃之error establishing a database connection</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-22T16:14:19+08:00">
-                2021-01-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>最近在进行网站检查的时候突然发现我的一个子网站挂了,提示<code>error establishing a database connection</code>, 如果是网站刚建立那好解决,80%的概率是数据连接参数不正确,或者是数据库端口没有开放</p>
-<p>但是我这个网站运行很长一段时间了,之前一直好好的,突然之间就挂了, 而且这个数据库我使用的是<code>docker</code>进行维护,同时,在同一个<code>mysql</code>容器中我放置了好几个网站的数据,其他网站运行却是正常的</p>
-<p>而且我通过第三方连接数据库的工具可以正常连接到被挂网站的数据库</p>
-<p>通过以上情况可以排除以下原因:</p>
-<ul>
-<li><code>mysql</code>容器没有问题</li>
-<li>数据库端口和连接参数也没问题(已经检查过配置文件,没有被外部篡改过)</li>
-<li>网站程序正常运行</li>
-</ul>
-<p>这种情况下该如何处理呢? 当然是找日志了</p>
-<p>第一步:查看主程序日志,没问题</p>
-<p>第二步:查看<code>mysql</code>容器日志,发现问题</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker logs --tail=50 mysql</span><br></pre></td></tr></table></figure>
-
-<p><code>Table &#39;./wordpress_wai/wp_options&#39; is marked as crashed and should be repaired when using LOCK TABLES</code></p>
-<p><strong>数据库没有问题,但是表有问题</strong></p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p><strong>对表进行修复即可：</strong></p>
-<p>首先登录mysql选择指定的数据库,然后执行以下命令:</p>
-<ol>
-<li><p>执行修复指令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">repair table wp_option</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>检查表的状态</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">check table wp_option</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<p>修复前最好先备份数据库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -uroot -p密码 数据库名 &gt;xxxxx.sql</span><br></pre></td></tr></table></figure>
-
-<p>如果表损坏比较严重,可能无法备份数据库</p>
-<p>如果你不知道如何查看<code>mysql</code>日志,那么直接运行备份数据库指令,也能帮你检查数据库是否存在问题</p>
-<p>修复完成后无需重启mysql容器, 直接刷新网址即可正常访问</p>
-<h3 id="2021年9月1日补充"><a href="#2021年9月1日补充" class="headerlink" title="2021年9月1日补充"></a>2021年9月1日补充</h3><p>突然数据库又崩了, 网站同样提示<code>error establishing a database connection</code></p>
-<p>我查看<code>docker</code>日志 报如下错误:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Database page corruption on disk or a failed file read of page [page id: space=0, page number=5]. You may have to recover from a backup</span><br></pre></td></tr></table></figure>
-
-<p>此时<code>mysql</code>容器已经进不去了, 百度了一下说是数据库受损 要在<code>my.cnf</code>配置文件中添加<code>innodb_force_recovery=1</code></p>
-<p>可是我在<code>conf</code>目录下并没有找到<code>my.cnf</code>文件 不知道是被谁给删了 难道被入侵了</p>
-<p>只好新建一个配置文件看看可不可行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim my.cnf</span><br></pre></td></tr></table></figure>
-
-<p>然后将以下内容拷贝进去:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">pid-file        = /var/run/mysqld/mysqld.pid</span><br><span class="line">socket          = /var/run/mysqld/mysqld.sock</span><br><span class="line">datadir         = /var/lib/mysql</span><br><span class="line">secure-file-priv= NULL</span><br><span class="line"># Disabling symbolic-links is recommended to prevent assorted security risks</span><br><span class="line">symbolic-links=0</span><br><span class="line"></span><br><span class="line"># Custom config should go here</span><br><span class="line">!includedir /etc/mysql/conf.d/</span><br></pre></td></tr></table></figure>
-
-<p><code>wq</code>保存退出 然后重启<code>mysql</code>容器, 重新访问网站 还是不行</p>
-<p>紧接着我在配置文件末尾添加了<code>innodb_force_recovery=1</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">pid-file        = /var/run/mysqld/mysqld.pid</span><br><span class="line">socket          = /var/run/mysqld/mysqld.sock</span><br><span class="line">datadir         = /var/lib/mysql</span><br><span class="line">secure-file-priv= NULL</span><br><span class="line"># Disabling symbolic-links is recommended to prevent assorted security risks</span><br><span class="line">symbolic-links=0</span><br><span class="line"></span><br><span class="line"># Custom config should go here</span><br><span class="line">!includedir /etc/mysql/conf.d/</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">innodb_force_recovery=1</span><br></pre></td></tr></table></figure>
-
-<p>保存重启后, 网站正常访问, 问题解决</p>
-<p>但是mysql容器日志一直提示:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[ERROR] [MY-012803] [InnoDB] innodb_force_recovery is on. We do not allow database modifications by the user. Shut down mysqld and edit my.cnf to set innodb_force_recovery=0</span><br></pre></td></tr></table></figure>
-
-<p>于是我把<code>innodb_force_recovery</code>值设为0 网站没问题 暂且就这样</p>
-<h4 id="关于innodb-force-recovery参数"><a href="#关于innodb-force-recovery参数" class="headerlink" title="关于innodb_force_recovery参数"></a>关于innodb_force_recovery参数</h4><ul>
-<li>Mode 1当遇到损坏页时，不使 MySQL 崩溃</li>
-<li>Mode 2不运行后台操作</li>
-<li>Mode 3不会尝试回滚事务</li>
-<li>Mode 4不计算统计数据或应用存储/缓冲的变化</li>
-<li>Mode 5在启动过程中不查看撤消日志</li>
-<li>Mode 6在启动时不从重做日志（ib_logfiles）前滚</li>
-</ul>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -2089,7 +1960,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">431</span>
+                  <span class="site-state-item-count">434</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

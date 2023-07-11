@@ -288,6 +288,528 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../363.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../363.html" itemprop="url">使用Android Studio进行C/C++的开发</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-17T11:04:19+08:00">
+                2022-09-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>作为一名专业<code>Android</code>开发者, 当我们遇到需要<code>C/C++</code>的开发时, 完全可以直接使用<code>Android Studio</code>, 而不用另外下载诸如<code>CLion</code>  <code>AppCode</code>等收费<code>IDE</code></p>
+<p>使用<code>Android Studio</code>的好处有:</p>
+<ul>
+<li><strong>免费</strong>: <code>JetBrains</code>的软件大部分都是收费的 唯独<code>Android Studio</code> 完全免费使用</li>
+<li><strong><code>Gradle</code>天然支持C语言的编译</strong>: <code>Gradle</code>不仅可以编译<code>Groovy</code>  <code>Java</code>和<code>Kotlin</code>, 还可以编译<code>C/C++</code> 、<code>Scala</code>和<code>Swift</code>, 未来还会支持更多语言, 潜力无限</li>
+<li><strong>节省电脑资源</strong>: 无需装多个<code>IDE</code>, 一个<code>Android Studio</code>就可以搞定<code>Android</code>  <code>Web</code>和<code>C</code>的开发 你说爽不爽</li>
+</ul>
+<p>说了这么多好处, 接来了咱们来聊聊如何实现<code>Android Studio</code>的<code>C/C++</code>开发</p>
+<h3 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h3><ol>
+<li><p>创建一个空工程, 默认选择<code>Android</code>空<code>Activity</code>工程即可, 然后将一些用不上的文件都清除, 最后目录结构如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- build.gradle</span><br><span class="line">`-- src</span><br><span class="line">    `-- main</span><br><span class="line">        `-- c</span><br><span class="line">            `-- hello.c</span><br></pre></td></tr></table></figure>
+
+<p>如果是<code>C++</code>开发, 那么目录名改成<code>cpp</code>, 其结构如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- build.gradle</span><br><span class="line">`-- src</span><br><span class="line">    `-- main</span><br><span class="line">        `-- cpp</span><br><span class="line">            `-- hello.cpp</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在<code>App</code>目录下的<code>build.gradle</code>中的内容全部清除 然后填入以下内容:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="string">plugin:</span> <span class="string">'c'</span></span><br><span class="line"></span><br><span class="line">model &#123;</span><br><span class="line">    components &#123;</span><br><span class="line">        main(NativeExecutableSpec) &#123;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同样的 如果是C++, 则将plugin改成cpp, 如下:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="string">plugin:</span> <span class="string">'cpp'</span></span><br><span class="line"></span><br><span class="line">model &#123;</span><br><span class="line">    components &#123;</span><br><span class="line">        main(NativeExecutableSpec) &#123;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>gradle</code>同步之后, 右侧<code>gradle task</code>面板中会生成三个<code>task</code>:</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220916122044974.png" alt="image-20220916122044974"></p>
+</li>
+<li><p>此时我们尝试编写C代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>** argv)</span></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello World!\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>编写完后 运行<code>gradle task</code>中的<code>build</code>, 就会自动对源码进行编译并生成可执行文件, 该文件我们可以在<code>build</code>目录中找到</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220916122359799.png" alt="image-20220916122359799"></p>
+</li>
+<li><p>打开文件 双击运行, 此时控台输出<code>Hello World</code></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220916122515283.png" alt="image-20220916122515283"></p>
+</li>
+</ol>
+<h3 id="构建执行流程优化"><a href="#构建执行流程优化" class="headerlink" title="构建执行流程优化"></a>构建执行流程优化</h3><ol>
+<li><p>编译结束后自动执行程序</p>
+<p>修改<code>build.gradle</code>文件内容如下即可:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="string">plugin:</span> <span class="string">'c'</span></span><br><span class="line"></span><br><span class="line">model &#123;</span><br><span class="line">    components &#123;</span><br><span class="line">        main(NativeExecutableSpec) &#123;</span><br><span class="line">            println(<span class="string">"开始编译..."</span>)</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">task execProgram()&#123;</span><br><span class="line">    doLast &#123;</span><br><span class="line">        println(<span class="string">"开始执行..."</span>)</span><br><span class="line">        exec &#123;</span><br><span class="line">            commandLine(<span class="string">"./build/exe/main/main"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">build.finalizedBy(execProgram)</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样, 点击<code>build</code>任务之后就会自动执行程序了, 如果只想重复执行程序 不进行重新编译, 那么单独执行<code>execProgram</code>任务即可:</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220916181048724.png" alt="image-20220916181048724"></p>
+</li>
+</ol>
+<h3 id="增加代码错误提示功能"><a href="#增加代码错误提示功能" class="headerlink" title="增加代码错误提示功能"></a>增加代码错误提示功能</h3><p>虽然<code>c/c++</code>程序可以正常编译执行了, 但是代码在编写过程中并没有语法错误提示, 在这种环境下写代码的体验会比较差</p>
+<p>接下来 我们把该功能实现, 这里需要配合<code>android</code>插件以及<code>cmake</code>构建工具:</p>
+<ol>
+<li><p><strong>下载<code>NDK</code>和<code>cmake</code>工具</strong></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220928141059262.png" alt="image-20220928141059262"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220928141148055.png" alt="image-20220928141148055"></p>
+</li>
+<li><p><strong>配置<code>build.gradle</code></strong></p>
+<p>增加如下内容:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="string">plugin:</span> <span class="string">'com.android.application'</span></span><br><span class="line">android&#123;</span><br><span class="line">    compileSdkVersion <span class="number">30</span></span><br><span class="line">    externalNativeBuild &#123;</span><br><span class="line">        cmake &#123;</span><br><span class="line">            path <span class="string">"CMakeLists.txt"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        <span class="comment">//需要限制最小库版本不能太低 不然有些c库可能缺失</span></span><br><span class="line">        minSdkVersion    <span class="number">21</span></span><br><span class="line">        targetSdkVersion <span class="number">30</span></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在<code>build.gradle</code>同级目录下创建<code>CMakeLists.txt</code>文件</strong></p>
+<p>并添加以下内容:</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 限定cmake最小版本号 当前使用的版本必须在这个之上</span></span><br><span class="line">cmake_minimum_required(VERSION 3.10.2)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 描述工程名称</span></span><br><span class="line">project(<span class="string">"cproject"</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 自定义变量  使用$&#123;变量名&#125;进行引用</span></span><br><span class="line">set(BINARY_NAME <span class="string">"android-lib"</span>)</span><br><span class="line">set(EXEC_NAME <span class="string">"androidexc"</span>)</span><br><span class="line"></span><br><span class="line">        </span><br><span class="line"><span class="comment">#获取指定目录下源文件列表，保存到 `DIR_SRCS` 变量中</span></span><br><span class="line">aux_source_directory($&#123;PROJECT_SOURCE_DIR&#125;/src/main/c DIR_SRCS)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成可执行文件</span></span><br><span class="line">add_executable($&#123;EXEC_NAME&#125; $&#123;DIR_SRCS&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成动态链接库</span></span><br><span class="line">add_library( <span class="comment"># 动态库名称</span></span><br><span class="line">        $&#123;BINARY_NAME&#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 生成动态库</span></span><br><span class="line">        SHARED</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 被编译进入库中的源码文件</span></span><br><span class="line">        $&#123;DIR_SRCS&#125;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在<code>main</code>目录下创建<code>AndroidManifest.xml</code>文件</strong></p>
+<p>并添加以下内容, 包名自定义:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</span><br><span class="line">    package=&quot;自定义包名&quot;&gt;</span><br><span class="line">    &lt;/manifest&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>同步工程</strong></p>
+<p>同步刷新<code>gradle</code>工程后, 此时我们发现<code>c</code>目录下的源码可以语法错误提示了, 并且代码自动补全功能也有了</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220928170120305.png" alt="image-20220928170120305"></p>
+</li>
+</ol>
+<h3 id="实现交叉编译"><a href="#实现交叉编译" class="headerlink" title="实现交叉编译"></a>实现交叉编译</h3><p>经过上面如此一番配置之后, 相当于结合了<code>gradle</code>和<code>cmake</code>两大构建工具,可以说是强大无比</p>
+<p>我们既可以使用<code>gradle</code>执行<code>execProgram</code>任务生成本地平台的可执行文件, 同时还可以使用<code>cmake</code>交叉编译生成<code>android</code>平台的执行文件和动态库文件</p>
+<p>我们只需编译工程或者执行<code>build</code>任务, 即可自动生成执行文件和动态库, 同时动态库会被<code>gradle</code>工具自动打包进<code>apk</code>文件中</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220928171158748.png" alt="image-20220928171158748"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220928171103061.png" alt="image-20220928171103061"></p>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../362.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../362.html" itemprop="url">一个快速实现创意的游戏开发工具，不止适合新手</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-16T17:04:19+08:00">
+                2022-09-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p> 我最近和朋友聊天，越发觉得但凡尝试过自行开发游戏的人，对开发工具应该都有相似的感受：UE4这类引擎上限非常高，但对于编程基础薄弱的人，可能不是第一选择；RPGmaker这一类工具我也用了一段时间，非常好上手，可惜2D画面有些简单。 </p>
+<p> 今天我也想分享一个不错的游戏开发工具，它比较能满足以下人群的需求，文章比较长，大家可以自行判断阅读：</p>
+<ul>
+<li><p>刚刚入门游戏开发的初学者</p>
+</li>
+<li><p>手头上有个游戏创意，想快速实现的人</p>
+</li>
+<li><p>希望快速验证游戏玩法和品质的人</p>
+<p>前两天我看到微博上介绍了一个叫罗布乐思（Roblox）的游戏引擎，据说它在全球范围内已经有1亿月活，超过400万的游戏开发者，和超过3000万的作品。</p>
+<p>虽然我猜测那是鹅厂做的一个推广，但还是有点好奇什么工具可以有这么高的月活量，所以试着用了三天，发现它有几个亮点。</p>
+</li>
+</ul>
+<h2 id="引擎非常简单易上手"><a href="#引擎非常简单易上手" class="headerlink" title="引擎非常简单易上手"></a><strong>引擎非常简单易上手</strong></h2><p>  这个引擎有多容易上手呢？简单到我在没看教程的前提下，就做出了一个游玩时长不到一分钟的横版跳跃小玩法，因为这个游戏<strong>大量的预设内容以及简单的脚本语言</strong>。</p>
+<p>  罗布乐思是一个有很多预设模块的3D引擎，比如我在这里展示的城市场景模板。</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/1280.jpeg" alt="6c505eea559516304660c4cee93d760d.jpg"></p>
+<p>   除了场景模板，编辑器里还有大量预设好的模型和效果。预设内容大大降低了制作游戏的时间和精力成本，假设你想做一个城市障碍跑酷小游戏，那么只需要打开城市模板，加入各种汽车、楼房甚至形状部件，就可以直接跑起来了。</p>
+<p>  当然，这些预设内容也是可以修改的，以这辆车为例，右上角的资源管理器显示，你可以控制的部分具体到某个车门、车窗以及乘客座位。再复杂点，你还可以实现对这辆车的加速速度、车轮扭矩、发动机动力等各种效果的控制。</p>
+<p>   如果你想做更多更复杂的玩法如捏脸、回合制、战棋等等，通过脚本就可以实现，官网的教程里也有对RPG类等级系统、任务线、武器刷新、NPC等各种内容的设置教程，连重生点也只需要单击就可以添加。</p>
+<p>  罗布乐思这个工具，可以说是把能简化的内容都帮你简化了一遍，非常友好。只要跟着教程走，很快你的游戏想法就能让人们玩儿上了。</p>
+<p>  并且，这个引擎用的脚本语言是lua。虽然相比起主流如C#，lua比较小众，但事实上它作为一个轻量小巧又五脏俱全的语言，概念简单，学起来是比较容易的。</p>
+<p>  对这一部分的实现有兴趣，可以到罗布乐思的创作者主页感受一下，在这里泡上一段时间，简单的游戏制作应该难不倒你。（指路<a href="https://developer.roblox.com/zh-cn/learn-roblox/all-tutorials）" target="_blank" rel="noopener">https://developer.roblox.com/zh-cn/learn-roblox/all-tutorials）</a></p>
+<h2 id="大量的免费美术资源"><a href="#大量的免费美术资源" class="headerlink" title="大量的免费美术资源"></a><strong>大量的免费美术资源</strong></h2><p>   在工具箱的“商店”里，有官方提供的大量免费美术资源，涵盖各种内容和类别。如果你在搜索框里输入“hair”，那么搜出来的不止是可以覆盖在部件表面上的超多种毛发材质，还有许多直接可以使用的发型贴图——一个换装小游戏的发型选择界面十分钟内就可以完成了。</p>
+<p>  老实说，我身边有不止一个朋友表示过，想参加游戏比赛或是做游戏，却因为缺乏美术资源或队友而难以实现。当然这个商店里的美术资源主要满足的是基本需求，胜在可以帮你快速地给自己的游戏套好一个皮，不至于光秃秃的。</p>
+<p>  对于在画面风格上有所追求的人，我在罗布乐思的中文论坛也看到有人做出过很不错的画面效果。</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/1280-20220915180720169.jpeg" alt="0ebf37e707b7b2ebb2ae1986777165e5.jpg">  这是开发者Joseph155用四个星期时间制作的《23号公寓》，这种画风和光影让我想到了《我的世界》和《模拟人生》。</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/1280-20220915180725532.jpeg" alt="e2018002457e89692e0244f6649e4c44.jpg"></p>
+<p>  这是我在罗布乐思网站发现的游戏《ROSES》，它的光影在网站里应该算非常优秀的了。按我的理解，这种效果能够通过插件实现，同时选项卡里可以直接管理插件，如此一来美术效果上自然可以有更多的实现空间。</p>
+<h2 id="没有服务器成本，还能一键发布多个平台"><a href="#没有服务器成本，还能一键发布多个平台" class="headerlink" title="没有服务器成本，还能一键发布多个平台"></a><strong>没有服务器成本，还能一键发布多个平台</strong></h2><p>  <strong>但我认为这个工具最重要的两个优势，是没有服务器成本——也就是能够零成本做联机游戏，以及一键多平台发布。</strong></p>
+<p>  由于这款工具的客户端和服务端是集成一体的，这使它不仅能够免费提供服务器，还能够免费负责容灾、运维等一系列网络端工作。</p>
+<p>  B站上有一位做独立游戏的Up主做了个试玩罗布乐思的视频，他只用一小时就做了个简单跑酷，发布之后，他还直接用PC和iPad登陆不同账号并联机游玩自己的游戏。</p>
+<p>（视频指路：<a href="https://www.bilibili.com/video/av76363666）" target="_blank" rel="noopener">https://www.bilibili.com/video/av76363666）</a></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/1280-20220915180732276.jpeg" alt="f57037c0d13350ce437145677d844bee.jpg">  也就是说，这个一小时做出来的小跑酷已经实现了联机功能，而且Up主并不需要操心服务器问题。这是非常节省人力精力的，以前我还泡在MC某著名私服的时候，运营团队有位负责网络的大神，因为熊孩子太多都被逼得退群两次，更别提搭服务器的成本了。</p>
+<p>  此外，根据我的理解和官网的说法，罗布乐思上的游戏可以只通过一个按键直接发布在PC、安卓、iOS，甚至是Xbox和VR平台的罗布乐思客户端，然后那些不同系统和设备上的玩家就可以直接玩到你的游戏。当然这应该只是海外的情况，国内如何我不是很确定。</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/1280-20220915180739021.jpeg" alt="34a991aac186784f75ed3d49b2b43739.jpg">  这也体现在测试选框里的一个功能上：点击模拟器就可以看到在不同主流设备上的模拟画面，这应该就是为了便于在各种设备上发布作品而设计的。做完之后直接点击发布，你会得到一个网址，任何人在浏览器上打开这个网址，或是在任何系统与设备的罗布乐思客户端上搜索游戏名，都能玩到这个游戏。</p>
+<p>  很明显，这完全省去了中间漫长痛苦的各平台打包过程，想想只是把游戏传个Steam就需要多久，还得分成不同的操作系统，移动设备上也没办法玩到——在这里只要点击一下发布。</p>
+<p>  有了这些已经设计好的功能，剩下的就只是好好把游戏创意实现出来，钻研一个真正好玩的玩法。依赖这款游戏的超高月活，游戏创意与玩法的质量会很容易得到验证。      </p>
+<p>  不过这工具虽然很实用，但在国内很少人知道，网上关于这个游戏的信息也很少。</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/1280-20220915180745323.jpeg" alt="bd9a253e5c04b243e1afe84cd4842bdc.jpg"> 所以我自行搜索过不少资料，发现YouTube上的个别Roblox视频能达到7000多万的播放量，社区（指路<a href="https://robloxforum.com/" target="_blank" rel="noopener">https://robloxforum.com</a>；<a href="https://devforum.roblox.com/" target="_blank" rel="noopener">https://devforum.roblox.com</a>）活跃程度也很高。</p>
+<p> 还有18岁高中生通过罗布乐思年收入上百万美元的新闻，这是17年的事儿了。</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/1280-20220915180751272.jpeg" alt="2b39017fd4866344361ddf595504bb9a.jpg"></p>
+<p>  但是我估计过不了多久，罗布乐思就会在国内变得更有知名度，因为那个所有游戏都躲不过的鹅厂已经找上门来了。很明显，罗布乐思很快就要进入中国市场了。</p>
+<p>  就看最近的新闻，它们推出了一个北极星计划，准备花3000万扶持创作者，另外还有技术和流量扶持，以及优先出海的名额；最近还有一个征集作品的创意比赛。只是这部分内容比较多，我也不太记得，有兴趣可以去搜一下。</p>
+<p>  我个人认为，如果大家都认可罗布乐思在开发游戏方面的实用性，接下来鹅厂又能好好做国内落地运营，未来这可能是一个很不错的社区。毕竟鹅厂要用心还是能做点东西出来的。当然，大家有别的想法欢迎留言讨论。</p>
+<p><strong>本文转载自:</strong> <a href="https://cowlevel.net/article/2084510" target="_blank" rel="noopener">奶牛关</a></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../360.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../360.html" itemprop="url">独立游戏开发者必备工具汇总</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-16T11:04:19+08:00">
+                2022-09-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>对于独立开发者而言, 使用一些免费且好用的工具相对来说会更加有利, 接下来我们围绕以下几点进行工具的汇总:</p>
+<ul>
+<li><strong>开源免费</strong>: 不用考虑版权问题 解决后顾之忧</li>
+<li><strong>跨平台</strong>: 可随时切换平台开发 这个不必多说</li>
+<li><strong>工具得好用</strong></li>
+</ul>
+<h3 id="工具汇总"><a href="#工具汇总" class="headerlink" title="工具汇总"></a>工具汇总</h3><ol>
+<li><p><strong>Krita</strong></p>
+<p>开源免费的绘画工具, <code>procreate</code>的替代品, 可绘画和制作逐帧动画</p>
+<p><a href="https://github.com/KDE/krita" target="_blank" rel="noopener">GitHub</a></p>
+<p><a href="https://krita.org/zh/" target="_blank" rel="noopener">官网</a></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220915162224967.png" alt="image-20220915162224967"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220915161819097.png" alt="image-20220915161819097"></p>
+</li>
+<li><p><strong>Blender</strong></p>
+<p>这个大家都熟悉, 免费开源的三维图形图像软件，提供从建模、动画、材质、渲染、到音频处理、视频剪辑等一系列动画短片制作解决方案</p>
+<p><a href="https://github.com/blender/blender" target="_blank" rel="noopener">Github</a></p>
+<p><a href="https://www.blender.org/download/" target="_blank" rel="noopener">官网下载</a></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20211228145312330.png" alt="image-20211228145312330"></p>
+</li>
+<li><p><strong>Pixelorama</strong></p>
+<p>也是一款强大的像素画绘制工具, 基于<code>Godot</code>引擎的<code>GDScript</code>语言编写, 功能强大 软件跨平台, 可以说是<code>Godot</code>的完美搭档, 我猜想未来可能会将该工具直接集成进<code>Godot</code>内部</p>
+<p><a href="https://github.com/Orama-Interactive/Pixelorama" target="_blank" rel="noopener">Github</a></p>
+<p><a href="https://orama-interactive.itch.io/pixelorama" target="_blank" rel="noopener">官网</a></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220915155142976.png" alt="image-20220915155142976"></p>
+<p>有<code>Web</code>在线版 也可以下载到本地使用:</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220915155311899.png" alt="image-20220915155311899"></p>
+</li>
+<li><p><strong>Godot</strong></p>
+<p>免费开源的轻量级游戏开发引擎, 麻雀虽小五脏俱全, 支持2D和3D游戏的开发, 内置<code>Tilemap</code>和2D骨骼, 中小型游戏完全胜任</p>
+<p><a href="https://godotengine.org/" target="_blank" rel="noopener">官网地址</a></p>
+<p><a href="https://github.com/godotengine/godot" target="_blank" rel="noopener">GitHub地址</a></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220915162249596.png" alt="image-20220915162249596"></p>
+</li>
+<li><p><strong>虚幻引擎</strong></p>
+<p>如果要做大型3D游戏, 那么虚幻必然是首选, 它也是开源软件, 但是并不免费, 收入超过100万美金的部分按照5%来计算交费, 这样一来 对于个人而言 和免费无异</p>
+<p><a href="https://github.com/EpicGames/UnrealEngine" target="_blank" rel="noopener">Github</a>: 这个需要<a href="https://www.unrealengine.com/zh-CN/ue-on-github" target="_blank" rel="noopener">授权</a>才能访问</p>
+<p><a href="https://www.unrealengine.com/zh-CN" target="_blank" rel="noopener">点击进入官网</a></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220915163612724.png" alt="image-20220915163612724"></p>
+</li>
+</ol>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../361.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -384,13 +906,13 @@
 </ol>
 <h3 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h3><p>关于仓库地址的配置我们可以直接在 <code>.git/config</code> 查看,<code>git</code>默认合集名为<code>origin</code> </p>
 <p>如果你习惯了输入<code>git push origin master</code>来推送仓库, 那么我们可以直接打开<code>config</code>文件然后在<code>origin</code>合集下追加其他仓库的地址, 如下:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915173750105.png" alt="image-20220915173750105"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220915173750105.png" alt="image-20220915173750105"></p>
 <p>保存后, 我们就可以使用啦 </p>
 <p>如果你担心文本输入出错, 也可以采用命令行的形式进行地址追加:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote set-url --add origin git@gitee.com:xxx/xxx.git</span><br></pre></td></tr></table></figure>
 
 <p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -524,7 +1046,7 @@
 <h3 id="开始使用"><a href="#开始使用" class="headerlink" title="开始使用"></a>开始使用</h3><p>首先登陆<code>netlify</code>网站并登录, 如果你的博客源码放在了<code>Github</code>上, 那么可以直接使用<code>Github</code>账号关联登录</p>
 <p><a href="https://app.netlify.com/" target="_blank" rel="noopener">点击进入netlify官网</a></p>
 <p>登录之后会出现以下面板, 我们点击<code>Add new site</code>按钮添加一个新站点:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915123216935.png" alt="image-20220915123216935"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220915123216935.png" alt="image-20220915123216935"></p>
 <p>点击后出现多个选项:</p>
 <ul>
 <li><code>import an existing project</code>:表示从Github中的仓库中直接拉取代码</li>
@@ -533,30 +1055,30 @@
 </ul>
 <p>接下来 我以<code>hexo</code>博客为例, 介绍第一种和第三种的用法</p>
 <h3 id="第一种-import-an-existing-project"><a href="#第一种-import-an-existing-project" class="headerlink" title="第一种 import an existing project"></a>第一种 <code>import an existing project</code></h3><p>点击后进入仓库选择页面, 我们可以选择从指定的托管厂商拉取网站源码:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915121740890.png" alt="image-20220915121740890"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220915121740890.png" alt="image-20220915121740890"></p>
 <p>由于我网站源码托管在了<code>Github</code>, 于是我点击<code>Github</code>选项, 进入到仓库选择页面:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915121922914.png" alt="image-20220915121922914"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220915121922914.png" alt="image-20220915121922914"></p>
 <p>选择好后进入网站部署配置页面, 填入我们需要让<code>netlify</code>在拉取我们的仓库后进行的指令操作,<code>hexo g</code>生成静态文件 然后将生成的静态文件上传到<code>netlify</code>:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915122130743.png" alt="image-20220915122130743"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220915122130743.png" alt="image-20220915122130743"></p>
 <p>填好后点击<code>Deploy site</code>, 然后<code>netlify</code>会自动拉取代码并部署网站</p>
 <p>紧接着 我们来到网站设置选项卡中配置自定义域名:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915122650516.png" alt="image-20220915122650516"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220915122650516.png" alt="image-20220915122650516"></p>
 <p>需要将自定义域名以<code>CNAME</code>的方式解析到<code>xxxxx.netlify.app</code>, 如果你的域名是阿里云注册的, 直接去阿里云控台配置即可</p>
 <p>解析配置完毕后, <code>netlify</code>会自动给网站配置<code>SSL</code>证书实现域名<code>https</code>访问:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915122938054.png" alt="image-20220915122938054"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220915122938054.png" alt="image-20220915122938054"></p>
 <p>此时 我们就可以使用域名正常访问我们的网站啦:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915123105502.png" alt="image-20220915123105502"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220915123105502.png" alt="image-20220915123105502"></p>
 <h3 id="第三种-Deploy-manually"><a href="#第三种-Deploy-manually" class="headerlink" title="第三种 Deploy manually"></a>第三种 <code>Deploy manually</code></h3><p>这个就比较简单了, 点击后会进入到如下页面:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915123323777.png" alt="image-20220915123323777"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220915123323777.png" alt="image-20220915123323777"></p>
 <p>我们只需将<code>public</code>文件夹拖拽到页面 即可自动上传部署</p>
 <p>上传完后回到<code>netlify</code>主页就能看到网站了, 然后进行自定义的域名配置即可正常访问 </p>
 <p>当然了 如果不用自定义域名 直接使用<code>netlify</code>提供的二级域名也能访问, 这个大家都明白 就不多赘述了</p>
 <h3 id="网站测速"><a href="#网站测速" class="headerlink" title="网站测速"></a>网站测速</h3><p>以下是国内访问测速图, 总体还不错 :</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220915123913425.png" alt="image-20220915123913425"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220915123913425.png" alt="image-20220915123913425"></p>
 <h3 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h3><p>经过此次账号封禁, 我开始担忧自己存放在<code>Github</code>上的数据安全性问题了, 万一国内开发者收到制裁  <code>Github</code>来个大扫除, 岂不是完蛋, 不过 这对于国内的代码托管厂商而言也许是个难得的机会</p>
 <p>所以我接下打算 将重要数据做个多地备份处理</p>
 <p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -698,19 +1220,19 @@
 <p><a href="https://docs.godotengine.org/zh_CN/latest/" target="_blank" rel="noopener">官方中文文档</a></p>
 <h3 id="快速上手"><a href="#快速上手" class="headerlink" title="快速上手"></a>快速上手</h3><p>以下介绍针对有编程语言基础的同学食用</p>
 <p>我们知道所谓引擎 其实就是一团封装好的代码而已, 将一些常用且重复的逻辑进行抽取简化  方便开发者调用 从而提升游戏开发的效率</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220913144306654.png" alt="image-20220913144306654"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220913144306654.png" alt="image-20220913144306654"></p>
 <p>在<code>Godot</code>中 每一个节点就是一个对象, 场景是一个节点 精灵也是一个节点 都是对象<strong>(如果你是<code>android</code>开发 我们可以将其看成是布局文件中的控件)</strong></p>
 <p>如果我们想在某个类中创建一个对象, 那么直接在该类中创建一个节点, 比如我们想在<code>Main</code>这个类中创建<code>Control</code>对象:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220913144722992.png" alt="image-20220913144722992"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220913144722992.png" alt="image-20220913144722992"></p>
 <p>既然是对象, 那么肯定有继承关系 属性和方法, 我们可以从右侧检查器面板中看到继承关系以及本类和父类们的属性 :</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220913144543831.png" alt="image-20220913144543831"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220913144543831.png" alt="image-20220913144543831"></p>
 <p>而右侧节点面板中的信号列表, 其实就相当于我们平常所说的监听回调:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220913145102898.png" alt="image-20220913145102898"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220913145102898.png" alt="image-20220913145102898"></p>
 <p>如果需要查看该对象的方法以及方法说明, 我们可以直接在检查器面板中打开随时查看:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220913145406023.png" alt="image-20220913145406023"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220913145406023.png" alt="image-20220913145406023"></p>
 <h3 id="Godot进阶"><a href="#Godot进阶" class="headerlink" title="Godot进阶"></a>Godot进阶</h3><ol>
 <li><p>使用场景自动加载的形式创建单例</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220914113325298.png" alt="image-20220914113325298"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220914113325298.png" alt="image-20220914113325298"></p>
 </li>
 </ol>
 <h3 id="常用快捷键"><a href="#常用快捷键" class="headerlink" title="常用快捷键"></a>常用快捷键</h3><ol>
@@ -734,22 +1256,22 @@
 </li>
 </ol>
 <h3 id="游戏导出"><a href="#游戏导出" class="headerlink" title="游戏导出"></a>游戏导出</h3><p>以导出Android包为例, 首先需要在编辑器设置中指定好<code>SDK</code>和签名路径:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220914114349233.png" alt="image-20220914114349233"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220914114349233.png" alt="image-20220914114349233"></p>
 <p>签名可以用以下指令生成:</p>
 <figure class="highlight d"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">keytool -keyalg RSA -genkeypair -<span class="keyword">alias</span> 用户名 -keypass 密码 -keystore <span class="keyword">debug</span>.keystore -storepass 密码 -dname <span class="string">"CN=Android Debug,O=Android,C=US"</span> -validity <span class="number">9999</span> -deststoretype pkcs12</span><br></pre></td></tr></table></figure>
 
 <p>紧接着进入导出界面, 选择Android, 然后提示模板缺失, 此时我们点击管理模板:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220914114704962.png" alt="image-20220914114704962"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220914114704962.png" alt="image-20220914114704962"></p>
 <p>然后点击下载模板:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220914114745522.png" alt="image-20220914114745522"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220914114745522.png" alt="image-20220914114745522"></p>
 <p>这个模板文件 包含了所有支持平台的基础框架包:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220914115341762.png" alt="image-20220914115341762"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220914115341762.png" alt="image-20220914115341762"></p>
 <p>此时 我们再次进入导出面板, 配置签名后点击导出项目就可以了:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220914115952330.png" alt="image-20220914115952330"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220914115952330.png" alt="image-20220914115952330"></p>
 <p>其他平台导出方法可参考官方文档, 当然还有贴吧小伙伴的经验贴可参考:</p>
 <p><a href="https://tieba.baidu.com/p/6015825850" target="_blank" rel="noopener">跨平台导出参考</a></p>
 <p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -889,11 +1411,11 @@
 <p>启动服务后, 浏览器输入<code>localhost:8000</code>, 即可正常获取到本地<code>json</code>数据</p>
 </li>
 <li><p>第二种是修改本地浏览器设置, 以<code>Windows</code>平台谷歌浏览器为例, 启动时添加参数<code>--allow-file-access-from-files</code></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/c8235f9d82ac126c8659f46c06bebb80.png" alt="20201223114910"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/c8235f9d82ac126c8659f46c06bebb80.png" alt="20201223114910"></p>
 </li>
 </ol>
 <p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -1019,7 +1541,7 @@
 <p>在开始之前需要完成 <a href="https://docs.certcloud.cn/docs/installation/auto/acme" target="_blank" rel="noopener">证书ACME自动部署</a> 页面的前两个步骤。</p>
 </blockquote>
 <h2 id="创建-ACME-目录-URL"><a href="#创建-ACME-目录-URL" class="headerlink" title="创建 ACME 目录 URL"></a>创建 ACME 目录 URL</h2><ol>
-<li>登录 CertCloud 账户，点击【自动化】-&gt;【ACME】-&gt;【添加 ACME 目录 URL】 <img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/acmepage.png" alt="ACME URL 生成操作步骤"></li>
+<li>登录 CertCloud 账户，点击【自动化】-&gt;【ACME】-&gt;【添加 ACME 目录 URL】 <img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/acmepage.png" alt="ACME URL 生成操作步骤"></li>
 <li>在弹出框中输入具有标识性的<code>名称</code>，选择证书来源[订单,产品]，选择相应的<code>订单</code>或<code>产品</code> <code>组织</code> ，点击【添加】按钮。ACME 界面会新增一条记录。</li>
 <li>ACME 界面会新增一条记录 ，点击对应记录的 【部署】 按钮，在跳转的页面选择 <code>acme.sh</code>，点击<code>复制图标</code>复制 <strong>acme.sh 部署命令</strong> 。</li>
 </ol>
@@ -1131,7 +1653,7 @@
 </li>
 </ol>
 <p><strong>本文转载自</strong>: <a href="https://docs.certcloud.cn/docs/installation/auto/acme/acmesh/" target="_blank" rel="noopener">https://docs.certcloud.cn/docs/installation/auto/acme/acmesh/</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -1253,10 +1775,10 @@
         
           
             <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>最近在使用<code>netlify</code>的静态网站托管服务, 如果需要自定义域名的话 需要提供<code>https</code>证书, 如下图:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220902113147959.png" alt="image-20220902113147959"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902113147959.png" alt="image-20220902113147959"></p>
 <h3 id="SSL证书介绍"><a href="#SSL证书介绍" class="headerlink" title="SSL证书介绍"></a>SSL证书介绍</h3><p>是一种配置在服务器上的数字证书, 由可信的数字证书颁发机构（CA）颁发, 类似于我们的驾驶证, 它具有服务器身份验证和数据传输加密功能。</p>
 <p>证书实际上就是几串字符密钥 以文本的形式存放在诸如<code>.key</code>  <code>.cer</code>   <code>.csr</code> 结尾的文件中:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220902121037323.png" alt="image-20220902121037323"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902121037323.png" alt="image-20220902121037323"></p>
 <p>文件介绍:</p>
 <ul>
 <li><code>.key</code>文件: 证书私钥</li>
@@ -1267,7 +1789,7 @@
 <p>那么浏览器和服务器  一个持有私钥一个持有公钥  进行加密会话 保证数据安全</p>
 <h3 id="自制SSL证书"><a href="#自制SSL证书" class="headerlink" title="自制SSL证书"></a>自制SSL证书</h3><p>既然所谓的证书就是<code>RSA</code>密钥, 那我们自然可以自己生成, 比如:</p>
 <p><a href="https://myssl.com/csr_create.html" target="_blank" rel="noopener">在线生成SSL证书</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220902142026451.png" alt="image-20220902142026451"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902142026451.png" alt="image-20220902142026451"></p>
 <p>但是这种自己颁发的证书是不被浏览器认可的, 就好比自己给自己手写一张驾驶证, 完全没有任何法律效力</p>
 <p>因此我们只能向<code>CA</code>机构申请证书, 国际知名的<code>CA</code>机构有<code>GeoTrust</code>、<code>Comodo</code>、<code>DigiCert</code>、<code>Sectigo</code>、<code>Thawte</code>、<code>GlobalSign</code>、<code>Symantec</code>、<code>AlphaSSL</code>等 </p>
 <p>大部分都是收费的, 那么我们要用免费的话, 可以退而求其次,<code>freessl</code>这个平台是个不错的选择</p>
@@ -1288,28 +1810,28 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">acme.sh --issue -d 域名 -w 证书存放目录</span><br></pre></td></tr></table></figure>
 
 <p><code>acme.sh</code> 默认会从<a href="https://zerossl.com/" target="_blank" rel="noopener">zerossl</a>获取证书, <code>zerossl</code>和<code>freessl.cn</code>一样, 也是一个证书中介网站 ,<code>zerossl</code>提供由<code>Let&#39;s Encrypt</code> 颁发的数字证书, 每个注册账户可以申请三个免费证书</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220902150909721.png" alt="image-20220902150909721"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902150909721.png" alt="image-20220902150909721"></p>
 <p>但是 由于免费的数量有限 所以我们不选择从<code>zerossl</code>获取</p>
 <p>如果只是临时测试用的话 可以用一用 直接在官网申请并下载证书<code>zip</code>包即可:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220902151803041.png" alt="image-20220902151803041"></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220902152401511.png" alt="image-20220902152401511"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902151803041.png" alt="image-20220902151803041"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902152401511.png" alt="image-20220902152401511"></p>
 <p>考虑到长期使用, 因此我们选择<code>freessl.cn</code></p>
 </li>
 <li><p><strong>从<code>freessl.cn</code>获取证书</strong></p>
 <p><code>freessl</code>支持<code>acme</code>自动化</p>
 <p>在网站输入域名并且进行校验后会生成一个<code>acme</code>地址, 这个地址相当于账号凭证, 利用这个它我们可以借助<code>acme.sh</code>快速获取证书:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220902152759063.png" alt="image-20220902152759063"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902152759063.png" alt="image-20220902152759063"></p>
 <p>具体指令如下:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">acme.sh --issue -d 域名  --dns dns_dp --server 你的acme地址</span><br></pre></td></tr></table></figure>
 
 <p>执行后自动将证书下载到本地:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220902113332949.png" alt="image-20220902113332949"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902113332949.png" alt="image-20220902113332949"></p>
 <p>最后我们将证书密钥拷贝至托管服务器中, 这里以<code>netlify</code>为例:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220902154250607.png" alt="image-20220902154250607"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902154250607.png" alt="image-20220902154250607"></p>
 <p>填写完后点击安装, 证书成功识别</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220902113754771.png" alt="image-20220902113754771"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902113754771.png" alt="image-20220902113754771"></p>
 <p>此时 我们即可通过自定义域名访问<code>netlify</code>中的静态网站了, 在浏览器中可以查看当前获取到的证书信息:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220902141040045.png" alt="image-20220902141040045"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902141040045.png" alt="image-20220902141040045"></p>
 </li>
 </ol>
 <h3 id="关于自动更新"><a href="#关于自动更新" class="headerlink" title="关于自动更新"></a>关于自动更新</h3><p>通常我们会将<code>acme.sh</code>安装至服务器中, 然后实现证书的自动更新, 由于我这边使用的是<code>netlify</code>, 所以三个月到期后需要手动执行一下代码</p>
@@ -1318,7 +1840,7 @@
 <li><strong>OHTTPS</strong>: <a href="https://ohttps.com/" target="_blank" rel="noopener">https://ohttps.com/</a></li>
 </ul>
 <p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -1457,7 +1979,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hugo new site 项目名称</span><br></pre></td></tr></table></figure>
 
 <p>执行完后会在当前目录下生成工程文件夹:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220901170044828.png" alt="image-20220901170044828"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220901170044828.png" alt="image-20220901170044828"></p>
 <p>目录介绍:</p>
 <ul>
 <li><strong>content目录</strong>: 用于存放博客文章</li>
@@ -1517,7 +2039,7 @@
 <li><p>每次执行指令都要指定主题太过繁琐?  没事 我们在配置文件中添加以下代码 配置默认主题即可解决烦恼</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 主题名称</span><br><span class="line">theme = &quot;hyde&quot;</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220901174231361.png" alt="image-20220901174231361"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220901174231361.png" alt="image-20220901174231361"></p>
 </li>
 <li><p>自定义域名无法访问?</p>
 <ol>
@@ -1527,545 +2049,7 @@
 </li>
 </ol>
 <p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../353.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../353.html" itemprop="url">虚幻蓝图快速上手</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-29T11:04:19+08:00">
-                2022-08-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>蓝图 实际上也是一门编程语言 一种图形化的语言  </p>
-<p>使用蓝图 可以使开发者们省去代码的编写  即便你不会代码 也能进行游戏开发 </p>
-<p>这一点 很大程度地吸引了许许多多的游戏爱好者的加入</p>
-<p>……</p>
-<p>如果你有编程基础的话 那么蓝图上手会非常的快, 接下来 我们来快速入门</p>
-<h4 id="语言类比"><a href="#语言类比" class="headerlink" title="语言类比"></a>语言类比</h4><p>我们知道 正常的编程的语言 基本上都有变量 函数的概念, 蓝图既然是一门语言, 那么它自然也有  只不过表现形式不太一样罢了</p>
-<h3 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h3><ol>
-<li><p><strong>蓝图中函数的表现形式</strong></p>
-<p>在蓝图中 每一个蓝图节点我们可以视作一个函数</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829152437687.png" alt="image-20220829152437687"></p>
-</li>
-<li><p><strong>函数的定义</strong></p>
-<p>虚幻引擎给我们封装好了许多函数 比如打印字符串的函数 给物体添加材质的函数等等</p>
-<p>如果我们想要自定义一个函数呢, 那么直接在左侧面板中添加一个新函数, 比如 我定义一个名为<code>Test</code>的函数  内部逻辑是比较传入的值是否等于3</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829180025489.png" alt="image-20220829180025489"></p>
-<p>函数创建好后可以在蓝图事件表中通过鼠标右键进行名称搜索使用:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829180313058.png" alt="image-20220829180313058"></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829180354133.png" alt="image-20220829180354133"></p>
-</li>
-<li><p><strong>函数的调用</strong></p>
-<p>节点连线可以表示函数调用和传参, 这种箭头形状的输入口 表示的就是函数调用, 左边调用右边</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829152624719.png" alt="image-20220829152624719"></p>
-</li>
-<li><p><strong>函数传参</strong></p>
-<p>蓝图节点左侧下方的一系列入口 可以理解为函数参数的传递入口:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829170225676.png" alt="image-20220829170225676"></p>
-</li>
-</ol>
-<h3 id="事件监听"><a href="#事件监听" class="headerlink" title="事件监听"></a>事件监听</h3><p>现代程序的编写几乎离不开监听回调, 在设计模式的领域中也叫做观察者者模式, 我们可以在蓝图编辑面板中左侧查看当前创建事件:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220919152646963.png" alt="image-20220919152646963"></p>
-<p>事件主要用于蓝图类之间的信息交互, 当关卡中的某一个子物体需要和所处关卡进行通信时, 我们可以在关卡蓝图中自定义一个事件, 然后子物体蓝图中调用触发:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220919153104557.png" alt="image-20220919153104557"></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220919153620945.png" alt="image-20220919153620945"></p>
-<p>事件触发命令格式为: <code>ce 事件名</code></p>
-<blockquote>
-<p>关卡蓝图是当前关卡内所有物体的父级 它可以获取到物体的实例 很容易和子物体进行数据通信, 但是物体并不持有关卡的实例, 所以信息交互需要依靠事件</p>
-</blockquote>
-<h3 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h3><ol>
-<li><p><strong>定义全局变量</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829152044387.png" alt></p>
-<p>添加变量后 我们可以在属性细节面板中 设置变量的数据类型</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829153316870.png" alt="image-20220829153316870">    </p>
-</li>
-<li><p><strong>定义局部变量</strong></p>
-<p>在左侧面板中 点击鼠标右键调出菜单 可以增加局部变量的设置入口, 其操作和使用与全局变量一样 这里不再赘述</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829155333576.png" alt="image-20220829155333576"></p>
-</li>
-<li><p><strong>初始化变量的值</strong></p>
-<p>通常情况下 我们在定义变量的同时 会对该变量进行值的初始化</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829153622095.png" alt="image-20220829153622095"></p>
-</li>
-<li><p><strong>获取变量值</strong></p>
-<p>程序运行时  我们需要动态读取变量的值, 此时我们按住Ctrl键  然后鼠标左键将变量拖拽至事件图标中 </p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/getvar.gif" alt="getvar"></p>
-<p>此时会生成一个获取变量值的函数(蓝图节点)</p>
-</li>
-<li><p><strong>设置变量的值</strong></p>
-<p>同样的 我们要生成一个设置变量值的函数时, 按住Alt键 然后鼠标左键将变量拖拽至事件图标中即可</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/setvar.gif" alt="setvar"></p>
-</li>
-</ol>
-<h3 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h3><p>任何一门编程语言都有注释  方便我们对于程序的维护  蓝图自然也有</p>
-<p>选中你需要进行注释的蓝图节点 然后按键盘C  则会出现一个方块将选中的节点包裹  此时可以输入注释内容</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829153005361.png" alt="image-20220829153005361"></p>
-<h3 id="逻辑执行"><a href="#逻辑执行" class="headerlink" title="逻辑执行"></a>逻辑执行</h3><p>比如我们要执行一个在屏幕上打印字符串的逻辑, 那么我们可以在游戏启动的时候 调用打印字符串的函数(节点)</p>
-<p>事件开始运行 这个函数 表示的就是游戏启动的 相当于<code>Java</code>中的<code>main</code>函数, 只执行一次</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829160253326.png" alt="image-20220829160253326"></p>
-<p>编写好逻辑后 运行游戏 就能看到屏幕上打印的内容了</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/printString.gif" alt="printString"></p>
-<h3 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h3><p>蓝图是一门面向对象的编程语言  在游戏中每一个物体都是一个对象 </p>
-<ol>
-<li><p><strong>创建对象</strong></p>
-<p>在世界大纲中显示的所有物体都是对象 </p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829161621529.png" alt="image-20220829161621529"></p>
-<p> 而创建对象方法很简单就是直接将素材拖拽至场景中</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/2022-08-29%2016-32-03.2022-08-29%2016_34_17.gif" alt="2022-08-29 16-32-03.2022-08-29 16_34_17"></p>
-<p>有些素材拖入场景后世界大纲中找不到 比如材质 说明该素材在蓝图事件表中不能直接通过右键的方式来创建对象引用</p>
-<p>材质比较特殊 对硬件资源消耗比较大  我们通常会在材质基础上创建材质实例 其好处是一方面减少资源消耗 另一方面可以暴露参数在游戏过程中动态修改属性</p>
-<p>对于材质对象的创建 我们可以选中对应材质 然后鼠标右键创建材质实例:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829170844561.png" alt="image-20220829170844561"></p>
-<p>点击创建后 素材面板会多出一个材质实例, 这个实例是材质的子类:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829171302287.png" alt="image-20220829171302287"></p>
-<p>我们可以在蓝图中创建数组变量来存放该实例:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829173504954.png" alt="image-20220829173504954"></p>
-</li>
-<li><p><strong>获取对象实例</strong></p>
-<p>我们只需在场景或者世界大纲中选中需要引用的物体对象, 然后在蓝图事件表中 右键创建对象引用节点即可</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829164655130.png" alt="image-20220829164655130"></p>
-<p>动图操作如下:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/2022-08-29%2016-48-00.2022-08-29%2016_49_34.gif" alt="2022-08-29 16-48-00.2022-08-29 16_49_34"></p>
-</li>
-<li><p>修改对象属性</p>
-<p>比如修改某个物体的位置属性, 我们可以在游戏启动时调用位置修改函数</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220829165958763.png" alt="image-20220829165958763"></p>
-</li>
-</ol>
-<h3 id="关卡蓝图和蓝图类"><a href="#关卡蓝图和蓝图类" class="headerlink" title="关卡蓝图和蓝图类"></a>关卡蓝图和蓝图类</h3><ul>
-<li><strong>关卡蓝图</strong>: 重点在关卡 而不是蓝图  是指以蓝图语言编辑的关卡 </li>
-<li><strong>蓝图类</strong>: 重点在类 是指以蓝图语言定义和编辑的类</li>
-</ul>
-<p>在游戏引擎中  关卡本质就是一个集合了众多<code>Actor</code>的类</p>
-<h3 id="虚幻引擎类继承关系"><a href="#虚幻引擎类继承关系" class="headerlink" title="虚幻引擎类继承关系"></a>虚幻引擎类继承关系</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">        |--Actor--Pawn--Character</span><br><span class="line">        |</span><br><span class="line">Object--|--PlayerController</span><br><span class="line">				|</span><br><span class="line">				|--Info--GameModeBase</span><br><span class="line">				|</span><br><span class="line">				|--ActorComponent--SceneComponent</span><br></pre></td></tr></table></figure>
-
-<h3 id="开发文档参考"><a href="#开发文档参考" class="headerlink" title="开发文档参考"></a>开发文档参考</h3><p><a href="https://docs.unrealengine.com/4.27/zh-CN/Basics/GettingStarted/" target="_blank" rel="noopener">官方文档</a></p>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../352.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../352.html" itemprop="url">虚幻引擎实用快捷键汇总</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-28T11:04:19+08:00">
-                2022-08-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="场景相关"><a href="#场景相关" class="headerlink" title="场景相关"></a>场景相关</h3><ol>
-<li><p>快速定位聚焦到某个物体</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">键盘F</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使物体下落吸附至地面</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">键盘end</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>快速旋转地图</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Alt+鼠标左键</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>快速缩放地图</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Alt+鼠标右键</span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ol>
-<ol start="5">
-<li><p>临时放大地图</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C+鼠标任意键长按</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>临时缩小地图</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Z+鼠标任意键长按</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>进入预览模式</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Alt+P</span><br></pre></td></tr></table></figure>
-
-
-
-</li>
-</ol>
-<h3 id="蓝图相关"><a href="#蓝图相关" class="headerlink" title="蓝图相关"></a>蓝图相关</h3><ol>
-<li><p>在蓝图面板获取变量值</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ctrl+鼠标左键拖动</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>在蓝图面板设置变量值</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Alt+鼠标左键拖动</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>切断蓝图节点之间的连线</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">光标移至线上 然后 Alt+鼠标左键</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>给选中的蓝图节点添加注释</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">键盘C</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>克隆选中的蓝图节点</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"> </span><br></pre></td></tr></table></figure>
-
-
-
-
-
-
-
-
-
-</li>
-</ol>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../351.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../351.html" itemprop="url">关于虚幻引擎位置迁移之路径修改</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-22T11:04:19+08:00">
-                2022-08-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>最近换了硬盘 打算将原来的虚幻引擎迁移到另一块硬盘 但是当我将引擎文件拷贝过去后 虚幻启动程序并未识别  然而设置面板中又没有关于这一块路径的修改</p>
-<p>难道我得重新下载一遍? 这我肯定是不能接受的呀</p>
-<p>于是乎我百度了一番经过尝试之后发现一个方法可行</p>
-<h3 id="解决方案一"><a href="#解决方案一" class="headerlink" title="解决方案一"></a>解决方案一</h3><p>重新下载引擎 然后选择新的引擎下载路径 该路径是你新硬盘位置  </p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220822145537993.png" alt="image-20220822145537993"></p>
-<p>下载开始后硬盘中会自动生成相应的引擎目录 此时暂停下载  紧接着将旧引擎迁移至该目录下 最后重启<code>Epic Games Launcher</code>即可</p>
-<h3 id="解决方案二"><a href="#解决方案二" class="headerlink" title="解决方案二"></a>解决方案二</h3><p>进入虚幻<code>support</code>目录 修改<code>install.in</code>文件, <code>Mac</code>系统路径如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Users/你的用户名/Library/Application Support/Epic/UnrealEngine/install.in</span><br></pre></td></tr></table></figure>
-
-<p>用文本文件打开 然后修改对应的路径即可</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/image-20220822150921510.png" alt="image-20220822150921510"></p>
-<p>同样的 最后重启<code>Epic Games Launcher</code>即可</p>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
           
@@ -2152,7 +2136,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">431</span>
+                  <span class="site-state-item-count">434</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

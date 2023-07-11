@@ -288,6 +288,492 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../46.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../46.html" itemprop="url">Android Studio 自定义Gradle插件</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-14T18:20:13+08:00">
+                2020-05-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>本文内容包括:</p>
+<ul>
+<li>利用AndroidStudio,编写自定义Gradle plugin</li>
+<li>MavenDeployer 发布plugin</li>
+<li>使用Gradle plugin</li>
+</ul>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>之前写了一个Android中的AOP框架Cooker.<br>这里总结一下里面用到的两块小知识:</p>
+<p>1)自定义 Gradle plugin<br>2)发布自己的jar到 maven仓库</p>
+<p>项目中引入自定义Gradle plugin一般有三种方法:</p>
+<blockquote>
+<ol>
+<li>直接写在 build.gradle中.</li>
+<li>plugin源码放到rootProjectDir/buildSrc/src/main/groovy目录下</li>
+<li>plugin打包成jar, 发布到maven仓库, 然后项目通过Build Script依赖jar的形式引入</li>
+</ol>
+</blockquote>
+<p>下面介绍的是第3种方式.</p>
+<h2 id="一-用AndroidStudio中写plugin"><a href="#一-用AndroidStudio中写plugin" class="headerlink" title="一. 用AndroidStudio中写plugin"></a>一. 用AndroidStudio中写plugin</h2><h3 id="1-新建一个Android工程"><a href="#1-新建一个Android工程" class="headerlink" title="1.新建一个Android工程"></a>1.新建一个Android工程</h3><h3 id="2-在这个工程里面-新建一个Android-Library"><a href="#2-在这个工程里面-新建一个Android-Library" class="headerlink" title="2.在这个工程里面,新建一个Android Library"></a>2.在这个工程里面,新建一个Android Library</h3><p>先起名叫cooker-plugin吧, 我们将会用这个library写Gradle plugin</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/4048192-c46c28de5172cdd9.webp" alt></p>
+<h3 id="3-建立plugin的目录结构"><a href="#3-建立plugin的目录结构" class="headerlink" title="3.建立plugin的目录结构"></a>3.建立plugin的目录结构</h3><p>把这个cooker-plugin中默认产生的文件都删除, 然后按照下面结构新建文件</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/4048192-debed4cf882cc124.webp" alt></p>
+<h4 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h4><p>1.因为我们用Groovy写的插件, 插件代码放在 src/main/groovy下</p>
+<p>2.在src/main/resources/META-INF/gradle-plugins 里声明plugin信息<br>比如:新建<code>cooker-plugin.properties</code>文件,内容如下</p>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; </span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>implementation-class=com.helen.plugin.CookerPlugin</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&gt; 这里:  </span><br><span class="line">&gt; <span class="string">"cooker-plugin"</span> 是插件名称;    </span><br><span class="line">&gt; <span class="string">"com.helen.plugin.CookerPlugin"</span> 是对应的插件实现类  </span><br><span class="line"></span><br><span class="line"><span class="number">3.b</span>uild.gradle 声明用groovy开发      </span><br><span class="line"></span><br><span class="line">```java   </span><br><span class="line">apply plugin: <span class="string">'groovy'</span></span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    <span class="function">compile <span class="title">gradleApi</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    compile <span class="title">localGroovy</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">repositories</span> &#123;</span><br><span class="line">    mavenCentral()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-实现插件"><a href="#4-实现插件" class="headerlink" title="4.实现插件"></a>4.实现插件</h3><p>实现plugin,其实就是需要继承实现Plugin<project> 的接口</project></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.helen.plugin</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.gradle.api.Plugin</span><br><span class="line"><span class="keyword">import</span> org.gradle.api.Project</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CookerPlugin</span> <span class="keyword">implements</span> <span class="title">Plugin</span>&lt;<span class="title">Project</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">apply</span><span class="params">(Project project)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//这里实现plugin的逻辑</span></span><br><span class="line">        <span class="comment">//巴拉巴拉巴拉</span></span><br><span class="line">        println <span class="string">"hello, this is cooker plugin!"</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//cooker-plugin</span></span><br><span class="line">        <span class="comment">//比如这里加一个简单的task</span></span><br><span class="line">        project.task(<span class="string">'cooker-test-task'</span>) &lt;&lt; &#123;</span><br><span class="line">            println <span class="string">"hello, this is cooker test task!"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-一个简单的plugin就写好了"><a href="#5-一个简单的plugin就写好了" class="headerlink" title="5.一个简单的plugin就写好了"></a>5.一个简单的plugin就写好了</h3><p>在cooker-plugin项目中, build一下.<br>就能在build/libs下生成对应的plugin插件了</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/4048192-177dc91cce18091e.webp" alt></p>
+<p>这个插件就能使用了. 可以发布在本地仓库或者Maven仓库.</p>
+<h2 id="二-mavenDeployer发布插件"><a href="#二-mavenDeployer发布插件" class="headerlink" title="二. mavenDeployer发布插件"></a>二. mavenDeployer发布插件</h2><p>下面介绍一下利用mavenDeployer发布在本地仓库.</p>
+<h3 id="1-引入-mavenDeplayer插件"><a href="#1-引入-mavenDeplayer插件" class="headerlink" title="1. 引入 mavenDeplayer插件"></a>1. 引入 mavenDeplayer插件</h3><p>修改cooker-plugin的build.gradle, 修改后如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: <span class="string">'groovy'</span></span><br><span class="line"><span class="comment">//添加maven plugin, 用于发布我们的jar</span></span><br><span class="line">apply plugin: <span class="string">'maven'</span></span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    <span class="function">compile <span class="title">gradleApi</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    compile <span class="title">localGroovy</span><span class="params">()</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">repositories </span>&#123;</span><br><span class="line">    mavenCentral()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//设置maven deployer</span></span><br><span class="line">uploadArchives &#123;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        mavenDeployer &#123;</span><br><span class="line">            <span class="comment">//设置插件的GAV参数</span></span><br><span class="line">            pom.groupId = <span class="string">'com.helen.plugin'</span></span><br><span class="line">            pom.artifactId = <span class="string">'cooker-plugin'</span></span><br><span class="line">            pom.version = <span class="number">1.0</span> </span><br><span class="line">            <span class="comment">//文件发布到下面目录</span></span><br><span class="line">            repository(url: uri(<span class="string">'../release'</span>))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-用uploadArchices发布"><a href="#2-用uploadArchices发布" class="headerlink" title="2.用uploadArchices发布"></a>2.用uploadArchices发布</h3><p>运行uploadArchives. 就能在设置的仓库路径中生成 cooker-plugin了</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/4048192-200e613468863e3a.webp" alt></p>
+<h2 id="三-使用gradle-plugin"><a href="#三-使用gradle-plugin" class="headerlink" title="三. 使用gradle plugin"></a>三. 使用gradle plugin</h2><h3 id="1-在build-gradle引入-cooker-plugin"><a href="#1-在build-gradle引入-cooker-plugin" class="headerlink" title="1.在build.gradle引入 cooker-plugin"></a>1.在build.gradle引入 cooker-plugin</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: <span class="string">'com.android.application'</span></span><br><span class="line"><span class="comment">//使用cooker-plugin</span></span><br><span class="line">apply plugin: <span class="string">'cooker-plugin'</span></span><br><span class="line"></span><br><span class="line">buildscript &#123;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        maven &#123;</span><br><span class="line">            <span class="comment">//cooker-plugin 所在的仓库</span></span><br><span class="line">            <span class="comment">//这里是发布在本地文件夹了</span></span><br><span class="line">            <span class="function">url <span class="title">uri</span><span class="params">(<span class="string">'../release'</span>)</span></span></span><br><span class="line"><span class="function">        &#125;</span></span><br><span class="line"><span class="function">    &#125;</span></span><br><span class="line"><span class="function">    dependencies </span>&#123;</span><br><span class="line">        <span class="comment">//引入cooker-plugin</span></span><br><span class="line">        classpath <span class="string">'com.helen.plugin:cooker-plugin:1.0'</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-我们编译App的时候-cooker-plugin就会介入了"><a href="#2-我们编译App的时候-cooker-plugin就会介入了" class="headerlink" title="2. 我们编译App的时候,cooker-plugin就会介入了"></a>2. 我们编译App的时候,cooker-plugin就会介入了</h3><p>每次clean/build时, 在Gradle Console可以看到我们的log<br><code>hello, this is cooker plugin!</code></p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Configuration <span class="keyword">on</span> demand <span class="keyword">is</span> an incubating feature.</span><br><span class="line">hello, <span class="keyword">this</span> <span class="keyword">is</span> cooker plugin!</span><br><span class="line">Incremental java compilation <span class="keyword">is</span> an incubating feature.</span><br><span class="line">:app:preBuild UP-TO-DATE</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-使用cooker-plugin中定义的task"><a href="#3-使用cooker-plugin中定义的task" class="headerlink" title="3.使用cooker-plugin中定义的task"></a>3.使用cooker-plugin中定义的task</h3><p>前面demo中, 我们新建了一个task: <code>cooker-test-task</code>, 他简单输出一句log.下面测试运行一下这个task.<br>在控制台输入 <code>gradle cooker-test-task</code> 运行结果如下</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/4048192-0e73dc69b9dad25f.webp" alt></p>
+<h2 id="四-总结"><a href="#四-总结" class="headerlink" title="四. 总结"></a>四. 总结</h2><p><a href="https://link.jianshu.com/?t=https://github.com/helen-x/gradle-plugin-demo" target="_blank" rel="noopener">Demo地址-Github</a><br>到此为止, 自定义Gradle plugin就介绍完了.<br>结合AndroidStudio, 自定义Gradle plugin可以完成很多功能.</p>
+<p>比如cooker的plugin完成了:<br>1)添加编译依赖<br>2)进行Aspecj编译<br>3)自动生成混淆配置</p>
+<h1 id="五-开发只针对当前项目的Gradle插件-附"><a href="#五-开发只针对当前项目的Gradle插件-附" class="headerlink" title="五. 开发只针对当前项目的Gradle插件(附)"></a>五. 开发只针对当前项目的Gradle插件(附)</h1><p>前面我们讲了如何自定义gradle插件并且打包出去，可能步骤比较多。有时候，你可能并不需要打包出去，只是在这一个项目中使用而已，那么你无需打包这个过程。</p>
+<p>只是针对当前项目开发的Gradle插件相对较简单。步骤之前所提到的很类似，只是有几点需要注意：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.新建的Module名称必须为BuildSrc</span><br><span class="line">2.无需resources目录</span><br></pre></td></tr></table></figure>
+
+<p>目录结构如下所示：</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/20160702135323958" alt></p>
+<p>其中，build.gradle内容为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: &apos;groovy&apos;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    compile gradleApi()//gradle sdk</span><br><span class="line">    compile localGroovy()//groovy sdk</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">repositories &#123;</span><br><span class="line">    jcenter()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>SecondPlugin.groovy内容为：</strong></p>
+<p>SecondPlugin.groovy内容为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">package  com.hc.second</span><br><span class="line"></span><br><span class="line">import org.gradle.api.Plugin</span><br><span class="line">import org.gradle.api.Project</span><br><span class="line"></span><br><span class="line">public class SecondPlugin implements Plugin&lt;Project&gt; &#123;</span><br><span class="line"></span><br><span class="line">void apply(Project project) &#123;</span><br><span class="line">    System.out.println(&quot;========================&quot;);</span><br><span class="line">    System.out.println(&quot;这是第二个插件!&quot;);</span><br><span class="line">    System.out.println(&quot;========================&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>在app这个Module中如何使用呢</strong>？直接在app的build.gradle下加入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: com.hc.second.SecondPlugin</span><br></pre></td></tr></table></figure>
+
+<p>clean一下，再make project，messages窗口信息如下<br><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/20160702135750329" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../47.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../47.html" itemprop="url">Android 中使用WebViewJavaScriptBridge进行H5和原生的交互</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-14T18:17:37+08:00">
+                2020-05-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/fdfs.jpg" alt></p>
+<h3 id="1-概述"><a href="#1-概述" class="headerlink" title="1.  概述"></a>1.  概述</h3><blockquote>
+<p>当我们采用H5与Native原生结合开发，使用H5去开发一些功能的时候，肯定会涉及到Android与Js互相调用的问题，通常有两种实现方式，</p>
+</blockquote>
+<p><strong>第一种</strong> 使用原生的addJavascriptInterface()来解决</p>
+<p><strong>第二种</strong> 使用第三方框架WebViewJavascriptBridge   这也是我今天要分享的部分</p>
+<h3 id="2-为什么要使用WsebViewJavascriptBridge"><a href="#2-为什么要使用WsebViewJavascriptBridge" class="headerlink" title="2.为什么要使用WsebViewJavascriptBridge"></a>2.为什么要使用WsebViewJavascriptBridge</h3><p>对于安卓开发有一段时间的人来说，知道安卓4.4以前谷歌的webview存在安全漏洞，网站可以通过js注入就可以随便拿到客户端的重要信息，甚至轻而易举的调用本地代码进行流氓行为，谷歌后来发现有此漏洞后，增加了防御措施，如果要是js调用本地代码，开发者必须在代码中申明<code>JavascriptInterface</code>，</p>
+<p> 列如在4.0之前我们要使得webView加载js只需如下代码：   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mWebView.addJavascriptInterface(new JsToJava(), &quot;myjsfunction&quot;);</span><br></pre></td></tr></table></figure>
+
+<p>4.4之后调用需要在调用方法加入加入@JavascriptInterface注解，如果代码无此申明，那么也就无法使得js生效，也就是说这样就可以避免恶意网页利用js对安卓客户端的窃取和攻击。</p>
+<p>但是即使这样，我们很多时候需要在js记载本地代码的时候，要做一些判断和限制，或者有可能也会做些过滤和对用户友好提示，因此JavascriptInterface也就无法满足我们的需求了，特此有大神就写出了WebViewJavascriptBridge框架。</p>
+<h3 id="3-开始使用"><a href="#3-开始使用" class="headerlink" title="3.开始使用"></a>3.开始使用</h3><h5 id="第一步-Android-Studio-导包"><a href="#第一步-Android-Studio-导包" class="headerlink" title="第一步.Android Studio 导包"></a>第一步.Android Studio 导包</h5><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">repositories &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    maven &#123; url <span class="string">"https://jitpack.io"</span> &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    compile <span class="string">'com.github.lzyzsd:jsbridge:1.0.4'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="第二步-在布局文件中添加"><a href="#第二步-在布局文件中添加" class="headerlink" title="第二步.在布局文件中添加"></a>第二步.在布局文件中添加</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;com.github.lzyzsd.jsbridge.BridgeWebView</span><br><span class="line">    android:id=&quot;@+id/wv_web_view&quot;</span><br><span class="line">    android:layout_width=&quot;match_parent&quot;</span><br><span class="line">    android:layout_height=&quot;match_parent&quot; /&gt;</span><br></pre></td></tr></table></figure>
+
+<h5 id="第三步-代码中添加交互方法"><a href="#第三步-代码中添加交互方法" class="headerlink" title="第三步.代码中添加交互方法"></a>第三步.代码中添加交互方法</h5><p><strong>H5调android方法</strong></p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//android端代码</span></span><br><span class="line">mWebView.registerHandler(<span class="string">"test"</span>, <span class="keyword">new</span> BridgeHandler() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public <span class="keyword">void</span> handler(<span class="built_in">String</span> data, CallBackFunction <span class="function"><span class="keyword">function</span>) </span>&#123;</span><br><span class="line">           <span class="function"><span class="keyword">function</span>.<span class="title">onCallBack</span>(<span class="params"><span class="string">"指定Handler收到Web发来的数据，回传数据给你"</span></span>);</span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">//<span class="title">H5</span>端代码</span></span><br><span class="line"><span class="function"><span class="title">function</span> <span class="title">test</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">           <span class="comment">//调用本地java方法</span></span><br><span class="line">           <span class="comment">//第一个参数是 调用java的函数名字 第二个参数是要传递的数据 第三个参数js在被回调后具体执行方法，responseData为java层回传数据</span></span><br><span class="line">           <span class="keyword">var</span> data=<span class="string">'发送消息给java代码指定接收'</span>;</span><br><span class="line">           <span class="built_in">window</span>.WebViewJavascriptBridge.callHandler(</span><br><span class="line">               <span class="string">'test'</span></span><br><span class="line">               ,data</span><br><span class="line">               , <span class="function"><span class="keyword">function</span>(<span class="params">responseData</span>) </span>&#123;</span><br><span class="line">                   bridgeLog(<span class="string">'来自Java的回传数据： '</span> + responseData);</span><br><span class="line">               &#125;</span><br><span class="line">           );</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+
+<p>或者</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//android端代码 </span></span><br><span class="line">mWebView.setDefaultHandler(<span class="keyword">new</span> BridgeHandler() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public <span class="keyword">void</span> handler(<span class="built_in">String</span> data, CallBackFunction <span class="function"><span class="keyword">function</span>) </span>&#123;</span><br><span class="line">                <span class="function"><span class="keyword">function</span>.<span class="title">onCallBack</span>(<span class="params"><span class="string">"指定Handler收到Web发来的数据，回传数据给你"</span></span>);</span></span><br><span class="line"><span class="function">            &#125;</span></span><br><span class="line"><span class="function">        &#125;);</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">//<span class="title">H5</span>端代码</span></span><br><span class="line"><span class="function"><span class="title">function</span> <span class="title">test</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">           <span class="comment">//发送消息给java代码</span></span><br><span class="line">           <span class="keyword">var</span> data = <span class="string">'发送消息给java代码全局接收'</span>;</span><br><span class="line"></span><br><span class="line">           <span class="built_in">window</span>.WebViewJavascriptBridge.send(</span><br><span class="line">               data</span><br><span class="line">               , <span class="function"><span class="keyword">function</span>(<span class="params">responseData</span>) </span>&#123;</span><br><span class="line">                  bridgeLog(<span class="string">'来自Java的回传数据： '</span> +responseData);</span><br><span class="line">               &#125;</span><br><span class="line">           );</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上两种方式 一个是指定调具体协定好的方法,一个是全局调用</p>
+<p><strong>android调H5</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//android端代码 </span></span><br><span class="line">mWebView.send(<span class="string">"发送数据给web默认接收"</span>,<span class="keyword">new</span> CallBackFunction()&#123;</span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCallBack</span><span class="params">(String data)</span> </span>&#123;</span><br><span class="line">                        Log.e(TAG, <span class="string">"来自web的回传数据："</span> + data);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//H5端代码 </span></span><br><span class="line"><span class="comment">//注册回调函数，第一次连接时调用 初始化函数</span></span><br><span class="line">connectWebViewJavascriptBridge(function(bridge) &#123;</span><br><span class="line">           bridge.init(function(message, responseCallback) &#123;</span><br><span class="line">               bridgeLog(<span class="string">'默认接收收到来自Java数据： '</span> + message);</span><br><span class="line">               <span class="keyword">var</span> responseData = <span class="string">'默认接收收到来自Java的数据，回传数据给你'</span>;</span><br><span class="line">               responseCallback(responseData);</span><br><span class="line">           &#125;);</span><br><span class="line"></span><br><span class="line">          </span><br><span class="line">       &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>或者</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//android端代码 </span></span><br><span class="line">mWebView.callHandler(<span class="string">"test"</span>,<span class="string">"发送数据给web指定接收"</span>,<span class="keyword">new</span> CallBackFunction()&#123;</span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCallBack</span><span class="params">(String data)</span> </span>&#123;</span><br><span class="line">                        Log.e(TAG, <span class="string">"来自web的回传数据："</span> + data);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line"><span class="comment">//H5端代码 </span></span><br><span class="line">   connectWebViewJavascriptBridge(function(bridge) &#123;</span><br><span class="line">          bridge.registerHandler(<span class="string">"test"</span>, function(data, responseCallback) &#123;</span><br><span class="line">               bridgeLog(<span class="string">'指定接收收到来自Java数据： '</span> + data);</span><br><span class="line">               <span class="keyword">var</span> responseData = <span class="string">'指定接收收到来自Java的数据，回传数据给你'</span>;</span><br><span class="line">               responseCallback(responseData);</span><br><span class="line">           &#125;);</span><br><span class="line">       &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>同样 两种方式一个是不指定方法,另一个是指定具体方法</p>
+<p> <strong>到此为止还无法交互,还需要配置setWebViewClient</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mWebView.setWebViewClient(new BridgeWebViewClient(mWebView));</span><br></pre></td></tr></table></figure>
+
+<p>这步非常关键,如果不配置 测试点击压根就不响应,如果你需要自定义WebViewClient,必须实现对应构造方法,而且重写的方法必须调用父类方法,如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">private class MyWebViewClient extends BridgeWebViewClient &#123;</span><br><span class="line">	//必须</span><br><span class="line">    public MyWebViewClient(BridgeWebView webView) &#123;</span><br><span class="line">        super(webView);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) &#123;</span><br><span class="line">        super.onReceivedError(view, request, error);//这个不能省略</span><br><span class="line">        // 避免出现默认的错误界面</span><br><span class="line">        view.loadUrl(&quot;about:blank&quot;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>到此为止,配置完毕,H5和Android就可以互相调用了</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../53.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../53.html" itemprop="url">如何在markdown中插入js和css</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-14T14:03:18+08:00">
+                2020-05-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>有时候我们可能需要改动markdown 的样式。由于markdown的呈现形式是html，可以直接把以下部分添加到markdown中，即可更改默认的样式</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&lt;style&gt;</span><br><span class="line">h1,</span><br><span class="line">h2,</span><br><span class="line">h3,</span><br><span class="line">h4,</span><br><span class="line">h5,</span><br><span class="line">h6,</span><br><span class="line">p,</span><br><span class="line">blockquote &#123;</span><br><span class="line">    margin: 0;</span><br><span class="line">    padding: 0;</span><br><span class="line">&#125;</span><br><span class="line">body &#123;</span><br><span class="line">    font-family: &quot;Helvetica Neue&quot;, Helvetica, &quot;Hiragino Sans GB&quot;, Arial, sans-serif;</span><br><span class="line">    font-size: 13px;</span><br><span class="line">    line-height: 18px;</span><br><span class="line">    color: #737373;</span><br><span class="line">    background-color: white;</span><br><span class="line">    margin: 10px 13px 10px 13px;</span><br><span class="line">&#125;</span><br><span class="line">table &#123;</span><br><span class="line">    margin: 10px 0 15px 0;</span><br><span class="line">    border-collapse: collapse;</span><br><span class="line">&#125;</span><br><span class="line">td,th &#123; </span><br><span class="line">    border: 1px solid #ddd;</span><br><span class="line">    padding: 3px 10px;</span><br><span class="line">&#125;</span><br><span class="line">th &#123;</span><br><span class="line">    padding: 5px 10px;  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">a &#123;</span><br><span class="line">    color: #0069d6;</span><br><span class="line">&#125;</span><br><span class="line">a:hover &#123;</span><br><span class="line">    color: #0050a3;</span><br><span class="line">    text-decoration: none;</span><br><span class="line">&#125;</span><br><span class="line">a img &#123;</span><br><span class="line">    border: none;</span><br><span class="line">&#125;</span><br><span class="line">p &#123;</span><br><span class="line">    margin-bottom: 9px;</span><br><span class="line">&#125;</span><br><span class="line">h1,</span><br><span class="line">h2,</span><br><span class="line">h3,</span><br><span class="line">h4,</span><br><span class="line">h5,</span><br><span class="line">h6 &#123;</span><br><span class="line">    color: #404040;</span><br><span class="line">    line-height: 36px;</span><br><span class="line">&#125;</span><br><span class="line">h1 &#123;</span><br><span class="line">    margin-bottom: 18px;</span><br><span class="line">    font-size: 30px;</span><br><span class="line">&#125;</span><br><span class="line">h2 &#123;</span><br><span class="line">    font-size: 24px;</span><br><span class="line">&#125;</span><br><span class="line">h3 &#123;</span><br><span class="line">    font-size: 18px;</span><br><span class="line">&#125;</span><br><span class="line">h4 &#123;</span><br><span class="line">    font-size: 16px;</span><br><span class="line">&#125;</span><br><span class="line">h5 &#123;</span><br><span class="line">    font-size: 14px;</span><br><span class="line">&#125;</span><br><span class="line">h6 &#123;</span><br><span class="line">    font-size: 13px;</span><br><span class="line">&#125;</span><br><span class="line">hr &#123;</span><br><span class="line">    margin: 0 0 19px;</span><br><span class="line">    border: 0;</span><br><span class="line">    border-bottom: 1px solid #ccc;</span><br><span class="line">&#125;</span><br><span class="line">blockquote &#123;</span><br><span class="line">    padding: 13px 13px 21px 15px;</span><br><span class="line">    margin-bottom: 18px;</span><br><span class="line">    font-family:georgia,serif;</span><br><span class="line">    font-style: italic;</span><br><span class="line">&#125;</span><br><span class="line">blockquote:before &#123;</span><br><span class="line">    content:&quot;\201C&quot;;</span><br><span class="line">    font-size:40px;</span><br><span class="line">    margin-left:-10px;</span><br><span class="line">    font-family:georgia,serif;</span><br><span class="line">    color:#eee;</span><br><span class="line">&#125;</span><br><span class="line">blockquote p &#123;</span><br><span class="line">    font-size: 14px;</span><br><span class="line">    font-weight: 300;</span><br><span class="line">    line-height: 18px;</span><br><span class="line">    margin-bottom: 0;</span><br><span class="line">    font-style: italic;</span><br><span class="line">&#125;</span><br><span class="line">code, pre &#123;</span><br><span class="line">    font-family: Monaco, Andale Mono, Courier New, monospace;</span><br><span class="line">&#125;</span><br><span class="line">code &#123;</span><br><span class="line">    background-color: #fee9cc;</span><br><span class="line">    color: rgba(0, 0, 0, 0.75);</span><br><span class="line">    padding: 1px 3px;</span><br><span class="line">    font-size: 12px;</span><br><span class="line">    -webkit-border-radius: 3px;</span><br><span class="line">    -moz-border-radius: 3px;</span><br><span class="line">    border-radius: 3px;</span><br><span class="line">&#125;</span><br><span class="line">pre &#123;</span><br><span class="line">    display: block;</span><br><span class="line">    padding: 14px;</span><br><span class="line">    margin: 0 0 18px;</span><br><span class="line">    line-height: 16px;</span><br><span class="line">    font-size: 11px;</span><br><span class="line">    border: 1px solid #d9d9d9;</span><br><span class="line">    white-space: pre-wrap;</span><br><span class="line">    word-wrap: break-word;</span><br><span class="line">&#125;</span><br><span class="line">pre code &#123;</span><br><span class="line">    background-color: #fff;</span><br><span class="line">    color:#737373;</span><br><span class="line">    font-size: 11px;</span><br><span class="line">    padding: 0;</span><br><span class="line">&#125;</span><br><span class="line">sup &#123;</span><br><span class="line">    font-size: 0.83em;</span><br><span class="line">    vertical-align: super;</span><br><span class="line">    line-height: 0;</span><br><span class="line">&#125;</span><br><span class="line">*&#123;</span><br><span class="line">    -webkit-print-color-adjust: exact;</span><br><span class="line">&#125;</span><br><span class="line">@media screen and (min-width: 914px) &#123;</span><br><span class="line">    body &#123;</span><br><span class="line">        width: 854px;</span><br><span class="line">        margin:10px auto;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">@media print &#123;</span><br><span class="line">    body,code,pre code,h1,h2,h3,h4,h5,h6 &#123;</span><br><span class="line">        color: black;</span><br><span class="line">    &#125;</span><br><span class="line">    table, pre &#123;</span><br><span class="line">        page-break-inside: avoid;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+
+<p>直接将以上代码插入文本的上方, 如下:</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20210831104548134.png" alt="image-20210831104548134"></p>
+<p>生成html的结果为:</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20210831104446641.png" alt="image-20210831104446641"></p>
+<h4 id="如何在Hexo发布博客的Md文件中引入JS代码"><a href="#如何在Hexo发布博客的Md文件中引入JS代码" class="headerlink" title="如何在Hexo发布博客的Md文件中引入JS代码"></a>如何在Hexo发布博客的Md文件中引入JS代码</h4><p>跟引入css样式一样 直接插入js代码即可 这里有两种方式:</p>
+<p><strong>第一种 引用第三方js文件</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=&quot;text/javascript&quot; src=&quot;/js/src/echarts.min.js&quot;&gt;&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>第二种 常规写法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line"></span><br><span class="line">var bmapChart=echarts.init(document.getElementById(&quot;map-wrap&quot;));</span><br><span class="line"></span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h4><p>如果使用<code>hexo</code>编译<code>html</code> 如果要将<code>html</code>代码当做普通文本处理 可以添加以下<code>raw</code>标签, 如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;% raw %&#125;</span><br><span class="line"></span><br><span class="line">这里是html代码区域, 表示失去html的功能</span><br><span class="line"></span><br><span class="line">&#123;% endraw %&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../51.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -419,7 +905,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">移动文件夹下所有东西到zone中</span><br><span class="line">$mv    /usr/lib/*    /zone</span><br></pre></td></tr></table></figure>
 
 <p><strong>本帖附件</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -554,11 +1040,11 @@
 <h2 id="第三种-通过代码获取"><a href="#第三种-通过代码获取" class="headerlink" title="第三种 通过代码获取"></a>第三种 通过代码获取</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 获取签名工具类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppSigning</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> String MD5 = <span class="string">"MD5"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> String SHA1 = <span class="string">"SHA1"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> String SHA256 = <span class="string">"SHA256"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> HashMap&lt;String, ArrayList&lt;String&gt;&gt; mSignMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回一个签名的对应类型的字符串</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> context</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> type</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 因为一个安装包可以被多个签名文件签名，所以返回一个签名信息的list</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ArrayList&lt;String&gt; <span class="title">getSignInfo</span><span class="params">(Context context, String type)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (context == <span class="keyword">null</span> || type == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        String packageName = context.getPackageName();</span><br><span class="line">        <span class="keyword">if</span> (packageName == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (mSignMap.get(type) != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> mSignMap.get(type);</span><br><span class="line">        &#125;</span><br><span class="line">        ArrayList&lt;String&gt; mList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Signature[] signs = getSignatures(context, packageName);</span><br><span class="line">            <span class="keyword">for</span> (Signature sig : signs) &#123;</span><br><span class="line">                String tmp = <span class="string">"error!"</span>;</span><br><span class="line">                <span class="keyword">if</span> (MD5.equals(type)) &#123;</span><br><span class="line">                    tmp = getSignatureByteString(sig, MD5);</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (SHA1.equals(type)) &#123;</span><br><span class="line">                    tmp = getSignatureByteString(sig, SHA1);</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (SHA256.equals(type)) &#123;</span><br><span class="line">                    tmp = getSignatureByteString(sig, SHA256);</span><br><span class="line">                &#125;</span><br><span class="line">                mList.add(tmp);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            LogUtil.e(e.toString());</span><br><span class="line">        &#125;</span><br><span class="line">        mSignMap.put(type, mList);</span><br><span class="line">        <span class="keyword">return</span> mList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取签名sha1值</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> context</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getSha1</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        String res = <span class="string">""</span>;</span><br><span class="line">        ArrayList&lt;String&gt; mlist = getSignInfo(context, SHA1);</span><br><span class="line">        <span class="keyword">if</span> (mlist != <span class="keyword">null</span> &amp;&amp; mlist.size() != <span class="number">0</span>) &#123;</span><br><span class="line">            res = mlist.get(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取签名MD5值</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> context</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getMD5</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        String res = <span class="string">""</span>;</span><br><span class="line">        ArrayList&lt;String&gt; mlist = getSignInfo(context, MD5);</span><br><span class="line">        <span class="keyword">if</span> (mlist != <span class="keyword">null</span> &amp;&amp; mlist.size() != <span class="number">0</span>) &#123;</span><br><span class="line">            res = mlist.get(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取签名SHA256值</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> context</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getSHA256</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        String res = <span class="string">""</span>;</span><br><span class="line">        ArrayList&lt;String&gt; mlist = getSignInfo(context, SHA256);</span><br><span class="line">        <span class="keyword">if</span> (mlist != <span class="keyword">null</span> &amp;&amp; mlist.size() != <span class="number">0</span>) &#123;</span><br><span class="line">            res = mlist.get(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回对应包的签名信息</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> context</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> packageName</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Signature[] getSignatures(Context context, String packageName) &#123;</span><br><span class="line">        PackageInfo packageInfo = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            packageInfo = context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNATURES);</span><br><span class="line">            <span class="keyword">return</span> packageInfo.signatures;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            LogUtil.e(e.toString());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取相应的类型的字符串（把签名的byte[]信息转换成16进制）</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sig</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> type</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">getSignatureString</span><span class="params">(Signature sig, String type)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">byte</span>[] hexBytes = sig.toByteArray();</span><br><span class="line">        String fingerprint = <span class="string">"error!"</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            MessageDigest digest = MessageDigest.getInstance(type);</span><br><span class="line">            <span class="keyword">if</span> (digest != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">byte</span>[] digestBytes = digest.digest(hexBytes);</span><br><span class="line">                StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">byte</span> digestByte : digestBytes) &#123;</span><br><span class="line">                    sb.append((Integer.toHexString((digestByte &amp; <span class="number">0xFF</span>) | <span class="number">0x100</span>)).substring(<span class="number">1</span>, <span class="number">3</span>));</span><br><span class="line">                &#125;</span><br><span class="line">                fingerprint = sb.toString();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            LogUtil.e(e.toString());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> fingerprint;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取相应的类型的字符串（把签名的byte[]信息转换成 95:F4:D4:FG 这样的字符串形式）</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sig</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> type</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">getSignatureByteString</span><span class="params">(Signature sig, String type)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">byte</span>[] hexBytes = sig.toByteArray();</span><br><span class="line">        String fingerprint = <span class="string">"error!"</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            MessageDigest digest = MessageDigest.getInstance(type);</span><br><span class="line">            <span class="keyword">if</span> (digest != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">byte</span>[] digestBytes = digest.digest(hexBytes);</span><br><span class="line">                StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">byte</span> digestByte : digestBytes) &#123;</span><br><span class="line">                    sb.append(((Integer.toHexString((digestByte &amp; <span class="number">0xFF</span>) | <span class="number">0x100</span>)).substring(<span class="number">1</span>, <span class="number">3</span>)).toUpperCase());</span><br><span class="line">                    sb.append(<span class="string">":"</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                fingerprint = sb.substring(<span class="number">0</span>, sb.length() - <span class="number">1</span>).toString();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            LogUtil.e(e.toString());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> fingerprint;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="第四种-使用Gradle-Tasks"><a href="#第四种-使用Gradle-Tasks" class="headerlink" title="第四种  使用Gradle Tasks"></a>第四种  使用Gradle Tasks</h2><p>这种方法适合有源码的情况, 操作非常的简单 </p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200506172813.png" alt></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200506172913.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/20200506172813.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/20200506172913.png" alt></p>
 <p><strong>本帖附件</strong></p>
 <p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -685,7 +1171,7 @@
 
 <p><strong>本帖附件</strong></p>
 <p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -829,10 +1315,10 @@ android:layout_gravity=&quot;center&quot;/&gt;</code></pre><p><strong>这种方�
 
 <h2 id="第五种-使用9patch图片-强烈推荐"><a href="#第五种-使用9patch图片-强烈推荐" class="headerlink" title="第五种 使用9patch图片(强烈推荐)"></a>第五种 使用9patch图片(强烈推荐)</h2><p>该种方式定制性强, 兼容性好, 需要注意的是避免将9patch宽高设置过大  小图可以拉大  大图不方便缩小</p>
 <p>链接地址:<a href="http://inloop.github.io/shadow4android/" target="_blank" rel="noopener">http://inloop.github.io/shadow4android/</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/dsff.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/dsff.png" alt></p>
 <p><strong>本帖附件</strong></p>
 <p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -962,7 +1448,7 @@ android:layout_gravity=&quot;center&quot;/&gt;</code></pre><p><strong>这种方�
 </ul>
 <p><strong>本帖附件</strong></p>
 <p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1100,7 +1586,7 @@ android:layout_gravity=&quot;center&quot;/&gt;</code></pre><p><strong>这种方�
 <h2 id="VNC桌面共享"><a href="#VNC桌面共享" class="headerlink" title="VNC桌面共享"></a>VNC桌面共享</h2><p>linux可参考:<a href="https://www.jianshu.com/p/3488968c81cb" target="_blank" rel="noopener">https://www.jianshu.com/p/3488968c81cb</a></p>
 <p><strong>本帖附件</strong></p>
 <p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1221,7 +1707,7 @@ android:layout_gravity=&quot;center&quot;/&gt;</code></pre><p><strong>这种方�
       
         
           
-            <p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200122180634.png" alt></p>
+            <p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/20200122180634.png" alt></p>
 <h3 id="使用前提"><a href="#使用前提" class="headerlink" title="使用前提"></a>使用前提</h3><p>需要先安装docker, 可参考<a href="http://codesan.github.io/ubuntu安装docker详细步骤.html" target="_blank" rel="noopener">《ubuntu安装docker详细步骤》</a></p>
 <h3 id="Docker容器基础指令"><a href="#Docker容器基础指令" class="headerlink" title="Docker容器基础指令"></a>Docker容器基础指令</h3><ol>
 <li><p>启动docker</p>
@@ -1392,490 +1878,7 @@ android:layout_gravity=&quot;center&quot;/&gt;</code></pre><p><strong>这种方�
 
 </li>
 </ol>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../96.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../96.html" itemprop="url">markdown导出带目录PDF的三种方法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-21T15:17:01+08:00">
-                2020-01-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>将文档导出PDF, 内容一旦比较多, 如果没有目录跳转的话找起来特别费劲, 以下是解决方案</p>
-</blockquote>
-<h3 id="第一种-使用CSDN"><a href="#第一种-使用CSDN" class="headerlink" title="第一种 使用CSDN"></a>第一种 使用CSDN</h3><h4 id="1-编辑好文章后-点击导出-选择导出为HTML"><a href="#1-编辑好文章后-点击导出-选择导出为HTML" class="headerlink" title="1. 编辑好文章后 点击导出, 选择导出为HTML"></a>1. 编辑好文章后 点击导出, 选择导出为HTML</h4><p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200121154509845.png" alt></p>
-<h4 id="2-选择导出的模板"><a href="#2-选择导出的模板" class="headerlink" title="2. 选择导出的模板"></a>2. 选择导出的模板</h4><p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200121152330894.png" alt></p>
-<h4 id="3-使用HTML转PDF工具进行格式转换"><a href="#3-使用HTML转PDF工具进行格式转换" class="headerlink" title="3. 使用HTML转PDF工具进行格式转换"></a>3. 使用HTML转PDF工具进行格式转换</h4><pre><code>软件下载链接:https://wkhtmltopdf.org/downloads.html</code></pre><h6 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法:"></a>使用方法:</h6><pre><code>wkhtmltopdf --disable-smart-shrinking html文件路径 导出的pdf文件路径 //html路径可使用网络路径</code></pre><h4 id="4-如果嫌下载软件麻烦-也可以直接使用浏览器导出"><a href="#4-如果嫌下载软件麻烦-也可以直接使用浏览器导出" class="headerlink" title="4. 如果嫌下载软件麻烦, 也可以直接使用浏览器导出"></a>4. 如果嫌下载软件麻烦, 也可以直接使用浏览器导出</h4><p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200121154853909.png" alt></p>
-<h3 id="第二种-使用i5ting-toc工具"><a href="#第二种-使用i5ting-toc工具" class="headerlink" title="第二种 使用i5ting_toc工具"></a>第二种 使用i5ting_toc工具</h3><p>此法需要nodejs环境</p>
-<h6 id="使用方法-1"><a href="#使用方法-1" class="headerlink" title="使用方法:"></a>使用方法:</h6><p>第一步.安装i5ting_toc</p>
-<pre><code>npm install i5ting_toc -g</code></pre><p>第二步 使用转换指令 先将md转成html </p>
-<pre><code>i5ting_toc -f [需要转换文件名].md</code></pre><p>第三步 预览转换后的文件</p>
-<pre><code>i5ting_toc -o //默认在同级目录生成preview文件夹</code></pre><p>第四步 用浏览器或者将HTML转成PDF即可<br><strong>效果如下:</strong><br><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200121163421261.png" alt></p>
-<h3 id="第三种-使用vscode插件-Markdown-Preview-Enhanced"><a href="#第三种-使用vscode插件-Markdown-Preview-Enhanced" class="headerlink" title="第三种 使用vscode插件 Markdown Preview Enhanced"></a>第三种 使用vscode插件 Markdown Preview Enhanced</h3><h5 id="使用方法-2"><a href="#使用方法-2" class="headerlink" title="使用方法:"></a>使用方法:</h5><p>第一步: 安装插件<br><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/2020012116002755.png" alt><br>第二步:打开需要转换的.md文件，右键选择打开同步预览<br><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200121160244207.png" alt><br>第三步 将光标放置想要生成目录的输出位置 右键打开命令面板 并输入<code>Markdown Preview Enhanced: Create Toc</code><br><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200121160600743.png" alt></p>
-<p>​    <img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200121160743903.png" alt></p>
-<p>第四步 点击保存 文档将自动生成目录</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200121160850389.png" alt></p>
-<p>第五步 导出你需要的格式 建议导出HTML 然后进行相应的转换即可</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200121161014388.png" alt></p>
-<p><strong>最终效果如下:</strong><br><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200121161510122.png" alt></p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../119.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../119.html" itemprop="url">新型冠状病毒肺炎安全防范手册健康宝典口罩选购佩戴正确洗手方式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-21T14:26:06+08:00">
-                2020-01-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="基本知识"><a href="#基本知识" class="headerlink" title="基本知识"></a>基本知识</h2><p>对于新型冠状病毒肺炎你需要了解一些基本知识：</p>
-<p>　　一、<strong>病毒对外界环境耐受情况</strong>：对热敏感，56℃ 30分钟、75%酒精、含氯消毒剂（比如84消毒液）、过氧化氢消毒液（家庭很少用），氯仿等脂溶剂均可有效灭活病毒</p>
-<p>　　二、<strong>传播途径</strong>：飞沫传播—打喷嚏；近距离面对面；接触传播。</p>
-<p>　　三、<strong>感染后初期症状</strong>：发热（不一定高热，很多病例最初是低热），乏力，呼吸道症状以干咳为主，并逐渐出现呼吸困难，严重者急性呼吸窘迫综合征、脓毒症休克、难以纠正的代谢性酸中毒和出凝血功能障碍。部分患者起病症状轻微，可无发热。</p>
-<p>　　四、<strong>化验检查</strong>：发病早期白细胞总数正常或减低，淋巴细胞计数减少。</p>
-<p>　　多数患者C反应蛋白和血沉升高，降钙素原正常。</p>
-<p>　　五、<strong>痊愈标准</strong>：体温恢复正常3天以上、呼吸道症状明显好转，连续两次呼吸道病原核酸检测阴性（间隔至少1天），可解除隔离出院或根据病情转至相应科室治疗其他疾病</p>
-<p>　　<strong>提醒广大职工、研究生及离退休同志：</strong></p>
-<p>　　一、减少外出，减少接触他人的机会</p>
-<p>　　二、有接触疑似或者确诊病人史，或者接触过来自疫区人员，从疫区返回人员，应自行居家隔离14天</p>
-<p>　　三、减少去生鲜市场，避免传染风险</p>
-<p>　　四、外出戴好口罩，最好N95口罩，压好密封条</p>
-<p>　　五、勤洗手</p>
-<p>　　六、饮食清淡，穿衣适中，增强自身免疫力</p>
-<p>​        七、避免在未加防护的情况下接触野生或养殖动物</p>
-<p>​        八、少吃野味</p>
-<p>　　九、假如出现类似症状，请您戴好口罩及时到发热门诊排查。</p>
-<h2 id="口罩分类与选购"><a href="#口罩分类与选购" class="headerlink" title="口罩分类与选购"></a>口罩分类与选购</h2><p> 药店里五花八门的口罩该如何选择？出门是不是一定要佩戴“网红”N95口罩？</p>
-<p>市面上常见的口罩可以分为三类：</p>
-<p><strong>1.医用外科口罩</strong></p>
-<p><strong>2.医用防护口罩（N95口罩）</strong></p>
-<p><strong>3.普通棉纱口罩</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/00811rPngy1gb2snxptnpj30go0go7fb.jpg" alt></p>
-<p> 其中医用外科口罩可以阻挡70%的细菌，N95口罩可以阻挡95%的细菌，而棉纱口罩只能阻挡36%的细菌，因此<strong>我们应该选择前两种口罩</strong>。</p>
-<h2 id="口罩正确佩戴方法"><a href="#口罩正确佩戴方法" class="headerlink" title="口罩正确佩戴方法"></a>口罩正确佩戴方法</h2><p>  <strong>1.医用外科口罩</strong> </p>
-<p>  医用外科口罩有三层，从外到内分别是<strong>防水层、过滤层、舒适层</strong>，舒适层是一层纱布，佩戴时白色的纱布朝内，<strong>蓝色的防水层朝外，有金属片的一边朝上</strong>，不要戴反，橡皮筋挂上双耳后捏紧金属片和鼻子贴合，抚平两颊，使口罩和面部之间尽量不留缝隙。</p>
-<h4 id="具体佩戴步骤"><a href="#具体佩戴步骤" class="headerlink" title="具体佩戴步骤"></a>具体佩戴步骤</h4><p><strong>第一步 将口罩罩住鼻、口及下巴，橡皮筋系在双耳后</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/00811rPngy1gb2sp2ebk2g30hb09r7wi.gif" alt></p>
-<p>*<em>第二步. 将双手指尖放在鼻夹上，从中间位置开始，用手指向内按压，并逐步向两侧移动，根据鼻梁形状塑造鼻夹, 调整系带的松紧度 *</em></p>
-<p><img src="https://wx1.sinaimg.cn/large/00811rPngy1gb2sqdrhp9g30hb0a31kx.gif" alt="img"></p>
-<p>  <strong>2. 医用防护口罩（N95口罩）</strong></p>
-<p>  常用的N95口罩实际上分为两种，</p>
-<ul>
-<li><p>一种是防生物口罩（蓝绿色），型号1860或9132；</p>
-</li>
-<li><p>一种是防尘口罩（白色），型号8210。</p>
-</li>
-</ul>
-<p>市民在购买时<strong>应选择防生物的医用防护口罩</strong>。佩戴防生物医用防护口罩时，将口罩罩在面部，先将下面的一根橡皮筋固定在脖子上，再将上面一根橡皮筋固定在头上，捏紧金属片，让口罩和面部贴合，不留缝隙。</p>
-<h4 id="具体佩戴步骤-1"><a href="#具体佩戴步骤-1" class="headerlink" title="具体佩戴步骤"></a>具体佩戴步骤</h4><p>  <strong>第一步. 一手托住防护口罩，有鼻夹的一面背向外</strong></p>
-<p>  <strong>第二步. 将防护口罩罩住鼻、口及下巴，鼻夹部位向上紧贴面部</strong></p>
-<p><img src="https://wx3.sinaimg.cn/large/00811rPngy1gb2ssmdeyig30hr0ab1kx.gif" alt="img"></p>
-<p>  <strong>第三步. 用另一只手将下方系带拉过头顶，放在颈后双耳下</strong></p>
-<p><img src="https://wx4.sinaimg.cn/large/00811rPngy1gb2sw3s8xkg30hb0a3qv5.gif" alt="img"></p>
-<p>  <strong>第四步. 再将上方系带拉至头顶中部</strong></p>
-<p><img src="https://wx3.sinaimg.cn/large/00811rPngy1gb2ssls2k6g30hb0a3npd.gif" alt="img"></p>
-<p>  <strong>第五步. 将双手指尖放在金属鼻夹上，从中间位置开始，用手指向内按鼻夹，并分别向两侧移动和按压，根据鼻梁的形状塑造鼻夹</strong></p>
-<p><img src="https://wx4.sinaimg.cn/large/00811rPngy1gb2ssn7e3mg30hb0a3u0x.gif" alt="img"></p>
-<h4 id="如果还是不太明白怎么佩戴口罩-以下有相关视频-点击即可跳转播放"><a href="#如果还是不太明白怎么佩戴口罩-以下有相关视频-点击即可跳转播放" class="headerlink" title="如果还是不太明白怎么佩戴口罩 以下有相关视频 点击即可跳转播放"></a>如果还是不太明白怎么佩戴口罩 以下有相关视频 点击即可跳转播放</h4><div align="center">
-<a target="_blank" href="https://m.weibo.cn/status/4462861688989407?wm=3333_2001&from=10A1193010&sourcetype=dingding#&video"><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200121134433.png" border="0" width="60%"></a>
-</div>
-
-<h2 id="正确洗手法"><a href="#正确洗手法" class="headerlink" title="正确洗手法"></a>正确洗手法</h2><p>洗手应该在流动水下进行，取适量洗手液（肥皂），均匀涂抹至整个手掌，认真搓揉双手至少15秒，清洗所有皮肤和指缝，具体步骤有七步：</p>
-<p><strong>1. 掌心相对，手指并拢相互揉搓</strong></p>
-<p><strong>2. 手心对手背沿指缝互相揉搓，交替进行</strong></p>
-<p><strong>3. 掌心相对，双手交叉指缝相互揉搓</strong></p>
-<p><strong>4.双手指相扣互搓</strong></p>
-<p><strong>5. 弯曲各手指关节在另一只手掌心旋转揉搓，交换进行</strong></p>
-<p><strong>6. 一手握另一手大拇指旋转揉搓，交换进行</strong></p>
-<p><strong>7. 将五个手指尖并拢放在另一手掌心旋转揉搓，交换进行</strong></p>
-<p><strong>最后，在流动水下冲净双手，擦干，擦干宜使用纸巾。</strong></p>
-<img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200121100247681.jpg" style="zoom:150%;">
-
-
-
-<h2 id="家庭预防图解"><a href="#家庭预防图解" class="headerlink" title="家庭预防图解"></a>家庭预防图解</h2><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/48540923dd54564e14de69c8e3618984d3584fc9.jpeg">
-
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/3ac79f3df8dcd1002dd6197431345216b8122f66.jpeg" alt></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/b03533fa828ba61ec87a0781038b820c324e59c9.jpeg" alt></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/f7246b600c3387447d3e467612b0ccffd62aa002.jpeg" alt></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/86d6277f9e2f0708e138e8d6aa9bad9fa801f269.jpeg" alt></p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://sn9.us/file/21042697-418900652" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../8.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../8.html" itemprop="url">ubuntu安装docker详细步骤</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-20T20:01:09+08:00">
-                2020-01-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20200122180203.png" alt></p>
-<p>这里建议大家使用阿里云的镜像源</p>
-<h3 id="第一步-安装所需的工具包"><a href="#第一步-安装所需的工具包" class="headerlink" title="第一步 安装所需的工具包"></a>第一步 安装所需的工具包</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install \</span><br><span class="line">    apt-transport-https \</span><br><span class="line">    ca-certificates \</span><br><span class="line">    curl \</span><br><span class="line">    gnupg-agent \</span><br><span class="line">    software-properties-common</span><br></pre></td></tr></table></figure>
-
-<h3 id="第二步-修改源文件权限"><a href="#第二步-修改源文件权限" class="headerlink" title="第二步 修改源文件权限"></a>第二步 修改源文件权限</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod 777 /etc/apt/sources.list //设置文件可读可写可执行</span><br></pre></td></tr></table></figure>
-
-<h3 id="第三步-将以下内容添加至源文件中-替换成阿里源-如下"><a href="#第三步-将以下内容添加至源文件中-替换成阿里源-如下" class="headerlink" title="第三步 将以下内容添加至源文件中 替换成阿里源 如下:"></a>第三步 将以下内容添加至源文件中 替换成阿里源 如下:</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ trusty-updates main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ trusty-proposed main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ trusty-updates main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ trusty-proposed main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse</span><br></pre></td></tr></table></figure>
-
-<h3 id="第四步-添加阿里公钥-以便于访问仓库"><a href="#第四步-添加阿里公钥-以便于访问仓库" class="headerlink" title="第四步 添加阿里公钥 以便于访问仓库"></a>第四步 添加阿里公钥 以便于访问仓库</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl -sSL http://acs-public-mirror.oss-cn-hangzhou.aliyuncs.com/docker-engine/internet | sh -</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> curl -fsSL https://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg | sudo apt-key add -</span><br></pre></td></tr></table></figure>
-
-<h3 id="第五步-添加Docker软件源"><a href="#第五步-添加Docker软件源" class="headerlink" title="第五步 添加Docker软件源"></a>第五步 添加Docker软件源</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo add-apt-repository \</span><br><span class="line">     &quot;deb [arch=amd64] https://mirrors.aliyun.com/docker-ce/linux/ubuntu \</span><br><span class="line">     $(lsb_release -cs) \</span><br><span class="line">     stable&quot;</span><br></pre></td></tr></table></figure>
-
-<h3 id="第六步-更新软件包缓存"><a href="#第六步-更新软件包缓存" class="headerlink" title="第六步 更新软件包缓存"></a>第六步 更新软件包缓存</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure>
-
-<h3 id="第七步-安装docker"><a href="#第七步-安装docker" class="headerlink" title="第七步 安装docker"></a>第七步 安装docker</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install docker-engine</span><br></pre></td></tr></table></figure>
-
-<h3 id="第八部-启动docker"><a href="#第八部-启动docker" class="headerlink" title="第八部 启动docker"></a>第八部 启动docker</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl enable docker</span><br><span class="line">sudo systemctl start docker</span><br></pre></td></tr></table></figure>
-
-<h3 id="第9步-测试经典的hello-world"><a href="#第9步-测试经典的hello-world" class="headerlink" title="第9步 测试经典的hello world"></a>第9步 测试经典的hello world</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker run hello-world</span><br></pre></td></tr></table></figure>
-
-<p>执行 <code>sudo docker run hello-world</code> 的时候，如果你没有构建过这个hello-world镜像，或从其它地方拉取过这个镜像，docker自动去docker上拉取最新的hello-world 镜像</p>
-<p>至此 docker安装完成</p>
-<h2 id="附带Docker国内镜像源"><a href="#附带Docker国内镜像源" class="headerlink" title="附带Docker国内镜像源"></a>附带Docker国内镜像源</h2><p>创建或修改 /etc/docker/daemon.json 文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># vi /etc/docker/daemon.json</span><br><span class="line">&#123;</span><br><span class="line">    &quot;registry-mirrors&quot;: [&quot;https://cr.console.aliyun.com/&quot;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Docker中国区官方镜像</span><br><span class="line">https://registry.docker-cn.com</span><br><span class="line"></span><br><span class="line">网易</span><br><span class="line">http://hub-mirror.c.163.com</span><br><span class="line"></span><br><span class="line">ustc </span><br><span class="line">https://docker.mirrors.ustc.edu.cn</span><br><span class="line"></span><br><span class="line">中国科技大学</span><br><span class="line">https://docker.mirrors.ustc.edu.cn</span><br><span class="line"></span><br><span class="line">阿里云容器 服务</span><br><span class="line">https://cr.console.aliyun.com/</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1962,7 +1965,7 @@ android:layout_gravity=&quot;center&quot;/&gt;</code></pre><p><strong>这种方�
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">431</span>
+                  <span class="site-state-item-count">434</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

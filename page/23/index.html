@@ -288,6 +288,674 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../212.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../212.html" itemprop="url">汇编语言之GNU ARM</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-25T16:14:19+08:00">
+                2021-01-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="什么是GNU"><a href="#什么是GNU" class="headerlink" title="什么是GNU"></a>什么是GNU</h2><p>GNU最开始其实是一个<strong>操作系统</strong>,旨为打造一个开源免费自由的操作系统,目前操作系统还在完善中</p>
+<p><strong>GNU计划</strong>: 最初目标是创建一套完全自由的操作系统GNU 和相应的软件</p>
+<p><strong>GCC</strong> :（GNU Compiler Collection）GNU编译器套件,GNU提供的一整套的工具集,这套工具集中包含了汇编器,编译器和链接器,二进制转换,调试工具等</p>
+<p><strong>GCC优势</strong>:</p>
+<ul>
+<li>免费开源</li>
+<li>贴近系统底层,功能强大,灵活性高</li>
+<li>跨平台，方便<a href="https://code.newban.cn/201.html">交叉编译</a></li>
+</ul>
+<p><strong>GCC劣势</strong>:</p>
+<ul>
+<li>工具基本采用命令行方式,学习和使用门槛较高</li>
+</ul>
+<p>接下来我们要学习的就是GNU计划众多的产物之一<strong>GNU FOR ARM</strong></p>
+<h2 id="汇编器与指令集"><a href="#汇编器与指令集" class="headerlink" title="汇编器与指令集"></a>汇编器与指令集</h2><ol>
+<li><p><strong>什么是汇编器</strong></p>
+<p>将汇编语言翻译成机器码的工具</p>
+</li>
+<li><p><strong>什么是编译器</strong></p>
+<p>将高级语言翻译成机器语言或者汇编语言的工具</p>
+</li>
+<li><p><strong>汇编器和编译器的区别</strong></p>
+<p>汇编器的服务对象是汇编语言,编译器的服务对象是高级语言</p>
+</li>
+<li><p><strong>汇编器和汇编语法伪指令的关系</strong></p>
+<p>不同的CPU对应不同的指令集 ,不同的汇编器对应不同的伪指令集和汇编语法。</p>
+<p>每种汇编器都可以有自己的伪指令集和自己的语法</p>
+</li>
+</ol>
+<p>使用不同的汇编器汇编同一个cpu架构的汇编代码,所对应的指令绝对是一致的,但伪指令各有千秋</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">;使用ARM官方的汇编器</span><br><span class="line">  	AREA test, CODE</span><br><span class="line">	mov R3,#5</span><br><span class="line">    END		</span><br><span class="line">    </span><br><span class="line">;使用GNU的汇编器</span><br><span class="line">    .text    ;伪指令</span><br><span class="line">    mov R3,#5   ;传送指令皆为mov</span><br><span class="line">    .end</span><br></pre></td></tr></table></figure>
+
+<h2 id="常见的汇编器"><a href="#常见的汇编器" class="headerlink" title="常见的汇编器"></a>常见的汇编器</h2><ul>
+<li><strong>MASM汇编器</strong>:微软旗下专为<strong>x86架构</strong>打造的一款汇编器,支持8086汇编和win32汇编</li>
+<li><strong>GNU汇编器</strong> : 简称为<strong>GAS</strong>,是GNU旗下的一款免费开源跨平台汇编器其子集中包含了支持多种架构的汇编器,比如<code>GNU FOR ARM</code>就是单独面向ARM架构的汇编器,此外还有<code>GNU FOR X86</code>等</li>
+<li><strong><a href="https://www.nasm.us/pub/nasm/releasebuilds/2.14.03rc2/win64/" target="_blank" rel="noopener">NASM汇编器</a></strong>: 是一款面向<strong>x86架构</strong>的汇编器,支持8086汇编和win32汇编,同时可跨平台, 免费开源</li>
+<li><strong>ARMASM汇编器</strong>:ARM官方原生的汇编器,集成在了ADS工具上,适用于<strong>ARM架构</strong>,我们也一般称之为<strong>ADS汇编器</strong></li>
+</ul>
+<h2 id="两种ARM汇编器的各自用途"><a href="#两种ARM汇编器的各自用途" class="headerlink" title="两种ARM汇编器的各自用途"></a>两种ARM汇编器的各自用途</h2><ul>
+<li><strong>ARMASM汇编器</strong>:一般用于windows平台</li>
+<li><strong>GAS汇编器</strong>:支持windows平台和linux平台，方便跨平台<a href="https://code.newban.cn/201.html">交叉编译</a></li>
+</ul>
+<p>由于移动设备如<strong>安卓和iphone</strong>底层都是采用GNU的编译环境，我们如果要进行移动端的开发，那么势必需要掌握GNU ARM, 同时和ADS和KEIL收费工具相比,GUN工具全部免费,方便开发者进行使用</p>
+<blockquote>
+<p>如果你是从事android开发,有兴趣可以去翻NDK r17以下版本的库,里面用的编译工具就是GCC</p>
+</blockquote>
+<h2 id="GNU-ARM开发环境搭建"><a href="#GNU-ARM开发环境搭建" class="headerlink" title="GNU ARM开发环境搭建"></a>GNU ARM开发环境搭建</h2><p>我们需要准备以下两个工具:</p>
+<ol>
+<li><strong>GCC编译套件</strong></li>
+<li><strong>安卓模拟器</strong></li>
+</ol>
+<p>GCC编译套件根据cpu架构和操作系统的不同,又分为了很多子类:</p>
+<ul>
+<li><strong>纯ARM裸机</strong>: 对应<code>arm-none-eabi</code>工具包</li>
+<li><strong>ARM架构+Linux操作系统</strong>:对应<code>arm-none-linux-eabi</code>工具包</li>
+</ul>
+<p>由于接下来我们选择在安卓模拟器上进行开发学习,因此我们选择<code>arm-none-linux-eabi</code>这套工具来进行代码的编译</p>
+<p><a href="https://code.newban.cn/202.html">工具下载</a></p>
+<p><a href="https://code.newban.cn/215.html">GCC工具的具体使用</a></p>
+<h2 id="伪指令和伪操作"><a href="#伪指令和伪操作" class="headerlink" title="伪指令和伪操作"></a>伪指令和伪操作</h2><ol>
+<li><p>注释</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@我是注释</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>段的声明</p>
+<ul>
+<li><p>代码段</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.text</span><br><span class="line">	@代码</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>数据段</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.data</span><br><span class="line">	@代码</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li><p>自定义一个段</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.section .pangshu @定义一个名为.panghsu的段</span><br></pre></td></tr></table></figure>
+
+
+
+
+</li>
+</ul>
+<ol start="3">
+<li><p>函数或者标签的声明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fun:  @在GNU环境中标签后面需要加冒号,而原生环境则不用</span><br><span class="line">	mov R0,#4</span><br><span class="line">	bx lr</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>数据的声明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.byte @定义单字节数据，例如：.byte 0x14；</span><br><span class="line">.short @定义双字节数据，例如：.short 0x1000；</span><br><span class="line">.long @定义四字节数据，例如：.long 0x10001000；</span><br><span class="line">.quad @定义8字节，如：.quad 0x1234567890abcd；</span><br><span class="line">.float @定义浮点数，如：.float 0f-314159265358979323846264338327/95028841971.693993751E-40 @ -pi</span><br><span class="line"></span><br><span class="line">@字符串定义</span><br><span class="line">.string “abcd”, “efgh”, “hello!”</span><br><span class="line">.asciz “qwer”, “sun”, “world!”</span><br><span class="line">.ascii “welcome/0”</span><br><span class="line">@需要注意的是：.ascii伪操作定义的字符串需要自行添加结尾字符’/0’。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>数据的批量定义</p>
+<ul>
+<li><p>格式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.rept @重复次数</span><br><span class="line">  @数据定义代码</span><br><span class="line">.endr @结束重复定义</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>示例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.rept 3</span><br><span class="line">.byte 0x23</span><br><span class="line">.endr</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>关于align</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">.global _start</span><br><span class="line">_start:</span><br><span class="line">    mov r0, #0x12</span><br><span class="line">	</span><br><span class="line">    .byte 0x12</span><br><span class="line">    .byte 0x34</span><br><span class="line"></span><br><span class="line">    ;.align 后跟为0，1，2或者不跟参数时都当作是4字节对齐</span><br><span class="line">.align </span><br><span class="line">    .byte 0x56</span><br><span class="line"></span><br><span class="line">    ; 2^3次方，8字节对齐</span><br><span class="line">.align 3</span><br><span class="line">    .word 0x1</span><br><span class="line">	</span><br><span class="line">    ; 2^5次访，32字节对齐</span><br><span class="line">.align 5</span><br><span class="line">    .word 0x2	</span><br><span class="line">	</span><br><span class="line">    ; 填充0x12345678，直到16字节对齐</span><br><span class="line">.balignl 16,0x12345678	</span><br><span class="line"></span><br><span class="line">    ;字符串</span><br><span class="line">    .ascii &quot;abc123&quot;</span><br><span class="line">	</span><br><span class="line">.align	</span><br><span class="line">    ;.ascii和.asciz的区别是，.asciz会在字符串后自动添加结束符\0. </span><br><span class="line">    .asciz &quot;def456&quot;</span><br><span class="line"></span><br><span class="line">    mov r0, #0xab</span><br><span class="line">	</span><br><span class="line">    ;.balign[wl] align, fill_value, max_padding</span><br><span class="line">.align</span><br><span class="line">    ; .balign 后跟的align参数必须为2的次方，否则会报错，按字节填充， fill_value要为字节</span><br><span class="line">.balign 8, 0x12</span><br><span class="line"></span><br><span class="line">    ; .balignw 按2字节填充</span><br><span class="line">.balignw 8, 0x3456	</span><br><span class="line"></span><br><span class="line">    ; .balignl 按4字节填充</span><br><span class="line">.balignl 8, 0xabcdef01</span><br></pre></td></tr></table></figure>
+
+<p>反汇编后的结果：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">00000000</span> &lt;_start&gt;:</span><br><span class="line">   <span class="number">0</span>:	e3a00012 	mov	r0, #<span class="number">18</span></span><br><span class="line">   <span class="number">4</span>:	<span class="number">3412</span>      	.<span class="keyword">short</span>	<span class="number">0x3412</span>              <span class="comment">// .byte 0x12 和 .byte 0x34</span></span><br><span class="line">   <span class="number">6</span>:	<span class="number">0000</span>      	.<span class="keyword">short</span>	<span class="number">0x0000</span>              <span class="comment">// .align 引起的填充</span></span><br><span class="line">   <span class="number">8</span>:	<span class="number">00000056</span> 	andeq	r0, r0, r6, asr r0  <span class="comment">// .byte 0x56</span></span><br><span class="line">   c:	e1a00000 	nop			; (mov r0, r0)  <span class="comment">// .align 3 8字节对齐</span></span><br><span class="line">  <span class="number">10</span>:	<span class="number">00000001</span> 	.word	<span class="number">0x00000001</span>          <span class="comment">// .word 0x1</span></span><br><span class="line">  <span class="number">14</span>:	e1a00000 	nop			; (mov r0, r0)  <span class="comment">// .align 5 ,32字节对齐</span></span><br><span class="line">  <span class="number">18</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">1</span>c:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">20</span>:	<span class="number">00000002</span> 	.word	<span class="number">0x00000002</span>          <span class="comment">// .word 0x2	</span></span><br><span class="line">  <span class="number">24</span>:	<span class="number">12345678</span> 	.word	<span class="number">0x12345678</span>          <span class="comment">// .balignl 16,0x12345678,填充0x12345678，直到16字节对齐</span></span><br><span class="line">  <span class="number">28</span>:	<span class="number">12345678</span> 	.word	<span class="number">0x12345678</span></span><br><span class="line">  <span class="number">2</span>c:	<span class="number">12345678</span> 	.word	<span class="number">0x12345678</span></span><br><span class="line">  <span class="number">30</span>:	<span class="number">31636261</span> 	.word	<span class="number">0x31636261</span>          <span class="comment">// .ascii "abc123"</span></span><br><span class="line">  <span class="number">34</span>:	<span class="number">3332</span>      	.<span class="keyword">short</span>	<span class="number">0x3332</span></span><br><span class="line">  <span class="number">36</span>:	<span class="number">0000</span>      	.<span class="keyword">short</span>	<span class="number">0x0000</span></span><br><span class="line">  <span class="number">38</span>:	<span class="number">34666564</span> 	.word	<span class="number">0x34666564</span>          <span class="comment">// .asciz "def456"</span></span><br><span class="line">  <span class="number">3</span>c:	<span class="number">3635</span>      	.<span class="keyword">short</span>	<span class="number">0x3635</span></span><br><span class="line">  <span class="number">3</span>e:	<span class="number">00</span>          	.byte	<span class="number">0x00</span></span><br><span class="line">  <span class="number">3f</span>:	e3a000ab 	mov	r0, #<span class="number">171</span>	; <span class="number">0xab</span>      <span class="comment">// mov r0, #0xab, 这里就不对齐了</span></span><br><span class="line">  <span class="number">43</span>:	<span class="number">00</span>          	.byte	<span class="number">0x00</span></span><br><span class="line">  <span class="number">44</span>:	<span class="number">12121212</span> 	.word	<span class="number">0x12121212</span>          <span class="comment">// .balign 8, 0x12</span></span><br><span class="line">  <span class="number">48</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">4</span>c:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">50</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">54</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">58</span>:	e1a00000 	nop			; (mov r0, r0)</span><br><span class="line">  <span class="number">5</span>c:	e1a00000 	nop			; (mov r0, r0)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h2 id="指令和伪指令的区别"><a href="#指令和伪指令的区别" class="headerlink" title="指令和伪指令的区别"></a>指令和伪指令的区别</h2><ul>
+<li><p><strong>指令</strong>: 有与之对应的机器码,能被cpu所识别,和编译器无关</p>
+</li>
+<li><p><strong>伪指令</strong>:没有与之对应的机器码,无法被cpu识别,只能被编译器识别,不同编译器伪指令不一样</p>
+<p>不同的CPU对应不同的指令集；不同的汇编器对应不同的语法和伪指令集 </p>
+</li>
+</ul>
+<p>例子:ARM原生编译器和GNU FOR ARM</p>
+<h2 id="两种汇编器语法对比一览表"><a href="#两种汇编器语法对比一览表" class="headerlink" title="两种汇编器语法对比一览表"></a>两种汇编器语法对比一览表</h2><table>
+<thead>
+<tr>
+<th>GNU ARM汇编</th>
+<th>ADS ARM汇编</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>“@”或“/<em>…</em>/”</td>
+<td>“;”</td>
+</tr>
+<tr>
+<td>.include</td>
+<td>GET</td>
+</tr>
+<tr>
+<td>.equ</td>
+<td>EQU</td>
+</tr>
+<tr>
+<td>.global</td>
+<td>EXPORT</td>
+</tr>
+<tr>
+<td>.extern</td>
+<td>IMPORT</td>
+</tr>
+<tr>
+<td>.long</td>
+<td>DCD</td>
+</tr>
+<tr>
+<td>.end</td>
+<td>END</td>
+</tr>
+<tr>
+<td>entry:</td>
+<td>ENTRY</td>
+</tr>
+<tr>
+<td>.text</td>
+<td>AREA Init,CODE,READONLY</td>
+</tr>
+<tr>
+<td>.data</td>
+<td>AREA Block,DATA,READWRITE</td>
+</tr>
+<tr>
+<td>.macro</td>
+<td>MACRO</td>
+</tr>
+<tr>
+<td>.endm</td>
+<td>MEND</td>
+</tr>
+</tbody></table>
+<h2 id="汇编语言和C语言交互"><a href="#汇编语言和C语言交互" class="headerlink" title="汇编语言和C语言交互"></a>汇编语言和C语言交互</h2><h4 id="1-引入其他源文件函数"><a href="#1-引入其他源文件函数" class="headerlink" title="1.引入其他源文件函数"></a>1.引入其他源文件函数</h4><p>使用<code>import</code>或者<code>extern</code>伪指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">;使用import伪指令</span><br><span class="line">AREA code, CODE</span><br><span class="line">import fun1         ;导入其他源文件中名为fun1的函数</span><br><span class="line">END</span><br><span class="line"></span><br><span class="line">;使用extern伪指令</span><br><span class="line">AREA code, CODE</span><br><span class="line">extern fun1       </span><br><span class="line">END</span><br></pre></td></tr></table></figure>
+
+<p><strong>两者区别:</strong></p>
+<ul>
+<li><code>import</code>:不管当前文件是否使用该引入的函数,该标签都会加入当前文件符号表,即为静态引用</li>
+<li><code>extern</code>:只有当前文件使用了该函数,才会将此标签加入符号表,即为动态引用</li>
+</ul>
+<h4 id="2-导出当前源文件中函数供其他文件访问"><a href="#2-导出当前源文件中函数供其他文件访问" class="headerlink" title="2.导出当前源文件中函数供其他文件访问"></a>2.导出当前源文件中函数供其他文件访问</h4><p>使用<code>export</code>或者<code>global</code>伪指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">;使用import伪指令</span><br><span class="line">AREA code, CODE</span><br><span class="line">export fun         ;导出fun函数供其他源文件使用</span><br><span class="line"></span><br><span class="line">fun </span><br><span class="line">	mov R0,#4</span><br><span class="line">	bx lr</span><br><span class="line">END</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-外链汇编之C语言调汇编函数"><a href="#3-外链汇编之C语言调汇编函数" class="headerlink" title="3.外链汇编之C语言调汇编函数"></a>3.外链汇编之C语言调汇编函数</h4><p>第一步,在汇编原文件中将函数暴露出来给供外部调用,使用<code>export</code>或者<code>global</code>伪指令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">AREA code, CODE</span><br><span class="line">export arm_strcpy  ;或者使用global</span><br><span class="line"></span><br><span class="line">arm_strcpy</span><br><span class="line">loop </span><br><span class="line">	ldrb R4,[R0],#1 ;如果使用ldr 那么将偏移值改成4</span><br><span class="line">	cmp R4,#0</span><br><span class="line">	beq over</span><br><span class="line">	strb R4,[R1],#1</span><br><span class="line">	b loop</span><br><span class="line">over	</span><br><span class="line">END</span><br></pre></td></tr></table></figure>
+
+<p>第二步,在C文件中引用汇编中的函数,C文件中只能使用<code>extern</code>伪指令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">extern arm_strcpy(char *src,char*des);</span><br><span class="line"></span><br><span class="line">int main2()&#123;</span><br><span class="line">	char *a=&quot;hello pangshu&quot;;</span><br><span class="line">	char b[64];</span><br><span class="line">	arm_strcpy(a,b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-外链汇编之汇编调c语言函数"><a href="#4-外链汇编之汇编调c语言函数" class="headerlink" title="4.外链汇编之汇编调c语言函数"></a>4.外链汇编之汇编调c语言函数</h4><p>第一步,在C文件中编写好函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">c_sum</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> a+b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第二步, 在汇编文件中引入函数,使用<code>import</code>或者<code>extern</code>伪指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AREA code, CODE</span><br><span class="line">import c_sum  </span><br><span class="line"></span><br><span class="line">mov R0,#1 ;第一个参数</span><br><span class="line">mov R1,#2 ;第二个参数</span><br><span class="line"></span><br><span class="line">END</span><br></pre></td></tr></table></figure>
+
+<p>第三步, 使用BL指令调用函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AREA code, CODE</span><br><span class="line">import c_sum  </span><br><span class="line"></span><br><span class="line">mov R0,#1 ;第一个参数</span><br><span class="line">mov R1,#2 ;第二个参数</span><br><span class="line">BL c_sum</span><br><span class="line">END</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>在ARM中函数参数使用R0~R3这三个寄存器来进行传递,最多传递4个参数,超过4个参数使用栈进行处理,函数返回值通过R0进行传递</p>
+</blockquote>
+<h4 id="5-内嵌汇编"><a href="#5-内嵌汇编" class="headerlink" title="5.内嵌汇编"></a>5.内嵌汇编</h4><p>GNU内嵌汇编,格式如下:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main2</span><span class="params">()</span></span>&#123;</span><br><span class="line">	__asm__(           <span class="comment">//大括号改成中括号</span></span><br><span class="line">	<span class="string">"mov R5,#0x00000005\n"</span>   <span class="comment">//汇编指令需要使用引号包裹，多条语句之间使用回车换行符进行分隔</span></span><br><span class="line">	<span class="string">"mov R6,#0x00000005"</span></span><br><span class="line">	);  <span class="comment">//需要以分号结尾</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="学习工具"><a href="#学习工具" class="headerlink" title="学习工具"></a>学习工具</h2><ul>
+<li>在线ARM汇编编辑器:<a href="https://azm.azerialabs.com/" target="_blank" rel="noopener">https://azm.azerialabs.com/</a></li>
+</ul>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../211.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../211.html" itemprop="url">视频帧率和码率对视频质量和文件大小的影响</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-24T16:14:19+08:00">
+                2021-01-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>我们从<strong>画面流畅度</strong>,<strong>画面清晰度</strong>,和<strong>视频文件体积</strong>三个方面进行分析:</p>
+<h2 id="帧率-FPS"><a href="#帧率-FPS" class="headerlink" title="帧率(FPS)"></a>帧率(FPS)</h2><p><strong>指每秒显示图像的张数</strong></p>
+<p>比如30帧,表示每秒显示30张图像</p>
+<p><strong>帧率越大,画面越流畅,帧率越小,画面越卡顿</strong>,如果低到1帧/秒,那么就相当于一个幻灯片了</p>
+<p><strong>帧率不会影响到画面的清晰度,只会影响画面的流畅度和文件的体积</strong>,帧率越大,视频对应的体积越大</p>
+<h2 id="分辨率-resolution"><a href="#分辨率-resolution" class="headerlink" title="分辨率(resolution)"></a>分辨率(resolution)</h2><p><strong>指像素点分布密度</strong></p>
+<p>比如24寸的显示器,设置1920x1080的分辨率,那就是横向由1920个像素点构成,纵向由1080个像素点构成,也就是说在屏幕尺寸固定的情况下,<strong>分辨率越高,画面越清晰细腻,反之,画面越模糊</strong></p>
+<p><strong>分辨率不会影响画面的流畅度,只会影响画面的清晰度和文件的体积</strong>,分辨率越大,视频体积越大</p>
+<h2 id="码率-Bitrate"><a href="#码率-Bitrate" class="headerlink" title="码率(Bitrate)"></a>码率(Bitrate)</h2><p><strong>指每秒传输的数据位数</strong>,单位kbps 即千位每秒 ,这里的位指的是二进制位</p>
+<p>基本的算法是:</p>
+<ul>
+<li><p>每秒传输的数据量=码率/8 </p>
+</li>
+<li><p>视频文件体积=码率/8x视频时长(s) =每秒传输的数据量*视频时长(s)</p>
+</li>
+</ul>
+<p>比如500Kbps,也就是每秒传输62K大小的数据, 假如按照帧率30fps进行计算,那么每张图片大小约为2kb大小</p>
+<p>也就是说视频时长和固定的情况下,<strong>码率越高,文件体积越大,同时视频显示的有效像素越多</strong>,视频更加接近原始分辨率,反之,码率越低,文件体积越小,但是视频能显示的有效像素就越少,原本1080p的分辨率,每帧图像至少需要占用20k的数据量,但是码率过低每帧只能分配2K的量,此时像素点显示不全,就会造成视频模糊不清晰</p>
+<p>因此,码率若是过低,再高的分辨率都拯救不了画质,反而会适得其反, </p>
+<p>事实上,低码率环境下,低分辨率画面要比高分辨率画面更加清晰</p>
+<p><strong>码率不会影响画面的流畅度,但是会影响画面的清晰度和文件的体积</strong></p>
+<h2 id="我们的需求"><a href="#我们的需求" class="headerlink" title="我们的需求"></a>我们的需求</h2><p>我们一般<strong>追求高清流畅的画质,同时文件体积尽可能小</strong>,那么该如何找到帧率 码率和分辨率三者的平衡点呢?</p>
+<p>首先在我们录制视频的时候,<strong>屏幕的分辨率一般是固定的</strong>,随着不同的电脑分辨率也不同(当然你要手动调整也行)</p>
+<p>其次,为了保证视频的流畅度我们一般将<strong>帧率设置在25fps</strong>以上</p>
+<p>那么我们想减小视频的体积的话,只能从码率入手了, 找到一个画质能接受,体积小的平衡点</p>
+<p>比如1980x1080的分辨率,我使用500kbps左右的码率,差不多可以接受,OBS在录制时默认也是在这个码率内来回波动</p>
+<p>以下是常见分辨率和码率之间平衡参考表:</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20210124171800.png" alt></p>
+<p><strong>举例</strong>:如果要想百分百还原1080p HQ的画质,至少需要5.76Mkpbs码率的支撑,如果是直播的话需要至少9M的宽带才能稳定传输对应的数据量,否则画面卡顿</p>
+<p>直播中,在分辨率和网速一定的情况下,我们会适当降低码率,牺牲部分清晰度的来保证视频的流畅性</p>
+<p>如果网速不行又希望画面还清晰流畅,那么就降低拍摄的分辨率,同时降低数据传输量也就是码率值,当然分辨率降低之后所谓的视频清晰度也只是相对的,凡事总有取舍</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../210.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../210.html" itemprop="url">关于mysql崩溃之error establishing a database connection</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-22T16:14:19+08:00">
+                2021-01-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>最近在进行网站检查的时候突然发现我的一个子网站挂了,提示<code>error establishing a database connection</code>, 如果是网站刚建立那好解决,80%的概率是数据连接参数不正确,或者是数据库端口没有开放</p>
+<p>但是我这个网站运行很长一段时间了,之前一直好好的,突然之间就挂了, 而且这个数据库我使用的是<code>docker</code>进行维护,同时,在同一个<code>mysql</code>容器中我放置了好几个网站的数据,其他网站运行却是正常的</p>
+<p>而且我通过第三方连接数据库的工具可以正常连接到被挂网站的数据库</p>
+<p>通过以上情况可以排除以下原因:</p>
+<ul>
+<li><code>mysql</code>容器没有问题</li>
+<li>数据库端口和连接参数也没问题(已经检查过配置文件,没有被外部篡改过)</li>
+<li>网站程序正常运行</li>
+</ul>
+<p>这种情况下该如何处理呢? 当然是找日志了</p>
+<p>第一步:查看主程序日志,没问题</p>
+<p>第二步:查看<code>mysql</code>容器日志,发现问题</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker logs --tail=50 mysql</span><br></pre></td></tr></table></figure>
+
+<p><code>Table &#39;./wordpress_wai/wp_options&#39; is marked as crashed and should be repaired when using LOCK TABLES</code></p>
+<p><strong>数据库没有问题,但是表有问题</strong></p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p><strong>对表进行修复即可：</strong></p>
+<p>首先登录mysql选择指定的数据库,然后执行以下命令:</p>
+<ol>
+<li><p>执行修复指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">repair table wp_option</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>检查表的状态</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">check table wp_option</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>修复前最好先备份数据库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -uroot -p密码 数据库名 &gt;xxxxx.sql</span><br></pre></td></tr></table></figure>
+
+<p>如果表损坏比较严重,可能无法备份数据库</p>
+<p>如果你不知道如何查看<code>mysql</code>日志,那么直接运行备份数据库指令,也能帮你检查数据库是否存在问题</p>
+<p>修复完成后无需重启mysql容器, 直接刷新网址即可正常访问</p>
+<h3 id="2021年9月1日补充"><a href="#2021年9月1日补充" class="headerlink" title="2021年9月1日补充"></a>2021年9月1日补充</h3><p>突然数据库又崩了, 网站同样提示<code>error establishing a database connection</code></p>
+<p>我查看<code>docker</code>日志 报如下错误:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Database page corruption on disk or a failed file read of page [page id: space=0, page number=5]. You may have to recover from a backup</span><br></pre></td></tr></table></figure>
+
+<p>此时<code>mysql</code>容器已经进不去了, 百度了一下说是数据库受损 要在<code>my.cnf</code>配置文件中添加<code>innodb_force_recovery=1</code></p>
+<p>可是我在<code>conf</code>目录下并没有找到<code>my.cnf</code>文件 不知道是被谁给删了 难道被入侵了</p>
+<p>只好新建一个配置文件看看可不可行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim my.cnf</span><br></pre></td></tr></table></figure>
+
+<p>然后将以下内容拷贝进去:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">pid-file        = /var/run/mysqld/mysqld.pid</span><br><span class="line">socket          = /var/run/mysqld/mysqld.sock</span><br><span class="line">datadir         = /var/lib/mysql</span><br><span class="line">secure-file-priv= NULL</span><br><span class="line"># Disabling symbolic-links is recommended to prevent assorted security risks</span><br><span class="line">symbolic-links=0</span><br><span class="line"></span><br><span class="line"># Custom config should go here</span><br><span class="line">!includedir /etc/mysql/conf.d/</span><br></pre></td></tr></table></figure>
+
+<p><code>wq</code>保存退出 然后重启<code>mysql</code>容器, 重新访问网站 还是不行</p>
+<p>紧接着我在配置文件末尾添加了<code>innodb_force_recovery=1</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">pid-file        = /var/run/mysqld/mysqld.pid</span><br><span class="line">socket          = /var/run/mysqld/mysqld.sock</span><br><span class="line">datadir         = /var/lib/mysql</span><br><span class="line">secure-file-priv= NULL</span><br><span class="line"># Disabling symbolic-links is recommended to prevent assorted security risks</span><br><span class="line">symbolic-links=0</span><br><span class="line"></span><br><span class="line"># Custom config should go here</span><br><span class="line">!includedir /etc/mysql/conf.d/</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">innodb_force_recovery=1</span><br></pre></td></tr></table></figure>
+
+<p>保存重启后, 网站正常访问, 问题解决</p>
+<p>但是mysql容器日志一直提示:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[ERROR] [MY-012803] [InnoDB] innodb_force_recovery is on. We do not allow database modifications by the user. Shut down mysqld and edit my.cnf to set innodb_force_recovery=0</span><br></pre></td></tr></table></figure>
+
+<p>于是我把<code>innodb_force_recovery</code>值设为0 网站没问题 暂且就这样</p>
+<h4 id="关于innodb-force-recovery参数"><a href="#关于innodb-force-recovery参数" class="headerlink" title="关于innodb_force_recovery参数"></a>关于innodb_force_recovery参数</h4><ul>
+<li>Mode 1当遇到损坏页时，不使 MySQL 崩溃</li>
+<li>Mode 2不运行后台操作</li>
+<li>Mode 3不会尝试回滚事务</li>
+<li>Mode 4不计算统计数据或应用存储/缓冲的变化</li>
+<li>Mode 5在启动过程中不查看撤消日志</li>
+<li>Mode 6在启动时不从重做日志（ib_logfiles）前滚</li>
+</ul>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../217.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -464,7 +1132,7 @@
 <li>使用<code>回车</code>重复上一条指令</li>
 </ol>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -684,7 +1352,7 @@
 </li>
 </ol>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -860,7 +1528,7 @@
 </ul>
 <p>假如我们接下来要使用UTF-8进行编码，那么我们需要指定一张表，也就是二进制码和功能之间的一一对应关系，比如算术运算中<code>加</code>这个关键字：编译器从文本中连续读取两个字节二进制数据然后查表，如果对应上了加法功能，那么继续往后读取需要进行运算的内容，读到结束标记的时候，然后将之前所读取的二进制转化成与之对应功能的机器码，以此类推，这个结束标记也是由我们来定，我们可以使用分号、回车换行或者其它特殊的符号作为一行语句的结束</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -994,7 +1662,7 @@
 </li>
 </ol>
 <h4 id="第三步-电子元器件采购"><a href="#第三步-电子元器件采购" class="headerlink" title="第三步 电子元器件采购"></a>第三步 电子元器件采购</h4><h4 id="第四步-电子元器件焊接"><a href="#第四步-电子元器件焊接" class="headerlink" title="第四步 电子元器件焊接"></a>第四步 电子元器件焊接</h4><h4 id="第四步-电路板测试"><a href="#第四步-电路板测试" class="headerlink" title="第四步 电路板测试"></a>第四步 电路板测试</h4><p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1155,7 +1823,7 @@
 <li>分支电路越多,总电流越大</li>
 </ul>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1282,7 +1950,7 @@
 <p>如果是32位cpu,那么32位也就是4个字节代表一个字的长度(word)</p>
 <h2 id="关于半字"><a href="#关于半字" class="headerlink" title="关于半字"></a>关于半字</h2><p>半字即为字长的一半,在16位cpu中,半字即为一个字节,故在16位中没有半字这个说法,一半32位以上cpu环境中常用</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1444,7 +2112,7 @@
 </tr>
 </tbody></table>
 <h2 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a>寄存器</h2><p>在ARM32中一共有37个寄存器,其中包含16个通用寄存器(R0~R15)和1个状态寄存器 ,15个通用影子寄存器,5个状态影子寄存器</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20210105183952.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20210105183952.png" alt></p>
 <h4 id="影子寄存器"><a href="#影子寄存器" class="headerlink" title="影子寄存器"></a>影子寄存器</h4><p>如上图所示,在ARM32中一共有7中不同的处理器模式,分别为:<strong>用户模式</strong>（User）,<strong>快速中断模式</strong>（FIQ）,<strong>普通中断模式</strong>（IRQ）,<strong>管理模式</strong>（Svc）,<strong>数据访问中止模式</strong>（Abort）,<strong>未定义指令中止模式</strong>（Und）,<strong>系统模式</strong>（Sys)</p>
 <p> 但是在不同的模式下,同样的一个寄存器名称指向不同的物理寄存器,这些不同的物理寄存器就被称之为影子寄存器</p>
 <p>由于这些影子寄存器也属于通用寄存器的范畴, <strong>因此很多人也将ARM32的通用寄存器归纳为31个</strong> </p>
@@ -1768,7 +2436,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">00000000000000000000000000000000  ;32个二进制位</span><br></pre></td></tr></table></figure>
 
 <p>为了方便程序员开发,设计者给这些二进制位进行了相应的命名：</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20210120151329.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20210120151329.png" alt></p>
 <p>当两个比较值相等,进行减法运算时,结果为0,那么Z标志位的值为1,也就是</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">01000000000000000000000000000000  ;32个二进制位</span><br></pre></td></tr></table></figure>
 
@@ -1804,7 +2472,7 @@
 <p>以下是<strong>控制位区域</strong>细分详解图：</p>
 </li>
 </ol>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20210120151619.png" alt> </p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20210120151619.png" alt> </p>
 <ol start="3">
 <li>比较指令标志位条件参考表</li>
 </ol>
@@ -2161,901 +2829,7 @@
 <p>2)    LDR －大范围的地址读取伪指令</p>
 <p>3)    NOP －空操作伪指令</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../205.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../205.html" itemprop="url">ARM原生汇编与ARM GNU汇编的区分</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-05T16:14:19+08:00">
-                2021-01-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="一、ARM汇编开发的两种的方式"><a href="#一、ARM汇编开发的两种的方式" class="headerlink" title="一、ARM汇编开发的两种的方式"></a>一、ARM汇编开发的两种的方式</h2><p>ARM汇编开发指用ARM提供的汇编指令，进行ARM程序的开发。</p>
-<p>ARM汇编开发，有两种开发方式，一种是使用ARM汇编，一种是使用ARM GNU汇编。两种汇编开发，使用的汇编指令是完全一样的，区别是宏指令，伪指令，伪操作不一样。其实两种开发方式的区别在于所使用的编译工具不一样。</p>
-<p>对于ARM汇编，使用的是ARM公司开发的编译器，而ARM GNU汇编，是使用GNU为ARM指令集开发的编译器，也就是arm-gcc。</p>
-<h2 id="二、ARM的编译开发环境"><a href="#二、ARM的编译开发环境" class="headerlink" title="二、ARM的编译开发环境"></a>二、ARM的编译开发环境</h2><p>两种常用的ARM的编译开发环境</p>
-<ul>
-<li>DS5：ARM提供的集成开发软件。使用的是ARM提供的工具链进行程序编译</li>
-<li>GNU开发环境： 由GNU的汇编器as，交叉编译器gcc，和链接器ld等组成</li>
-</ul>
-<h2 id="三、伪操作，宏指令，伪指令"><a href="#三、伪操作，宏指令，伪指令" class="headerlink" title="三、伪操作，宏指令，伪指令"></a>三、伪操作，宏指令，伪指令</h2><p>伪操作：ARM汇编语言程序里的一些特殊指令助记符，其作用主要是完成汇编程序做各种准备工作，在源程序进行汇编时由汇编程序处理，而不是在计算机运行期间由机器执行。如程序段的定义，就属于伪操作。</p>
-<p>宏指令：一段独立的程序代码，可插在源程序中，通过伪操作来定义。</p>
-<p>伪指令：ARM汇编语言程序里的一些特殊指令助记符，不在处理器运行期间执行，在汇编时，被合适的ARM的机器指令代替，从而实现真正的指令操作。</p>
-<h2 id="四、ARM原生汇编伪操作"><a href="#四、ARM原生汇编伪操作" class="headerlink" title="四、ARM原生汇编伪操作"></a>四、ARM原生汇编伪操作</h2><table>
-<thead>
-<tr>
-<th>伪操作</th>
-<th>语法格式</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>GBLA</td>
-<td>GBLA  Varible</td>
-<td>声明一个全局的算术变量，并将其初始化为0</td>
-</tr>
-<tr>
-<td>GBLL</td>
-<td>GBLL  Varible</td>
-<td>声明一个全局的逻辑变量，并将其初始化成{FALSE}</td>
-</tr>
-<tr>
-<td>GBLS</td>
-<td>GBLS  Varible</td>
-<td>声明一个全局的字符串变量，并将其初始化成空串</td>
-</tr>
-<tr>
-<td>LCLA</td>
-<td>LCLA  Varible</td>
-<td>声明一个局部的算术变量，并将其初始化为0</td>
-</tr>
-<tr>
-<td>LCLL</td>
-<td>LCLL  Varible</td>
-<td>声明一个局部的逻辑变量，并将其初始化成{FALSE}</td>
-</tr>
-<tr>
-<td>LCLS</td>
-<td>LCLS  Varible</td>
-<td>声明一个局部的字符串变量，并将其初始化成空串</td>
-</tr>
-<tr>
-<td>SETA</td>
-<td>SETA  Varible  expr</td>
-<td>给一个全局或局部算术变量赋值</td>
-</tr>
-<tr>
-<td>SETL</td>
-<td>SETL  Varible  expr</td>
-<td>给一个全局或局部逻辑变量赋值</td>
-</tr>
-<tr>
-<td>SETS</td>
-<td>SETS  Varible  expr</td>
-<td>给一个全局或局部字符串变量赋值</td>
-</tr>
-<tr>
-<td>RLIST</td>
-<td>name LIST {list of registers}</td>
-<td>为一个通用寄存器列表定义名称</td>
-</tr>
-<tr>
-<td>CN</td>
-<td>name CN expr</td>
-<td>为一个协处理器的寄存器定义名称</td>
-</tr>
-<tr>
-<td>CP</td>
-<td>name CP expr</td>
-<td>为一个协处理器定义名称</td>
-</tr>
-<tr>
-<td>DN/SN</td>
-<td>name DN/SN expr</td>
-<td>DN/SN为一个双精度/单精度的VFP寄存器定义名称</td>
-</tr>
-<tr>
-<td>FN</td>
-<td>name FN  expr</td>
-<td>为一个FPA浮点寄存器定义名称</td>
-</tr>
-<tr>
-<td>LTORG</td>
-<td>LTONG</td>
-<td>声明一个数据缓冲池（文字池）的开始</td>
-</tr>
-<tr>
-<td>MAP</td>
-<td>MAP expr {, base-register}</td>
-<td>定义一个结构化的内存表(storage map)的首地址</td>
-</tr>
-<tr>
-<td>FIELD</td>
-<td>{label}  FIELF  expr</td>
-<td>定义一个结构化内存表中的数据域</td>
-</tr>
-<tr>
-<td>SPACE</td>
-<td>{label}  SPACE  expr</td>
-<td>分配一块连续内存单元，并用0初始化</td>
-</tr>
-<tr>
-<td>DCB</td>
-<td>{label}  DCB  expr {,expr}..</td>
-<td>分配一块字节内存单元，并用expr初始化</td>
-</tr>
-<tr>
-<td>DCD/ DCDU</td>
-<td>{label} DCD/DCDU expr {,expr}…</td>
-<td>分配一块字内存单元， 并用expr初始化</td>
-</tr>
-<tr>
-<td>DCDO</td>
-<td>{label}  DCDO  expr {,expr}…</td>
-<td>分配一块字对齐的字内存单元， 并用expr初始化</td>
-</tr>
-<tr>
-<td>DCFD/DCFDU</td>
-<td>{label}  DCFD{U}  fpliteral ,{,fpliteral}…</td>
-<td>为双精度的浮点数分配字对齐的内存单元</td>
-</tr>
-<tr>
-<td>DCFS/DCFSU</td>
-<td>{label}   DCFS{U}  fpliteral,{,fpliteral}…</td>
-<td>为单精度的浮点数分配字对齐的内存单元</td>
-</tr>
-<tr>
-<td>DCI</td>
-<td>{label} DCI expr, {expr}…</td>
-<td>ARM代码分配一段字对齐的内存单元，填充expr（二进制指令码），THUMB代码中，分配一段半字对齐的半字内存单元。</td>
-</tr>
-<tr>
-<td>DCQ/ DCQU</td>
-<td>{label} DCQ{U}  {-} literal, {, {-} literal}…</td>
-<td>分配一段以双字（8个字节）为单位的内存</td>
-</tr>
-<tr>
-<td>DCW/DCWU</td>
-<td>{label} DCW{U}  {-} literal, {, {-} literal}…</td>
-<td>DCW用于分配一段半字对齐的半字内存单元</td>
-</tr>
-</tbody></table>
-<h3 id="1、AREA"><a href="#1、AREA" class="headerlink" title="1、AREA"></a>1、AREA</h3><p>创建一段新的程序代码或数据区。</p>
-<p>格式 ： </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AREA  name, &#123;,attr,&#125; …</span><br></pre></td></tr></table></figure>
-
-<p>其中，name是程序段名， atrr是段名属性</p>
-<p>对于属性，有以下一些：</p>
-<ul>
-<li>CODE： 用于定义代码段，默认为是READONLY</li>
-<li>DATA： 用于定于数据段，默认为READWRITE</li>
-<li>READONLY: 指定本段的内容只读</li>
-<li>READWRITE：  指定本段的内容可读可写</li>
-<li>ALIGN:  指定对齐为2次幂</li>
-<li>COMMON: 定义通用的段。不包含任何用户的代码和数据。各源文件中同名的COMMON属性段共享同一段存储单元</li>
-</ul>
-<h3 id="2、ALIGN"><a href="#2、ALIGN" class="headerlink" title="2、ALIGN"></a>2、ALIGN</h3><p>指定对齐</p>
-<p>  ALIGN  4  表示4字节地址对齐</p>
-<p>  ALIGN  8  表示8字节地址对齐</p>
-<p>  注意：在AREA中使用和单独使用ALIGN的区别，在于格式和对齐的计算不一样。</p>
-<h3 id="3、ENTRY"><a href="#3、ENTRY" class="headerlink" title="3、ENTRY"></a>3、ENTRY</h3><p>指定汇编程序的入口。</p>
-<p>一个程序至少有一个入口点，也可以有多个入口点，但是在一个源文件中，最多只能有一个ENTRY。当多个源文件均有ENTRY时，由链接器指定程序真正的入口。</p>
-<h3 id="4、END"><a href="#4、END" class="headerlink" title="4、END"></a>4、END</h3><p>表示源程序的结束</p>
-<p>所以汇编语言源文件必须以END结束，汇编器遇到END, 将结束编译。</p>
-<h3 id="5、EXPORT"><a href="#5、EXPORT" class="headerlink" title="5、EXPORT"></a>5、EXPORT</h3><p>格式：　EXPORT  标号  [,WEAK]</p>
-<p>声明一个全局标号，其他源文件可以使用这个标号。WEAK表示碰上其他同名标号时，其他标号优先。</p>
-<h3 id="6、IMPORT"><a href="#6、IMPORT" class="headerlink" title="6、IMPORT"></a>6、IMPORT</h3><p>格式:  IMPORT 标号，[,WEAK]</p>
-<p>表示该引用的标号在其他源文件中，单要在当前文件中引用。WEAK表示找不到该标号时，也不报错，一般该标号置为0，如果是B 或BL指令用到该标号，该指令置为nop。</p>
-<p>该标号会加入到当前源文件的符号表中。</p>
-<h3 id="7、EXTERN"><a href="#7、EXTERN" class="headerlink" title="7、EXTERN"></a>7、EXTERN</h3><p>和IMPORT一样，不同在于，如果当前文件没有引用该标号，该标号不会加入到当前源文件的符号表中。</p>
-<h3 id="8、GET-或INCLUDE"><a href="#8、GET-或INCLUDE" class="headerlink" title="8、GET(或INCLUDE)"></a>8、GET(或INCLUDE)</h3><p>将一个源文件含到当前的源文件中</p>
-<h3 id="9、EQU"><a href="#9、EQU" class="headerlink" title="9、EQU"></a>9、EQU</h3><p>对一个常量标号赋值</p>
-<p>格式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">name  EQU  expression</span><br></pre></td></tr></table></figure>
-
-<p>其中： name符号名， expression寄存器相关或者程序相关的固定值</p>
-<p>如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">num  EQU  2  ;  为符号赋予数字2</span><br></pre></td></tr></table></figure>
-
-<p>EQU，等同于C语言中用#define定义一个常量</p>
-<h3 id="10、SPCAE"><a href="#10、SPCAE" class="headerlink" title="10、SPCAE"></a>10、SPCAE</h3><p>用于分配一片连续内存单元，并用0初始化。SPACE可用%代替。</p>
-<p>格式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;label&#125; SPACE expr</span><br></pre></td></tr></table></figure>
-
-<p>label ： 是一个标号, 可选</p>
-<p>expr：  分配的内存字节数</p>
-<p>如</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stack SPACE 100 ； 分配100个字节内存单元，并用0初始化。标号stack是这片空间的起始地址</span><br></pre></td></tr></table></figure>
-
-<h3 id="11、DCB"><a href="#11、DCB" class="headerlink" title="11、DCB"></a>11、DCB</h3><p>用于分配段字节内存单元，并用伪操作中的expr初始化。</p>
-<p>格式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;label&#125; DCB expr &#123;,expr&#125;</span><br></pre></td></tr></table></figure>
-
-<p>label： 是一个标号，可选</p>
-<p>expr： 可以是-128~255的数值或者字符串</p>
-<p>如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">string  DCB  &quot;HELLO&quot;  ;为HELLO字符串分配空间， string是这块空间的起始地址</span><br></pre></td></tr></table></figure>
-
-<h3 id="12、DCD及DCDU"><a href="#12、DCD及DCDU" class="headerlink" title="12、DCD及DCDU"></a>12、DCD及DCDU</h3><p>用于分配段字内存单元（分配的内存都是字对齐，DCDU并不严格字对齐），并用伪操作中的expr初始化。 DCD 可用 &amp; 代替。</p>
-<p>格式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;label&#125; DCD expr, &#123;,expr&#125;</span><br></pre></td></tr></table></figure>
-
-<p>label: 是一个标号，可选，表示这块内存单元的首地址</p>
-<p>expr： 数字表达式或程序中的标号</p>
-<p>如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data DCD  1,2,3,4   ;分配字对齐的字单元空间，初始化为1，2，3，4</span><br></pre></td></tr></table></figure>
-
-<h2 id="五、ARM原生汇编伪指令"><a href="#五、ARM原生汇编伪指令" class="headerlink" title="五、ARM原生汇编伪指令"></a>五、ARM原生汇编伪指令</h2><p>ARM伪指令包括： ADR, ADRL,LDR ,NOP</p>
-<p>THUMB伪指令包括：ADR, LDR, NOP</p>
-<table>
-<thead>
-<tr>
-<th>伪指令</th>
-<th>语法格式</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>ADR</td>
-<td>ADR{cond} register, expr</td>
-<td>将基于PC或基于寄存器的地址值读取到寄存器中。小范围的地址读取</td>
-</tr>
-<tr>
-<td>ADRL</td>
-<td>ADRL{cond} register, expr</td>
-<td>将给予PC或基于寄存器的地址值读取到寄存器中。中等范围的地址读取</td>
-</tr>
-<tr>
-<td>LDR</td>
-<td>LDR {cond} register, =[expr|label]</td>
-<td>将一个32位的立即数或者一个地址值读取到寄存器中。大范围的地址读取</td>
-</tr>
-<tr>
-<td>NON</td>
-<td>NOP</td>
-<td>在汇编时，被替换成空操作</td>
-</tr>
-</tbody></table>
-<h2 id="六、ARM-GNU编译环境"><a href="#六、ARM-GNU编译环境" class="headerlink" title="六、ARM GNU编译环境"></a>六、ARM GNU编译环境</h2><table>
-<thead>
-<tr>
-<th>伪操作</th>
-<th>语法格式</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>.byte</td>
-<td>.byte expr {,expr}…</td>
-<td>分配一段字节内存单元，并用expr初始化</td>
-</tr>
-<tr>
-<td>.hword/.short</td>
-<td>.hword expr {,expr}…</td>
-<td>分配一段半字内存单元，并用expr初始化</td>
-</tr>
-<tr>
-<td>.ascii</td>
-<td>.ascii expr {,expr}…</td>
-<td>定义字符串expr</td>
-</tr>
-<tr>
-<td>.asciz/.string</td>
-<td>.asciz expr {,expr}…</td>
-<td>定义字符串expr（会增加/0为结束符）</td>
-</tr>
-<tr>
-<td>.floar/.single</td>
-<td>.float expr {,expr}…</td>
-<td>定义32bit IEEE浮点数expr</td>
-</tr>
-<tr>
-<td>.double</td>
-<td>.doubel expr {,expr}…</td>
-<td>定义64bit IEEE浮点数expr</td>
-</tr>
-<tr>
-<td>.word/.long/.int</td>
-<td>.word expr {,expr}…</td>
-<td>分配一段字内存单元，并用expr初始化</td>
-</tr>
-<tr>
-<td>.fill</td>
-<td>.fill  repeat {,size} {,value}</td>
-<td>分配一段字节内存单元，用sieze长度value填充repeat次</td>
-</tr>
-<tr>
-<td>.zero</td>
-<td>.zero size</td>
-<td>分配一段字节内存单元，并用0填充内存</td>
-</tr>
-<tr>
-<td>.space/.skip</td>
-<td>.space size, {,value}</td>
-<td>分配一段内存单元，用value将内存初始化</td>
-</tr>
-<tr>
-<td>.section</td>
-<td>.section expr</td>
-<td>定义一个段</td>
-</tr>
-<tr>
-<td>.text</td>
-<td>.text {subsection}</td>
-<td>代码段，</td>
-</tr>
-<tr>
-<td>.data</td>
-<td>.data{subsection}</td>
-<td>数据段</td>
-</tr>
-<tr>
-<td>.bss</td>
-<td>.bss{subsection}</td>
-<td>bss段</td>
-</tr>
-<tr>
-<td>.cond 16/.thumb</td>
-<td>.code 16/.thumb</td>
-<td>表示之后的汇编指令使用THUMB指令集</td>
-</tr>
-<tr>
-<td>.code 32/.arm</td>
-<td>.code 32/.arm</td>
-<td>表示之后的汇编指令使用ARM指令集</td>
-</tr>
-<tr>
-<td>.end</td>
-<td>.end</td>
-<td>标记汇编文件的结束</td>
-</tr>
-<tr>
-<td>.include</td>
-<td>.include “filename”</td>
-<td>将一个源文件包含到当前源文件中</td>
-</tr>
-<tr>
-<td>.align/.balign</td>
-<td>.align {alignment} {,fill},{max}</td>
-<td>通过填充字节使当前位置满足一定的对齐格式</td>
-</tr>
-</tbody></table>
-<h2 id="七、两种开发环境的区别"><a href="#七、两种开发环境的区别" class="headerlink" title="七、两种开发环境的区别"></a>七、两种开发环境的区别</h2><p>两种开发环境下的汇编代码，有较多不同的点，主要是符号及伪操作的不同。</p>
-<table>
-<thead>
-<tr>
-<th>ARM汇编的伪操作符</th>
-<th>GNU汇编的伪操作符</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>INLCUDE</td>
-<td>.include</td>
-</tr>
-<tr>
-<td>NUM   EQU  25</td>
-<td>.equ  NUM,  25</td>
-</tr>
-<tr>
-<td>EXPORT</td>
-<td>.global</td>
-</tr>
-<tr>
-<td>IMPORT</td>
-<td>.extern</td>
-</tr>
-<tr>
-<td>DCD</td>
-<td>.long</td>
-</tr>
-<tr>
-<td>IF:  DEF:</td>
-<td>.ifdef</td>
-</tr>
-<tr>
-<td>ELSE</td>
-<td>.else</td>
-</tr>
-<tr>
-<td>ENDIF</td>
-<td>.endif</td>
-</tr>
-<tr>
-<td>OR</td>
-<td>|</td>
-</tr>
-<tr>
-<td>SHL</td>
-<td>&lt;&lt;</td>
-</tr>
-<tr>
-<td>RN</td>
-<td>.req</td>
-</tr>
-<tr>
-<td>GBLA</td>
-<td>.global</td>
-</tr>
-<tr>
-<td>NUM  SETA 16</td>
-<td>.equ  NUM , 16</td>
-</tr>
-<tr>
-<td>MACRO</td>
-<td>.macro</td>
-</tr>
-<tr>
-<td>MEND</td>
-<td>.endm</td>
-</tr>
-<tr>
-<td>END</td>
-<td>.end</td>
-</tr>
-<tr>
-<td>AREA WORD, CODE, READONLY</td>
-<td>.text</td>
-</tr>
-<tr>
-<td>AREA BLOCK, DATE, READWRITE</td>
-<td>.data</td>
-</tr>
-<tr>
-<td>CODE32</td>
-<td>.arm</td>
-</tr>
-<tr>
-<td>CODE16</td>
-<td>.thumb</td>
-</tr>
-<tr>
-<td>LTORG</td>
-<td>.ltorg</td>
-</tr>
-<tr>
-<td>%</td>
-<td>.fill</td>
-</tr>
-<tr>
-<td>ENTRY</td>
-<td>ENTRY:</td>
-</tr>
-<tr>
-<td>ldr x0,=0xff</td>
-<td>ldr x0,=0xff</td>
-</tr>
-</tbody></table>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../201.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../201.html" itemprop="url">android设备上如何运行C语言原生程序</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-03T16:14:19+08:00">
-                2021-01-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>咱们知道<code>android</code>设备可以直接运行<code>apk</code>,或者使用<code>dalvikvm</code>指令运行<code>dex</code>文件中的程序, 但是这两者本质上使用的语言都是<code>java</code>或者<code>smali</code>,</p>
-<p>如果需要执行C语言程序,我们通常需要借助<code>NDK</code>编译成<code>so</code>库, 那有没有不使用<code>NDK</code>而直接编译c原生程序然后在安卓设备中运行的方式呢?</p>
-<h2 id="交叉编译"><a href="#交叉编译" class="headerlink" title="交叉编译"></a>交叉编译</h2><p>C语言是一门跨平台的语言,<strong>语言跨平台,但是程序不跨平台</strong></p>
-<p>也就是说在<code>windows</code>平台下编译的程序只能在<code>windows</code>平台上执行,<code>linux</code>亦是如此, 为什么会出现这种情况呢? </p>
-<p>除了操作系统导致的文件格式不一致之外,本质上是因为不同平台<code>cpu</code>使用的架构不一致导致</p>
-<p>目前主流的三大<code>cpu</code>架构<strong>x86,ARM,MIPS</strong>,每个架构都对应着属于自己的一套汇编指令集, 我们编写的程序,最终都会解码成汇编指令被<code>cpu</code>所执行,</p>
-<p>那么在<code>windows</code>平台上进行本机编译的C语言代码,会根据当前平台的<code>cpu</code>架构和操作系统生成只能在当前平台运行的程序</p>
-<p>如果我想在<code>windows</code>平台编译出能在<code>linux</code>系统或者在<code>ARM</code>设备中运行的程序, 那该怎么办呢?</p>
-<p>这个时候我们就要使用交叉编译工具, 那这种<strong>编译的模式就不叫本机编译了,而叫做交叉编译</strong></p>
-<h2 id="为什么需要交叉编译"><a href="#为什么需要交叉编译" class="headerlink" title="为什么需要交叉编译"></a>为什么需要交叉编译</h2><p>场景:</p>
-<ul>
-<li>你正在编译一款<code>linux</code>应用,但你手上只有一台<code>windows</code>电脑,这个时候交叉编译能帮上大忙</li>
-<li>目标设备环境不允许,比如单片机, 内存和性能无法支持程序的编译</li>
-<li>一款配备新硬件的机器问世, 需要借助交叉编译来编译它的系统和编译器等</li>
-</ul>
-<h2 id="交叉编译工具"><a href="#交叉编译工具" class="headerlink" title="交叉编译工具"></a>交叉编译工具</h2><p>目前主流的交叉编译工具有<code>GCC</code>和<code>Clang</code>, 接下来主要介绍<code>GCC</code>的使用方法:</p>
-<p>首先</p>
-<p>交叉编译工具链的命名规则为：<strong>arch [-vendor] [-os] [-(gnu)eabi]</strong></p>
-<ul>
-<li><strong>arch</strong> – 体系架构，如<code>ARM</code>，<code>MIPS</code></li>
-<li><strong>vendor</strong> – 工具链提供商</li>
-<li><strong>os</strong> – 目标操作系统</li>
-<li><strong>eabi</strong> – 嵌入式应用二进制接口（Embedded Application Binary Interface）</li>
-</ul>
-<p>根据对操作系统的支持与否，<strong>ARM GCC可分为支持和不支持操作系统</strong>，</p>
-<h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><ul>
-<li><strong>arm-none-eabi</strong>：这个是没有操作系统的,适用于<code>ARM</code>架构裸机,工具链提供商未知,嵌入式应用二进制接口,这个工具不支持那些跟操作系统关系密切的函数，比如fork(2)。他使用的是<code>newlib</code>这个专用于嵌入式系统的C库。</li>
-<li><strong>arm-none-linux-eabi</strong>：用于<code>Linux</code>的，<code>ARM</code>架构,使用<code>Glibc</code></li>
-</ul>
-<blockquote>
-<p>如果是裸机编译,由于没有操作系统进行文件识别翻译,因此编译出来的大部分是面向cpu内核的机器码文件</p>
-<p>单片机编译后的文件就是如此</p>
-</blockquote>
-<h2 id="回到主题"><a href="#回到主题" class="headerlink" title="回到主题"></a>回到主题</h2><p>我需要用C语言编写一个能在安卓设备上运行的程序, 首先安卓设备大多采用的是<code>ARM</code>架构<code>cpu,</code> 系统采用的是<code>linux</code>系统, </p>
-<p>如果我们想在安卓设备中进行本机编译的话,实现起来比较困难, 那么咱们可以借助交叉编译工具,实现在<code>windows</code>平台上编译出能够在<code>ARM+Linux</code>平台上的可执行程序</p>
-<p>这里我们使用 <code>arm-none-linux-gnueabi-gcc</code> 这款交叉编译工具</p>
-<p>工具下载:</p>
-<p><a href="https://code.newban.cn/202.html">各个平台arm-none-linux-gnueabi交叉编译工具下载</a></p>
-<p>或者</p>
-<p><a href="https://sourcery.mentor.com/public/gnu_toolchain/arm-none-linux-gnueabi/arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2" target="_blank" rel="noopener">linux平台arm-none-linux-gnueabi工具直链下载</a></p>
-<h4 id="第一步-源码编写"><a href="#第一步-源码编写" class="headerlink" title="第一步 源码编写"></a>第一步 源码编写</h4><p>新建<code>test.c</code>文件</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;  </span></span></span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello world!\n"</span>);  </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="第二步-源码编译"><a href="#第二步-源码编译" class="headerlink" title="第二步 源码编译"></a>第二步 源码编译</h4><p>在命令窗口执行bin包下的<code>arm-none-linux-gnueabi-gcc</code>指令</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arm-none-linux-gnueabi-gcc test.c -o test -<span class="keyword">static</span></span><br></pre></td></tr></table></figure>
-
-<p> 因为<code>Android 的 Linux</code> 内核没有标准IO库函数，因此我们采用静态编译的方式进行编译 末尾<code>-static</code>必须要有</p>
-<h4 id="第三步-将编译后的可执行文件传至安卓设备"><a href="#第三步-将编译后的可执行文件传至安卓设备" class="headerlink" title="第三步 将编译后的可执行文件传至安卓设备"></a>第三步 将编译后的可执行文件传至安卓设备</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb push test /data/</span><br></pre></td></tr></table></figure>
-
-<h4 id="第四步-执行文件"><a href="#第四步-执行文件" class="headerlink" title="第四步 执行文件"></a>第四步 执行文件</h4><p>直接在控制台输入文件名即可执行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./test</span><br></pre></td></tr></table></figure>
-
-<p>如果提示权限拒绝,那么执行以下指令:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 test</span><br></pre></td></tr></table></figure>
-
-<p>至此 程序正常运行 控台输出<code>Hello world!</code></p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../202.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../202.html" itemprop="url">各个平台arm-none-linux-gnueabi交叉编译工具下载</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-03T16:14:19+08:00">
-                2021-01-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>arm-none-linux-gnueabi-gcc</strong>是 Codesourcery 公司（目前已经被Mentor收购）基于GCC推出的的ARM交叉编译工具。可用于交叉编译ARM系统中所有环节的代码，包括裸机程序、u-boot、Linux kernel、filesystem和App应用程序。使用时，按照主机平台，可以下载以下任一版本中的一个，结果是一样的：</p>
-<ul>
-<li><strong>Linux解压版</strong>：在Linux主机（如Ubuntu、RedHat等）直接解压即可使用。<strong>推荐方式！</strong></li>
-<li><strong>Linux安装版</strong>：在Linux主机下执行后按照提示安装后使用。</li>
-<li><strong>Windows解压版</strong>：在Windows系统下解压后使用，但是需要MingW32。</li>
-<li><strong>Windows安装版</strong>：在Windows系统下安装后使用。</li>
-<li><strong>RPM安装版</strong>：RedHat系统安装包，新版本不提供该类安装包。</li>
-<li><strong>源码版</strong>：交叉编译器源代码，一般很少用到。</li>
-</ul>
-<p>为方便国内用户下载使用，我们从Codesourcery（Mentor）官网下载了所有版本的arm-none-linux-gnueabi-gcc编译器，并放到国内云盘上提供下载。因为版本很多，可能难以选择，但是我们建议您使用最新版本，即有<em>最新~</em>标志的下载项。</p>
-<h2 id="1-Linux解压版"><a href="#1-Linux解压版" class="headerlink" title="1 Linux解压版"></a>1 Linux解压版</h2><p>gnu-csl-arm-2005Q1B-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 —— <a href="http://pan.baidu.com/s/1dD7ZSbv" target="_blank" rel="noopener">下载</a><br>arm-2006q1-3-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 —— <a href="http://pan.baidu.com/s/1pJAxr1T" target="_blank" rel="noopener">下载</a><br>arm-2006q1-6-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 —— <a href="http://pan.baidu.com/s/1pJjsX0v" target="_blank" rel="noopener">下载</a><br>arm-2006q3-26-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 —— <a href="http://pan.baidu.com/s/1sj0PPwh" target="_blank" rel="noopener">下载</a><br>arm-2007q1-10-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 —— <a href="http://pan.baidu.com/s/1dDoxdIT" target="_blank" rel="noopener">下载</a><br>arm-2007q1-21-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 —— <a href="http://pan.baidu.com/s/1zs2PS" target="_blank" rel="noopener">下载</a><br>arm-2007q3-51-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 —— <a href="http://pan.baidu.com/s/1hqvc7uW" target="_blank" rel="noopener">下载</a><br>arm-2008q1-126-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 —— <a href="http://pan.baidu.com/s/1bn8JSBl" target="_blank" rel="noopener">下载</a><br>arm-2008q3-41-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 —— <a href="http://pan.baidu.com/s/1sj8Xr7B" target="_blank" rel="noopener">下载</a><br>arm-2008q3-72-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 —— <a href="http://pan.baidu.com/s/1sjDbdk5" target="_blank" rel="noopener">下载</a><br>arm-2009q1-176-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 —— <a href="http://pan.baidu.com/s/1eQDx5BW" target="_blank" rel="noopener">下载</a><br>arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.bz2 —— <a href="http://pan.baidu.com/s/1hq3jZ60" target="_blank" rel="noopener">下载</a><br>arm-2009q3-67-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 —— <a href="http://pan.baidu.com/s/1dDEf4nJ" target="_blank" rel="noopener">下载</a><br>arm-2010.09-50-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 —— <a href="http://pan.baidu.com/s/1ntv8p7N" target="_blank" rel="noopener">下载</a><br>arm-2010q1-202-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 —— <a href="http://pan.baidu.com/s/1jG9R9EA" target="_blank" rel="noopener">下载</a><br>arm-2011.03-41-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 —— <a href="http://pan.baidu.com/s/1dD7tU8p" target="_blank" rel="noopener">下载</a><br>arm-2012.09-64-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 —— <a href="http://pan.baidu.com/s/1ntA1wI9" target="_blank" rel="noopener">下载</a><br>arm-2013.05-24-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 —— <a href="http://pan.baidu.com/s/1i3gNttF" target="_blank" rel="noopener">下载</a><br>arm-2013.11-33-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 —— <a href="http://pan.baidu.com/s/1dDkZmoh" target="_blank" rel="noopener">下载</a><br><strong>arm-2014.05-29-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2</strong> <em>最新~推荐！</em>—— <a href="http://pan.baidu.com/s/1mgyYfos" target="_blank" rel="noopener">下载</a></p>
-<h2 id="2-Linux安装版"><a href="#2-Linux安装版" class="headerlink" title="2 Linux安装版"></a>2 Linux安装版</h2><p>arm-2006q3-26-arm-none-linux-gnueabi.bin —— <a href="http://pan.baidu.com/s/1hqKfaAw" target="_blank" rel="noopener">下载</a><br>arm-2007q1-10-arm-none-linux-gnueabi.bin —— <a href="http://pan.baidu.com/s/1bngZ90r" target="_blank" rel="noopener">下载</a><br>arm-2007q1-21-arm-none-linux-gnueabi.bin —— <a href="http://pan.baidu.com/s/1sjFcXUP" target="_blank" rel="noopener">下载</a><br>arm-2007q3-51-arm-none-linux-gnueabi.bin —— <a href="http://pan.baidu.com/s/1o6v6nWm" target="_blank" rel="noopener">下载</a><br>arm-2008q1-126-arm-none-linux-gnueabi.bin —— <a href="http://pan.baidu.com/s/1gd9XC1X" target="_blank" rel="noopener">下载</a><br>arm-2008q3-41-arm-none-linux-gnueabi.bin —— <a href="http://pan.baidu.com/s/1gdf53fP" target="_blank" rel="noopener">下载</a><br>arm-2008q3-72-arm-none-linux-gnueabi.bin —— <a href="http://pan.baidu.com/s/1dDf9BGX" target="_blank" rel="noopener">下载</a><br>arm-2009q1-176-arm-none-linux-gnueabi.bin —— <a href="http://pan.baidu.com/s/1mgqQCDM" target="_blank" rel="noopener">下载</a><br>arm-2009q1-203-arm-none-linux-gnueabi.bin —— <a href="http://pan.baidu.com/s/1c0H5ui0" target="_blank" rel="noopener">下载</a><br>arm-2009q3-67-arm-none-linux-gnueabi.bin —— <a href="http://pan.baidu.com/s/1lLsTo" target="_blank" rel="noopener">下载</a><br>arm-2010.09-50-arm-none-linux-gnueabi.bin —— <a href="http://pan.baidu.com/s/1eQf78KM" target="_blank" rel="noopener">下载</a><br>arm-2010q1-202-arm-none-linux-gnueabi.bin —— <a href="http://pan.baidu.com/s/1qW8tw1e" target="_blank" rel="noopener">下载</a><br>arm-2011.03-41-arm-none-linux-gnueabi.bin —— <a href="http://pan.baidu.com/s/1eQCbBcI" target="_blank" rel="noopener">下载</a><br>arm-2011.09-70-arm-none-linux-gnueabi.bin —— <a href="http://pan.baidu.com/s/1gdDv5rd" target="_blank" rel="noopener">下载</a><br>arm-2012.03-57-arm-none-linux-gnueabi.bin —— <a href="http://pan.baidu.com/s/1gd26ezT" target="_blank" rel="noopener">下载</a><br>arm-2012.09-64-arm-none-linux-gnueabi.bin —— <a href="http://pan.baidu.com/s/1jG2zYUq" target="_blank" rel="noopener">下载</a><br>arm-2013.05-24-arm-none-linux-gnueabi.bin —— <a href="http://pan.baidu.com/s/1eQ7rTmE" target="_blank" rel="noopener">下载</a><br>arm-2013.11-33-arm-none-linux-gnueabi.bin —— <a href="http://pan.baidu.com/s/1gvEt4" target="_blank" rel="noopener">下载</a><br>arm-2014.05-29-arm-none-linux-gnueabi.bin —— <em>最新~</em> <a href="http://pan.baidu.com/s/1o6JmOXG" target="_blank" rel="noopener">下载</a></p>
-<h2 id="3-Windows-Mingw32-版"><a href="#3-Windows-Mingw32-版" class="headerlink" title="3 Windows Mingw32 版"></a>3 Windows Mingw32 版</h2><p>gnu-csl-arm-2005Q1B-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1kTmOULx" target="_blank" rel="noopener">下载</a><br>arm-2006q3-26-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1dDH3rdZ" target="_blank" rel="noopener">下载</a><br>arm-2007q1-10-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1bn1YrRx" target="_blank" rel="noopener">下载</a><br>arm-2007q1-21-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1pJuOqRT" target="_blank" rel="noopener">下载</a><br>arm-2007q3-51-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1pJJQKeZ" target="_blank" rel="noopener">下载</a><br>arm-2008q1-126-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1i3KcX6l" target="_blank" rel="noopener">下载</a><br>arm-2008q3-41-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1qWLQ84O" target="_blank" rel="noopener">下载</a><br>arm-2008q3-72-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1ntHnbXB" target="_blank" rel="noopener">下载</a><br>arm-2009q1-176-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1o69d0gU" target="_blank" rel="noopener">下载</a><br>arm-2009q1-203-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1eQ1Sjtw" target="_blank" rel="noopener">下载</a><br>arm-2009q3-67-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1qWBHlne" target="_blank" rel="noopener">下载</a><br>arm-2010.09-50-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1nt0XXNz" target="_blank" rel="noopener">下载</a><br>arm-2010q1-202-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1jG85Bym" target="_blank" rel="noopener">下载</a><br>arm-2011.03-41-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1jG9lDkE" target="_blank" rel="noopener">下载</a><br>arm-2011.09-70-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1sj7B13B" target="_blank" rel="noopener">下载</a><br>arm-2012.03-57-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1c0hD47Q" target="_blank" rel="noopener">下载</a><br>arm-2012.09-64-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1i3va3wL" target="_blank" rel="noopener">下载</a><br>arm-2013.05-24-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1bnCNEaz" target="_blank" rel="noopener">下载</a><br>arm-2013.11-33-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <a href="http://pan.baidu.com/s/1pJ0nUkj" target="_blank" rel="noopener">下载</a><br>arm-2014.05-29-arm-none-linux-gnueabi-i686-mingw32.tar.bz2 —— <em>最新~</em> <a href="http://pan.baidu.com/s/1sj4T7IH" target="_blank" rel="noopener">下载</a></p>
-<h2 id="4-Windows安装版"><a href="#4-Windows安装版" class="headerlink" title="4 Windows安装版"></a>4 Windows安装版</h2><p>gnu-csl-arm-2005Q1B-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1gdxMxWZ" target="_blank" rel="noopener">下载</a><br>arm-2006q1-3-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1ntqO8MP" target="_blank" rel="noopener">下载</a><br>arm-2006q1-6-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1pJNo76F" target="_blank" rel="noopener">下载</a><br>arm-2006q3-26-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1c0vkFM4" target="_blank" rel="noopener">下载</a><br>arm-2007q1-10-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1mg9N1C8" target="_blank" rel="noopener">下载</a><br>arm-2007q1-21-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1eQ06tou" target="_blank" rel="noopener">下载</a><br>arm-2007q3-51-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1sjv0hB3" target="_blank" rel="noopener">下载</a><br>arm-2008q1-126-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1pJG2VYr" target="_blank" rel="noopener">下载</a><br>arm-2008q3-41-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1sjjUP9j" target="_blank" rel="noopener">下载</a><br>arm-2008q3-72-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1eQEd2ee" target="_blank" rel="noopener">下载</a><br>arm-2009q1-176-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1c07vWVA" target="_blank" rel="noopener">下载</a><br>arm-2009q1-203-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1gduyCoF" target="_blank" rel="noopener">下载</a><br>arm-2009q3-67-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1kTkNbpX" target="_blank" rel="noopener">下载</a><br>arm-2010.09-50-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1bn5whSb" target="_blank" rel="noopener">下载</a><br>arm-2010q1-202-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1qWHgRfu" target="_blank" rel="noopener">下载</a><br>arm-2011.03-41-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1o6iFcuu" target="_blank" rel="noopener">下载</a><br>arm-2011.09-70-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1mgoiMI8" target="_blank" rel="noopener">下载</a><br>arm-2012.03-57-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1jGBTxNC" target="_blank" rel="noopener">下载</a><br>arm-2012.09-64-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1jGC9wBs" target="_blank" rel="noopener">下载</a><br>arm-2013.05-24-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1c0Ilr2o" target="_blank" rel="noopener">下载</a><br>arm-2013.11-33-arm-none-linux-gnueabi.exe —— <a href="http://pan.baidu.com/s/1kTHrdDt" target="_blank" rel="noopener">下载</a><br>arm-2014.05-29-arm-none-linux-gnueabi.exe —— <em>最新~</em> <a href="http://pan.baidu.com/s/1dDviBkP" target="_blank" rel="noopener">下载</a></p>
-<h2 id="5-PRM安装版"><a href="#5-PRM安装版" class="headerlink" title="5 PRM安装版"></a>5 PRM安装版</h2><p>arm-arm-none-linux-gnueabi-2007q3-51.i686.rpm —— <a href="http://pan.baidu.com/s/1pJCzoLH" target="_blank" rel="noopener">下载</a></p>
-<h2 id="6-源码"><a href="#6-源码" class="headerlink" title="6 源码"></a>6 源码</h2><p>gnu-csl-arm-2005Q1B-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1sjM43Dz" target="_blank" rel="noopener">下载</a><br>arm-2006q1-3-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1pJDflpx" target="_blank" rel="noopener">下载</a><br>arm-2006q1-6-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1o64tHYq" target="_blank" rel="noopener">下载</a><br>arm-2006q3-26-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1eQxi2Ro" target="_blank" rel="noopener">下载</a><br>arm-2007q1-10-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/14ImMa" target="_blank" rel="noopener">下载</a><br>arm-2007q1-21-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1nt5HE5b" target="_blank" rel="noopener">下载</a><br>arm-2007q3-51-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1o6iFcvC" target="_blank" rel="noopener">下载</a><br>arm-2008q1-126-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1sj6V0Jj" target="_blank" rel="noopener">下载</a><br>arm-2008q3-41-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1o6Fjdfc" target="_blank" rel="noopener">下载</a><br>arm-2008q3-72-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1ntmKPbr" target="_blank" rel="noopener">下载</a><br>arm-2009q1-176-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1o69JwxG" target="_blank" rel="noopener">下载</a><br>arm-2009q1-203-arm-none-linux-gnueabi.src.tar.bz2.bz2 —— <a href="http://pan.baidu.com/s/1mgqQCFA" target="_blank" rel="noopener">下载</a><br>arm-2009q3-67-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1i3JxaRV" target="_blank" rel="noopener">下载</a><br>arm-2010.09-50-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1gd9rIs7" target="_blank" rel="noopener">下载</a><br>arm-2010q1-202-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1gdkVlkR" target="_blank" rel="noopener">下载</a><br>arm-2011.03-41-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1pJCzoLH" target="_blank" rel="noopener">下载</a><br>arm-2011.09-70-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1ntqi9k9" target="_blank" rel="noopener">下载</a><br>arm-2012.03-57-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1kT5LIaN" target="_blank" rel="noopener">下载</a><br>arm-2012.09-64-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1gwTdG" target="_blank" rel="noopener">下载</a><br>arm-2013.05-24-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1hqf4HnQ" target="_blank" rel="noopener">下载</a><br>arm-2013.11-33-arm-none-linux-gnueabi.src.tar.bz2 —— <a href="http://pan.baidu.com/s/1eQAaVh4" target="_blank" rel="noopener">下载</a><br>arm-2014.05-29-arm-none-linux-gnueabi.src.tar.bz2 —— <em>最新~</em> <a href="http://pan.baidu.com/s/1ntFmvjz" target="_blank" rel="noopener">下载</a></p>
-<p>Mentor官方下载地址（需要注册，注册之后官方会发送一个下载地址到邮箱里面）：<a href="http://www.mentor.com/embedded-software/sourcery-tools/sourcery-codebench/evaluations/。" target="_blank" rel="noopener">http://www.mentor.com/embedded-software/sourcery-tools/sourcery-codebench/evaluations/。</a></p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -3142,7 +2916,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">431</span>
+                  <span class="site-state-item-count">434</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

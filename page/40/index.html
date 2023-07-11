@@ -288,6 +288,517 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../81.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../81.html" itemprop="url">Handler机制详解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-22T17:42:33+08:00">
+                2019-12-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Handler机制主要涉及到五个类"><a href="#Handler机制主要涉及到五个类" class="headerlink" title="Handler机制主要涉及到五个类"></a>Handler机制主要涉及到五个类</h3><ul>
+<li>Handler (用于处理消息)</li>
+<li>Message (消息对象)</li>
+<li>MessageQueue (按一定顺序储存消息对象)</li>
+<li>looper  (内部是死循环, 不断从MessageQueue 中取消息)</li>
+<li>HandlerThead</li>
+</ul>
+<h3 id="首先咱们来看一张Handler消息机制图"><a href="#首先咱们来看一张Handler消息机制图" class="headerlink" title="首先咱们来看一张Handler消息机制图"></a>首先咱们来看一张Handler消息机制图</h3><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/Handler机制.png" style="zoom:150%;">
+
+<p><strong>些许懵逼?</strong></p>
+<p><strong>那咱们从源码开始入手,先从Handler.java开始</strong></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191222180401.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191222180500.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191222180541.png" alt></p>
+<p>得出结论:</p>
+<ul>
+<li><strong>handler利用MessageQueue对象,调用其enquequeMessage方法将消息塞给MessageQueue</strong></li>
+<li><strong>msg.target为handler自身对象</strong></li>
+</ul>
+<p>那么enquequeMessage具体是怎么个塞法呢?</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191222181226.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191222181333.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191222181708.png" alt></p>
+<p>得出结论:</p>
+<ul>
+<li>enquequeMessage将传入的消息根据延时时间进行排序,0毫秒在前,非0毫秒在后</li>
+</ul>
+<p><strong>咱们接着看Lopper.java</strong></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191222181925.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191222182436.png" alt></p>
+<p>得出结论</p>
+<ul>
+<li><p>loop方法内部实际是一个死循环</p>
+</li>
+<li><p>通过queque.next()从消息队列中取消息,如果没有消息就阻塞住,有消息就往下执行</p>
+</li>
+<li><p>如果有消息, 通过dispatchMessage进行消息分发, 注意 这个dispatchMessage方法是Handler对象的</p>
+</li>
+</ul>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191222182656.png" alt></p>
+<p>进入到Message.java中</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191222190622.png" alt><br>得出结论:</p>
+<ul>
+<li>到最后调用了handleMessage交由用户去处理</li>
+<li>之所以系统创建多个Handler处理成百上千的消息而不会乱套,主要靠的就是target变量,相当于给每个消息绑定了一个Handler, 指定该Handler进行处理</li>
+<li>从sendMessage到handleMessage大致就是这么一个流程</li>
+</ul>
+<p><strong>那么到此为止, 问题来了:</strong></p>
+<ul>
+<li>前面说到, loop方法内部是一个死循环, 那这个循环是如果实在UI线程,岂不是会造成线程阻塞?</li>
+</ul>
+<p>android肯定不会允许这种情况发生的, 为了解决这个问题, <strong>HandlerThread</strong>上场了,单独开启了一个子线程用于handler</p>
+<p><strong>HandlerThread</strong>继承自<strong>Thread</strong>进入到<strong>HandlerThread.java</strong>中我们先找到关键方法run</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191222183746.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191222184127.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191222184203.png" alt></p>
+<p>得出结论:</p>
+<ul>
+<li>perpare()主要用于初始化创建looper对象, 并将该对象存放到线程变量中,供线程对象使用</li>
+<li>初始化完成后调用loop方法开始死循环</li>
+<li>如果自己使用looper需要开启一个线程, 否则会阻塞UI线程, 并且调用perpare和loop方法</li>
+<li>平常我们在使用的handler的时候不需要开启线程, 是因为系统已经替我们开启了ActivityThread线程</li>
+</ul>
+<h3 id="Handler消息分发流程"><a href="#Handler消息分发流程" class="headerlink" title="Handler消息分发流程"></a>Handler消息分发流程</h3><p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/Handler%E5%88%86%E5%8F%91%E6%B6%88%E6%81%AF%E6%B5%81%E7%A8%8B.png" alt></p>
+<h3 id="附加"><a href="#附加" class="headerlink" title="附加"></a>附加</h3><p><strong>ActivityThread中也有一个loop方法</strong></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191222185511.png" alt></p>
+<p>实际上, Android应用的启动运行靠的也是handler, 不断地处理系统消息, 这样四大组件才能正常运转起来</p>
+<p><strong>本帖附件</strong></p>
+<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../58.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../58.html" itemprop="url">Activity跳转之scheme跳转法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-19T17:47:50+08:00">
+                2019-12-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>Activity的跳转可以说是非常简单的了、从一个页面跳转至另一个页面，我们最常用的也就是下面这种：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="keyword">this</span>, xxx.class);</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
+
+<p><strong>当然还有我们的隐式跳转，为Intent指定一个<code>action</code>即可</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="string">"this is an action"</span>);</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
+
+<p><strong>这篇文章上面提到的两个都不讲,这里来说使用scheme协议来进行页面跳转</strong></p>
+<ul>
+<li><a href="https://developer.android.google.cn/guide/topics/manifest/data-element.html" target="_blank" rel="noopener">manifest / data 配置</a></li>
+<li>如果需要让我们的Activity能被其他应用或者网页所打开，需要在<code>AndroidManifest</code>中进行配置（浏览网页的时候点击一些广告可以进对应的app大概就是这个原理）</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&lt;activity android:name=<span class="string">".TestOneActivity"</span>&gt;</span><br><span class="line">    &lt;intent-filter&gt;</span><br><span class="line">        &lt;action android:name=<span class="string">"android.intent.action.VIEW"</span> /&gt;</span><br><span class="line">        &lt;category android:name=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span><br><span class="line">        &lt;category android:name=<span class="string">"android.intent.category.BROWSABLE"</span> /&gt;</span><br><span class="line">        &lt;!--配置scheme--&gt;</span><br><span class="line">        &lt;data</span><br><span class="line">            android:scheme=<span class="string">"azhon.scheme"</span> /&gt;</span><br><span class="line">    &lt;/intent-filter&gt;</span><br><span class="line">&lt;/activity&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>如上代码我们只是简单的配置了一个<code>android:scheme</code>属性，那要打开这个Activity也是so easy的</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">startActivity(<span class="keyword">new</span> Intent(Intent.ACTION_VIEW,                        Uri.parse(<span class="string">"azhon.scheme://"</span>)));</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>当然&lt; data/&gt;中还可以配置更多的属性（截取自官方中文文档，可以点击上面的manifest / data 配置）</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;data android:scheme=<span class="string">"string"</span></span><br><span class="line">      android:host=<span class="string">"string"</span></span><br><span class="line">      android:port=<span class="string">"string"</span></span><br><span class="line">      android:path=<span class="string">"string"</span></span><br><span class="line">      android:pathPattern=<span class="string">"string"</span></span><br><span class="line">      android:pathPrefix=<span class="string">"string"</span></span><br><span class="line">      android:mimeType=<span class="string">"string"</span> /&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong><em>scheme 路径的规则</em></strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;scheme&gt; :<span class="comment">// &lt;host&gt; : &lt;port&gt; [&lt;path&gt;|&lt;pathPrefix&gt;|&lt;pathPattern&gt;]</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>scheme开头 :// 主机名 : 端口号 / [路径/参数] 路径后面拼接参数也是可以的下面会用到。<br>这个地址和我们经常使用的网页地址差不多是一样滴<br>eg:<a href="https://loaclhost:8080/index.jsp" target="_blank" rel="noopener">https://loaclhost:8080/index.jsp</a></p>
+</blockquote>
+<p><strong>在网页中打开我们对应的页面</strong></p>
+<ul>
+<li>我们修改Manifest中Activity的配置在多加点料,我这里创建了两个页面</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">activity android:name=<span class="string">".TestOneActivity"</span>&gt;</span><br><span class="line">    &lt;intent-filter&gt;</span><br><span class="line">        &lt;action android:name=<span class="string">"android.intent.action.VIEW"</span> /&gt;</span><br><span class="line">        &lt;category android:name=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span><br><span class="line">        &lt;category android:name=<span class="string">"android.intent.category.BROWSABLE"</span> /&gt;</span><br><span class="line">        &lt;data</span><br><span class="line">            android:host=<span class="string">"azhon"</span></span><br><span class="line">            android:port=<span class="string">"1011"</span></span><br><span class="line">            android:scheme=<span class="string">"azhon.scheme"</span> /&gt;</span><br><span class="line">    &lt;/intent-filter&gt;</span><br><span class="line">&lt;/activity&gt;</span><br><span class="line"> </span><br><span class="line">&lt;activity android:name=<span class="string">".TestTwoActivity"</span>&gt;</span><br><span class="line">    &lt;intent-filter&gt;</span><br><span class="line">        &lt;action android:name=<span class="string">"android.intent.action.VIEW"</span> /&gt;</span><br><span class="line">        &lt;category android:name=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span><br><span class="line">        &lt;category android:name=<span class="string">"android.intent.category.BROWSABLE"</span> /&gt;</span><br><span class="line">        &lt;data</span><br><span class="line">            android:host=<span class="string">"azhon"</span></span><br><span class="line">            android:port=<span class="string">"1012"</span></span><br><span class="line">            android:scheme=<span class="string">"azhon.scheme"</span> /&gt;</span><br><span class="line">    &lt;/intent-filter&gt;</span><br><span class="line">&lt;/activity&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在主页面布局添加一个WebView控件，并让它加载<code>assets</code>文件夹中的html文件</li>
+<li>布局文件代码：</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">WebView</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:id</span>=<span class="string">"@+id/web"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_marginTop</span>=<span class="string">"20dp"</span> /</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>assets文件夹中的Html代码：</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"azhon.scheme://azhon:1011/我是路径?user=958460248&amp;psd=123456"</span>&gt;</span>跳转至TestOneActivity<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"azhon.scheme://azhon:1012/i am path?toId=25&amp;tmId=888"</span>&gt;</span>跳转至TestTwoActivity<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>效果图：<br><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/20191219175153.png" alt></p>
+<blockquote>
+<p>在网页中只需要使用一个超链接便可以轻松的跳转至我们的app，是不是很开心。<br>当你将这个html文件使用手机的浏览器查看时，点击也是一样可以跳转进app的<br>跳转页面的时候还可以通过 ?key=value&amp;key1=value2 键值对的方式往地址后面拼接参数</p>
+</blockquote>
+<ul>
+<li>在跳转过去的页面接收传递过来的参数</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = getIntent();</span><br><span class="line">Uri uri = intent.getData();</span><br><span class="line"> </span><br><span class="line"><span class="keyword">assert</span> uri != <span class="keyword">null</span>;</span><br><span class="line">sb.append(<span class="string">"scheme: "</span>).append(intent.getScheme()).append(<span class="string">"&lt;p&gt;"</span>);</span><br><span class="line">sb.append(<span class="string">"host: "</span>).append(uri.getHost()).append(<span class="string">"&lt;p&gt;"</span>);</span><br><span class="line">sb.append(<span class="string">"port: "</span>).append(uri.getPort()).append(<span class="string">"&lt;p&gt;"</span>);</span><br><span class="line">sb.append(<span class="string">"path: "</span>).append(uri.getPath()).append(<span class="string">"&lt;p&gt;"</span>);</span><br><span class="line">sb.append(<span class="string">"params: "</span>).append(uri.getQuery()).append(<span class="string">"&lt;p&gt;"</span>);</span><br><span class="line"> </span><br><span class="line"><span class="comment">//获取跳转过来携带所有参数的 键名</span></span><br><span class="line">Set&lt;String&gt; names = uri.getQueryParameterNames();</span><br><span class="line">Iterator&lt;String&gt; iterator = names.iterator();</span><br><span class="line"><span class="keyword">while</span> (iterator.hasNext()) &#123;</span><br><span class="line">    String key = iterator.next();</span><br><span class="line">    sb.append(key).append(<span class="string">": "</span>).append(uri.getQueryParameter(key)).append(<span class="string">"&lt;p&gt;"</span>);</span><br><span class="line">&#125;</span><br><span class="line">tv.setText(Html.fromHtml(sb.toString()));</span><br></pre></td></tr></table></figure>
+
+<p><strong>有了这种跳转方式 你只要知道其他app的scheme你就可以随意的跳过去了想想都刺激，比如下面代码打开微信和QQ程序。</strong></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href="weixin://"&gt;打开微信&lt;/a&gt;&lt;p&gt;  </span><br><span class="line">&lt;a href="mqqzone://"&gt;打开QQ&lt;/a&gt;</span><br></pre></td></tr></table></figure>
+
+<p>效果图：<br><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/20191219175213.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../61.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../61.html" itemprop="url">Android Studio 常见错误异常以及解决</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-17T19:32:49+08:00">
+                2019-12-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="案例1"><a href="#案例1" class="headerlink" title="案例1:"></a>案例1:</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Invoke-customs are only supported starting with Android O (--min-api 26)</span><br></pre></td></tr></table></figure>
+
+<h5 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案:"></a>解决方案:</h5><p>将以下代码添加到app的build.gradle的android节点下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">compileOptions &#123;</span><br><span class="line">       sourceCompatibility JavaVersion.VERSION_1_8</span><br><span class="line">       targetCompatibility JavaVersion.VERSION_1_8</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="案例2"><a href="#案例2" class="headerlink" title="案例2"></a>案例2</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Could not create service of type FileAccessTimeJournal using GradleUserHomeScopeServices.createFileAccessTimeJournal()</span><br><span class="line">Owner PID: 4567</span><br></pre></td></tr></table></figure>
+
+<h5 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#杀进程</span><br><span class="line">sudo kill -9 1902</span><br></pre></td></tr></table></figure>
+
+<h4 id="案例3"><a href="#案例3" class="headerlink" title="案例3"></a>案例3</h4><p>在<code>Fragment</code>中显示<code>popwindow</code>报错:<code>token null is not valid; is your activity running?</code></p>
+<h5 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h5><p>布局绘制完后显示, 如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">override fun onViewCreated(view: View, savedInstanceState: Bundle?) &#123;</span><br><span class="line">     super.onViewCreated(view, savedInstanceState)</span><br><span class="line">	//待布局绘制完成后显示</span><br><span class="line">     view.viewTreeObserver.addOnGlobalLayoutListener &#123;</span><br><span class="line">         mTipPopView.showAsDropDown(binding.topBg)</span><br><span class="line"></span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="案例4"><a href="#案例4" class="headerlink" title="案例4"></a>案例4</h4><p>Vector矢量图兼容性问题 低版本机型直接崩溃</p>
+<h5 id="解决方案-3"><a href="#解决方案-3" class="headerlink" title="解决方案"></a>解决方案</h5><p>代码中使用:<code>AppCompatResources.getDrawable</code></p>
+<p>不要使用:<code>ContextCompat.getDrawable</code></p>
+<p>示例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">toolbar.setBackgroundDrawable(AppCompatResources.getDrawable(this, R.drawable.bg_toolbar_v))</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt="img"></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../60.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -360,15 +871,15 @@
         
           
             <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>APT(Annotation Processing Tool)即<strong>注解处理器</strong>，是一种用来处理注解的工具。JVM会在<strong>编译期</strong>就运行APT去扫描处理代码中的注解然后输出java文件。</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/2172fb599f0546de7e005d1f1d8eb58e.JPEG" alt="image"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/2172fb599f0546de7e005d1f1d8eb58e.JPEG" alt="image"></p>
 <p>简单来说~~就是你只需要添加注解，APT就可以帮你生成需要的代码</p>
 <p>许多的Android开源库都使用了APT技术，如ButterKnife、ARouter、EventBus等</p>
-<h2 id="动手实现一个简单的APT"><a href="#动手实现一个简单的APT" class="headerlink" title="动手实现一个简单的APT"></a>动手实现一个简单的APT</h2><p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/91372f3181b93ad855b4780ef90124f1.JPEG" alt="image"></p>
+<h2 id="动手实现一个简单的APT"><a href="#动手实现一个简单的APT" class="headerlink" title="动手实现一个简单的APT"></a>动手实现一个简单的APT</h2><p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/91372f3181b93ad855b4780ef90124f1.JPEG" alt="image"></p>
 <h3 id="小目标"><a href="#小目标" class="headerlink" title="小目标"></a>小目标</h3><p>在使用Java开发Android时，页面初始化的时候我们通常要写大量的view = findViewById(R.id.xx)代码</p>
 <p>作为一个优(lan)秀(duo)的程序员，我们现在就要实现一个APT来完成这个繁琐的工作，通过一个注解就可以自动给View获得实例</p>
 <p><a href="https://github.com/LiMubai2017/aptDemo" target="_blank" rel="noopener">本demo地址</a></p>
 <h3 id="第零步-创建一个项目"><a href="#第零步-创建一个项目" class="headerlink" title="第零步 创建一个项目"></a>第零步 创建一个项目</h3><p>创建一个项目，名称叫 <code>apt_demo</code><br>创建一个Activity，名称叫 <code>MainActivity</code><br>在布局中添加一个TextView, id为<code>test_textview</code></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/18fd744a3b3e298c8273e4ce9f47b366.JPEG" alt="image"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/18fd744a3b3e298c8273e4ce9f47b366.JPEG" alt="image"></p>
 <h3 id="第一步-自定义注解"><a href="#第一步-自定义注解" class="headerlink" title="第一步 自定义注解"></a>第一步 自定义注解</h3><p>创建一个Java Library Module名称叫 <code>apt-annotation</code></p>
 <p>在这个module中创建自定义注解 <code>@BindView</code></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@Retention(RetentionPolicy.CLASS)</span><br><span class="line">@Target(ElementType.FIELD)</span><br><span class="line">public @interface BindView &#123;</span><br><span class="line">    int value();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -381,13 +892,13 @@
 <p>在这个Module中添加依赖</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    implementation project(&apos;:apt-annotation&apos;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/0d74c8ced3f3840693e2afcf3c6b7b7b.JPEG" alt="image"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/0d74c8ced3f3840693e2afcf3c6b7b7b.JPEG" alt="image"></p>
 <p>在这个Module中创建<code>BindViewProcessor</code>类</p>
 <p>直接给出代码~~</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br></pre></td><td class="code"><pre><span class="line">public class BindViewProcessor extends AbstractProcessor &#123;</span><br><span class="line">    private Filer mFilerUtils;       // 文件管理工具类</span><br><span class="line">    private Types mTypesUtils;    // 类型处理工具类</span><br><span class="line">    private Elements mElementsUtils;  // Element处理工具类</span><br><span class="line"></span><br><span class="line">    private Map&lt;TypeElement, Set&lt;ViewInfo&gt;&gt; mToBindMap = new HashMap&lt;&gt;(); //用于记录需要绑定的View的名称和对应的id</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public synchronized void init(ProcessingEnvironment processingEnv) &#123;</span><br><span class="line">        super.init(processingEnv);</span><br><span class="line"></span><br><span class="line">        mFilerUtils = processingEnv.getFiler();</span><br><span class="line">        mTypesUtils = processingEnv.getTypeUtils();</span><br><span class="line">        mElementsUtils = processingEnv.getElementUtils();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Set&lt;String&gt; getSupportedAnnotationTypes() &#123;</span><br><span class="line">        HashSet&lt;String&gt; supportTypes = new LinkedHashSet&lt;&gt;();</span><br><span class="line">        supportTypes.add(BindView.class.getCanonicalName());</span><br><span class="line">        return supportTypes; //将要支持的注解放入其中</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public SourceVersion getSupportedSourceVersion() &#123;</span><br><span class="line">        return SourceVersion.latestSupported();// 表示支持最新的Java版本</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public boolean process(Set&lt;? extends TypeElement&gt; set, RoundEnvironment roundEnv) &#123;</span><br><span class="line">        System.out.println(&quot;start process&quot;);</span><br><span class="line">        if (set != null &amp;&amp; set.size() != 0) &#123;</span><br><span class="line">            Set&lt;? extends Element&gt; elements = roundEnv.getElementsAnnotatedWith(BindView.class);//获得被BindView注解标记的element</span><br><span class="line"></span><br><span class="line">            categories(elements);//对不同的Activity进行分类</span><br><span class="line"></span><br><span class="line">            //对不同的Activity生成不同的帮助类</span><br><span class="line">            for (TypeElement typeElement : mToBindMap.keySet()) &#123;</span><br><span class="line">                String code = generateCode(typeElement);    //获取要生成的帮助类中的所有代码</span><br><span class="line">                String helperClassName = typeElement.getQualifiedName() + &quot;$$Autobind&quot;; //构建要生成的帮助类的类名</span><br><span class="line"></span><br><span class="line">                //输出帮助类的java文件，在这个例子中就是MainActivity$$Autobind.java文件</span><br><span class="line">                //输出的文件在build-&gt;source-&gt;apt-&gt;目录下</span><br><span class="line">                try &#123;</span><br><span class="line">                    JavaFileObject jfo = mFilerUtils.createSourceFile(helperClassName, typeElement);</span><br><span class="line">                    Writer writer = jfo.openWriter();</span><br><span class="line">                    writer.write(code);</span><br><span class="line">                    writer.flush();</span><br><span class="line">                    writer.close();</span><br><span class="line">                &#125; catch (IOException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //将需要绑定的View按不同Activity进行分类</span><br><span class="line">    private void categories(Set&lt;? extends Element&gt; elements) &#123;</span><br><span class="line">        for (Element element : elements) &#123;  //遍历每一个element</span><br><span class="line">            VariableElement variableElement = (VariableElement) element;    //被@BindView标注的应当是变量，这里简单的强制类型转换</span><br><span class="line">            TypeElement enclosingElement = (TypeElement) variableElement.getEnclosingElement(); //获取代表Activity的TypeElement</span><br><span class="line">            Set&lt;ViewInfo&gt; views = mToBindMap.get(enclosingElement); //views储存着一个Activity中将要绑定的view的信息</span><br><span class="line">            if (views == null) &#123;    //如果views不存在就new一个</span><br><span class="line">                views = new HashSet&lt;&gt;();</span><br><span class="line">                mToBindMap.put(enclosingElement, views);</span><br><span class="line">            &#125;</span><br><span class="line">            BindView bindAnnotation = variableElement.getAnnotation(BindView.class);    //获取到一个变量的注解</span><br><span class="line">            int id = bindAnnotation.value();    //取出注解中的value值，这个值就是这个view要绑定的xml中的id</span><br><span class="line">            views.add(new ViewInfo(variableElement.getSimpleName().toString(), id));    //把要绑定的View的信息存进views中</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //按不同的Activity生成不同的帮助类</span><br><span class="line">    private String generateCode(TypeElement typeElement) &#123;</span><br><span class="line">        String rawClassName = typeElement.getSimpleName().toString(); //获取要绑定的View所在类的名称</span><br><span class="line">        String packageName = ((PackageElement) mElementsUtils.getPackageOf(typeElement)).getQualifiedName().toString(); //获取要绑定的View所在类的包名</span><br><span class="line">        String helperClassName = rawClassName + &quot;$$Autobind&quot;;   //要生成的帮助类的名称</span><br><span class="line"></span><br><span class="line">        StringBuilder builder = new StringBuilder();</span><br><span class="line">        builder.append(&quot;package &quot;).append(packageName).append(&quot;;\n&quot;);   //构建定义包的代码</span><br><span class="line">        builder.append(&quot;import com.example.apt_api.template.IBindHelper;\n\n&quot;); //构建import类的代码</span><br><span class="line"></span><br><span class="line">        builder.append(&quot;public class &quot;).append(helperClassName).append(&quot; implements &quot;).append(&quot;IBindHelper&quot;);   //构建定义帮助类的代码</span><br><span class="line">        builder.append(&quot; &#123;\n&quot;); //代码格式，可以忽略</span><br><span class="line">        builder.append(&quot;\t@Override\n&quot;);    //声明这个方法为重写IBindHelper中的方法</span><br><span class="line">        builder.append(&quot;\tpublic void inject(&quot; + &quot;Object&quot; + &quot; target ) &#123;\n&quot;);   //构建方法的代码</span><br><span class="line">        for (ViewInfo viewInfo : mToBindMap.get(typeElement)) &#123; //遍历每一个需要绑定的view</span><br><span class="line">            builder.append(&quot;\t\t&quot;); //代码格式，可以忽略</span><br><span class="line">            builder.append(rawClassName + &quot; substitute = &quot; + &quot;(&quot; + rawClassName + &quot;)&quot; + &quot;target;\n&quot;);    //强制类型转换</span><br><span class="line"></span><br><span class="line">            builder.append(&quot;\t\t&quot;); //代码格式，可以忽略</span><br><span class="line">            builder.append(&quot;substitute.&quot; + viewInfo.viewName).append(&quot; = &quot;);    //构建赋值表达式</span><br><span class="line">            builder.append(&quot;substitute.findViewById(&quot; + viewInfo.id + &quot;);\n&quot;);  //构建赋值表达式</span><br><span class="line">        &#125;</span><br><span class="line">        builder.append(&quot;\t&#125;\n&quot;);    //代码格式，可以忽略</span><br><span class="line">        builder.append(&apos;\n&apos;);   //代码格式，可以忽略</span><br><span class="line">        builder.append(&quot;&#125;\n&quot;);  //代码格式，可以忽略</span><br><span class="line"></span><br><span class="line">        return builder.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //要绑定的View的信息载体</span><br><span class="line">    class ViewInfo &#123;</span><br><span class="line">        String viewName;    //view的变量名</span><br><span class="line">        int id; //xml中的id</span><br><span class="line"></span><br><span class="line">        public ViewInfo(String viewName, int id) &#123;</span><br><span class="line">            this.viewName = viewName;</span><br><span class="line">            this.id = id;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/b348172e0a71245f0670ea8442693a9f.JPEG" alt="image"></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/cb36e19ebae79e38d33c0660e024d7e7.JPEG" alt="image"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/b348172e0a71245f0670ea8442693a9f.JPEG" alt="image"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/cb36e19ebae79e38d33c0660e024d7e7.JPEG" alt="image"></p>
 <h4 id="2-1-继承AbstractProcessor抽象类"><a href="#2-1-继承AbstractProcessor抽象类" class="headerlink" title="2-1 继承AbstractProcessor抽象类"></a>2-1 继承AbstractProcessor抽象类</h4><p>我们自己实现的APT类需要继承<code>AbstractProcessor</code>这个类，其中需要重写以下方法：</p>
 <ul>
 <li><code>init(ProcessingEnvironment processingEnv)</code></li>
@@ -438,9 +949,9 @@
 
 <p>有没有觉得字符串拼接很麻烦呢，不仅麻烦还容易出错，那么有没有更好的办法呢（留个坑）</p>
 <p>同样的~ 这个方法的设计仅供参考啦啦啦<del>~</del></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/2275ad66b214a748862a5b15bca9a63c.JPEG" alt="image"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/2275ad66b214a748862a5b15bca9a63c.JPEG" alt="image"></p>
 <h3 id="第三步-注册你的APT"><a href="#第三步-注册你的APT" class="headerlink" title="第三步 注册你的APT"></a>第三步 注册你的APT</h3><p>这应该是最简单的一步<br>这应该是最麻烦的一步</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/730383b052c0ca2562ff1dd1f7fc5069.JPEG" alt="image"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/730383b052c0ca2562ff1dd1f7fc5069.JPEG" alt="image"></p>
 <p>客官别急，往下看就知道了~</p>
 <p>注册一个APT需要以下步骤：</p>
 <ol>
@@ -449,12 +960,12 @@
 <li>在 META-INF/services 目录文件夹下创建 javax.annotation.processing.Processor 文件；</li>
 <li>在 javax.annotation.processing.Processor 文件写入注解处理器的全称，包括包路径；</li>
 </ol>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/68b43659490a86f98c2b5daaa44b8db7.JPEG" alt="image"></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/68b43659490a86f98c2b5daaa44b8db7.JPEG" alt="image"></p>
 <p>正如我前面所说的~<br>简单是因为都是一些固定的步骤<br>麻烦也是因为都是一些固定的步骤</p>
 <h3 id="最后一步-对外提供API"><a href="#最后一步-对外提供API" class="headerlink" title="最后一步 对外提供API"></a>最后一步 对外提供API</h3><p>4.1 创建一个Android Library Module，名称叫<code>apt-api</code>,并添加依赖</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    api project(&apos;:apt-annotation&apos;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>4.2 分别创建launcher、template文件夹<br><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/6bd1d1cadcaf14c10c8dcb352efe5a6c.JPEG" alt="image"></p>
+<p>4.2 分别创建launcher、template文件夹<br><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/6bd1d1cadcaf14c10c8dcb352efe5a6c.JPEG" alt="image"></p>
 <p>4.3 在template文件夹中创建<code>IBindHelper</code>接口</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface IBindHelper &#123;</span><br><span class="line">    void inject(Object target);</span><br><span class="line">&#125;</span><br><span class="line">123</span><br></pre></td></tr></table></figure>
 
@@ -469,7 +980,7 @@
 <p>我们来修改MainActivity中的代码</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public class MainActivity extends AppCompatActivity &#123;</span><br><span class="line"></span><br><span class="line">    @BindView(value = R.id.test_textview)</span><br><span class="line">    public TextView testTextView;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected void onCreate(Bundle savedInstanceState) &#123;</span><br><span class="line">        super.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line"></span><br><span class="line">        AutoBind.getInstance().inject(this);</span><br><span class="line">        testTextView.setText(&quot;APT 测试&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">1234567891011121314</span><br></pre></td></tr></table></figure>
 
-<p>大功告成！我们来运行项目试试看<br><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/8f10e8f50bc1613713bfa437d1e557bf.JPEG" alt="image"></p>
+<p>大功告成！我们来运行项目试试看<br><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/8f10e8f50bc1613713bfa437d1e557bf.JPEG" alt="image"></p>
 <p>TextView已经正确显示了文字，我们的小demo到这里就完成啦~</p>
 <h2 id="还可以更好"><a href="#还可以更好" class="headerlink" title="还可以更好"></a>还可以更好</h2><p>我们的APT还可以变得更简单！</p>
 <h3 id="痛点"><a href="#痛点" class="headerlink" title="痛点"></a>痛点</h3><ul>
@@ -493,7 +1004,7 @@
 
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>APT是一个非常强大而且频繁出现在各种开源库的工具，学习APT不仅可以让我们在阅读开源库源码时游刃有余也可以自己开发注解框架来帮自己写代码~</p>
 <p>本文转载自：<a href="https://juejin.im/post/5bcdb901f265da0ac8496fed" target="_blank" rel="noopener">https://juejin.im/post/5bcdb901f265da0ac8496fed</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -620,7 +1131,7 @@
 <p><strong>打印结果为:</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">-----三种方式获取普通类的名字-----</span><br><span class="line"> getName()方法：com.getname.pkg.Main</span><br><span class="line">getCanonicalName()方法： com.getname.pkg.Main</span><br><span class="line">getSimpleName()方法： Main</span><br><span class="line"></span><br><span class="line">-----对于数组 int[]-----</span><br><span class="line"> getName()方法：[I</span><br><span class="line">getCanonicalName()方法： int[]</span><br><span class="line"></span><br><span class="line">-----对于内部类-----</span><br><span class="line"> getName()方法：com.getname.pkg.Main$Demo1$Demo2</span><br><span class="line">getCanonicalName()方法： com.getname.pkg.Main.Demo1.Demo2</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -819,7 +1330,7 @@
 <p>除非你可以肯定该 <code>feature1</code> 分支只有你自己使用，否则请谨慎操作。</p>
 <p>结论：只要你的分支上需要 <code>rebase</code> 的所有 <code>commits</code> 历史还没有被 <code>push</code> 过，就可以安全地使用 <code>git-rebase</code>来操作。</p>
 <p>本文转载自:<a href="http://jartto.wang/2018/12/11/git-rebase/" target="_blank" rel="noopener">http://jartto.wang/2018/12/11/git-rebase/</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1005,10 +1516,10 @@
 <p><strong>优点</strong></p>
 <p>它的强大之处无需多言，看代表框架的源码，你可以学到很多新姿势。总的一句话：它可以做任何你不想做的繁杂的工作，它可以帮你写任何你不想重复代码。懒人福利，老司机必备神技，可以提高车速，让你以任何姿势漂移。它可以生成任何源代码供你在任何地方使用，就像剑客的剑，快疾如风，无所不及</p>
 <h3 id="Aop和Apt对比"><a href="#Aop和Apt对比" class="headerlink" title="Aop和Apt对比"></a>Aop和Apt对比</h3><p>如图所示:</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20191216203909.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/20191216203909.png" alt></p>
 <p>和</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/20191216205936.png" alt></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/20191216205936.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1149,7 +1660,7 @@
 <p>相当Java中的：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyLayout</span> <span class="keyword">extends</span> <span class="title">RelativeLayout</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyLayout</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(context, <span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyLayout</span><span class="params">(Context context, AttributeSet attrs)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(context, attrs, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyLayout</span><span class="params">(Context context, AttributeSet attrs, <span class="keyword">int</span> defStyleAttr)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context, attrs, defStyleAttr);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1304,7 +1815,7 @@
 
 
 
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -1426,7 +1937,7 @@
         
           
             <h3 id="一-选择排序介绍"><a href="#一-选择排序介绍" class="headerlink" title="一.选择排序介绍"></a>一.选择排序介绍</h3><p>选出最小的一个数与第一个位置的数交换</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/7789414-5893f3ff1b915c38.gif" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/7789414-5893f3ff1b915c38.gif" alt></p>
 <h3 id="二-选择排序原理分析"><a href="#二-选择排序原理分析" class="headerlink" title="二.选择排序原理分析"></a>二.选择排序原理分析</h3><p>第1趟比较：拿第1个元素依次和它后面的每个元素进行比较，如果第1个元素大于后面某个元素，交换它们，经过第1趟比较，数组中最小的元素被选出，它被排在第一位</p>
 <p>第2趟比较：拿第2个元素依次和它后面的每个元素进行比较，如果第2个元素大于后面某个元素，交换它们，经过第2趟比较，数组中第2小的元素被选出，它被排在第二位</p>
 <p>……</p>
@@ -1441,524 +1952,7 @@
 <p>稳定性：选择排序是不稳定的排序算法，因为无法保证值相等的元素的相对位置不变，例如 [3, 4, 3, 1, 5]这个数组，第一次交换，第一个3和1交换位置，此时原来两个3的相对位置发生了变化。</p>
 <p><strong>本帖附件</strong></p>
 <p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../85.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../85.html" itemprop="url">Java面试题之TCP和UDP的区别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-09T12:20:24+08:00">
-                2019-12-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="网络层的划分"><a href="#网络层的划分" class="headerlink" title="网络层的划分"></a>网络层的划分</h2><h3 id="一-网络层的划分"><a href="#一-网络层的划分" class="headerlink" title="一 网络层的划分"></a>一 网络层的划分</h3><ul>
-<li><p>物理层 :负责在物理线路上传输原始的二进制数据（0和1），该层数据以比特流的形式传输 </p>
-</li>
-<li><p>链路层:  负责在通信的实体间建立数据链路连接，该层数据以帧的形式传输 </p>
-</li>
-<li><p>网络层:  负责创建逻辑链路，以及实现数据包的分片和重组，实现拥塞控制、网络互连等功能，该层数据以IP数据报(IP分组)的形式传输 </p>
-</li>
-<li><p>传输层:   负责向用户提供端到端的通信服务，实现流量控制以及差错控制，这一层主要重点是两个协议 : <strong>UDP 和 TCP</strong> </p>
-</li>
-<li><p>应用层:  为应用程序提供了网络服务，应用层协议最著名的就是<strong>HTTP, FTP了</strong>, 还有一个重要的DNS </p>
-<h3 id="二、TCP和UDP的区别"><a href="#二、TCP和UDP的区别" class="headerlink" title="二、TCP和UDP的区别"></a>二、TCP和UDP的区别</h3></li>
-</ul>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/1600629-20190325093559181-511608101.jpg" alt></p>
-<h3 id="三-TCP的三次握手"><a href="#三-TCP的三次握手" class="headerlink" title="三 TCP的三次握手"></a>三 TCP的三次握手</h3><ul>
-<li><strong>第一次握手：</strong>建立连接</li>
-<li><strong>第二次握手</strong>：响应连接</li>
-<li><strong>第三次握手：</strong>测试数据</li>
-</ul>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../98.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../98.html" itemprop="url">Source Insight快捷键大全</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-06T18:34:25+08:00">
-                2019-12-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Source-Insight快捷键大全"><a href="#Source-Insight快捷键大全" class="headerlink" title="Source Insight快捷键大全"></a>Source Insight快捷键大全</h2><p>退出程序 : Alt+F4</p>
-<p>重画屏幕 : Ctrl+Alt+Space</p>
-<p>完成语法 : Ctrl+E</p>
-<p>复制一行 : Ctrl+K</p>
-<p>恰好复制该位置右边的该行的字符 : Ctrl+Shift+K</p>
-<p>复制到剪贴板 : Ctrl+Del</p>
-<p>剪切一行 : Ctrl+U</p>
-<p>剪切该位置右边的该行的字符 : Ctrl+;</p>
-<p>剪切到剪贴板 : Ctrl+Shift+X</p>
-<p>剪切一个字 : Ctrl+,</p>
-<p>左边缩进 : F9</p>
-<p>右边缩进 : F10</p>
-<p>插入一行 : Ctrl+I</p>
-<p>插入新行 : Ctrl+Enter</p>
-<p>加入一行 : Ctrl+J</p>
-<p>从剪切板粘贴 : Ctrl+Ins</p>
-<p>粘贴一行 : Ctrl+P</p>
-<p>重复上一个动作 : Ctrl+Y</p>
-<p>重新编号 : Ctrl+R</p>
-<p>重复输入 : Ctrl+</p>
-<p>替换 : Ctrl+H</p>
-<p>智能重命名 : Ctrl+’</p>
-<p>关闭文件 : Ctrl+W</p>
-<p>关闭所有文件 : Ctrl+Shift+W</p>
-<p>新建 : Ctrl+N</p>
-<p>转到下一个文件 : Ctrl+Shift+N</p>
-<p>打开 : Ctrl+O</p>
-<p>重新装载文件 : Ctrl+Shift+O</p>
-<p>另存为 : Ctrl+Shift+S</p>
-<p>显示文件状态 : Shift+F10</p>
-<p>激活语法窗口 : Alt+L</p>
-<p>回到该行的开始 : Home</p>
-<p>回到选择的开始 : Ctrl+Alt+[</p>
-<p>到块的下面 : Ctrl+Shift+]</p>
-<p>到块的上面 : Ctrl+Shift+[</p>
-<p>书签 : Ctrl+M</p>
-<p>到文件底部 : Ctrl+End, Ctrl+(KeyPad) End</p>
-<p>到窗口底部 : (KeyPad) End (小键盘的END)</p>
-<p>到一行的尾部 : End</p>
-<p>到选择部分的尾部 : Ctrl+Alt+]</p>
-<p>到下一个函数 : 小键盘 +</p>
-<p>上一个函数 : 小键盘 -</p>
-<p>后退 : Alt+,, Thumb 1 Click</p>
-<p>后退到索引 : Alt+M</p>
-<p>向前 : Alt+., Thumb 2 Click</p>
-<p>转到行 : F5, Ctrl+G</p>
-<p>转到下一个修改 : Alt+(KeyPad) +</p>
-<p>转到下一个链接 : Shift+F9, Ctrl+Shift+L</p>
-<p>回到前一个修改 : Alt+(KeyPad) -</p>
-<p>跳到连接(就是语法串口列表的地方) : Ctrl+L</p>
-<p>跳到匹配 : Alt+]</p>
-<p>下一页 : PgDn, (KeyPad) PgDn</p>
-<p>上一页 : PgUp, (KeyPad) PgUp</p>
-<p>向上滚动半屏 : Ctrl+PgDn, Ctrl+(KeyPad) PgDn, (KeyPad) *</p>
-<p>向下滚动半屏 : Ctrl+PgUp, Ctrl+(KeyPad) PgUp, (KeyPad) /</p>
-<p>左滚 : Alt+Left</p>
-<p>向上滚动一行 : Alt+Down</p>
-<p>向下滚动一行 : Alt+Up</p>
-<p>右滚 : Alt+Right</p>
-<p>选择一块 : Ctrl+-</p>
-<p>选择当前位置的左边一个字符 : Shift+Left</p>
-<p>选择当前位置右边一个字符 : Shift+Right</p>
-<p>选择一行 : Shift+F6</p>
-<p>从当前行其开始向下选择 : Shift+Down</p>
-<p>从当前行其开始向上选择 : Shift+Up</p>
-<p>选择上页 : Shift+PgDn, Shift+(KeyPad) PgDn</p>
-<p>选择下页 : Shift+PgUp, Shift+(KeyPad) PgUp</p>
-<p>选择句子(直到遇到一个 . 为止) : Shift+F7, Ctrl+.</p>
-<p>从当前位置选择到文件结束 : Ctrl+Shift+End</p>
-<p>从当前位置选择到行结束 : Shift+End</p>
-<p>从当前位置选择到行的开始 : Shift+Home</p>
-<p>从当前位置选择到文件顶部 : Ctrl+Shift+Home</p>
-<p>选择一个单词 : Shift+F5</p>
-<p>选择左边单词 : Ctrl+Shift+Left</p>
-<p>选择右边单词 : Ctrl+Shift+Right</p>
-<p>到文件顶部 : Ctrl+Home, Ctrl+(KeyPad) Home</p>
-<p>到窗口顶部 : (KeyPad) Home</p>
-<p>到单词左边(也就是到一个单词的开始) : Ctrl+Left</p>
-<p>到单词右边(到该单词的结束) : Ctrl+Right</p>
-<p>排列语法窗口(有三种排列方式分别按1,2,3次) : Alt+F7</p>
-<p>移除文件 : Alt+Shift+R</p>
-<p>同步文件 : Alt+Shift+S</p>
-<p>增量搜索(当用Ctrl + F 搜索,然后按F12就会转到下一个匹配) : F12</p>
-<p>替换文件 : Ctrl+Shift+H</p>
-<p>向后搜索 : F3</p>
-<p>在多个文件中搜索 : Ctrl+Shift+F</p>
-<p>向前搜索 : F4</p>
-<p>搜索选择的(比如选择了一个单词,shift+F4将搜索下一个) : Shift+F4</p>
-<p>搜索 : Ctrl+F</p>
-<p>浏览本地语法(弹出该文件语法列表窗口,如果你光标放到一个变量/函数等,那么列出本文件该变量/函数等的信息) : F8</p>
-<p>浏览工程语法 : F7, Alt+G</p>
-<p>跳到基本类型(即跳到原型) : Alt+0</p>
-<p>跳到定义出(也就是声明) : Ctrl+=, Ctrl+L Click (select), Ctrl+Double L Click</p>
-<p>检查引用 : Ctrl+/</p>
-<p>语法信息(弹出该语法的信息) : Alt+/, Ctrl+R Click (select)</p>
-<p>高亮当前单词 : Shift+F8</p>
-<p>语法窗口(隐藏/显示语法窗口) : Alt+F8</p>
-<p>关闭窗口 : Alt+F6, Ctrl+F4</p>
-<p>最后一个窗口 : Ctrl+Tab, Ctrl+Shift+Tab</p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../95.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../95.html" itemprop="url">linux下的线程与进程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-06T18:24:00+08:00">
-                2019-12-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="两种线程设计模型"><a href="#两种线程设计模型" class="headerlink" title="两种线程设计模型"></a>两种线程设计模型</h2><ul>
-<li><p><strong>核心级线程设计模型</strong>:</p>
-<p>由操作系统内核实现, 特点是: 速度快  <em>windows系统采用的是这种设计模型</em></p>
-<p>可以比喻为用自己的大脑控制自己十根手指头</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/%E5%9B%BE%E7%89%871.png" alt></p>
-</li>
-<li><p><strong>用户级线程设计模型</strong>:</p>
-<p>操作系统核外实现的线程模式, 特点是: 线程调度在核外 速度不如核内 <em>Linux系统采用的是这种</em></p>
-</li>
-</ul>
-<p>​        可以比喻为自己的十根手指头需要借助外力才能动</p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/%E5%9B%BE%E7%89%872.png" alt></p>
-<h2 id="Linux系统下有真正意义的多线程么"><a href="#Linux系统下有真正意义的多线程么" class="headerlink" title="Linux系统下有真正意义的多线程么?"></a>Linux系统下有真正意义的多线程么?</h2><p>由上面Linux采用的线程设计模型可知,Linux系统并没有真正意义上的多线程</p>
-<p>因此, Linux系统里处理多线程不如Windows强悍</p>
-<h2 id="Linux系统的两个线程库"><a href="#Linux系统的两个线程库" class="headerlink" title="Linux系统的两个线程库"></a>Linux系统的两个线程库</h2><ul>
-<li>LinuxThreads线程库</li>
-<li>RedHat的NPTL</li>
-</ul>
-<p>这两个线程库实际上并没有完全按照线程模式进行实现</p>
-<h2 id="进程的生命周期"><a href="#进程的生命周期" class="headerlink" title="进程的生命周期"></a>进程的生命周期</h2><h4 id="进程的创建及回收"><a href="#进程的创建及回收" class="headerlink" title="进程的创建及回收"></a>进程的创建及回收</h4><p>在Android中, ActivityThead的创建预示着进程的创建</p>
-<h4 id="进程的级别-由高到低"><a href="#进程的级别-由高到低" class="headerlink" title="进程的级别(由高到低)"></a>进程的级别(由高到低)</h4><ul>
-<li><strong>前台进程</strong>: 优先级最高, 正处于Activity Resume()状态, 杀死前台进程需要用户响应</li>
-<li><strong>可见进程</strong></li>
-<li><strong>服务进程</strong></li>
-<li><strong>后台进程</strong></li>
-<li><strong>空进程:</strong> 无组件启动,做进程缓存使用, 恢复速度快</li>
-</ul>
-<p>当一个应用启动的时候, 它的进程级别不是保持固定的, Android内部通过Handler进行轮询检测当前进程的状态,ActivityThread掌控的Activity 的生命周期, 如果栈中无Activity存在, 但是有Service存在的情况下, 此时的进程级别就会从前台进程降为服务进程</p>
-<p>如果想要查询当前进程的级别, 可以通过ActivityManager .RuningAppProcessInfo进行查询,内部有对应的变量和方法</p>
-<h4 id="进程级别的记忆方法"><a href="#进程级别的记忆方法" class="headerlink" title="进程级别的记忆方法"></a>进程级别的记忆方法</h4><p>前见服后空</p>
-<p>谐音: 权健服后空 (懂?)</p>
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
           
@@ -2045,7 +2039,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">431</span>
+                  <span class="site-state-item-count">434</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

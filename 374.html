@@ -90,13 +90,13 @@
 <meta property="og:site_name" content="乱码三千 – 分享实用IT技术">
 <meta property="og:description" content="前言过去我们项目组的应用都是用 supervisord 托管的。最近因为某些因素，无法使用 supervisord，因此考虑改用 systemd。 systemd作为主流 Linux 发行版的默认选项，之前多多少少用过一点 systemd。不过这次需要上生产环境，所以抽空深入研究一番。 为什么要用supervisord?  实现进程的分组管理，比如支持一同启动/停止多个生产者/消费者实例。 进程崩">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/bVNlB3.png">
-<meta property="og:image" content="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png">
-<meta property="og:updated_time" content="2022-09-22T02:07:36.650Z">
+<meta property="og:image" content="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/bVNlB3.png">
+<meta property="og:image" content="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png">
+<meta property="og:updated_time" content="2023-07-11T02:28:06.017Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="supervisor和systemd的对比">
 <meta name="twitter:description" content="前言过去我们项目组的应用都是用 supervisord 托管的。最近因为某些因素，无法使用 supervisord，因此考虑改用 systemd。 systemd作为主流 Linux 发行版的默认选项，之前多多少少用过一点 systemd。不过这次需要上生产环境，所以抽空深入研究一番。 为什么要用supervisord?  实现进程的分组管理，比如支持一同启动/停止多个生产者/消费者实例。 进程崩">
-<meta name="twitter:image" content="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/bVNlB3.png">
+<meta name="twitter:image" content="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/bVNlB3.png">
 
 
 
@@ -387,7 +387,7 @@
 <p><code>systemd</code> 可以指定 <code>stop</code> 操作时可以选择的命令（<code>ExecStop=</code>）。另外它还提供了 <code>ExecReload=</code>，可以自定义调用 <code>systemctl reload xxx</code> 重新读取程序配置文件时的操作。<br><code>supervisord</code>不支持 reload 指定进程。同时对于 <code>stop</code>操作，它只允许你选择要发送哪种信号…</p>
 <p><code>supervisord</code> 的 <code>stopwaitsecs</code> 可以控制<code>stop</code> 操作后等待程序退出的耐心（以秒衡量）。待给定的耐心都消耗完毕后，<code>supervisord</code> 才会痛下杀手，发送 <code>SIGKILL</code>。</p>
 <p><code>systemd</code> 对应的配置项是 <code>TimeoutStopSec=</code>。<code>systemd</code> 会给多一次机会，在下最后通牒之前，会先发送 <code>SIGTERM</code>，过另一个<code>TimeoutStopSec</code>之后才发送 <code>SIGKILL</code>。</p>
-<h3 id="进程重启"><a href="#进程重启" class="headerlink" title="进程重启"></a>进程重启</h3><p>为了避免在<code>supervisord</code> 和 <code>systemd</code>两套术语间迷糊，请允许我抛弃所有术语，用自己的话描述。<br><img src="https://raw.fastgit.org/songjianzaina/lunanzb_img/master/img/bVNlB3.png" alt="life-cycle"></p>
+<h3 id="进程重启"><a href="#进程重启" class="headerlink" title="进程重启"></a>进程重启</h3><p>为了避免在<code>supervisord</code> 和 <code>systemd</code>两套术语间迷糊，请允许我抛弃所有术语，用自己的话描述。<br><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/bVNlB3.png" alt="life-cycle"></p>
 <p>从上图可以看到，进程在 RUNNING 之前，会有一个 STARTING 的过程。在 STARTING 过程中，进程可能会读取配置文件，进行初始化。<br>这一过程中的错误处理，跟 RUNNING 状态的应当有所不同。<br>以上是<code>supervisord</code>的想法。</p>
 <p>所以<code>supervisord</code> 提供了单独的 <code>startretries</code> 配置项，用来配置 STARTING 阶段的重启次数。<br><code>systemd</code> 对此没有特殊处理。</p>
 <p>一个程序，从 RUNNING 到 EXITED，有两种可能：正常退出或异常退出…（废话）<br>这两种情况，是通过配置的退出码来区分的。对于 supervisord，这个配置项是 <code>exitcodes</code>。systemd 则通过 <code>SuccessExitStatus</code> 来控制。<br>有趣的是，<code>exitcodes</code> 的默认值是 <code>0,2</code>，不知道为何它会认为 2 也是正常的退出码。</p>
@@ -415,7 +415,7 @@
 <p><code>supervisord</code>偏于应用层，却因此有独特的用武之地。</p>
 <p>举个例子，许多人会往 <code>docker</code>打包里面封入一份<code>supervisord</code>，让它来做 <code>PID 1</code>，以此稍微增强下健壮性。<br>换 <code>systemd</code> 做同样的事，就像用园艺剪刀裁纸，即使能够顺利完成，也难免事倍功半。毕竟这样的方式跟<code>systemd</code> 的设计是背道而驰的。</p>
 <p><strong>本文转载自</strong>: <a href="https://segmentfault.com/a/1190000009338835" target="_blank" rel="noopener">segmentfault</a></p>
-<p><img src="https://raw.fastgit.org/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
 
       
@@ -555,7 +555,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">431</span>
+                  <span class="site-state-item-count">434</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
