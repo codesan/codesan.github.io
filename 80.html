@@ -92,7 +92,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/20200106104558.png">
 <meta property="og:image" content="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png">
-<meta property="og:updated_time" content="2023-07-11T02:28:07.585Z">
+<meta property="og:updated_time" content="2023-07-18T09:16:12.981Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Git Submodule的介绍与使用">
 <meta name="twitter:description" content="场景复现公司有10个项目正在开发, 以后会陆陆续续增加新项目, 而这些项目都用到公共的一些类库, 如果你是技术负责人, 你会选择哪个方案? 方案一: 将公共类库依次拷贝至10个项目中 (不推荐  一旦类库需要修改, 你需要修改不只10遍) 方案二: 将公共类库封装成第三方框架, 放在公共仓库, 每个项目各自引入,(使用方便, 但是不方便修改源代码 不推荐) 方案三: 将公共类库源代码放在公有仓库">
@@ -369,52 +369,111 @@
 
       
         <p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/20200106104558.png" alt></p>
-<h3 id="场景复现"><a href="#场景复现" class="headerlink" title="场景复现"></a>场景复现</h3><p>公司有10个项目正在开发, 以后会陆陆续续增加新项目, 而这些项目都用到公共的一些类库, 如果你是技术负责人, 你会选择哪个方案?</p>
+<h2 id="场景复现"><a href="#场景复现" class="headerlink" title="场景复现"></a>场景复现</h2><p>公司有10个项目正在开发, 以后会陆陆续续增加新项目, 而这些项目都用到公共的一些类库, 如果你是技术负责人, 你会选择哪个方案?</p>
 <p><strong>方案一</strong>: 将公共类库依次拷贝至10个项目中 <strong>(不推荐  一旦类库需要修改, 你需要修改不只10遍)</strong></p>
 <p><strong>方案二</strong>: 将公共类库封装成第三方框架, 放在公共仓库, 每个项目各自引入,<strong>(使用方便, 但是不方便修改源代码 不推荐)</strong></p>
 <p><strong>方案三</strong>: 将公共类库源代码放在公有仓库, 每个项目下分别clone, <strong>( 方便修改类库代码, 也方便同步修改,但是主工程项目会将类库代码并入主工程提交, 两个仓库独立性不够, 有时候我可能只想先pull没有类库的代码, 这个时候就不方便了)</strong></p>
-<h3 id="引出Git-Submodule"><a href="#引出Git-Submodule" class="headerlink" title="引出Git Submodule"></a>引出Git Submodule</h3><p>为了增加公共类库与主项目的独立性, Git 给大家提供了子模块功能 允许你将一个 Git 仓库作为另一个 Git 仓库的子目录 ,  它能让你将另一个仓库克隆到自己的项目中，同时还保持提交的独立 </p>
-<h3 id="开始使用"><a href="#开始使用" class="headerlink" title="开始使用"></a>开始使用</h3><p>1.<strong>添加子模块</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule add &lt;仓库地址&gt; &lt;本地路径&gt;//如果不指定本地路径 默认放在当前目录下</span><br></pre></td></tr></table></figure>
+<h2 id="引出Git-Submodule"><a href="#引出Git-Submodule" class="headerlink" title="引出Git Submodule"></a>引出Git Submodule</h2><p>为了增加公共类库与主项目的独立性, Git 给大家提供了子模块功能 允许你将一个 Git 仓库作为另一个 Git 仓库的子目录 ,  它能让你将另一个仓库克隆到自己的项目中，同时还保持提交的独立 </p>
+<h2 id="开始使用"><a href="#开始使用" class="headerlink" title="开始使用"></a>开始使用</h2><h4 id="添加子模块"><a href="#添加子模块" class="headerlink" title="添加子模块"></a>添加子模块</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule add &lt;仓库地址&gt; &lt;本地路径&gt;//如果不指定本地路径 默认放在当前目录下</span><br></pre></td></tr></table></figure>
 
-<p>2.<strong>如果子模块代码有修改需要同步至远程仓库</strong></p>
-<p>进入到子模块目录下, 指定分支:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout master //这里以master分支为例</span><br></pre></td></tr></table></figure>
+<h4 id="将子模块代码同步至远程仓库"><a href="#将子模块代码同步至远程仓库" class="headerlink" title="将子模块代码同步至远程仓库"></a>将子模块代码同步至远程仓库</h4><p>进入到子模块目录下, 指定分支:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout master //这里以master分支为例</span><br></pre></td></tr></table></figure>
 
 <p>然后</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git commit -am &quot;修改类库&quot;</span><br><span class="line">git push</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git commit -am <span class="string">"修改类库"</span></span><br><span class="line">git push</span><br></pre></td></tr></table></figure>
 
-<p>3.<strong>如果需要从远程仓库更新代码</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule update --remote</span><br></pre></td></tr></table></figure>
+<h3 id="从远程仓库更新代码"><a href="#从远程仓库更新代码" class="headerlink" title="从远程仓库更新代码"></a>从远程仓库更新代码</h3><p>在父模块目录下执行以下命令:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule update --remote</span><br></pre></td></tr></table></figure>
 
 <p>或者</p>
 <p>直接进入到子模块目录下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git pull</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git pull</span><br></pre></td></tr></table></figure>
 
 <p>两者效果都是一样的</p>
+<p>除此之外还可以使用以下指令对多个子模块进行批量更新:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule foreach --recursive git pull</span><br></pre></td></tr></table></figure>
+
+<p>或者</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git pull --recurse-submodules</span><br></pre></td></tr></table></figure>
+
 <p><strong>注意:如果你的子模块内部也包含了一个子模块, 你可以使用:</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule foreach git submodule update</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule foreach git submodule update</span><br></pre></td></tr></table></figure>
 
 <p>进行遍历更新</p>
-<p><strong>4.如果你要删除子模块</strong></p>
-<ul>
-<li>1.删除.gitsubmodule里相关部分</li>
-<li>2.删除.git/config 文件里相关字段</li>
-<li>3.删除子仓库目录。</li>
-</ul>
-<p>然后执行命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rm --cached &lt;本地路径&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="删除子模块"><a href="#删除子模块" class="headerlink" title="删除子模块"></a>删除子模块</h4><ol>
+<li><p>首先执行以下命令移除子模块引用:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule deinit &lt;submodule_path&gt;</span><br></pre></td></tr></table></figure>
 
-<p>即可完成删除。</p>
-<p><strong>5.团队开发的时候, 进来一个新的成员, 他首次clone项目的时候, 并不会将子模块一并clone进来</strong></p>
+<p>其中，<code>&lt;submodule_path&gt;</code> 是子模块的相对路径或<code>URL</code>。这将取消子模块的连接，并使其变回普通的目录。</p>
+</li>
+<li><p>执行以下命令来从 <code>.gitmodules</code> 文件中移除子模块的记录：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rm --cached &lt;submodule_path&gt;</span><br></pre></td></tr></table></figure>
+
+<p>同样，<code>&lt;submodule_path&gt;</code> 是子模块的相对路径或 URL。该命令会将子模块的相关配置从<code>Git</code>仓库中移除。</p>
+</li>
+<li><p>执行以下命令删除子模块的相关目录和文件</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git rm &lt;submodule_path&gt;</span><br><span class="line">rm &lt;submodule_path&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+</li>
+</ol>
+<h4 id="移动子模块"><a href="#移动子模块" class="headerlink" title="移动子模块"></a>移动子模块</h4><p>要将 <code>Git</code> 中的子模块移动到另一个目录，可以按照以下步骤进行操作：</p>
+<ol>
+<li><p>进入包含子模块的 Git 仓库的根目录。</p>
+</li>
+<li><p>执行以下命令来修改子模块的路径：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git mv &lt;current_submodule_path&gt; &lt;new_submodule_path&gt;</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>&lt;current_submodule_path&gt;</code> 是当前子模块的路径，<code>&lt;new_submodule_path&gt;</code> 是你想要将子模块移动到的新路径。该命令会将子模块在 Git 仓库中的路径更改为新路径。</p>
+</li>
+<li><p>修改包含子模块的父项目中 <code>.gitmodules</code> 文件中子模块的路径记录。打开该文件，并将与子模块相关的路径修改为新的路径。</p>
+</li>
+<li><p>提交代码变更：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add .gitmodules</span><br><span class="line">git commit -m <span class="string">"Move submodule to new directory"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>更新子模块引用：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule sync --recursive</span><br></pre></td></tr></table></figure>
+
+<p>这将使父项目更新其对子模块的引用，以适应新的路径。</p>
+</li>
+<li><p>执行以下命令来完成子模块路径的更新：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure>
+
+<p>该命令会更新父项目中的子模块路径，并将子模块检出到新的目录中。</p>
+</li>
+</ol>
+<h4 id="将本地仓库添加为子模块"><a href="#将本地仓库添加为子模块" class="headerlink" title="将本地仓库添加为子模块"></a>将本地仓库添加为子模块</h4><p>如果你的本地已经有了一个仓库，并希望将其设置为某个项目的子模块，而不重新下载该仓库，可以按照以下步骤操作：</p>
+<ol>
+<li><p>在父项目的根目录下打开命令行工具。</p>
+</li>
+<li><p>使用 <code>git submodule add</code> 命令添加子模块，但是在这里我们指定本地路径作为子模块的位置而不是远程仓库的<code>URL</code>。例如：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule add /path/to/local/repo path/to/submodule</span><br></pre></td></tr></table></figure>
+
+<p>将 <code>/path/to/local/repo</code>替换为你本地仓库的实际路径，<code>path/to/submodule</code> 替换为你希望子模块存放的相对路径（相对于父项目的根目录）。</p>
+</li>
+<li><p>接下来将子模块的引用地址改为远程仓库地址</p>
+<p>进入父项目的根目录，在命令行工具中执行以下命令来修改子模块的引用地址：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule <span class="built_in">set</span>-url &lt;submodule_path&gt; &lt;remote_repository_url&gt;</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>&lt;submodule_path&gt;</code> 是子模块所在的路径（相对于父项目的根目录），<code>&lt;remote_repository_url&gt;</code>是子模块的远程仓库地址</p>
+</li>
+</ol>
+<ol start="4">
+<li>运行上述命令后，Git 会将本地仓库的当前状态作为子模块的初始状态，而无需重新下载。</li>
+</ol>
+<p><strong>注意:</strong> <code>git submodule set-url是``Git</code> 2.25以上版本才有的功能, 使用前需要先检查一下您当前的<code>git</code>版本</p>
+<h4 id="工程克隆"><a href="#工程克隆" class="headerlink" title="工程克隆"></a>工程克隆</h4><p>团队开发的时候, 进来一个新的成员, 他首次clone项目的时候, 并不会将子模块一并clone进来</p>
 <p>这个时候, 需要先初始化子模块:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 用来初始化本地配置文件</span><br><span class="line">git submodule init</span><br><span class="line"># 从该项目中抓取所有数据并检出父项目中列出的合适的提交(指定的提交)。</span><br><span class="line">git submodule update</span><br><span class="line">(以上两条命令也可以合并成一条组合命令：git submodule update --init --recursive)</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 用来初始化本地配置文件</span></span><br><span class="line">git submodule init</span><br><span class="line"><span class="comment"># 从该项目中抓取所有数据并检出父项目中列出的合适的提交(指定的提交)。</span></span><br><span class="line">git submodule update</span><br><span class="line">(以上两条命令也可以合并成一条组合命令：git submodule update --init --recursive)</span><br></pre></td></tr></table></figure>
 
 <p>或者直接:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># clone 父仓库的时候加上 --recursive，会自动初始化并更新仓库中的每一个子模块</span><br><span class="line">git clone --recursive https://gitee.com/xiaomumaozi/SubModule_Test.git</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># clone 父仓库的时候加上 --recursive，会自动初始化并更新仓库中的每一个子模块</span></span><br><span class="line">git <span class="built_in">clone</span> --recursive https://gitee.com/xiaomumaozi/SubModule_Test.git</span><br></pre></td></tr></table></figure>
 
-<p><strong>本帖附件</strong></p>
-<p><a href="https://u21519047.pipipan.com/fs/21519047-395416051" target="_blank" rel="noopener">点击下载</a></p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
 <p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
 <p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
 
@@ -555,7 +614,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">434</span>
+                  <span class="site-state-item-count">439</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -568,7 +627,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">126</span>
+                  <span class="site-state-item-count">127</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
@@ -608,7 +667,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#场景复现"><span class="nav-number">1.</span> <span class="nav-text">场景复现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#引出Git-Submodule"><span class="nav-number">2.</span> <span class="nav-text">引出Git Submodule</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开始使用"><span class="nav-number">3.</span> <span class="nav-text">开始使用</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#场景复现"><span class="nav-number">1.</span> <span class="nav-text">场景复现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引出Git-Submodule"><span class="nav-number">2.</span> <span class="nav-text">引出Git Submodule</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始使用"><span class="nav-number">3.</span> <span class="nav-text">开始使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#添加子模块"><span class="nav-number">3.0.1.</span> <span class="nav-text">添加子模块</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#将子模块代码同步至远程仓库"><span class="nav-number">3.0.2.</span> <span class="nav-text">将子模块代码同步至远程仓库</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从远程仓库更新代码"><span class="nav-number">3.1.</span> <span class="nav-text">从远程仓库更新代码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#删除子模块"><span class="nav-number">3.1.1.</span> <span class="nav-text">删除子模块</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#移动子模块"><span class="nav-number">3.1.2.</span> <span class="nav-text">移动子模块</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#将本地仓库添加为子模块"><span class="nav-number">3.1.3.</span> <span class="nav-text">将本地仓库添加为子模块</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#工程克隆"><span class="nav-number">3.1.4.</span> <span class="nav-text">工程克隆</span></a></li></ol></li></ol></div>
             
 
           </div>

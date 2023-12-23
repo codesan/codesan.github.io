@@ -288,6 +288,823 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../368.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../368.html" itemprop="url">使用Docker搭建基于gitea的私有git仓库</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-19T11:04:19+08:00">
+                2022-09-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>最近打算将一些私有仓库转移到自己服务器上, 以备不时之需, 目前免费开源的<code>Git</code>仓库框架有<code>Gitlab</code>和<code>Gitea</code>, 考虑到资源消耗问题, 果断选择了<code>Gitea</code></p>
+<p><a href="https://github.com/go-gitea/gitea" target="_blank" rel="noopener">Gitea的Github地址</a></p>
+<p>接下来分享我个人使用<code>Docker</code>快速搭建<code>Gitea</code>的过程</p>
+<h3 id="步骤如下"><a href="#步骤如下" class="headerlink" title="步骤如下"></a>步骤如下</h3><h4 id="安装gitea"><a href="#安装gitea" class="headerlink" title="安装gitea"></a>安装gitea</h4><ol>
+<li><p>搜索<code>gitea</code>镜像</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker search gitea</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>拉取<code>gitea</code>镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull gitea/gitea</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建并运行容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">docker run -id \</span><br><span class="line">--privileged=true \</span><br><span class="line">--restart=always \</span><br><span class="line">--name=c_gitea \</span><br><span class="line">-p 10022:22 \</span><br><span class="line">-p 13000:3000 \</span><br><span class="line">-v /root/app/gitea:/data \</span><br><span class="line">-h c_gitea \</span><br><span class="line"> gitea/gitea:latest</span><br></pre></td></tr></table></figure>
+
+<p><strong>参数详解:</strong></p>
+<ul>
+<li><strong>privileged</strong>: 是否授予容器<code>root</code>权限</li>
+<li><strong>restart</strong> : docker启动是是否自动启动容器</li>
+<li><strong>name</strong>: 表示容器别名</li>
+<li><code>-p 10022:22</code>: 容器暴露了<code>22</code>和<code>3000</code>端口 </li>
+<li><code>-v /root/app/gitea:/data</code>: 容器的<code>data</code>目录挂载到<code>/root/app/gitea</code></li>
+</ul>
+</li>
+<li><p>浏览器访问<code>gitea</code>配置页面</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://服务器ip:13000</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220919172350179.png" alt="image-20220919172350179"></p>
+<p>这里主要需要配置数据库以及域名 其他的保持默认即可</p>
+<p>首先数据库的话 这里有多种数据库可选, 考虑到资源消耗和移植方便 我选择<code>sqlite3</code></p>
+<p>那么在进行配置之前 我们需要先安装<code>sqlite3</code>来创建数据库文件</p>
+<p>依然使用<code>docker</code>快速安装:</p>
+</li>
+</ol>
+<h4 id="安装sqlite3"><a href="#安装sqlite3" class="headerlink" title="安装sqlite3"></a>安装<code>sqlite3</code></h4><ol>
+<li><p>拉取镜像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull nouchka/sqlite3</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建并运行容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">docker run -id \</span><br><span class="line">--restart=always \</span><br><span class="line">--name=c_sqlite \</span><br><span class="line">-p 1433:1433 \</span><br><span class="line">-v /root/app/gitea/sqlite:/root/db \</span><br><span class="line">-h c_sqlite \</span><br><span class="line">nouchka/sqlite3:latest</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>进入容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it c_sqlite bash</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<ol start="4">
+<li><p>进入容器后运行指令创建数据库</p>
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlite3 数据库名.db</span><br></pre></td></tr></table></figure>
+
+<p>   运行创建数据库指令时 <code>sqlite3</code>默认会在当前目录生成<code>db</code>文件, 所以执行前要确保当前目录为挂载目录,也就是<code>/root/db</code></p>
+<p>   <img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220919182016029.png" alt="image-20220919182016029"></p>
+<pre><code>执行`sqlite3`进入`SQL`状态, 此时我们输入`.database`可以查看并刷新已经创建的数据库文件 这一步关键 否则宿主挂载目录文件不更新</code></pre></li>
+<li><p>退出数据库</p>
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.quit</span><br></pre></td></tr></table></figure>
+
+<p>   <img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220919182305343.png" alt="image-20220919182305343"></p>
+<pre><code>此时我们在宿主的`/root/app/gitea/sqlite`可以查看到刚刚生成的数据库</code></pre></li>
+</ol>
+<h4 id="数据库关联"><a href="#数据库关联" class="headerlink" title="数据库关联"></a>数据库关联</h4><p>我们需要明白的是, 在<code>docker</code>中<code>gitea</code>容器是个独立的系统, 在配置页面中填写的路径皆为<code>gitea</code>容器内部路径, 而非宿主路径</p>
+<p>由于<code>gitea</code>容器的<code>/data</code>目录映射到了宿主的<code>/root/app/gitea</code>目录, 因此 我们需要将生成的<code>sqlite</code>数据库文件放置在宿主的<code>/root/app/gitea</code>目录下, 这样<code>gitea</code>容器才能访问到数据库文件</p>
+<p>这一点 我在<code>sqlite</code>容器创建时已经考虑到了, 所以将<code>sqlite</code>挂载目录设为了<code>/root/app/gitea/sqlite</code>, 从而免去了数据库文件的迁移</p>
+<p>此时 我只需在配置页面数据库路径一项填入<code>/data/sqlite/gitea.db</code>即可:</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220920101539648.png" alt="image-20220920101539648"></p>
+<blockquote>
+<p>如果后期需要修改配置可以进入<code>/root/app/gitea/gitea/conf/app.ini</code> 进行修改, 每次修改后记得需要重启<code>gitea</code>容器才能生效</p>
+</blockquote>
+<p>配置完毕后 点击安装 </p>
+<p>紧接着自动跳转到登录页面, 此时我们注册一个新账号然后登录:</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220920102423120.png" alt="image-20220920102423120"></p>
+<p>至此 我们的私有仓库就搭建完毕了, 如果需要节省资源, 可以将<code>sqlite</code>容器停止, 它的存在只是为了创建数据库 以及必要的时候进行数据自定义处理, 暂时不需要它保持运行状态</p>
+<h4 id="外部仓库同步"><a href="#外部仓库同步" class="headerlink" title="外部仓库同步"></a>外部仓库同步</h4><p><code>gitea</code>支持从外部仓库导入 支持以下常见厂商:</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220920103201263.png" alt="image-20220920103201263"></p>
+<p>如果从<code>github</code> 导入 首先需要去<code>github</code>中申请一个<code>access token</code>      </p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220920104007824.png" alt="image-20220920104007824"></p>
+<p>当然我们也可以直接使用<code>clone</code>的形式进行迁移 无需<code>token</code>:</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220920115211964.png" alt="image-20220920115211964"></p>
+<p>后面的就不多介绍了  </p>
+<h4 id="自定义域名"><a href="#自定义域名" class="headerlink" title="自定义域名"></a>自定义域名</h4><p>正常情况下我们可以通过地址<code>http://服务器公网IP:13000</code>来访问服务器, 如果需要配置自定义域名, 那么需要修改一些配置:</p>
+<p>首先域名端, 也就是域名解析需要指向服务器IP, 这点不做过多介绍 大家都明白</p>
+<p>另外就是服务端 </p>
+<p>由于我使用了<code>Nginx</code>进行反向代理, 并且给<code>docker</code>配置了桥接网络, 所以在<code>nginx.conf</code>文件中配置如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">http&#123;</span><br><span class="line">upstream gitea&#123;</span><br><span class="line">server c_gitea:3000;</span><br><span class="line">&#125;</span><br><span class="line">server&#123;</span><br><span class="line">        listen       80;</span><br><span class="line">    server_name git.newban.cn;</span><br><span class="line">    location / &#123;</span><br><span class="line">            proxy_redirect off;</span><br><span class="line">            proxy_set_header Host $host;</span><br><span class="line">            proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">            proxy_pass http://gitea;</span><br><span class="line">            break;</span><br><span class="line">                 &#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过桥接网络 我们可以直接使用容器别名实现容器间的相互通信, 减少端口暴露的风险</p>
+<h3 id="gitea目录结构"><a href="#gitea目录结构" class="headerlink" title="gitea目录结构"></a>gitea目录结构</h3><p>数据库主要用于存放用户和仓库相关的配置数据</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220920112051764.png" alt="image-20220920112051764"></p>
+<p>而我们的代码主要是放在了本地磁盘的<code>/root/app/gitea/git</code>目录下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── git</span><br><span class="line">│   ├── lfs</span><br><span class="line">│   └── repositories</span><br><span class="line">├── gitea</span><br><span class="line">│   ├── attachments</span><br><span class="line">│   ├── avatars</span><br><span class="line">│   ├── conf</span><br><span class="line">│   ├── home</span><br><span class="line">│   ├── indexers</span><br><span class="line">│   ├── jwt</span><br><span class="line">│   ├── log</span><br><span class="line">│   ├── packages</span><br><span class="line">│   ├── queues</span><br><span class="line">│   ├── repo-archive</span><br><span class="line">│   ├── repo-avatars</span><br><span class="line">│   ├── sessions</span><br><span class="line">│   └── tmp</span><br><span class="line">├── sqlite</span><br><span class="line">│   └── gitea.db</span><br><span class="line">└── ssh</span><br><span class="line">    ├── ssh_host_dsa_key</span><br><span class="line">    ├── ssh_host_dsa_key.pub</span><br><span class="line">    ├── ssh_host_ecdsa_key</span><br><span class="line">    ├── ssh_host_ecdsa_key.pub</span><br><span class="line">    ├── ssh_host_ed25519_key</span><br><span class="line">    ├── ssh_host_ed25519_key.pub</span><br><span class="line">    ├── ssh_host_rsa_key</span><br><span class="line">    └── ssh_host_rsa_key.pub</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../367.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../367.html" itemprop="url">Android Studio关于插件市场Marketplace无法搜索的问题解决</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-17T18:04:19+08:00">
+                2022-09-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>有的小伙伴在进行插件搜索时可能会出现搜索空白的情况, 界面显示<code>Not Found</code></p>
+<p>此时 只需要设置一下国内代理即可:</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220916162230660.png" alt="image-20220916162230660"></p>
+<p>进入代理设置, 勾选自动代理 并输入以下地址:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://mirrors.neusoft.edu.cn:80</span><br></pre></td></tr></table></figure>
+
+<p>重新搜索 OK</p>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../366.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../366.html" itemprop="url">自建 Git 服务器：Gitea 与 Gitlab 部署踩坑经历与对比总结</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-17T17:04:19+08:00">
+                2022-09-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这一周我都在折腾在自己的内网服务器中部署私有 Git 服务器，对于目前用的最广泛的 <a href="https://link.zhihu.com/?target=https://github.com/go-gitea/gitea" target="_blank" rel="noopener">Gitea</a> 与 <a href="https://link.zhihu.com/?target=http://gitlab.com/" target="_blank" rel="noopener">GitLab</a> 都进行了实际部署，并邀请了多人进行试用。</p>
+<p>对于这两个被广泛使用的可自托管的 Git 托管方案，网上似乎都是几张清单式的功能对比表，所以我想在这篇文章中对比两者在我实践中感受到的的差别，以及说说这几天我趟过的坑，为准备自建 Git 托管网站的用户提供参考与建议。</p>
+<p>在正文开始前，我先提醒一件事情：<strong>不推荐在非自己托管的 Gitea 上使用 GitHub TOKEN 等个人敏感信息，目前（v1.16.4） Gitea 的隐私管理缺陷可能会向站点管理员泄露你的隐私。</strong>这个问题可以说是我遇到的最大的坑，也是让我转向 GitLab 的主因，我会在正文中详细说明这个问题。</p>
+<p><strong>更新：Gitea v1.16.6 已经修复了泄露 TOKEN 的问题，但对于切记注意第三方 Gitea 托管站点的版本。</strong></p>
+<p>在本文发布后，Gitea 作者已经看到了部分对 Gitea 缺失功能的吐槽，并开始在新版本中实现它们，所以部分内容可能有所过时。</p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>作为可以自己部署的 Git 托管服务器方案，Gitea 与 GitLab 有很多相似之处：有着和 GitHub 相似的仓库界面，一样有着基本的 Git Server 功能，一样同时支持 http(s) 与 ssh，一样支持 Issue 和 Pull requests……</p>
+<p>Gitea 是完全开源免费的项目，而 GitLab 有着开源并免费的版本 GitLab CE，也有付费并有闭源功能的 GitLab EE。它们也都提供了由各自的官方托管版网站，你可以前往 <a href="https://link.zhihu.com/?target=http://gitea.com/" target="_blank" rel="noopener">gitea.com</a> 与 <a href="https://link.zhihu.com/?target=http://gitlab.com/" target="_blank" rel="noopener">gitlab.com</a> 体验它们的用法。</p>
+<p>这些最基础的东西双方都很相似，只看双方提供的功能对比表很难感受出它们有多大差别，但在实际部署它们后，你可以很直观地感受到它们骨子里就是不同的，它们之间的区别就和 <code>com.sun.net.httpserver</code> 和 Spring 全家桶一样，是单一功能的库与一个生态的区别。</p>
+<p>Gitea 是一个功能较为单一的 Git 托管服务器，所有功能都围绕着 Git 托管而来，而且给出了较高的可定制性。在部署 Gitea 的时候，我很明确自己的目的是实现 Git 托管功能，部署后我再根据自己的需求去组合其他工具来满足我的工作流。</p>
+<p>GitLab 则是一个大而全的解决方案整合，将 Git 托管、持续集成/部署等功能做在了一起，试图解决你的所有需求。在我部署它之后，我需要探索它的功能，学习它的工作流，适应它来完成我的工作。</p>
+<h2 id="资源占用"><a href="#资源占用" class="headerlink" title="资源占用"></a>资源占用</h2><p>作为 Git 托管服务器使用时，Gitea 资源占用明显要低得多。</p>
+<p>静态硬盘占用上，Gitea 核心是一个 100 MiB 上下的可执行文件，外加上作为必要依赖的 Git（如果内置 SQLite 不够的话也需要单独部署一个 MySQL 或者 PostgreSQL 做数据库），而 GitLab 光 Docker image 大小就 GiB 级了……不用我多说，截一下 GitLab 的日志文件夹就知道这玩意有多重量级了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ ls ./gitlab/logs</span><br><span class="line">alertmanager     gitlab-kas    gitlab-workhorse  nginx              prometheus   redis           sshd</span><br><span class="line">gitaly           gitlab-rails  grafana           postgres-exporter  puma         redis-exporter</span><br><span class="line">gitlab-exporter  gitlab-shell  logrotate         postgresql         reconfigure  sidekiq</span><br></pre></td></tr></table></figure>
+
+<p>我断断续续跑了两天，这日志就快 200MiB 了……</p>
+<p>内存方面，我这里 Gitea 日常占用内存通常在几百 MiB 浮动，而 GitLab 的 Docker 容器目前内存占用是 14GiB。</p>
+<p>GitLab CPU 占用率（相对于一个核心计算）日常待机在 35% 上下，而 Gitea 通常是 0.2% 左右。（<em>这些都是日常无负载状态下的情况，如果有机会的话我试试进一步比较，现在正在停用 GItea，懒得折腾了。）</em></p>
+<h2 id="网站配置"><a href="#网站配置" class="headerlink" title="网站配置"></a>网站配置</h2><p>Gitea 大部分配置都要通过修改 <code>app.ini</code> 并重启 Gitea 服务器来应用，后台管理面板基本没有可修改的配置，不能进行配置热修改。</p>
+<p>GitLab 部分网络相关的配置（域名，端口，代理，邮箱等）需要修改 <code>gitlab.rb</code> 并重启 GitLab，剩下的大多选项都是在管理员面板里通过 Web UI 进行热修改并及时生效。</p>
+<p>对于要稳定运行的 Git 托管服务器来说，Gitea 每次修改配置后想要生效都要离线一段时间，好在 Gitea 启动很快，我这里从启动到能正常访问大概只要 10 秒钟（数据库跑在另一个容器里，没有计算它的启动时间），而 GitLab 启动一次要一分多钟，但由于 GitLab 大部分配置都是热修改，除了最开始部署时需要修改配置，运行中基本没有重启的需求。</p>
+<p>想要自定义页面布局在 GitLab 上非常困难，除了首页内容可以通过管理面板修改外，剩下的地方似乎都无法用常规手段修改。Gitea 放开了很多 tmpl 文件可配置，我想要给站点每个页面底部添加一条链接，自己提供一个 <code>extra_links_footer.tmpl</code> 就能完成，但在 GitLab 我是没有找到什么好办法去实现。（似乎能改 <code>/var/opt/gitlab</code> 里的东西来修改布局，但我改了这个文件夹里的一些配置后再重启后，我修改的地方都被还原了，有空再做进一步的探索。）</p>
+<p>另外有一点就是，Gitea 内几乎所有链接都在使用基于 <code>ROOT_URL</code> 的绝对链接，所以基本绑死在这个 ROOT_URL 上，配置好后基本没办法用多个域名访问同一个 Gitea。准备使用内网穿透的用户要注意一下这个问题，很多内网穿透服务分配给用户的都是非标准端口，如果想在内外网都能良好访问自己的 Gitea 服务器，最好让 Gitea 内网的端口与公网端口一致，不然很多麻烦事情。</p>
+<p>GitLab 会检测你用来访问 GitHub 所用的域名，而且很多地方都会根据这个更改显示，不会因为用不同于 <code>external_url</code> 的地址访问而出现问题，这方面问题会比 Gitea 少很多。 （注意一下，如果你在 <code>external_url</code> 中写了带端口号的地址，GitLab 的侦听端口也会跟着变更。不想改侦听端口的话记着覆盖 <code>nginx[&#39;listen_port&#39;]</code> 设置）</p>
+<h2 id="隐私保护"><a href="#隐私保护" class="headerlink" title="隐私保护"></a>隐私保护</h2><p>隐私保护方面我觉得是 Gitea 最值得诟病的问题，也是我转而投向 GitLab 的主因。</p>
+<p>Gitea 的一些功能需要 GitHub TOKEN 实现（譬如从 GitHub 导入私有项目等），GitHub TOKEN 作为用户隐私，本身应该受到良好保护，但我在实际使用过程中发现，目前版本（v1.16.4）的 Gitea 有严重的安全问题：</p>
+<p>当用户正在进行使用 GitHub TOKEN 访问 GitHub 仓库的任务时，包含了 GitHub TOKEN 的 URL 直接明文出现在管理后台中，管理员可以轻松的从后台看到这些隐私信息：</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/v2-9ec85b637e3aad5f79c1c1f684767d53_720w.jpg" alt="img"></p>
+<p>这应该开发者考虑不周造成的问题，相对而言能明显感受到 GitLab 要更关心用户的隐私保护问题，涉及到隐私信息时都高度敏感，在不修改服务器本身的情况下，管理员也无法触及它们。（当然在管理员能接触到 GitLab 服务器的情况下，依然可以通过篡改服务器来窃取用户隐私，所以对第三方托管的服务器并不能无保留的信任。）</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/v2-07b3c70a9f44bacceee9f377b8291bf8_720w.jpg" alt="img">GitLab 中带有用户 TOKEN 的 URL 显示</p>
+<h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><h3 id="消息通知"><a href="#消息通知" class="headerlink" title="消息通知"></a>消息通知</h3><p>GitLab 与 Gitea 都能配置邮件消息通知。</p>
+<p>GitLab 每个用户都能设置自己接受的通知，或者完全拒绝邮件通知，设置的粒度可以细分到组/项目级别，管理员还能通过管理后台对用户手动群发邮件通知。</p>
+<p>Gitea 的用户无法控制自己接受的通知，只能由管理员配置通知的类型，而且也只能进行全局范围的配置，无法细分到用户身上，而且所有通知都是 Gitea 的自动通知，管理员无法发送自定义通知。</p>
+<p>对于 Gitea 这个邮件通知，不能说不能用，但对于多用户的服务器来说，我觉得难用到很难接受的程度，我在配好邮箱后尝试了一会就关掉了。</p>
+<h3 id="存储库导入与镜像"><a href="#存储库导入与镜像" class="headerlink" title="存储库导入与镜像"></a>存储库导入与镜像</h3><p>Gitea 和 GitLab 也都支持导入第三方 Git 仓库，特别是提供了原生的迁移 GitHub 仓库的办法，可以连带着 Issue、PR 等其他数据一同导入进来。</p>
+<p>此项功能需要 GitHub TOKEN 来完成，Gitea 有泄露 TOKEN 的问题，这点在前面已经说过了，所以不建议在第三方托管的 Gitea 上进行此操作。</p>
+<p>但如果在你自己的 Gitea 上执行，不需要担心隐私问题的话，我尝试下来的体验非常好，仓库内容基本都能原模原样地导入过来。</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/v2-804b34a97620ab2aa0953722a53291db_720w.jpg" alt="img">Gitea 导入的 Issue</p>
+<p>而 GitLab 的迁移功能个人体验就比较差了。Issue 虽然也能搬过来，但是无法做到 Gitea 这样保持创建者信息，所有的 Issue 创建者都会变成进行导入的用户，然后在内容中添加一条 <code>Created by</code> 信息来标识原创建者。</p>
+<p>问题更大的是，GitLab 的 Issue Markdown 语法和 GitHub 有一定差别。最典型的问题是，GitHub Issue 中单个换行符就能换行，GitLab 则是保持了标准的 Markdown 语法，需要连续两个换行才可以，这导致导入的 Issue 格式全都乱成一团，根本没法看：</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/v2-6a46517a40ebc45bfb3686f7e14d5840_720w.jpg" alt="img">GitLab 导入后的样子</p>
+<p>除此之外，Gitea 和 GitLab 还支持存储库镜像功能，能够让一个 Gitea/GitLab 存储库与一个外部的存储库（譬如 GitHub 上的存储库）保持关联。它们都支持这两种镜像模式：</p>
+<ul>
+<li>Push 镜像：以当前仓库为主要仓库，在当前仓库发生修改后自动将修改推送到外部仓库中。</li>
+<li>Pull 镜像：以外部仓库为主要仓库，在固定间隔后或者手动触发时从外部仓库拉取内容更新当前仓库中。</li>
+</ul>
+<p>在镜像功能上，GitLab 很离谱的把 Pull 镜像归属到了 EE 功能中，也就是要付费才能使用，这一点我是完全没有想到的，因为这个功能怎么看都应该属于 CE 的范畴，这也是我对 GitLab CE 意见最大的地方。我自己部署的是 GitLab CE，所以无法尝试 Pull 镜像了。</p>
+<p>GitLab 的 Push 镜像功能会在每次用户修改仓库或者手动触发时进行推送，我使用下来体验良好。</p>
+<p>Gitea 的 Pull 镜像当然是完全能免费使用的，基本的定时与手动更新仓库功能都可用，就是可惜无法同时同步 wiki、Issue 和 PR。</p>
+<p>而 Gitea 的 Push 镜像，我自己没有尝试过，但看文档的描述，Gitea 的 Push 镜像同步是定时触发的，我觉得这就挺迷惑的，还是 GitLab 的策略更好用。</p>
+<p>而且特别要注意，Gitea 同步时唯一的认证方式是账号密码认证，但 GitHub 现在禁止账密认证，导致无法正常进行认证，唯一的解决方案是把 GitHub TOKEN 写在 URL 里，但除非是你自部署的 Gitea 并且其他人无法访问这个仓库，否则就会导致你的 GitHub TOKEN 泄露。</p>
+<p>GitLab 原生就支持使用 GitHub TOKEN 或者通过 SSH 进行认证。SSH 不知道为什么我这里配好公钥也无法通过认证，但用 GitHub TOKEN 认证的方式工作一切正常，而且对 TOKEN 也有应有的保护，作为主要仓库使用并用它同步到 GitHub 上是没问题的。（SSH 地址必须是 <code>ssh://git@github.com/&lt;group name&gt;/&lt;repo name&gt;.git</code> 的形式，GitHub 的 Code 按钮里那个地址不能直接用，前面要补上 <code>ssh://</code>，中间的冒号也要改成正斜杠）</p>
+<h3 id="CI-CD"><a href="#CI-CD" class="headerlink" title="CI/CD"></a>CI/CD</h3><p>谈 Gitea 与 GitLab 的区别，那肯定少不了 CI/CD 这个重头戏。</p>
+<p>Gitea 没有提供内置的 CI/CD 支持，但是可以用 Gitea 提供的 API 与其他 CI 集成，目前推荐的比较多的似乎是是自部署 <a href="https://link.zhihu.com/?target=https://drone.io/" target="_blank" rel="noopener">Drone CI</a>，但也可以与 <a href="https://link.zhihu.com/?target=https://travis-ci.org/" target="_blank" rel="noopener">Travis CI</a> 这类现成的 CI 集成。</p>
+<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/v2-12a6c7f2d58a04d4f7a24160b9fd58a7_720w.jpg" alt="img">Gitea 与 Drone CI 的集成</p>
+<p>Gitea 与 CI 的集成我没有亲自尝试过，但可以参考上面 <a href="https://link.zhihu.com/?target=http://gitea.com/" target="_blank" rel="noopener">gitea.com</a> 里现成的例子。我本来想尝试部署 <a href="https://link.zhihu.com/?target=https://www.jetbrains.com/teamcity/" target="_blank" rel="noopener">JetBrains TeamCity</a>，但 Gitea 目前的 API 并不足以与 TeamCity 集成，这在后续版本中可能会改进。</p>
+<p>而 GitLab 原生就集成了一套强大的 CI 功能，而且就像 GitHub Action 与 GitHub 那样，它与 GitLab 有着极为紧密的结合。</p>
+<p>GitLab 用于执行 GitLab CI 的程序叫做 GitLab Runner。在刚开始看文档的时候，我一直很疑惑为什么 GitLab Runner 的介绍在用户指南里，而非管理员的配置指南中，在配置好后我才豁然开朗，因为 GitLab 不止允许管理员注册全局可用的共享 GitLab Runner，它还允许一般用户为自己或者组注册自托管的 GitLab Runner 实例，让 CI 仅跑在自己的机器上。</p>
+<p>目前我只是简单的配置并跑了一些简单的样例，尝试后我觉得很喜欢这样一套高度集成而且灵活易配置的 CI 方案，我认为这方面 GitLab 要比 Gitea强很多。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>根据到目前为止我自己的实际体验，对于仅个人或者小型团队内部的 Git 服务器来说，我更推荐 Gitea，它更轻量，更容易定制化，GitLab 相对来说太吃资源了，而且很多高级功能一般用户可能永远用不上。</p>
+<p>如果是中大型团队/企业，或者是要搭建公开服务的站点，那么我只推荐 GitLab。Gitea 对于隐私的保护实在有很多欠缺，而且用起来的时候经常能感受到很多设计并不适合向大量用户提供稳定的服务。GitLab 虽然重，但是整体考虑更加完善，更适合作为商业化的产品使用。</p>
+<p>目前我还没有来得及尝试更多功能，所以暂时也给不了更多建议，以后或许会继续更新踩坑经历，希望能帮到更多用户。</p>
+<p><strong>本文转载自</strong>: <a href="https://zhuanlan.zhihu.com/p/486410391" target="_blank" rel="noopener">知乎</a></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../365.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../365.html" itemprop="url">国内代码托管厂商汇总</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-17T14:04:19+08:00">
+                2022-09-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="汇总如下"><a href="#汇总如下" class="headerlink" title="汇总如下"></a>汇总如下</h3><ol>
+<li><p><strong>Gitee</strong></p>
+<p><a href="https://gitee.com" target="_blank" rel="noopener">点击进入</a></p>
+<p>开源中国旗下的产品, 算是国内老牌厂商了</p>
+</li>
+<li><p><strong>Coding.net</strong></p>
+<p><a href="https://coding.net" target="_blank" rel="noopener">点击进入</a></p>
+<p>目前属于腾讯旗下的产品</p>
+</li>
+<li><p><strong>CodeUp</strong></p>
+<p><a href="https://codeup.aliyun.com" target="_blank" rel="noopener">点击进入</a></p>
+<p>阿里云旗下的产品</p>
+</li>
+<li><p><strong>GitCode</strong></p>
+<p><a href="https://gitcode.nett" target="_blank" rel="noopener">点击进入</a></p>
+<p>CSDN旗下的产品</p>
+</li>
+<li><p><strong>小程序代码托管</strong></p>
+<p><a href="https://git.weixin.qq.com" target="_blank" rel="noopener">点击进入</a></p>
+<p>也是腾讯旗下的 主要用于微信小程序代码托管</p>
+</li>
+<li><p><strong>极狐 JihuLab</strong></p>
+<p><a href="https://jihulab.com" target="_blank" rel="noopener">点击进入</a></p>
+<p>基于<code>Gitlab</code>搭建的托管平台</p>
+</li>
+</ol>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../364.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../364.html" itemprop="url">MAC下使用Tree指令打印目录结构树</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-17T12:04:19+08:00">
+                2022-09-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── app</span><br><span class="line">│   ├── build</span><br><span class="line">│   │   ├── exe</span><br><span class="line">│   │   │   └── main</span><br><span class="line">│   │   │       └── main</span><br><span class="line">│   │   ├── objs</span><br><span class="line">│   │   │   └── main</span><br><span class="line">│   │   │       └── mainCpp</span><br><span class="line">│   │   │           └── c8slc3rovxgcr2csa5t8w6tth</span><br><span class="line">│   │   │               └── HH.o</span><br><span class="line">│   │   └── tmp</span><br><span class="line">│   │       ├── compileMainExecutableMainCpp</span><br><span class="line">│   │       │   ├── options.txt</span><br><span class="line">│   │       │   └── output.txt</span><br><span class="line">│   │       └── linkMainExecutable</span><br><span class="line">│   │           ├── options.txt</span><br><span class="line">│   │           └── output.txt</span><br><span class="line">│   ├── build.gradle</span><br><span class="line">│   ├── libs</span><br><span class="line">│   ├── proguard-rules.pro</span><br><span class="line">│   └── src</span><br><span class="line">│       ├── androidTest</span><br><span class="line">│       │   └── java</span><br><span class="line">│       │       └── com</span><br><span class="line">│       │           └── example</span><br><span class="line">│       │               └── myapplication</span><br><span class="line">│       │                   └── ExampleInstrumentedTest.kt</span><br><span class="line">│       ├── main</span><br><span class="line">│       │   ├── c</span><br><span class="line">│       │   │   ├── Hello.c</span><br><span class="line">│       │   │   └── Hello.h</span><br><span class="line">│       │   └── cpp</span><br><span class="line">│       │       └── HH.cpp</span><br><span class="line">│       └── test</span><br><span class="line">│           └── java</span><br><span class="line">│               └── com</span><br><span class="line">│                   └── example</span><br><span class="line">│                       └── myapplication</span><br><span class="line">│                           └── ExampleUnitTest.kt</span><br><span class="line">├── build.gradle</span><br><span class="line">├── gradle</span><br><span class="line">│   └── wrapper</span><br><span class="line">│       ├── gradle-wrapper.jar</span><br><span class="line">│       └── gradle-wrapper.properties</span><br><span class="line">├── gradle.properties</span><br><span class="line">├── gradlew</span><br><span class="line">├── gradlew.bat</span><br><span class="line">├── local.properties</span><br><span class="line">└── settings.gradle</span><br></pre></td></tr></table></figure>
+
+<p>如果你也想要打印类似于上面的目录结构树, 那么我们可以安装一个<code>tree</code>程序, </p>
+<p>如果是<code>Mac</code>平台 那么直接使用<code>brew</code>工具进行安装:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install tree</span><br></pre></td></tr></table></figure>
+
+<p>安装完毕后 在你只需要打印结构树的目录下输入<code>tree</code>即可</p>
+<h3 id="Tree的常用技巧"><a href="#Tree的常用技巧" class="headerlink" title="Tree的常用技巧"></a>Tree的常用技巧</h3><ol>
+<li><p>如果想将目录树输出到文本, 我们可以:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tree &gt;README.md</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果我们指定打印层级数, 那么可以:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tree -L 层级数量</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果我们只想打印文件夹</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tree -d</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果我们想滤除掉某个文件夹</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tree -I 文件夹名称</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../363.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1115,977 +1932,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../358.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../358.html" itemprop="url">快速上手免费开源游戏引擎Godot</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-10T11:04:19+08:00">
-                2022-09-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p><code>Godot</code>是一款免费开源的游戏引擎, 其优点如下:</p>
-<ul>
-<li>免费开源</li>
-<li>体积小 非常轻量 而且功能齐全</li>
-<li>跨平台开发 支持<code>Windows</code>  <code>Mac</code>  <code>Linux</code>  <code>Android</code>甚至<code>Web在线开发</code></li>
-<li>脚本语言简单 语法和<code>python</code>类似</li>
-<li>游戏跨平台运行</li>
-<li>内置脚本编辑器 无需额外安装第三方编辑器 </li>
-</ul>
-<p>当然 它也有一定的劣势:</p>
-<ul>
-<li>对H5的支持不太好 不适合做页游</li>
-<li>不支持小程序</li>
-<li><code>2D</code>比较成熟 但<code>3D</code>相对<code>Unity</code>和<code>UE</code>而言弱一些</li>
-</ul>
-<p>总之 中小型的游戏开发  完全可以胜任</p>
-<p><a href="https://godotengine.org/" target="_blank" rel="noopener">官网地址</a></p>
-<p><a href="https://github.com/godotengine/godot" target="_blank" rel="noopener">GitHub地址</a></p>
-<p><a href="https://docs.godotengine.org/zh_CN/latest/" target="_blank" rel="noopener">官方中文文档</a></p>
-<h3 id="快速上手"><a href="#快速上手" class="headerlink" title="快速上手"></a>快速上手</h3><p>以下介绍针对有编程语言基础的同学食用</p>
-<p>我们知道所谓引擎 其实就是一团封装好的代码而已, 将一些常用且重复的逻辑进行抽取简化  方便开发者调用 从而提升游戏开发的效率</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220913144306654.png" alt="image-20220913144306654"></p>
-<p>在<code>Godot</code>中 每一个节点就是一个对象, 场景是一个节点 精灵也是一个节点 都是对象<strong>(如果你是<code>android</code>开发 我们可以将其看成是布局文件中的控件)</strong></p>
-<p>如果我们想在某个类中创建一个对象, 那么直接在该类中创建一个节点, 比如我们想在<code>Main</code>这个类中创建<code>Control</code>对象:</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220913144722992.png" alt="image-20220913144722992"></p>
-<p>既然是对象, 那么肯定有继承关系 属性和方法, 我们可以从右侧检查器面板中看到继承关系以及本类和父类们的属性 :</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220913144543831.png" alt="image-20220913144543831"></p>
-<p>而右侧节点面板中的信号列表, 其实就相当于我们平常所说的监听回调:</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220913145102898.png" alt="image-20220913145102898"></p>
-<p>如果需要查看该对象的方法以及方法说明, 我们可以直接在检查器面板中打开随时查看:</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220913145406023.png" alt="image-20220913145406023"></p>
-<h3 id="Godot进阶"><a href="#Godot进阶" class="headerlink" title="Godot进阶"></a>Godot进阶</h3><ol>
-<li><p>使用场景自动加载的形式创建单例</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220914113325298.png" alt="image-20220914113325298"></p>
-</li>
-</ol>
-<h3 id="常用快捷键"><a href="#常用快捷键" class="headerlink" title="常用快捷键"></a>常用快捷键</h3><ol>
-<li><p>添加节点</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ctrl+A</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>全局搜索</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ctrl+shift+F</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>复制物体</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ctrl+D</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>播放动画</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shift+D</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>停止动画</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S</span><br></pre></td></tr></table></figure>
-
-
-
-</li>
-</ol>
-<h3 id="游戏导出"><a href="#游戏导出" class="headerlink" title="游戏导出"></a>游戏导出</h3><p>以导出Android包为例, 首先需要在编辑器设置中指定好<code>SDK</code>和签名路径:</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220914114349233.png" alt="image-20220914114349233"></p>
-<p>签名可以用以下指令生成:</p>
-<figure class="highlight d"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">keytool -keyalg RSA -genkeypair -<span class="keyword">alias</span> 用户名 -keypass 密码 -keystore <span class="keyword">debug</span>.keystore -storepass 密码 -dname <span class="string">"CN=Android Debug,O=Android,C=US"</span> -validity <span class="number">9999</span> -deststoretype pkcs12</span><br></pre></td></tr></table></figure>
-
-<p>紧接着进入导出界面, 选择Android, 然后提示模板缺失, 此时我们点击管理模板:</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220914114704962.png" alt="image-20220914114704962"></p>
-<p>然后点击下载模板:</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220914114745522.png" alt="image-20220914114745522"></p>
-<p>这个模板文件 包含了所有支持平台的基础框架包:</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220914115341762.png" alt="image-20220914115341762"></p>
-<p>此时 我们再次进入导出面板, 配置签名后点击导出项目就可以了:</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220914115952330.png" alt="image-20220914115952330"></p>
-<p>其他平台导出方法可参考官方文档, 当然还有贴吧小伙伴的经验贴可参考:</p>
-<p><a href="https://tieba.baidu.com/p/6015825850" target="_blank" rel="noopener">跨平台导出参考</a></p>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../357.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../357.html" itemprop="url">JS读取本地json文件的方法汇总</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-05T11:04:19+08:00">
-                2022-09-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>对于单纯的静态网站而言, 我们有时候可能会直接将<code>json</code>数据放在本地, 此时涉及到<code>json</code>文件内容读取的问题</p>
-<p>假设<code>html</code>同级目录下有一个名为<code>data.json</code>的文件, 读取的方式有:</p>
-<h3 id="第一种-使用ajax"><a href="#第一种-使用ajax" class="headerlink" title="第一种 使用ajax"></a>第一种 使用ajax</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$.ajax(&#123;</span><br><span class="line">                url: <span class="string">"data.json"</span>,<span class="comment">//同文件夹下的json文件路径</span></span><br><span class="line">                type: <span class="string">"GET"</span>,<span class="comment">//请求方式为get</span></span><br><span class="line">                dataType: <span class="string">"json"</span>, <span class="comment">//返回数据格式为json</span></span><br><span class="line">                success: <span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;<span class="comment">//请求成功完成后要执行的方法 </span></span><br><span class="line">                    <span class="built_in">console</span>.log(data);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;)</span><br></pre></td></tr></table></figure>
-
-<h3 id="第二种-getJson"><a href="#第二种-getJson" class="headerlink" title="第二种 getJson"></a>第二种 getJson</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$.getJSON(<span class="string">"data.json"</span>, <span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">              <span class="built_in">console</span>.log(data)</span><br><span class="line">          &#125;);</span><br></pre></td></tr></table></figure>
-
-<h3 id="第三种-使用原生XMLHttpRequest"><a href="#第三种-使用原生XMLHttpRequest" class="headerlink" title="第三种 使用原生XMLHttpRequest"></a>第三种 使用原生XMLHttpRequest</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">var</span> url = <span class="string">"data.json"</span></span><br><span class="line"><span class="comment">// 申明一个XMLHttpRequest</span></span><br><span class="line"><span class="keyword">var</span> request = <span class="keyword">new</span> XMLHttpRequest();</span><br><span class="line"><span class="comment">// 设置请求方法与路径</span></span><br><span class="line">request.open(<span class="string">"get"</span>, url);</span><br><span class="line"><span class="comment">// 不发送数据到服务器</span></span><br><span class="line">request.send(<span class="literal">null</span>);</span><br><span class="line"><span class="comment">//XHR对象获取到返回信息后执行</span></span><br><span class="line">request.onload = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 解析获取到的数据</span></span><br><span class="line">    <span class="keyword">var</span> data = <span class="built_in">JSON</span>.parse(request.responseText);</span><br><span class="line">    <span class="built_in">console</span>.log(data)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h3><p>我们在进行本地代码测试的时候, 如果以双击的形式打开<code>html</code>, 会出现跨域问题, 浏览器控台报错如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Access to XMLHttpRequest at &apos;file:///Users/songjian/Desktop/data.json&apos; from origin &apos;null&apos; has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, chrome-extension, chrome-untrusted, https, isolated-app</span><br></pre></td></tr></table></figure>
-
-<p><strong>解决方法有两种:</strong></p>
-<ol>
-<li><p>第一种是给网页添加一个域名, 比如<code>localhost</code>, 我们可以使用<code>python</code>或者<code>nodejs</code>在本地启动一个服务, 这里以<code>python3</code>为例:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m http.server 8000</span><br></pre></td></tr></table></figure>
-
-<p>启动服务后, 浏览器输入<code>localhost:8000</code>, 即可正常获取到本地<code>json</code>数据</p>
-</li>
-<li><p>第二种是修改本地浏览器设置, 以<code>Windows</code>平台谷歌浏览器为例, 启动时添加参数<code>--allow-file-access-from-files</code></p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/c8235f9d82ac126c8659f46c06bebb80.png" alt="20201223114910"></p>
-</li>
-</ol>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../356.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../356.html" itemprop="url">acme.sh证书自动部署教程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-02T14:04:19+08:00">
-                2022-09-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本页面介绍了 ACME.sh 结合 CertCloud 的部署流程。</p>
-<blockquote>
-<p>在开始之前需要完成 <a href="https://docs.certcloud.cn/docs/installation/auto/acme" target="_blank" rel="noopener">证书ACME自动部署</a> 页面的前两个步骤。</p>
-</blockquote>
-<h2 id="创建-ACME-目录-URL"><a href="#创建-ACME-目录-URL" class="headerlink" title="创建 ACME 目录 URL"></a>创建 ACME 目录 URL</h2><ol>
-<li>登录 CertCloud 账户，点击【自动化】-&gt;【ACME】-&gt;【添加 ACME 目录 URL】 <img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/acmepage.png" alt="ACME URL 生成操作步骤"></li>
-<li>在弹出框中输入具有标识性的<code>名称</code>，选择证书来源[订单,产品]，选择相应的<code>订单</code>或<code>产品</code> <code>组织</code> ，点击【添加】按钮。ACME 界面会新增一条记录。</li>
-<li>ACME 界面会新增一条记录 ，点击对应记录的 【部署】 按钮，在跳转的页面选择 <code>acme.sh</code>，点击<code>复制图标</code>复制 <strong>acme.sh 部署命令</strong> 。</li>
-</ol>
-<blockquote>
-<p>当前，CertCloud ACME 仅支持 OV 和 EV TLS / SSL 证书。<br>如果需要查看详细的 ACME URL ，则只需要点击对应数据的“ 部署 ”按钮，就可以看到详细的 ACME URL 信息。</p>
-</blockquote>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>官网：<a href="https://github.com/acmesh-official/acme.sh" target="_blank" rel="noopener">ACME.sh GitHub项目地址</a></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl  https://get.acme.sh | sh</span><br></pre></td></tr></table></figure>
-
-<p>普通用户和 root 用户都可以安装使用。</p>
-<p>安装过程:</p>
-<ol>
-<li>默认安装 acme.sh 到你的 <strong>home</strong> 目录下:</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#cd ~/.acme.sh/</span><br></pre></td></tr></table></figure>
-
-<p>为了方便使用 acme.sh，可以创建 一个 bash 的 alias:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alias acme.sh=~/.acme.sh/acme.sh</span><br></pre></td></tr></table></figure>
-
-<h2 id="颁发并安装证书"><a href="#颁发并安装证书" class="headerlink" title="颁发并安装证书"></a>颁发并安装证书</h2><ol>
-<li>通过 SSH 连接到安装有 ACME 客户端的 Web 服务器。</li>
-<li>在终端提示符下，使用 ACME.sh 客户端命令执行上述复制的颁发命令请求证书。<strong>ACME.sh 客户端颁发、安装以及重颁发示例：</strong></li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 获取</span></span><br><span class="line">sudo acme.sh --issue -d DOMAIN --dns DNS_TYPE --server YOUR-ACME-URL --days DAYS </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 安装</span></span><br><span class="line">sudo acme.sh --installcert -d DOMAIN --key-file  YOUR-KEY.pem  --fullchain-file  YOUR-CERT.pem --reloadcmd   "YOUR-SERVER-RELOAD"</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 获取并安装（以上两条命令合在一起）</span></span><br><span class="line">sudo acme.sh --issue -d DOMAIN --dns DNS_TYPE --server YOUR-ACME-URL --days DAYS &amp;&amp; sudo acme.sh --installcert -d DOMAIN --key-file  YOUR-KEY.pem  --fullchain-file  YOUR-CERT.pem --reloadcmd   "YOUR-SERVER-RELOAD"</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>DOMAIN</code> 需要替换为申请时提交的域名信息，可以为多个。</li>
-<li><code>DNS_TYPE</code> 为需要验证的域名的 DNS 的类型，不同的类型需要配置不同的环境变量。(预审核通过的可以直接配置为 dns_dp ,不需要配置密钥信息)</li>
-<li><code>DAYS</code> 为申请的证书的请求周期，应比当前订单的<strong>密钥轮换周期</strong>时间小。</li>
-<li><code>YOUR-ACME-URL</code> 为先前创建的 ACME 目录 URL （请参阅 <strong>创建 ACME 目录 URL</strong>）。</li>
-<li><code>YOUR-KEY.pem</code> 表示服务配置的证书私钥的路径地址信息。</li>
-<li><code>YOUR-CERT.pem</code> 表示服务配置的证书文件的路径地址信息。</li>
-<li><code>YOUR-SERVER-RELOAD</code> 表示服务重载服务的命令。（具体的实例，可以看下方的 <strong>ACME.sh 部分常用命令</strong>）</li>
-</ul>
-<p>注：可以根据自己的需要和服务器环境自定义 ACME 客户端执行命令。</p>
-<p>ACME返回的错误和错误消息与 CertCloud API 中返回的错误和错误消息相同。有关错误代码及其含义的列表，请参见 <a href="https://docs.certcloud.cn/docs/installation/auto/openapi/errcode" target="_blank" rel="noopener">Open API 错误</a>。</p>
-<blockquote>
-<p>完成后，终端将显示一条成功消息<br>恭喜你！ACME 证书请求已完成，并且新发行的证书已安装(保存)在 Web 服务器上。可以访问网站以确认安装成功。</p>
-</blockquote>
-<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><p>为了更方便使用，提供了部分 ACME.sh 的常用命令。</p>
-<table>
-<thead>
-<tr>
-<th>字段信息</th>
-<th>解释</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>- -issue</td>
-<td>签发请求</td>
-</tr>
-<tr>
-<td>- -days [days]</td>
-<td>请求签发证书的周期，配合 –issue 使用</td>
-</tr>
-<tr>
-<td>- -server [ACME 目录 URL]</td>
-<td>证书服务商的 ACME 目录 URL，配合 –issue 使用</td>
-</tr>
-<tr>
-<td>- -installcert</td>
-<td>安装证书</td>
-</tr>
-<tr>
-<td>-d [网站域名]</td>
-<td>配置证书的域名信息</td>
-</tr>
-<tr>
-<td>- -webroot [网站跟文件路径]</td>
-<td>文件验证需要的网站跟文件路径</td>
-</tr>
-<tr>
-<td>- -dns [DNS类型]</td>
-<td>配置验证域名的DNS信息</td>
-</tr>
-<tr>
-<td>- -cert-file [证书保存的路径]</td>
-<td>安装证书保存的路径</td>
-</tr>
-<tr>
-<td>- -key-file [私钥保存的路径]</td>
-<td>安装私钥保存的路径</td>
-</tr>
-<tr>
-<td>- -fullchain-file [证书链保存的路径]</td>
-<td>安装证书链保存的路径</td>
-</tr>
-<tr>
-<td>- -reloadcmd [Web 重载命令]</td>
-<td>安装证书完成之后Web服务的重载命令</td>
-</tr>
-</tbody></table>
-<ol>
-<li><p>文件验证</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">acme.sh  --issue  -d mydomain.com -d www.mydomain.com  --webroot  /home/wwwroot/mydomain.com/ --server https://acme.certcloud.cn/acme/directory/XXX</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>DNS 验证( 以 DNSPod ，阿里 DNS 为例)</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">export DP_Id="XXX"</span><br><span class="line">export DP_Key="XXX"</span><br><span class="line">acme.sh  --issue  --dns dns_dp   -d aa.com  -d www.aa.com --server https://acme.certcloud.cn/acme/directory/XXX </span><br><span class="line">   </span><br><span class="line">export Ali_Key="XXX"</span><br><span class="line">export Ali_Secret="XXX"</span><br><span class="line">acme.sh  --issue --dns dns_ali -d example.com -d www.example.com --server https://acme.certcloud.cn/acme/directory/XXX</span><br></pre></td></tr></table></figure>
-
-<p>更多支持的DNS类型详见 [<a href="https://github.com/acmesh-official/acme.sh/wiki/dnsapi" target="_blank" rel="noopener">ACME.sh 支持的 DNS 类型大全</a>]</p>
-</li>
-<li><p>证书部署：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Nginx example:</span><br><span class="line">   </span><br><span class="line">acme.sh --installcert -d example.com --server https://acme.certcloud.cn/acme/directory/XXX \</span><br><span class="line">--key-file       /path/to/keyfile/in/nginx/key.pem  \</span><br><span class="line">--fullchain-file /path/to/fullchain/nginx/cert.pem \</span><br><span class="line">--reloadcmd     "service nginx force-reload"</span><br><span class="line">   </span><br><span class="line">Apache example:</span><br><span class="line">   </span><br><span class="line">acme.sh --installcert -d example.com --server https://acme.certcloud.cn/acme/directory/XXX  \</span><br><span class="line">--cert-file      /path/to/certfile/in/apache/cert.pem  \</span><br><span class="line">--key-file       /path/to/keyfile/in/apache/key.pem  \</span><br><span class="line">--fullchain-file /path/to/fullchain/certfile/apache/fullchain.pem \</span><br><span class="line">--reloadcmd     "service apache2 force-reload"</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>获取并部署</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">acme.sh --issue -d example.com -d www.example.com --dns dns_dp --server https://acme.certcloud.cn/acme/directory/XXX --days 30 </span><br><span class="line">&amp;&amp; acme.sh --installcert -d example.com -d www.example.com \</span><br><span class="line">--key-file    /etc/nginx/conf.d/example.com.key  \</span><br><span class="line">--fullchain-file /etc/nginx/conf.d/example.com.cer \</span><br><span class="line">--reloadcmd  "service nginx force-reload"</span><br></pre></td></tr></table></figure>
-
-<p>days 的周期为 30 天，acme.sh 会每 30 天去请求 server 去获取新的证书，并进行安装。</p>
-</li>
-</ol>
-<p><strong>本文转载自</strong>: <a href="https://docs.certcloud.cn/docs/installation/auto/acme/acmesh/" target="_blank" rel="noopener">https://docs.certcloud.cn/docs/installation/auto/acme/acmesh/</a></p>
-<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../355.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../355.html" itemprop="url">使用ACME搭配freessl网站实现免费https证书的生成和更新</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-02T11:04:19+08:00">
-                2022-09-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>最近在使用<code>netlify</code>的静态网站托管服务, 如果需要自定义域名的话 需要提供<code>https</code>证书, 如下图:</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902113147959.png" alt="image-20220902113147959"></p>
-<h3 id="SSL证书介绍"><a href="#SSL证书介绍" class="headerlink" title="SSL证书介绍"></a>SSL证书介绍</h3><p>是一种配置在服务器上的数字证书, 由可信的数字证书颁发机构（CA）颁发, 类似于我们的驾驶证, 它具有服务器身份验证和数据传输加密功能。</p>
-<p>证书实际上就是几串字符密钥 以文本的形式存放在诸如<code>.key</code>  <code>.cer</code>   <code>.csr</code> 结尾的文件中:</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902121037323.png" alt="image-20220902121037323"></p>
-<p>文件介绍:</p>
-<ul>
-<li><code>.key</code>文件: 证书私钥</li>
-<li><code>.cer</code>文件: <code>certificate</code>的缩写,这就是数字证书</li>
-<li><code>.csr</code>文件:<code>certificate signing request</code>的缩写 证书签名请求文件，含有公钥信息</li>
-</ul>
-<p>这些文件需要存放在服务器中, 当浏览器通过域名对服务器进行访问时, 可获取服务器中的证书, 证书中含有公钥</p>
-<p>那么浏览器和服务器  一个持有私钥一个持有公钥  进行加密会话 保证数据安全</p>
-<h3 id="自制SSL证书"><a href="#自制SSL证书" class="headerlink" title="自制SSL证书"></a>自制SSL证书</h3><p>既然所谓的证书就是<code>RSA</code>密钥, 那我们自然可以自己生成, 比如:</p>
-<p><a href="https://myssl.com/csr_create.html" target="_blank" rel="noopener">在线生成SSL证书</a></p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902142026451.png" alt="image-20220902142026451"></p>
-<p>但是这种自己颁发的证书是不被浏览器认可的, 就好比自己给自己手写一张驾驶证, 完全没有任何法律效力</p>
-<p>因此我们只能向<code>CA</code>机构申请证书, 国际知名的<code>CA</code>机构有<code>GeoTrust</code>、<code>Comodo</code>、<code>DigiCert</code>、<code>Sectigo</code>、<code>Thawte</code>、<code>GlobalSign</code>、<code>Symantec</code>、<code>AlphaSSL</code>等 </p>
-<p>大部分都是收费的, 那么我们要用免费的话, 可以退而求其次,<code>freessl</code>这个平台是个不错的选择</p>
-<h3 id="freessl-cn"><a href="#freessl-cn" class="headerlink" title="freessl.cn"></a>freessl.cn</h3><p>该网站免费提供由<code>Let&#39;s Encrypt</code> 与 <code>TrustAsia</code>两家<code>CA</code>机构颁发的<code>SSL</code>证书, 我们注册后即可免费申请, 但是证书有效期只有三个月, 到期后需要重新申请</p>
-<p>为了解决自动续期的问题 我们需要用到一个工具, 那就是<code>acme.sh</code></p>
-<h3 id="ACME-SH"><a href="#ACME-SH" class="headerlink" title="ACME.SH"></a>ACME.SH</h3><p><code>acme.sh</code>是一个数字证书管理工具, 利用它我们可以:</p>
-<ul>
-<li>辅助申请<code>SSL</code>证书文件到本地</li>
-<li>内置定时程序 到期自动申请证书</li>
-<li>安装证书到指定目录</li>
-</ul>
-<p><a href="https://github.com/acmesh-official/acme.sh" target="_blank" rel="noopener">GitHub地址</a></p>
-<h5 id="工具使用"><a href="#工具使用" class="headerlink" title="工具使用"></a>工具使用</h5><ol>
-<li><p><strong>工具安装</strong></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> https://github.com/acmesh-official/acme.sh.git</span><br><span class="line">$ <span class="built_in">cd</span> ./acme.sh</span><br><span class="line">$ ./acme.sh --install -m my@example.com</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>证书申请</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">acme.sh --issue -d 域名 -w 证书存放目录</span><br></pre></td></tr></table></figure>
-
-<p><code>acme.sh</code> 默认会从<a href="https://zerossl.com/" target="_blank" rel="noopener">zerossl</a>获取证书, <code>zerossl</code>和<code>freessl.cn</code>一样, 也是一个证书中介网站 ,<code>zerossl</code>提供由<code>Let&#39;s Encrypt</code> 颁发的数字证书, 每个注册账户可以申请三个免费证书</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902150909721.png" alt="image-20220902150909721"></p>
-<p>但是 由于免费的数量有限 所以我们不选择从<code>zerossl</code>获取</p>
-<p>如果只是临时测试用的话 可以用一用 直接在官网申请并下载证书<code>zip</code>包即可:</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902151803041.png" alt="image-20220902151803041"></p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902152401511.png" alt="image-20220902152401511"></p>
-<p>考虑到长期使用, 因此我们选择<code>freessl.cn</code></p>
-</li>
-<li><p><strong>从<code>freessl.cn</code>获取证书</strong></p>
-<p><code>freessl</code>支持<code>acme</code>自动化</p>
-<p>在网站输入域名并且进行校验后会生成一个<code>acme</code>地址, 这个地址相当于账号凭证, 利用这个它我们可以借助<code>acme.sh</code>快速获取证书:</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902152759063.png" alt="image-20220902152759063"></p>
-<p>具体指令如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">acme.sh --issue -d 域名  --dns dns_dp --server 你的acme地址</span><br></pre></td></tr></table></figure>
-
-<p>执行后自动将证书下载到本地:</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902113332949.png" alt="image-20220902113332949"></p>
-<p>最后我们将证书密钥拷贝至托管服务器中, 这里以<code>netlify</code>为例:</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902154250607.png" alt="image-20220902154250607"></p>
-<p>填写完后点击安装, 证书成功识别</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902113754771.png" alt="image-20220902113754771"></p>
-<p>此时 我们即可通过自定义域名访问<code>netlify</code>中的静态网站了, 在浏览器中可以查看当前获取到的证书信息:</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220902141040045.png" alt="image-20220902141040045"></p>
-</li>
-</ol>
-<h3 id="关于自动更新"><a href="#关于自动更新" class="headerlink" title="关于自动更新"></a>关于自动更新</h3><p>通常我们会将<code>acme.sh</code>安装至服务器中, 然后实现证书的自动更新, 由于我这边使用的是<code>netlify</code>, 所以三个月到期后需要手动执行一下代码</p>
-<p>更多关于<code>acme.sh</code>自动化的用法, 可以参见《<a href="https://code.newban.cn/356.html">acme.sh证书自动部署教程</a>》</p>
-<h3 id="其他可以获取免费SSL证书的网站"><a href="#其他可以获取免费SSL证书的网站" class="headerlink" title="其他可以获取免费SSL证书的网站"></a>其他可以获取免费SSL证书的网站</h3><ul>
-<li><strong>OHTTPS</strong>: <a href="https://ohttps.com/" target="_blank" rel="noopener">https://ohttps.com/</a></li>
-</ul>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../354.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../354.html" itemprop="url">使用Hugo搭建个人博客</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-01T11:04:19+08:00">
-                2022-09-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><code>Hugo</code>和<code>Hexo</code>类似, 也是一个搭建静态博客的工具, <code>Hugo</code>由<code>Go</code>语言编写,相比之下 <code>Hugo</code>编译速度要比<code>Hexo</code>快很多</p>
-<p>不过各有各的优点, 目前我两个工具都在用, 主要还是以<code>Hexo</code>为主</p>
-<p>接下来介绍<code>Hugo</code>的使用</p>
-<h3 id="工具安装"><a href="#工具安装" class="headerlink" title="工具安装"></a>工具安装</h3><ol>
-<li><p><strong>Mac用户</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install hugo</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>Windows用户</strong></p>
-<p><a href="https://github.com/gohugoio/hugo/releases" target="_blank" rel="noopener">GitHub下载安装包</a></p>
-<p>下载完后 给<code>hugo.exe</code>配置环境变量, 方便任意目录使用该程序</p>
-</li>
-</ol>
-<p>安装完后 可以在命令窗口输入<code>hugo version</code> 来检测是否安装成功</p>
-<h3 id="工具基础使用"><a href="#工具基础使用" class="headerlink" title="工具基础使用"></a>工具基础使用</h3><ol>
-<li><p><strong>创建博客空工程</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hugo new site 项目名称</span><br></pre></td></tr></table></figure>
-
-<p>执行完后会在当前目录下生成工程文件夹:</p>
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220901170044828.png" alt="image-20220901170044828"></p>
-<p>目录介绍:</p>
-<ul>
-<li><strong>content目录</strong>: 用于存放博客文章</li>
-<li><strong>themes目录</strong>: 用于存放博客主题</li>
-<li><strong>static目录</strong>: 该目录下文件不会被渲染 可用于存放静态资源 比如图片<code>js</code> <code>css</code>以及<code>CNAME</code>等等</li>
-<li><strong>archetypes目录</strong>:里面存放文章模版文件</li>
-<li><strong>data目录</strong>:用于存放数据</li>
-<li><strong>layouts目录</strong>:用于存放布局文件</li>
-<li><strong>config.toml文件</strong>: 配置文件</li>
-</ul>
-</li>
-<li><p><strong>新建文章</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hugo new post/first.md</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>下载博客主题</strong></p>
-<p>博客必须要有一个主题 不然渲染出来的页面是空白, 我们以<code>hyde</code>主题为例:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 创建 themes 目录</span><br><span class="line">$ cd themes</span><br><span class="line">$ git clone https://github.com/spf13/hyde.git</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>生成静态文件</strong></p>
-<p>需要指定以那个主题进行静态页面渲染</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hugo --theme=hyde</span><br></pre></td></tr></table></figure>
-
-<p>此时目录下会自动生成一个<code>public</code>目录, 里面的文件即为生成的静态文件, 可以直接部署到网站</p>
-</li>
-<li><p><strong>部署到<code>GitHub</code></strong></p>
-<p>添加静态仓库关联:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ cd public</span><br><span class="line">$ git init</span><br><span class="line">$ git remote add origin https://github.com/xxx/xxx.github.io.git</span><br></pre></td></tr></table></figure>
-
-<p>或者使用submodule的方式:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule add -f -b master https://github.com/xxx/xxx.github.io.git public</span><br></pre></td></tr></table></figure>
-
-<p>最后将静态文件推送到仓库:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">$ git add -A</span><br><span class="line">$ git commit -m &quot;first commit&quot;</span><br><span class="line">$ git push -u origin master</span><br></pre></td></tr></table></figure>
-
-<p>部署这一块 相比<code>hexo</code>要繁琐一些, 我们可以使用脚本或者用<code>GitHub actions</code>自动部署</p>
-</li>
-</ol>
-<h3 id="其他命令"><a href="#其他命令" class="headerlink" title="其他命令"></a>其他命令</h3><ol>
-<li><p><strong>生成独立页面</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hugo new about.md</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>博客本地调试</strong></p>
-<p>调试时同样需要指定一个主题</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hugo server --theme=hyde</span><br></pre></td></tr></table></figure>
-
-<p>服务启动后 浏览器里打开： <code>http://localhost:1313</code>, 即可看到当前博客页面, 修改文章动态更新</p>
-<p>如果需要让草稿一并加入调试 那么可以加入<code>-D</code>:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hugo server --theme=hyde -D</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>生成静态文件时草稿也进行渲染</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hugo  --theme=hyde -D</span><br></pre></td></tr></table></figure>
-
-<p>必须是大写的<code>D</code></p>
-</li>
-</ol>
-<h3 id="进阶使用"><a href="#进阶使用" class="headerlink" title="进阶使用"></a>进阶使用</h3><ol>
-<li><p>每次执行指令都要指定主题太过繁琐?  没事 我们在配置文件中添加以下代码 配置默认主题即可解决烦恼</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 主题名称</span><br><span class="line">theme = &quot;hyde&quot;</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://raw.staticdn.net/songjianzaina/lunanzb_img/master/img/image-20220901174231361.png" alt="image-20220901174231361"></p>
-</li>
-<li><p>自定义域名无法访问?</p>
-<ol>
-<li>需要在配置文件中将<code>baseURL</code>参数替换成你的域名</li>
-<li>同时在<code>static</code>目录下新建<code>CNAME</code>文件, 然后输入你的域名</li>
-</ol>
-</li>
-</ol>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
-<p><img src="https://raw.staticdn.net/songjianzaina/SavePicGoPic/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2136,7 +1982,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">434</span>
+                  <span class="site-state-item-count">439</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2149,7 +1995,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">126</span>
+                  <span class="site-state-item-count">127</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
