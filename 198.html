@@ -1,0 +1,2329 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+<meta name="referrer" content="never">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="汇编,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="乱码三千 – 分享实用IT技术" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="x86汇编语法 注释  1;我是注释   变量取值和赋值(传送指令)  123456;赋值mov ax,2000H ;将十六进制2000赋值给十六位寄存器ax  相当于ax=2000H;取值mov bx,ax ;将ax中的值取出赋值给bx  相当于bx=ax   存放的数据大小根据使用的寄存器而定, 比如ax是16位寄存器,最大只能存放16位数据,也就是4位十六进制数据 十六进制数据不能以字母开头">
+<meta name="keywords" content="汇编">
+<meta property="og:type" content="article">
+<meta property="og:title" content="x86汇编语言之8086语法和指令集">
+<meta property="og:url" content="https://code.newban.cn/198.html">
+<meta property="og:site_name" content="乱码三千 – 分享实用IT技术">
+<meta property="og:description" content="x86汇编语法 注释  1;我是注释   变量取值和赋值(传送指令)  123456;赋值mov ax,2000H ;将十六进制2000赋值给十六位寄存器ax  相当于ax=2000H;取值mov bx,ax ;将ax中的值取出赋值给bx  相当于bx=ax   存放的数据大小根据使用的寄存器而定, 比如ax是16位寄存器,最大只能存放16位数据,也就是4位十六进制数据 十六进制数据不能以字母开头">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png">
+<meta property="og:updated_time" content="2024-04-08T02:36:39.704Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="x86汇编语言之8086语法和指令集">
+<meta name="twitter:description" content="x86汇编语法 注释  1;我是注释   变量取值和赋值(传送指令)  123456;赋值mov ax,2000H ;将十六进制2000赋值给十六位寄存器ax  相当于ax=2000H;取值mov bx,ax ;将ax中的值取出赋值给bx  相当于bx=ax   存放的数据大小根据使用的寄存器而定, 比如ax是16位寄存器,最大只能存放16位数据,也就是4位十六进制数据 十六进制数据不能以字母开头">
+<meta name="twitter:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+<!--谷歌广告验证代码-->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: "ca-pub-2626449904708114",
+          enable_page_level_ads: true
+     });
+</script>
+<!--谷歌广告验证代码-->
+
+<!--短链广告-->
+<!--<script type="text/javascript">
+    var adfly_id = 25792435;
+    var adfly_advert = 'banner';
+    var popunder = false;
+    var exclude_domains = ['code.newban.cn','newban.cn',  'localhost:4000'];
+</script>
+<script src="https://cdn.adf.ly/js/link-converter.js"></script>-->
+<!--短链广告-->
+
+
+
+  <link rel="canonical" href="https://code.newban.cn/198.html">
+
+
+
+
+
+  <title>x86汇编语言之8086语法和指令集 | 乱码三千 – 分享实用IT技术</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+  
+<a href="https://www.github.com/songjianzaina" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">乱码三千 – 分享实用IT技术</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">乱码三千 – 码出一个新世界</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://www.newban.cn/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="https://code.newban.cn/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">x86汇编语言之8086语法和指令集</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-23T14:14:19+08:00">
+                2020-12-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="x86汇编语法"><a href="#x86汇编语法" class="headerlink" title="x86汇编语法"></a>x86汇编语法</h2><ol>
+<li><strong>注释</strong></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">;我是注释</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><strong>变量取值和赋值(传送指令)</strong></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">;赋值</span><br><span class="line">mov ax,2000H ;将十六进制2000赋值给十六位寄存器ax  相当于ax=2000H</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">;取值</span><br><span class="line">mov bx,ax ;将ax中的值取出赋值给bx  相当于bx=ax</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>存放的数据大小根据使用的寄存器而定, 比如ax是16位寄存器,最大只能存放16位数据,也就是4位十六进制数据</p>
+<p>十六进制数据不能以字母开头, 前面需加上0 否则编译报错</p>
+</blockquote>
+<ol start="3">
+<li><strong>函数声明</strong></li>
+</ol>
+<p>结构如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">函数名:</span><br><span class="line">	函数体</span><br><span class="line">	ret   ;结尾标记</span><br></pre></td></tr></table></figure>
+
+<p>示例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">print:	;函数名</span><br><span class="line">		mov dx,offset str</span><br><span class="line">		mov ah, 9ch </span><br><span class="line">		int 21h</span><br><span class="line">		</span><br><span class="line">		ret ;函数结尾标记</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><strong>函数调用</strong></li>
+</ol>
+<p>x86架构中使用关键指令<code>call</code></p>
+<p>x86架构汇编示例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">		call print ;调用print函数</span><br><span class="line">		</span><br><span class="line">		;退出程序</span><br><span class="line">		mov ah, 4ch </span><br><span class="line">		int 21h</span><br><span class="line">		</span><br><span class="line">print:	;函数名</span><br><span class="line">		mov dx,offset str;获取别名对应数据的偏移地址</span><br><span class="line">		mov ah, 9ch ;9h表示调用显存 从dx总读取偏移地址对应的数据</span><br><span class="line">		int 21h</span><br><span class="line">		ret</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li><p><strong>字符串的定义</strong></p>
+<p><strong>起因</strong>：如果直接将字符串赋值给通用寄存器，会出现以下两个问题：</p>
+<ul>
+<li>字符顺序是反着的</li>
+<li>最多只能存放两个字符</li>
+<li>无法获取到数据地址，不能堆字符串进行修改</li>
+</ul>
+<p>为了解决这个问题，需要使用另外一种方式，定义字符串</p>
+<p><strong>首先</strong>:需要先在内存中申请一块空间，可以使用伪指令<strong>db</strong>和<strong>dw</strong></p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">db--&gt;define <span class="keyword">byte</span>  定义字节 读写一个数据，偏移量加<span class="number">1</span></span><br><span class="line">dw--&gt;define word  定义字   读写一个数据，偏移量加<span class="number">2</span></span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">dd--&gt;define <span class="keyword">double</span> word 定义双字， 读写一个数据 偏移量加<span class="number">4</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>示例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">db &apos;hello&apos;  ;占用五个字节的内存空间</span><br><span class="line">dw &apos;hello&apos;  ;占用六个字节的内存空间  跟偏移量有关系</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<blockquote>
+<p>如果定义数字,使用dw每个数字占用两个字节的空间, 字符串比较特殊,并不是每个字符占用两个字节,而是总长度必须是2的倍数</p>
+</blockquote>
+</li>
+</ol>
+<ol start="6">
+<li><p><strong>字符串的获取</strong></p>
+<p>获取字符串的数据,首先要获取到数据所对应的内存地址</p>
+<p>那怎么获取已经定义好的地址呢?</p>
+<p><strong>第一步尝试: 给数据添加别名</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">str db &apos;hello&apos;</span><br><span class="line"></span><br><span class="line">start:</span><br><span class="line">	mov bx,str ;别名中存放的是偏移地址</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<p>别名中存放的是偏移地址,但是光有偏移地址还不行,还需要段地址, <strong>段地址+偏移地址=实际物理地址</strong>,别名默认从ds寄存器中读取段地址, 但是我们并没有给ds寄存器赋过值, 这就导致我们无法获取正确的数据,因为我们不知道正确的段地址是多少?</p>
+<p>那字符串段地址从哪里获取呢?</p>
+<ul>
+<li><p>方法一: 直接从内存中找(仅限于调试,实际开发肯定不行)</p>
+</li>
+<li><p>方法二:使用段进行包裹, 段能给我们提供一个段地址(正解)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">data segment</span><br><span class="line">	str db &apos;hello&apos;</span><br><span class="line">data ends</span><br><span class="line">	;使用段进行包裹, 可以借助段名称获取段地址</span><br><span class="line">start:</span><br><span class="line">	mov ax,data</span><br><span class="line">	mov ds,ax</span><br><span class="line">	mov bx,str </span><br><span class="line"></span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>对内存中的数据进行读写</strong></p>
+<p>从内存中一次读取数据的多少,取决于寄存器的容器大小</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">  data segment</span><br><span class="line">  	str dw &apos;hello&apos;  ;如果定义多个数据 使用逗号进行分隔</span><br><span class="line">data ends</span><br><span class="line">  </span><br><span class="line">  start:</span><br><span class="line">  	mov ax,data</span><br><span class="line">  	mov ds,ax</span><br><span class="line">  	mov ax,str  ;如果从内存中读取数据,是根据寄存器大小来读取,16位寄存器则一次性读取16位数据,8位al则一次性读取八位数据</span><br><span class="line">  </span><br><span class="line">  end start</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<p>   <strong>思考</strong>:为什么以下写法报错:</p>
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">;报错1</span><br><span class="line">data segment</span><br><span class="line">	str db &apos;hello &apos; ;改成dw则不报错</span><br><span class="line">data ends</span><br><span class="line">start:</span><br><span class="line">mov ax,data</span><br><span class="line">	mov ds,ax</span><br><span class="line">	mov ax,str  ;</span><br><span class="line"></span><br><span class="line">end start</span><br><span class="line"></span><br><span class="line">;报错2</span><br><span class="line">data segment</span><br><span class="line">	str dw &apos;hello &apos; </span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line">start:</span><br><span class="line">	mov ax,data</span><br><span class="line">	mov ds,ax</span><br><span class="line">	mov al,str  ; ;改成mov ax,str 或者mov al,b.str 则不报错</span><br><span class="line"></span><br><span class="line">end start</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">;报错3</span><br><span class="line">mov ax,bl   ;宽度不匹配  以上两个也是同样的问题</span><br></pre></td></tr></table></figure>
+
+
+<p>   <strong>内存数据的读写是从低往高进行读写</strong></p>
+<p>   上面使用db或者dw定义数据的方式,定义数据的同时就已经定义好了数据所在的物理地址, <strong>如果我们想要从指定的内存地址中写入或者读取数据的话,需要借助段寄存器来实现</strong> 在8086中给我们提供了DS SS CS ES四个寄存器,理论上你使用哪一个都行,但是由于系统默认读取DS寄存器中的数据当做段地址,所以我们一般使用DS进行数据的段地址管理</p>
+<ul>
+<li><p>如何从指定内存中读取数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">;假设我们需要从0710:0000这个物理地址中读取数据,然后存放到寄存器中</span><br><span class="line"></span><br><span class="line">;错误写法1:</span><br><span class="line">start:</span><br><span class="line">	mov ax,0710H:0000H  ;没有这种语法</span><br><span class="line">end start</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">;错误写法2:</span><br><span class="line">start:</span><br><span class="line">	mov ds,0710H   ;段寄存器不能直接赋值,必须借助通用寄存器</span><br><span class="line">	mov ax,ds:[0]</span><br><span class="line">end start</span><br><span class="line"></span><br><span class="line">;正确写法:</span><br><span class="line">start:</span><br><span class="line">	mov ax,0710H</span><br><span class="line">	mov ds,ax</span><br><span class="line">	mov ax,ds:[0]  ;实际物理地址 段地址+偏移地址 ===&gt;ds:[xxx] 表示从该地址取数据</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<ul>
+<li><p>如何往指定内存中写入数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">;假设我们需要将数据写入0710:0000这个物理地址中</span><br><span class="line"></span><br><span class="line">;错误写法1:</span><br><span class="line">  start:</span><br><span class="line">  	mov ax,3333H</span><br><span class="line">  	mov 0710:0000,ax  ;没有这种语法</span><br><span class="line">  end start</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  ;错误写法2:</span><br><span class="line">  data segment</span><br><span class="line">  	str dw &apos;he&apos;</span><br><span class="line">  data ends</span><br><span class="line"></span><br><span class="line">  start:</span><br><span class="line">  	mov ax,data</span><br><span class="line">  	mov ds,ax   </span><br><span class="line">  	mov ds:[0],ds:str ;必须借助通用寄存器进行赋值</span><br><span class="line">  end start</span><br><span class="line"></span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">  ;正确写法1:</span><br><span class="line">  data segment</span><br><span class="line">  	str dw &apos;he&apos;</span><br><span class="line">  data ends</span><br><span class="line"></span><br><span class="line">  start:</span><br><span class="line">  	mov ax,data</span><br><span class="line">  	mov ds,ax   </span><br><span class="line">  	mov ax,ds:str ;str-==&gt;[xx] ds:[xxx]</span><br><span class="line">  	mov ds:[0],ax </span><br><span class="line">  end start</span><br><span class="line"></span><br><span class="line">  ;正确写法2:</span><br><span class="line">  start:</span><br><span class="line">  	mov ax,0710H </span><br><span class="line">  	mov ds,ax;指定需要写入数据的段地址</span><br><span class="line">  	</span><br><span class="line">  	mov ax,3333H ;将3333H当做数据</span><br><span class="line">  	mov ds:[0],ax  </span><br><span class="line">  end start</span><br><span class="line">  </span><br><span class="line">;正确写法3:</span><br><span class="line">  start:</span><br><span class="line">  	mov ax,0710H </span><br><span class="line">  	mov ds,ax;指定需要写入数据的段地址</span><br><span class="line">  	</span><br><span class="line">  	mov ds:[0],3333H  ;可以直接将数据写入 最多写入十六位的数据</span><br><span class="line">  end start</span><br></pre></td></tr></table></figure>
+
+
+
+
+</li>
+</ul>
+<blockquote>
+<p>补充:往内存中写入数据是字节宽度还是字型宽度取决于寄存器的宽度也就是 <code>mov ds:[0],ax</code> 或者数据的大小:<code>mov ds:[0] 30H</code></p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">; 以下是指定数据占用空间的大小 可以实现8位数据占用16个字节的空间的目的</span><br><span class="line"></span><br><span class="line"> mov byte ptr ds:[0],1 ;前面加上byte ptr关键字 表示往指定内存中写入字节型数据1</span><br><span class="line"> </span><br><span class="line"> mov word ptr ds:[0],1 ;往指定内存中写入字型数据1 也就是在内存中占用两个字节空间</span><br></pre></td></tr></table></figure>
+
+<p>​<br>8. <strong>字符串修改和替换</strong></p>
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">;需求1 : 将内存中he修改为wo</span><br><span class="line"></span><br><span class="line">data segment</span><br><span class="line">	str dw &apos;he&apos;</span><br><span class="line">	newstr dw &apos;wo&apos;</span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">start:</span><br><span class="line">	mov ax,data</span><br><span class="line">	mov ds,ax   </span><br><span class="line"></span><br><span class="line">	mov ax,ds:str</span><br><span class="line">	mov ds:newstr,ax </span><br><span class="line"></span><br><span class="line">end start</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">;需求2 : 将内存中hello 修改为wowowo</span><br><span class="line"></span><br><span class="line">data segment</span><br><span class="line">	str dw &apos;hello &apos;</span><br><span class="line">	newstr dw &apos;wowowo&apos;</span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">start:</span><br><span class="line">	mov ax,data</span><br><span class="line">	mov ds,ax   </span><br><span class="line"></span><br><span class="line">	mov ax,ds:str</span><br><span class="line">	mov ds:newstr,ax </span><br><span class="line">	</span><br><span class="line">	mov ax,ds:str+2</span><br><span class="line">	mov ds:newstr+2,ax</span><br><span class="line"></span><br><span class="line">	mov ax,ds:str+4</span><br><span class="line">	mov ds:newstr+4,ax</span><br><span class="line"></span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<p>   分段写法:</p>
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">data segment</span><br><span class="line">	str dw &apos;he&apos;</span><br><span class="line">	</span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line">newData segment</span><br><span class="line">     newstr dw &apos;wo&apos;</span><br><span class="line">newData ends</span><br><span class="line"></span><br><span class="line">code segment</span><br><span class="line">start:</span><br><span class="line">	mov ax,data</span><br><span class="line">	mov ds,ax   </span><br><span class="line">	mov ax,newData</span><br><span class="line">	mov es,ax</span><br><span class="line">	</span><br><span class="line">	mov ax,ds:str</span><br><span class="line">	mov es:newstr,ax </span><br><span class="line">	</span><br><span class="line">code ends</span><br><span class="line"></span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<ol start="9">
+<li><p><strong>Loop循环指令</strong></p>
+<p>类似于高级语言中的while循环, 系统默认从cx寄存器中读取数据作为循环的条件,当cx中的值cx-1大于零时循环执行一次代码</p>
+<p>示例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">;需求 : 将内存中wowowo修改为hello </span><br><span class="line"></span><br><span class="line">data segment</span><br><span class="line">	str dw &apos;hello &apos;</span><br><span class="line">	newstr dw &apos;wowowo&apos;</span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">start:</span><br><span class="line">	mov ax,data</span><br><span class="line">	mov ds,ax   </span><br><span class="line">	</span><br><span class="line">	mov bx,0 </span><br><span class="line">	mov cx,3</span><br><span class="line">replace:	</span><br><span class="line">	mov ax,ds:[bx]</span><br><span class="line">	mov ds:[bx+6],ax </span><br><span class="line">	add bx,2</span><br><span class="line">	loop replace</span><br><span class="line"></span><br><span class="line">end start</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">;需求 : 将内存中wowowo修改为hello </span><br><span class="line"></span><br><span class="line">data segment</span><br><span class="line">	dw &apos;aaa&apos;</span><br><span class="line">	str dw &apos;hello &apos;</span><br><span class="line">	newstr dw &apos;wowowo&apos;</span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">start:</span><br><span class="line">	mov ax,data</span><br><span class="line">	mov ds,ax   </span><br><span class="line">	</span><br><span class="line">	mov bx,offset str </span><br><span class="line">	mov cx,3</span><br><span class="line">replace:	</span><br><span class="line">	mov ax,ds:[bx]</span><br><span class="line">	mov ds:[bx+6],ax </span><br><span class="line">	add bx,2</span><br><span class="line">	loop replace</span><br><span class="line"></span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<p><strong>加减运算指令add和sub</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">add ax,2 ;ax=ax+2</span><br><span class="line">sub ax,2 ;ax=ax-2</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">sub/add 通用寄存器,数值  ;add/sub ax,2</span><br><span class="line">sub/add 通用寄存器,通用寄存器 ;add/sub ax,bx</span><br><span class="line">sub/add 内存地址,通用寄存器 ;add/sub ds:[0],bx</span><br><span class="line">sub/add 通用寄存器,内存地址 ;add/sub ax,ds:[0]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">;错误写法</span><br><span class="line">sub/add 内存地址,内存地址 ;;add/sub ds:[0],ds:[3]  不允许这样写</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<ol start="10">
+<li><p><strong>中断</strong></p>
+<p>顾名思义,程序运行到一半暂时断开,官方一点说就是,由于软件或者硬件信号,使得cpu暂停当前任务,转而执行另一段子程序</p>
+<blockquote>
+<p>可以形象理解为游戏中暂时搁置主线任务临时去完成支线任务</p>
+</blockquote>
+<p>中断的分类:</p>
+<ul>
+<li><p><strong>外中断 (硬中断):</strong>由外部设备(比如网卡,或者硬盘 键盘 鼠标)引发的中断,比如当网卡收到数据包的时候,就会发出一个中断</p>
+</li>
+<li><p><strong>内中断(软中断):</strong>由执行的中断指令产生的,可以通过程序控制触发</p>
+</li>
+</ul>
+<p>我们接下来要学习的是内中断知识,如果我们想要通过代码发出一个中断,那么需要使用中断指令<code>int</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int 21h ;执行中断码为21H的中断指令</span><br></pre></td></tr></table></figure>
+
+<p>cpu接收到中断信号后,暂停当前正在执行的指令,临时去执行中断码对应的内容</p>
+<p>中断码不止一个,每个码代表着不同的含义,部分中断码列表如下:</p>
+<table>
+<thead>
+<tr>
+<th>中断</th>
+<th>功能</th>
+<th>入口参数</th>
+<th>出口参数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>INT16</td>
+<td>键盘输入</td>
+<td>AH=0H读键盘  AH=10读扩展键盘</td>
+<td>AH=键盘扫描码 AL=字符ascii码</td>
+</tr>
+<tr>
+<td>INT20</td>
+<td>程序正常退出</td>
+<td>CS=PSP段地址</td>
+<td></td>
+</tr>
+<tr>
+<td>INT21</td>
+<td>系统功能调用</td>
+<td>AH=功能号</td>
+<td></td>
+</tr>
+<tr>
+<td>INT22</td>
+<td>程序结束处理</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>INT23</td>
+<td>Ctrl-Break处理</td>
+<td></td>
+<td>AL=0(忽略)</td>
+</tr>
+<tr>
+<td>INT24</td>
+<td>严重错误处理</td>
+<td>AL=驱动器号</td>
+<td>AL=1(重试)AL=2(通过INT 23H终止)Cy=1出错</td>
+</tr>
+<tr>
+<td>INT25</td>
+<td>绝对磁盘读</td>
+<td>CX=读入扇区数DX=起始逻辑扇区数DS:BX=缓冲区地址AL=驱动器号</td>
+<td>Cy=0正确</td>
+</tr>
+<tr>
+<td>INT26</td>
+<td>绝对磁盘写</td>
+<td>CX=写盘扇区数DX=起始逻辑扇区数DS:BX=缓冲区地址</td>
+<td></td>
+</tr>
+<tr>
+<td>INT27</td>
+<td>驻留退出</td>
+<td>CS=PSP段地址DX=程序末地址+1</td>
+<td></td>
+</tr>
+</tbody></table>
+</li>
+</ol>
+<pre><code>**二、DOS功能调用**
+
+**功能号在AH中,并设好其余的入口参数,向DOS发出INT21H命令,最后获得出口参数。**
+
+| 调用号 | 功能                                                         | 入口参数                                                     | 出口参数                                                     |
+| ------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 00H    | 程序终止                                                     | CS=PSP段地址                                                 |                                                              |
+| 01H    | 键盘输入字符                                                 |                                                              | AL=输入的字符                                                |
+| 02H    | 显示输出                                                     | DL=显示的字符                                                |                                                              |
+| 03H    | 串行设备输入                                                 |                                                              | AL=输入的字符                                                |
+| 04H    | 串行设备输出                                                 | DL=输出的字符                                                |                                                              |
+| 05H    | 打印输出                                                     | DL=输出的字符                                                |                                                              |
+| 06H    | 直接控制台I/O                                                | DL=0FFH(输入请求)DL=字符(输出请求)                           | AL=输入的字符                                                |
+| 07H    | 直接控制台I/O(不显示输入)                                    |                                                              | AL=输入的字符                                                |
+| 08H    | 键盘输入字符(无回显)                                         |                                                              | AL=输入的字符                                                |
+| 09H    | 显示字符串                                                   | DS:DX=缓冲区首址                                             |                                                              |
+| 0AH    | 输入字符串                                                   | DS:DX=缓冲区首址                                             |                                                              |
+| 0BH    | 检查标准输入状态                                             |                                                              | AL=00无按键AL=0FFH有按键                                     |
+| 0CH    | 清除输入缓冲区并执行指定的标准输入功能                       | AL=功能号(01/06/07/08/0AH)DS:DX=缓冲区(0AH功能)              | AL=输入的数据(功能01/06/07/08)                               |
+| 0DH    | 初始化磁盘状态                                               |                                                              |                                                              |
+| 0EH    | 选择缺省的驱动器                                             | DL=驱动器号(0=A,1=B..)                                       | AL=逻辑驱动器数                                              |
+| 0FH    | 打开文件                                                     | DS:DX=未打开的FCB首址                                        | AL=00成功,0FFH失败                                           |
+| 10H    | 关闭文件                                                     | DS:DX=打开的FCB首址                                          | AL=00成功,0FFH失败                                           |
+| 11H    | 查找第一匹配目录                                             | DS:DX=未打开的FCB首址                                        | AL=00成功,0FFH失败                                           |
+| 12H    | 查找下一匹配目录                                             | DS:DX=未打开的FCB首址                                        | AL=00成功,0FFH失败                                           |
+| 13H    | 删除文件                                                     | DS:DX=未打开的FCB首址                                        | AL=00成功,0FFH失败                                           |
+| 14H    | 顺序读                                                       | DS:DX=打开的FCB首址                                          | AL=00成功,01文件结束02缓冲区太小03缓冲区不满                 |
+| 15H    | 顺序写                                                       | DS:DX=打开的FCB首址                                          | AL=00成功,01盘满02缓冲区太小                                 |
+| 16H    | 创建文件                                                     | DS:DX=未打开的FCB首址                                        | AL=00成功0FFH目录区满                                        |
+| 17H    | 文件换名                                                     | DS:DX=被修改的FCB首址                                        | AL=00成功,0FFH未找到目录项或文件重名                         |
+| *18H   | 保留未用                                                     |                                                              |                                                              |
+| 19H    | 取缺省驱动器号                                               |                                                              | AL=驱动器号(0=A,1=B..)                                       |
+| 1AH    | 设置磁盘缓冲区DTA                                            | DS:DX=磁盘缓冲区首址                                         |                                                              |
+| *1BH   | 取缺省驱动器的磁盘格式信息                                   |                                                              | AL=每簇的扇区数CX=每扇区的字节数DX=数据区总簇数-1DS:BX=介质描述字节 |
+| *1CH   | 取指定驱动器的磁盘格式信息                                   | DL=驱动器号(0=缺省,1=A..)                                    | AL=每簇的扇区数CX=每扇区的字节数DX=数据区总簇数-1DS:BX=介质描述字节 |
+| *1DH   | 保留未用                                                     |                                                              |                                                              |
+| *1EH   | 保留未用                                                     |                                                              |                                                              |
+| *1FH   | 取缺省驱动器的DPB                                            |                                                              | DS:BX=DPB首址                                                |
+| *20H   | 保留未用                                                     |                                                              |                                                              |
+| 21H    | 随机读一个记录                                               | DS:DX=打开的FCB首址                                          | AL=00成功,01文件结束02缓冲区太小03缓冲区不满                 |
+| 22H    | 随机写一个记录                                               | DS:DX=打开的FCB首址                                          | AL=00成功,01盘满02缓冲区太小                                 |
+| 23H    | 取文件大小                                                   | DS:DX=未打开的FCB首址                                        | AL=00成功,0FFH失败                                           |
+| 24H    | 设置随机记录号                                               | DS:DX=打开的FCB首址                                          |                                                              |
+| 25H    | 设置中断向量                                                 | AL=中断号DS:DX=中断程序入口                                  |                                                              |
+| *26H   | 创建新的PSP                                                  | DS:DX=新的PSP段地址                                          |                                                              |
+| 27H    | 随机读若干记录                                               | DS:DX=打开的FCB首址CX=要读入的记录数                         | AL=00成功,01文件结束AL=02缓冲区太小AL=03缓冲区不满CX=读入的块数 |
+| 28H    | 随机写若干记录                                               | DS:DX=打开的FCB首址CX=要写入的记录数                         | AL=00成功,01盘满AL=02缓冲区太小AL=03缓冲区不满CX=已写的块数  |
+| 29H    | 分析文件名                                                   | AL=分析控制标记DS:SI=要分析的字符串ES:DI=未打开的FCB首址     | AL=00未通配符01有通配符0FFH驱动器字母无效ES:DI=未打开的FCB   |
+| 2AH    | 取系统日期                                                   |                                                              | CX=年(1980-2099)DH=月,DL=日,AL=星期(0=星期日)                |
+| 2BH    | 置系统日期                                                   | CX=年,DH=月,DL=日                                            | AL=00成功,0FFH失败                                           |
+| 2CH    | 取系统时间                                                   |                                                              | CH=时(0-23),CL=分,DH=秒,DL=百分之几秒                        |
+| 2DH    | 置系统时间                                                   | CX=时,分DX=秒,百分秒                                         | AL=00成功,0FFH失败                                           |
+| 2EH    | 设置/复位校验开关                                            | AL=0关闭,1打开                                               |                                                              |
+| 2FH    | 取磁盘传输地址DTA                                            |                                                              | ES:BX=DTA首地址                                              |
+| 30H    | 取DOS版本                                                    |                                                              | AL,AH=DOS主、次版本                                          |
+| 31H    | 结束并驻留                                                   | AL=返回码,DX=内存大小                                        |                                                              |
+| *32H   | 取指定驱动器的DPB                                            |                                                              | DS:BX=DPB首址                                                |
+| 33H    | 取或置Ctrl-Break标志                                         | AL=0:取,1:置,DL=标志                                         | DL=标志(取功能)0:关1:开                                      |
+| *34H   | 取DOS中断标志                                                |                                                              | ES:BX=DOS中断标志                                            |
+| 35H    | 取中断向量地址                                               | AL=中断号                                                    | ES:BX=中断程序入口                                           |
+| 36H    | 取磁盘的自由空间                                             | DL=驱动器号(0=缺省,1=A                                       | AX=FF驱动器无效其它每簇扇区数BX=自由簇数CX=每扇区字节数BX=文件区所占簇数 |
+| *37H   | 取/置参数分隔符取/置设备名许可标记                           | AL=0:取分隔符,1:置分隔符,DL=分隔符2:取许可标记3:置许可标记,DL=许可标记 | DL=分隔符(功能0)DL=许可标记(功能2)                           |
+| 38H    | 取国家信息                                                   | AL=0,DS:DX=缓冲区首址                                        |                                                              |
+| 39H    | 创建子目录                                                   | DS:DX=路径字符串                                             | CF=0成功,1失败,AX=错误码                                     |
+| 3AH    | 删除子目录                                                   | DS:DX=路径字符串                                             | CF=0成功,1失败,AX=错误码                                     |
+| 3BH    | 设置子目录                                                   | DS:DX=路径字符串                                             | CF=0成功,1失败,AX=错误码                                     |
+| 3CH    | 创建文件                                                     | DS:DX=带路径的文件名CX=属性1-只读2-隐蔽4-系统                | CF=0成功,AX=文件号CF=1失败,AX=错误码                         |
+| 3DH    | 打开文件                                                     | DS:DX=带路径的文件名AL=方式0-读1-写2-读写                    | CF=0成功,AX=文件号CF=1失败,AX=错误码                         |
+| 3EH    | 关闭文件                                                     | BX=文件号                                                    | CF=0成功CF=1失败,AX=错误码                                   |
+| 3FH    | 读文件或设备                                                 | BX=文件号CX=字节数                                           | CF=0成功DX:AX=新的指针位置                                   |
+| 40H    | 写文件或设备                                                 | DS:DX=缓冲区首址                                             | CF=1失败,AX=错误码                                           |
+| 41H    | 删除文件                                                     | DS:DX=带路径的文件名                                         | CF=0成功,1失败,AX=错误码                                     |
+| 42H    | 移动文件指针                                                 | AL=方式0-正向1-相对2-反向BX=文件号,CX:DX=移动的位移量        | CF=0成功,DX:AX=新的文件指针CF=1失败,AX=错误码                |
+| 43H    | 取/置文件属性                                                | AL=0:取1:置,CX=新属性DS:DX=带路径的文件名                    | CX=属性(功能0)1-只读2-隐蔽4-系统20H-归档                     |
+| 44H    | 设备输入/输出控制:设置/取得与打开设备的句柄相关联信息,或发送/接收控制字符串至设备句柄 | AL=0/1取/置设备信息2/3读/写设备控制通道4/5同功能2/36/7取输入/输出状态BX=句柄(功能0-3,6-7)BL=驱动器号(功能4-5)CX=字节数(功能2-5)DS:DX=缓冲区(功能2-5) | CF=0成功DX=设备信息(功能0)AL=状态(功能6/7)0未准备,1准备AX=传送的字节数(功能2-5) |
+| 45H    | 复制文件号(对于一个打开的文件返回一个新的文件号)             | BX=文件号                                                    | CF=0成功,AX=新文件号CF=1失败,AX=错误码                       |
+| 46H    | 强行复制文件号                                               | BX=现存的文件号,CX=第2文件号                                 | CF=0成功,1失败AX=错误码                                      |
+| 47H    | 取当前目录                                                   | DL=驱动器号DS:SI=缓冲区首址                                  | CF=0成功,1失败AX=错误码                                      |
+| 48H    | 分配内存                                                     | BX=所需的内存节数                                            | CF=0成功,AX=分配的段数,CF=1失败,AX=错误码BX=最大可用块大小   |
+| 49H    | 释放内存                                                     | ES=释放块的段值                                              | CF=1失败,AX=错误码                                           |
+| 4AH    | 修改分配内存                                                 | ES=修改块的段值BX=新长度(以节为单位)                         | CF=1失败,AX=错误码BX=最大可用块大小                          |
+| 4BH    | 装载程序运行程序                                             | AL=0装载并运行1获得执行信息3装载但不运行DS:DX=带路径的文件名ES:BX=装载用的参数块 | CF=1失败,AX=错误码                                           |
+| 4CH    | 带返回码的结束                                               | AL=进程返回码                                                |                                                              |
+| 4DH    | 取由31H/4CH带回的返回码                                      |                                                              | AL=进程返回码AH=类型码,0-正常结束1-由Ctrl-Break结束2-由严重设备错误而结束3-由调用31H而结束 |
+| 4EH    | 查找第一个匹配项                                             | DS:DX=带路径的文件名CX=属性                                  | CF=1失败,AX=错误码                                           |
+| 4FH    | 查找下一个匹配项                                             |                                                              | CF=1失败,AX=错误码                                           |
+| *50H   | 建立当前的PSP段地址                                          | BX=PSP段地址                                                 |                                                              |
+| *51H   | 读当前的PSP段地址                                            |                                                              | BX=PSP段地址                                                 |
+| *52H   | 取DOS系统数据区首址                                          |                                                              | ES:BX=DOS数据区首址                                          |
+| *53H   | 为块设备建立DPB                                              | DS:SI=BPB,ES:DI=DPB                                          |                                                              |
+| 54H    | 取校验开关设定值                                             |                                                              | AL=标志值(0:关,1:开)                                         |
+| *55H   | 由当前PSP建立新PSP                                           | DX=PSP段地址                                                 |                                                              |
+| 56H    | 文件换名                                                     | DS:DX=带路径的旧文件名ES:DI=带路径的新文件名                 | CF=1失败,AX=错误码                                           |
+| 57H    | 取/置文件时间及日期                                          | AL=0/1取/置,BX=文件号CX=时间,DX=日期                         | CF=0成功,CX=时间,DX=日期                                     |</code></pre><ol start="11">
+<li><p><strong>打印字符串</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">data segment</span><br><span class="line">	str db &apos;hello pangshu!$&apos; ;$ 表示结尾标记</span><br><span class="line">	</span><br><span class="line">data ends</span><br><span class="line">code segment	</span><br><span class="line"></span><br><span class="line">start:	</span><br><span class="line">		mov ax,data</span><br><span class="line">		mov ds,ax</span><br><span class="line">		</span><br><span class="line">		;业务逻辑代码</span><br><span class="line">		mov dx,offset str;获取别名对应数据的偏移地址</span><br><span class="line">		mov ah, 9h ;9h表示调用显存 从dx总读取偏移地址对应的数据</span><br><span class="line">		int 21h</span><br><span class="line">		</span><br><span class="line">		;退出程序</span><br><span class="line">		mov ah, 4ch </span><br><span class="line">		int 21h</span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<ol start="12">
+<li><p><strong>除法指令div</strong></p>
+<p>格式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">div 寄存器  ;div bx   该寄存器表示除数</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p> 公式是<em>被除数<em>÷</em>除数</em>=商……余数 </p>
+</blockquote>
+</li>
+</ol>
+<p>被除数需要预先存放在ax寄存器中，相除后商存放在ax寄存器中，余数存放在dx寄存器中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mov ax,2000 ;定义被除数</span><br><span class="line">mov bx,300   ;定义除数</span><br><span class="line">div bx      ; 进行除法运算</span><br><span class="line"></span><br><span class="line">mov ds:[0],ax ;将商存放至内存中</span><br><span class="line">mov ds:[2],dx ;将余数存放至内存中</span><br></pre></td></tr></table></figure>
+
+<p>因为ax和dx需要存放被除数和余数， 因此除数一般放在bx，cx，或者内存中</p>
+<p>由于16位寄存器最多只能存放16位数据，假如被除数数值超过十六位，那么被除数低16位存放在ax寄存器中，高十六位存放在dx寄存器中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mov dx,20   ;定义被除数高16位</span><br><span class="line">mov ax,2000 ;定义被除数低16位  就是1407D0H</span><br><span class="line">mov bx,300   ;定义除数</span><br><span class="line">div bx      ; 进行除法运算</span><br><span class="line"></span><br><span class="line">mov ds:[0],ax ;将商存放至内存中</span><br><span class="line">mov ds:[2],dx ;将余数存放至内存中</span><br></pre></td></tr></table></figure>
+
+<ol start="13">
+<li><p>乘法指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mov ax,100</span><br><span class="line">mov bx,1000</span><br><span class="line">mul bx    ;相乘</span><br><span class="line"></span><br><span class="line">mov ds:[0],ax ;将积低16位存放至内存中</span><br><span class="line">mov ds:[2],dx ;将积高16位存放至内存中</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+</li>
+</ol>
+<h2 id="段寄存器"><a href="#段寄存器" class="headerlink" title="段寄存器"></a>段寄存器</h2><ol>
+<li><strong>数据和指令的区别</strong></li>
+</ol>
+<p>内存中存放的数据都是十六进制的数据，如果这些十六进制数据被标记为数据，那么cpu在读取的时候，读到多少就是多少，如果被标记为了指令，那么cpu会将这些十六进制转成指令进行执行</p>
+<p>cpu只是个无情的计算机器，它无法自动区分数据和指令，标记需要我们告诉cpu</p>
+<p>那么 如何给数据进行标记呢？</p>
+<ol start="2">
+<li><strong>段寄存器的种类</strong></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">DS----&gt;data segment</span><br><span class="line">SS----&gt;stack segment </span><br><span class="line">CS----&gt;code segement </span><br><span class="line">ES----&gt;extra segement</span><br></pre></td></tr></table></figure>
+
+<p>都是用于存放段地址的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">实际物理地址=段地址*16:偏移地址 10*10=100  </span><br><span class="line">71001	  =	0710*16:0001</span><br></pre></td></tr></table></figure>
+
+<p><strong>DS寄存器用于存放数据的段地址</strong>，那么数据所对应的偏移地址可以使用bx寄存器进行存放，<strong>使用DS寄存操作的内存数据都被当成是纯数据</strong>，里面存的是什么，读出来的就是什么</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mov ax,3000H  ;这行代码会转成16进制的数据存放到内存中 这些数据所对应的段地址默认放在ds寄存器中 ，使用ds进行读取的时候 读取的是该指令对应的16进制数据， 而不是被还原成了指令进行执行</span><br></pre></td></tr></table></figure>
+
+<p><strong>CS寄存器用于存放指令所在的段地址</strong>，IP寄存器存放的是当前正在执行的指令所对应的偏移地址，<strong>所有使用CS:IP进行操作的内存数据都被当成是指令对待</strong>，读取的时候会将16进制数据转成对应的指令并执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mov bx,3333H ;假如这条这条指令数据所对应的物理地址为0710:0000</span><br><span class="line">mov ax,2000H ;假如这条这条指令数据所对应的物理地址为0710:0003</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">;如果我想跳过第一条指令 直接执行第二条指令 那么直接修改CS:IP的值为0710:0003即可</span><br></pre></td></tr></table></figure>
+
+<p><strong>SS寄存器用于存放栈空间对应的段地址</strong>，所有被SS操作的内存空间都被当成栈空间进行对待，你想让哪部分内存空间当作栈空间，完全取决于开发者，sp寄存器存放栈空间偏移量，ss和sp配合使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mov ax,0710H</span><br><span class="line">mov ss,ax </span><br><span class="line">mov sp,20 ;将0710:0000~0710:0014H 这20个字节的内存空间定义为栈空间</span><br></pre></td></tr></table></figure>
+
+<p><strong>ES寄存器一般用于DS的替补</strong>,DS被占用无法使用时,临时使用ES替代,用法和DS一致</p>
+<h2 id="栈空间的操作"><a href="#栈空间的操作" class="headerlink" title="栈空间的操作"></a>栈空间的操作</h2><p>栈段里面存放也是数据和数据段无异,只不过数据排列的方式不一样,正常的排列方式是数据从低地址往高地址进行偏移存放,读取数据也是从低到高,而栈则是写入数据从高到低进行偏移,读取数据从低地址到高地址</p>
+<p>由于这个特性,所以我们在定义一块空间作为栈空间使用时,都会先往高地址偏移一段空间</p>
+<p><strong>栈存储特点:</strong></p>
+<ul>
+<li><p>一次读写两个字节的数据</p>
+</li>
+<li><p>数据高地址往低地址逆序偏移存放</p>
+</li>
+</ul>
+<ol>
+<li><p><strong>栈空间的声明</strong></p>
+<p>前面提到过，使用ss寄存器进行标记的空间为栈空间</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">data segment</span><br><span class="line">	db 0,0,0,0,0,0,0,0 ;定义数据相当于是开辟了一块未标记内存空间，这块空间可以当作是数据空间也可以栈或者指令空间，却决于该段地址是由哪个段寄存器进行管理的</span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line">code segment</span><br><span class="line">	start:</span><br><span class="line">		mov ax，data</span><br><span class="line">		mov ss，ax ;该空间被ss指向，因此被当作是栈空间 如果是被CS指向则被当成指令空间，里面存放的数据都会被当成指令进行执行</span><br><span class="line">		mov sp,8</span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>往栈空间中写入数据</strong></p>
+<p>使用push指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">data segment</span><br><span class="line">	db 0,0,0,0,0,0,0,0 </span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line">code segment</span><br><span class="line">	start:</span><br><span class="line">		mov ax，data</span><br><span class="line">		mov ss，ax </span><br><span class="line">		mov sp,8</span><br><span class="line">		</span><br><span class="line">		mov ax,2000H</span><br><span class="line">		push ax  ;一次写入两个字节的数据,如果使用al编译报错</span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>从栈空间读取数据</strong></p>
+<p>使用pop指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">data segment</span><br><span class="line">	db 0,0,0,0,0,0,0,0 </span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line">code segment</span><br><span class="line">	start:</span><br><span class="line">		mov ax，data</span><br><span class="line">		mov ss，ax </span><br><span class="line">		mov sp,8</span><br><span class="line">		</span><br><span class="line">		mov ax,2000H</span><br><span class="line">		push ax</span><br><span class="line">		</span><br><span class="line">		pop bx  ;一次读取两个字节的数据,如果使用bl编译报错</span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>思考:栈空间和数据段空间,里面存放的都是数据,那么是否可以使用SS来存放数据段的段地址呢,答案是可以的, 当SS充当数据段的时候,读写操作和DS一样,SS:[N],如果充当栈段的时候,读写操作时候时候pop和push,</p>
+<p>由于pop和push默认以SS寄存器中的数据当做栈段地址,因此不能使用其他段寄存器充当栈段寄存器</p>
+</blockquote>
+</li>
+</ol>
+<h2 id="操控显存输出字符串"><a href="#操控显存输出字符串" class="headerlink" title="操控显存输出字符串"></a>操控显存输出字符串</h2><p>前面咱们介绍过使用中断的方式输出字符串, 今天我们学习一种不使用中断的方式实现字符串的打印</p>
+<p> 在8086的内存地址结构中，<code>B8000H~BFFFFH</code>这部分的内存区域为显存区域，一旦向这个地址空间写入数据，<strong>cpu会从0号偏移地址开始读取数据然后显示输出</strong>, (每写入一次数据就从0开始读取一次)</p>
+<p>代码尝试:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">start:</span><br><span class="line">	   mov ax,0B800H</span><br><span class="line">	   mov ds,ax</span><br><span class="line">  </span><br><span class="line">	 </span><br><span class="line">	   mov dl,&apos;a&apos;           </span><br><span class="line">	   mov ds:[0],dl</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<p>在这块区域中,每个字符固定占用两个字节的空间,也就是<code>ds:[0]</code>和<code>ds:[1]</code>存放一个字符的信息,前者存放字符具体的内容,后者存放字符对应的颜色</p>
+<p>比如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">start:</span><br><span class="line">	   mov ax,0B800H</span><br><span class="line">	   mov ds,ax</span><br><span class="line">  </span><br><span class="line">	 </span><br><span class="line">	   mov dl,&apos;a&apos;           </span><br><span class="line">	   mov ds:[0],dl</span><br><span class="line">	   </span><br><span class="line">	   mov dl,00000100B ;让字符以红色显示          </span><br><span class="line">	   mov ds:[1],dl</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<p> <strong>字符颜色的设置规则:</strong> </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 0 0 0 0 0 0 0  ;用8个二进制位表示字符属性</span><br></pre></td></tr></table></figure>
+
+<p>从高往低数,第一个二进制位表示是否显示闪烁痕迹</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">start:</span><br><span class="line">	   mov ax,0B800H</span><br><span class="line">	   mov ds,ax</span><br><span class="line">  </span><br><span class="line">	 </span><br><span class="line">	   mov dl,&apos;a&apos;           </span><br><span class="line">	   mov ds:[0],dl</span><br><span class="line">	   </span><br><span class="line">	   mov dl,10000000B ;保留字符闪烁痕迹       </span><br><span class="line">	   mov ds:[1],dl</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<p>第234个二进制位表示字符背景颜色 分别代表：RGB，即red、green、blue </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">start:</span><br><span class="line">	   mov ax,0B800H</span><br><span class="line">	   mov ds,ax</span><br><span class="line">  </span><br><span class="line">	 </span><br><span class="line">	   mov dl,&apos;a&apos;           </span><br><span class="line">	   mov ds:[0],dl</span><br><span class="line">	   </span><br><span class="line">	   mov dl,01000000B ;背景颜色设为红色       </span><br><span class="line">	   mov ds:[1],dl</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<p>第5个二进制位表示字符是否高亮</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">start:</span><br><span class="line">	   mov ax,0B800H</span><br><span class="line">	   mov ds,ax</span><br><span class="line">  </span><br><span class="line">	 </span><br><span class="line">	   mov dl,&apos;a&apos;           </span><br><span class="line">	   mov ds:[0],dl</span><br><span class="line">	   </span><br><span class="line">	   mov dl,00001100B ;字符颜色设置为红色 并且高亮显示 </span><br><span class="line">	   mov ds:[1],dl</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<p>第678个二进制位表示字符本身的颜色 分别代表：RGB，即red、green、blue </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">start:</span><br><span class="line">	   mov ax,0B800H</span><br><span class="line">	   mov ds,ax</span><br><span class="line">  </span><br><span class="line">	 </span><br><span class="line">	   mov dl,&apos;a&apos;           </span><br><span class="line">	   mov ds:[0],dl</span><br><span class="line">	   </span><br><span class="line">	   mov dl,00000111B ;背景颜色设为白色  系统默认颜色是白色  </span><br><span class="line">	   mov ds:[1],dl</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<p>由于cpu会从0号偏移地址开始读取数据然后显示输出,因此假如你直接在6号偏移地址写入字符数据, 那么前面三个数据会以占位形式存在</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">start:</span><br><span class="line">	   mov ax,0B800H</span><br><span class="line">	   mov ds,ax</span><br><span class="line">  </span><br><span class="line">	 </span><br><span class="line">	   mov dl,&apos;a&apos;           </span><br><span class="line">	   mov ds:[0],dl</span><br><span class="line">	   </span><br><span class="line">	   mov dl,00000111B  </span><br><span class="line">	   mov ds:[6],dl ;输出结果为&quot;   a&quot;</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<p><strong>字符串打印</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">data segment</span><br><span class="line">	str db &apos;hello pangshu&apos;</span><br><span class="line">	endstr db &apos;&apos;</span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line">code segment</span><br><span class="line"></span><br><span class="line">    start:                  </span><br><span class="line">    </span><br><span class="line">           mov ax,data</span><br><span class="line">           mov ds,ax</span><br><span class="line">           mov ax,0B800H</span><br><span class="line">           mov es,ax</span><br><span class="line"></span><br><span class="line">		   mov cx ,offset endstr-str</span><br><span class="line">		   mov bx,0 </span><br><span class="line">		   mov si,0      </span><br><span class="line">		   </span><br><span class="line">    print:</span><br><span class="line">           mov dl,ds:[si]           </span><br><span class="line">           mov es:[bx],dl</span><br><span class="line"></span><br><span class="line">           mov dl,00000111B ;背景颜色设为白色  系统默认颜色是白色  </span><br><span class="line">           mov es:[bx+1],dl  </span><br><span class="line">           inc si</span><br><span class="line">           add bx,2</span><br><span class="line">           loop print</span><br><span class="line"></span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<p>借助字符不断刷新显示的特性,可用让字符动画显示</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">;让字符从左往右移动</span><br><span class="line">code segment</span><br><span class="line"></span><br><span class="line">    start:                        </span><br><span class="line">           mov ax,0B800H</span><br><span class="line">           mov es,ax</span><br><span class="line">           </span><br><span class="line">		   mov bx,0 </span><br><span class="line">   		   mov cx,30</span><br><span class="line">    print:     </span><br><span class="line">           mov es:[bx],&apos; &apos; </span><br><span class="line">           mov dl,&apos;a&apos;        </span><br><span class="line">           mov es:[bx+2],dl        </span><br><span class="line">           add bx,2    </span><br><span class="line">           loop print</span><br><span class="line"></span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<p>屏幕默认显示80x25个字符,全屏显示106x38个字符,那么可以根据这个特性,让字符上下移动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">;让字符从上往下移动</span><br><span class="line">code segment</span><br><span class="line"></span><br><span class="line">    start:                        </span><br><span class="line">           mov ax,0B800H</span><br><span class="line">           mov es,ax</span><br><span class="line">           </span><br><span class="line">		   mov bx,0 </span><br><span class="line">   		   mov cx,25</span><br><span class="line">    print:     </span><br><span class="line">           mov es:[bx],&apos;a&apos; </span><br><span class="line">           mov dl,&apos; &apos;        </span><br><span class="line">           mov es:[bx-160],dl        </span><br><span class="line">           add bx,160   ;为什么是160而不是80 以内一个字符占两个字节的空间, 80个字符总共偏移了160</span><br><span class="line">           loop print</span><br><span class="line"></span><br><span class="line">code ends</span><br><span class="line">end start</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">;让字符从下往上移动</span><br><span class="line">code segment</span><br><span class="line"></span><br><span class="line">    start:                        </span><br><span class="line">           mov ax,0B800H</span><br><span class="line">           mov es,ax</span><br><span class="line">           </span><br><span class="line">		   mov bx,160*24 </span><br><span class="line">   		   mov cx,25</span><br><span class="line">    print:     </span><br><span class="line">           mov es:[bx],&apos;a&apos; </span><br><span class="line">           mov dl,&apos; &apos;        </span><br><span class="line">           mov es:[bx+160],dl        </span><br><span class="line">           sub bx,160   ;为什么是160而不是80 以内一个字符占两个字节的空间, 80个字符总共偏移了160</span><br><span class="line">           loop print</span><br><span class="line"></span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<p>另外, 让字符斜着移动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">;让让字符斜着移动</span><br><span class="line">code segment</span><br><span class="line"></span><br><span class="line">    start:                        </span><br><span class="line">           mov ax,0B800H</span><br><span class="line">           mov es,ax</span><br><span class="line">           </span><br><span class="line">		   mov bx,0 </span><br><span class="line">   		   mov cx,25</span><br><span class="line">    print:     </span><br><span class="line">           mov es:[bx],&apos;a&apos; </span><br><span class="line">           mov dl,&apos; &apos;        </span><br><span class="line">           mov es:[bx-161],dl        </span><br><span class="line">           add bx,161   ;向右斜加偏移量 向左斜减偏移量</span><br><span class="line">           loop print</span><br><span class="line"></span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<p>补充: 在8086中系统提供了一个显示服务(Video Service)中断供我们使用,使用10H这个中断码也可以打印带有颜色属性的字符串</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">;示例1:</span><br><span class="line">mov ah,2 ;放置光标</span><br><span class="line">mov bh,0 ;第0页</span><br><span class="line">mov dh,5 ;行号</span><br><span class="line">mod dl,12 ;列号</span><br><span class="line">int 10H</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">;示例2:</span><br><span class="line">mov ah,9 ;在光标的位置显示字符</span><br><span class="line">mov al,&apos;a&apos; ;字符</span><br><span class="line">mov bl,11001010B ;颜色</span><br><span class="line">mov bh,0 ;第0页</span><br><span class="line">mov cx,3 ;重复显示3次</span><br><span class="line">int 10H</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用键盘输入控制字符移动"><a href="#使用键盘输入控制字符移动" class="headerlink" title="使用键盘输入控制字符移动"></a>使用键盘输入控制字符移动</h2><p>使用16号中断码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">;使用键盘控制字符移动</span><br><span class="line">code segment</span><br><span class="line"></span><br><span class="line">    start:                        </span><br><span class="line">           mov ax,0B800H</span><br><span class="line">           mov es,ax</span><br><span class="line">		   mov bx,0 </span><br><span class="line">   		   mov cx,30    </span><br><span class="line">   		      </span><br><span class="line">   		scan:   </span><br><span class="line">   		   mov ah, 00H</span><br><span class="line">   		   int 16H       </span><br><span class="line">   		   cmp al,61H ;判断两个值是否相等</span><br><span class="line">   		   jne scan2  ;jmp not equal 如果两者不相等 则跳转到scan2 否则往下执行</span><br><span class="line">   		   call  left </span><br><span class="line">   		   jmp scan    </span><br><span class="line">   	    scan2:	     </span><br><span class="line">   		   cmp al,64H</span><br><span class="line">   		   jne scan3    </span><br><span class="line">   		   call  right</span><br><span class="line">   		   jmp scan    </span><br><span class="line">   	    scan3:	   </span><br><span class="line">   		   cmp al,77H</span><br><span class="line">   		   jne scan4 </span><br><span class="line">   		   call top</span><br><span class="line">   		   jmp scan   </span><br><span class="line">   	    scan4:	   </span><br><span class="line">   		   </span><br><span class="line">   		   cmp al,73H</span><br><span class="line">   		   jne scan </span><br><span class="line">   		   </span><br><span class="line">   		   call  down</span><br><span class="line">   		   jmp scan    </span><br><span class="line">   		   </span><br><span class="line">    right:     </span><br><span class="line">           mov es:[bx],&apos; &apos; </span><br><span class="line">           mov dl,&apos;a&apos;        </span><br><span class="line">           mov es:[bx+2],dl        </span><br><span class="line">           add bx,2    </span><br><span class="line">          ret   </span><br><span class="line">     </span><br><span class="line">   		   </span><br><span class="line">    left:     </span><br><span class="line">           mov es:[bx],&apos; &apos; </span><br><span class="line">           mov dl,&apos;a&apos;        </span><br><span class="line">           mov es:[bx-2],dl        </span><br><span class="line">           sub bx,2    </span><br><span class="line">          ret  </span><br><span class="line">           </span><br><span class="line">    top:     </span><br><span class="line">           mov es:[bx],&apos; &apos; </span><br><span class="line">           mov dl,&apos;a&apos;        </span><br><span class="line">           mov es:[bx-160],dl        </span><br><span class="line">           sub bx,160    </span><br><span class="line">          ret  </span><br><span class="line">           </span><br><span class="line">     </span><br><span class="line">   		   </span><br><span class="line">    down:     </span><br><span class="line">           mov es:[bx],&apos; &apos; </span><br><span class="line">           mov dl,&apos;a&apos;        </span><br><span class="line">           mov es:[bx+160],dl        </span><br><span class="line">           add bx,160    </span><br><span class="line">          ret     </span><br><span class="line"></span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<h3 id="内存读写的另外一种简便方法"><a href="#内存读写的另外一种简便方法" class="headerlink" title="内存读写的另外一种简便方法"></a>内存读写的另外一种简便方法</h3><p>直接使用<code>别名+[偏移量]</code>的形式获取或者修改已经定义好的数据,比如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">;需求:将第二个字符串最后一个o替换成第一个字符串中的e</span><br><span class="line">data segment</span><br><span class="line">	str dw &apos;hello &apos;</span><br><span class="line">	newstr dw &apos;wowowo&apos;</span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">;以前的写法:</span><br><span class="line">code segment</span><br><span class="line">start:</span><br><span class="line">	mov ax,data</span><br><span class="line">	mov ds,ax   </span><br><span class="line">    mov al,ds:b.str+1    </span><br><span class="line">    mov ds:b.newstr+5,al</span><br><span class="line">code ends</span><br><span class="line">end start</span><br><span class="line"></span><br><span class="line">;更加简便的写法:</span><br><span class="line">code segment</span><br><span class="line">start:</span><br><span class="line">	mov ax,data</span><br><span class="line">	mov ds,ax   </span><br><span class="line">    mov al ,b.str[1]   ;使用b.或者直接定义db数据 实现对单个字符进行控制 </span><br><span class="line">    mov b.newstr[5],al</span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<p>  <code>mov ax ,str</code> 中的<code>str</code>相当于是<code>str[0]</code>,这也是为什么咱们能够直接通过别名来获取第一个字符的原因 </p>
+<blockquote>
+<p>前面我们只介绍了b.str[0],表示读取一个字节的数据,另外一种w.str[0]表示读取一个字的数据</p>
+<p>别名str中存放的数据量更db和dw有关, 如果是db那么别名默认取一个字节数据,如果dw 别名默认取两个字节数据, 可以使用b.和w.进行数据量的调节</p>
+</blockquote>
+<h2 id="一维数组的定义"><a href="#一维数组的定义" class="headerlink" title="一维数组的定义"></a>一维数组的定义</h2><p>数组本质上就是多个数据的集合,在内存中按照一定顺序排列,角标即为每个数据的偏移值,如果使用<code>db</code>进行数据的定义那么两个数据之间的偏移值为1个字节,如果使用<code>dw</code>指令定义数据,则偏移值为2个字节</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">data segment</span><br><span class="line">	db 3 dup(1) ;批量定义三个连续的数据 每个数据的偏移量为1  在内存中的排列为 111</span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line">data segment</span><br><span class="line">	db 3 dup(1,2,3) ;批量定义三个连续的数据 每个数据的偏移量为1  在内存中的排列为 123123123</span><br><span class="line">data ends</span><br></pre></td></tr></table></figure>
+
+<p><strong>数组的打印</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">data segment</span><br><span class="line">	array db 128 dup(0)</span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line">code segment</span><br><span class="line">	start:</span><br><span class="line">		mov ax,data</span><br><span class="line">		mov ds,ax</span><br><span class="line">		</span><br><span class="line">		mov array[0],1   </span><br><span class="line">		mov array[1],2</span><br><span class="line">		mov array[2],3    </span><br><span class="line">		</span><br><span class="line"></span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<h2 id="外中断"><a href="#外中断" class="headerlink" title="外中断"></a>外中断</h2><p><strong>外中断 (硬中断):</strong>由外部设备(比如网卡,或者硬盘 键盘 鼠标)引发的中断,比如当网卡收到数据包的时候,就会发出一个中断</p>
+<p><strong>中断屏蔽:</strong></p>
+<p>cpu监听到外部中断时,第一步需要先判断IF标志位的值,如果为1则执行,如果为0则屏蔽</p>
+<p>为什么还有中断屏蔽这么一说? 因为有些重复的外部中断并不需要响应,或者cpu正在在执行非常重要的一段指令,这些指令不能中断,一旦中途调开可能会造成系统崩溃,那么在这种情况下需要先将IF标志位置为0,屏蔽所有可屏蔽的外部信号,等这段指令执行完后,再讲IF还原回1, 这个IF标志位相当于是一个监听外部信号的开关</p>
+<p>为了方便IF标志位的修改,8086提供了相应的指令方面我们使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cli  ;相当于IF=0</span><br><span class="line"></span><br><span class="line">sti  ;相当于IF=1</span><br></pre></td></tr></table></figure>
+
+<h4 id="键盘中断"><a href="#键盘中断" class="headerlink" title="键盘中断"></a>键盘中断</h4><p>当我们按下键盘中的一个键,那么键盘会向cpu发出一个中断信号,cpu接收到信号后判断标志位IF是否为1,如果为1,则执行这个中断</p>
+<p>当松开按键时,同样会发出一个中断信号,也就是说点击一个键实际产生了两个中断信号</p>
+<p><strong>以上这一系列过程涉及到几个问题</strong>:</p>
+<p>​    1. 键盘是一个外部设备,电信号发出时,cpu怎么知道这个信号是来自键盘而不是鼠标的呢?</p>
+<p>​    2. cpu又如何知道你按下的是哪一个键?</p>
+<p><strong>解答1</strong>:</p>
+<p>​    cpu除了可以对寄存器 和内存进行数据读写之外,还可以读写端口的数据,电脑上一共有65535个端口,每个端口相当于是一个数据通道,当外部键盘借助USB接口接入电脑被驱动识别后,势必有一个端口与其相连进行数据通信, 在8086中这个端口号为60H</p>
+<p>那么如何使用汇编读写端口中的数据呢?</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">in al,60H ; 使用in指令 从60h这个端口读取一个字节到al寄存器中去</span><br><span class="line"></span><br><span class="line">out 60h,al ; 使用out指令 al寄存器中的数据写入60H端口</span><br></pre></td></tr></table></figure>
+
+<p><strong>从端口读写数据必须使用ax或者al寄存器进行交互</strong></p>
+<p><strong>解答2:</strong></p>
+<p>​    键盘每个键位所对应的字符都有与之对应的扫描码一一映射,不同厂商键盘硬件对应的扫描码可能不一致,它们最终都会转成相应的ascii码</p>
+<p>键位扫描码参考表如下:</p>
+<table>
+<thead>
+<tr>
+<th><strong>key</strong></th>
+<th><strong>mark（Hex）按下</strong></th>
+<th><strong>break（Hex）松开</strong></th>
+<th><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>NumLock</td>
+<td>45</td>
+<td>c5</td>
+<td>break = mark + 0x80</td>
+</tr>
+<tr>
+<td>/</td>
+<td>e0 35</td>
+<td>e0 b5</td>
+<td>由 e0 引导出 extend scan code</td>
+</tr>
+<tr>
+<td>*</td>
+<td>37</td>
+<td>b7</td>
+<td>break = mark + 0x80</td>
+</tr>
+<tr>
+<td>-</td>
+<td>4a</td>
+<td>ca</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>7/Home</td>
+<td>47</td>
+<td>c7</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>8/Up</td>
+<td>48</td>
+<td>c8</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>9/PgUp</td>
+<td>49</td>
+<td>c9</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>4/Left</td>
+<td>4b</td>
+<td>cb</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>5</td>
+<td>4c</td>
+<td>cc</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>6/Right</td>
+<td>4d</td>
+<td>cd</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>1/End</td>
+<td>4f</td>
+<td>cf</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>2/Down</td>
+<td>50</td>
+<td>d0</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>3/PgDn</td>
+<td>51</td>
+<td>d1</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>0/Ins</td>
+<td>52</td>
+<td>d2</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>./Del</td>
+<td>53</td>
+<td>d3</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>+</td>
+<td>4e</td>
+<td>ce</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>Enter</td>
+<td>e0 1c</td>
+<td>e0 9c</td>
+<td></td>
+</tr>
+<tr>
+<td>Scroll Lock</td>
+<td>46</td>
+<td>c6</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>Pause/Break</td>
+<td>e1 1d 45 e1 9d c5</td>
+<td>*</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>Insert</td>
+<td>e0 52</td>
+<td>e0 d2</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>Home</td>
+<td>e0 47</td>
+<td>e0 c7</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>Page Up</td>
+<td>e0 49</td>
+<td>e0 c9</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>Delete</td>
+<td>e0 53</td>
+<td>e0 d3</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>End</td>
+<td>e0 4f</td>
+<td>e0 cf</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>Page Down</td>
+<td>e0 51</td>
+<td>e0 d1</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>left</td>
+<td>e0 46</td>
+<td>e0 c6</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>right</td>
+<td>e0 4d</td>
+<td>e0 cd</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>up</td>
+<td>e0 48</td>
+<td>e0 c8</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>down</td>
+<td>e0 50</td>
+<td>e0 d0</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><esc></esc></td>
+<td>01</td>
+<td>81</td>
+<td>scan code</td>
+</tr>
+<tr>
+<td>F1</td>
+<td>3b</td>
+<td>bb</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>3c</td>
+<td>bc</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>F3</td>
+<td>3d</td>
+<td>bd</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>F4</td>
+<td>3e</td>
+<td>be</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>F5</td>
+<td>3f</td>
+<td>bf</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>F6</td>
+<td>40</td>
+<td>c0</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>F7</td>
+<td>41</td>
+<td>c1</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>F8</td>
+<td>42</td>
+<td>c2</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>F9</td>
+<td>43</td>
+<td>c3</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>F10</td>
+<td>44</td>
+<td>c4</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>F11</td>
+<td>57</td>
+<td>d7</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>F12</td>
+<td>58</td>
+<td>d8</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>~/·</td>
+<td>29</td>
+<td>a9</td>
+<td></td>
+</tr>
+<tr>
+<td><tab></tab></td>
+<td>0f</td>
+<td>8f</td>
+<td></td>
+</tr>
+<tr>
+<td><scapslock></scapslock></td>
+<td>3a</td>
+<td>ba</td>
+<td></td>
+</tr>
+<tr>
+<td><l-shift></l-shift></td>
+<td>2a</td>
+<td>aa</td>
+<td></td>
+</tr>
+<tr>
+<td>!/1</td>
+<td>02</td>
+<td>82</td>
+<td></td>
+</tr>
+<tr>
+<td>q</td>
+<td>10</td>
+<td>90</td>
+<td></td>
+</tr>
+<tr>
+<td>a</td>
+<td>1e</td>
+<td>9e</td>
+<td></td>
+</tr>
+<tr>
+<td>z</td>
+<td>2c</td>
+<td>ac</td>
+<td></td>
+</tr>
+<tr>
+<td>@/2</td>
+<td>03</td>
+<td>83</td>
+<td></td>
+</tr>
+<tr>
+<td>w</td>
+<td>11</td>
+<td>91</td>
+<td></td>
+</tr>
+<tr>
+<td>s</td>
+<td>1f</td>
+<td>9f</td>
+<td></td>
+</tr>
+<tr>
+<td>x</td>
+<td>2d</td>
+<td>ad</td>
+<td></td>
+</tr>
+<tr>
+<td>#/3</td>
+<td>04</td>
+<td>84</td>
+<td></td>
+</tr>
+<tr>
+<td>e</td>
+<td>12</td>
+<td>12</td>
+<td></td>
+</tr>
+<tr>
+<td>d</td>
+<td>20</td>
+<td>a0</td>
+<td></td>
+</tr>
+<tr>
+<td>c</td>
+<td>2e</td>
+<td>ae</td>
+<td></td>
+</tr>
+<tr>
+<td>$/4</td>
+<td>05</td>
+<td>85</td>
+<td></td>
+</tr>
+<tr>
+<td>r</td>
+<td>13</td>
+<td>93</td>
+<td></td>
+</tr>
+<tr>
+<td>f</td>
+<td>21</td>
+<td>a1</td>
+<td></td>
+</tr>
+<tr>
+<td>v</td>
+<td>2f</td>
+<td>af</td>
+<td></td>
+</tr>
+<tr>
+<td>%/5</td>
+<td>06</td>
+<td>86</td>
+<td></td>
+</tr>
+<tr>
+<td>t</td>
+<td>14</td>
+<td>94</td>
+<td></td>
+</tr>
+<tr>
+<td>g</td>
+<td>22</td>
+<td>a2</td>
+<td></td>
+</tr>
+<tr>
+<td>b</td>
+<td>30</td>
+<td>b0</td>
+<td></td>
+</tr>
+<tr>
+<td>^/6</td>
+<td>07</td>
+<td>87</td>
+<td></td>
+</tr>
+<tr>
+<td>y</td>
+<td>15</td>
+<td>95</td>
+<td></td>
+</tr>
+<tr>
+<td>h</td>
+<td>23</td>
+<td>a3</td>
+<td></td>
+</tr>
+<tr>
+<td>n</td>
+<td>31</td>
+<td>b1</td>
+<td></td>
+</tr>
+<tr>
+<td>&amp;/7</td>
+<td>08</td>
+<td>88</td>
+<td></td>
+</tr>
+<tr>
+<td>u</td>
+<td>16</td>
+<td>96</td>
+<td></td>
+</tr>
+<tr>
+<td>j</td>
+<td>24</td>
+<td>a4</td>
+<td></td>
+</tr>
+<tr>
+<td>m</td>
+<td>32</td>
+<td>b2</td>
+<td></td>
+</tr>
+<tr>
+<td>*/8</td>
+<td>09</td>
+<td>89</td>
+<td></td>
+</tr>
+<tr>
+<td>i</td>
+<td>17</td>
+<td>97</td>
+<td></td>
+</tr>
+<tr>
+<td>k</td>
+<td>25</td>
+<td>a5</td>
+<td></td>
+</tr>
+<tr>
+<td>&lt;/,</td>
+<td>33</td>
+<td>b3</td>
+<td></td>
+</tr>
+<tr>
+<td>(/9</td>
+<td>0a</td>
+<td>8a</td>
+<td></td>
+</tr>
+<tr>
+<td>o</td>
+<td>18</td>
+<td>98</td>
+<td></td>
+</tr>
+<tr>
+<td>l</td>
+<td>26</td>
+<td>a6</td>
+<td></td>
+</tr>
+<tr>
+<td>&gt;/.</td>
+<td>34</td>
+<td>b4</td>
+<td></td>
+</tr>
+<tr>
+<td>)/0</td>
+<td>0b</td>
+<td>8b</td>
+<td></td>
+</tr>
+<tr>
+<td>p</td>
+<td>19</td>
+<td>99</td>
+<td></td>
+</tr>
+<tr>
+<td>:/;</td>
+<td>27</td>
+<td>a7</td>
+<td></td>
+</tr>
+<tr>
+<td>?//</td>
+<td>35</td>
+<td>b5</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>_/-</td>
+<td>0c</td>
+<td>8c</td>
+</tr>
+<tr>
+<td>{/[</td>
+<td>1a</td>
+<td>9a</td>
+<td></td>
+</tr>
+<tr>
+<td>“/‘</td>
+<td>28</td>
+<td>a8</td>
+<td></td>
+</tr>
+<tr>
+<td><r-shift></r-shift></td>
+<td>36</td>
+<td>b6</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>+/=</td>
+<td>0d</td>
+<td>8d</td>
+</tr>
+<tr>
+<td>}/]</td>
+<td>1b</td>
+<td>9b</td>
+<td></td>
+</tr>
+<tr>
+<td><enter></enter></td>
+<td>1c</td>
+<td>9c</td>
+<td></td>
+</tr>
+<tr>
+<td><l-ctrl></l-ctrl></td>
+<td>1d</td>
+<td>9d</td>
+<td></td>
+</tr>
+<tr>
+<td>|/\</td>
+<td>2b</td>
+<td>ab</td>
+<td></td>
+</tr>
+<tr>
+<td><l-alt></l-alt></td>
+<td>38</td>
+<td>b8</td>
+<td></td>
+</tr>
+<tr>
+<td><backspace></backspace></td>
+<td>0e</td>
+<td>8e</td>
+<td></td>
+</tr>
+<tr>
+<td><space></space></td>
+<td>39</td>
+<td>b9</td>
+<td></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>如果是控制键ctrl shift 则将其转变成状态字节, 记录到0040:0017这个内存空间中,也就是说当我们按下控制键 这个位置的数据会发生相应的改变</p>
+</blockquote>
+<h2 id="磁盘读写"><a href="#磁盘读写" class="headerlink" title="磁盘读写"></a>磁盘读写</h2><ol>
+<li>概念</li>
+</ol>
+<p>磁盘构造:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">一面=80个磁道</span><br><span class="line"></span><br><span class="line">一个磁道=18个扇区</span><br><span class="line"></span><br><span class="line">一个扇区=512byte</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><p>中断</p>
+<p><strong>使用13H号中断</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">;读取磁盘中的数据到0:200H这个内存中</span><br><span class="line">mov ax,0</span><br><span class="line">mov es,ax</span><br><span class="line">mov bx,200h</span><br><span class="line"></span><br><span class="line">mov al,1 ;读取的扇区数</span><br><span class="line">mov ch,0 ;磁道号</span><br><span class="line">mov cl,1 ;扇区号</span><br><span class="line">mov dl,0 ;驱动器号 软驱a, b</span><br><span class="line">mov dh,2 ;面号</span><br><span class="line">mov ah,2 ;2表示读取 3表示写入</span><br><span class="line">int 13H</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">;将0:200H这个内存中数据写入软盘</span><br><span class="line">mov ax,0</span><br><span class="line">mov es,ax</span><br><span class="line">mov bx,200h</span><br><span class="line"></span><br><span class="line">mov al,1 ;读取的扇区数</span><br><span class="line">mov ch,0 ;磁道号</span><br><span class="line">mov cl,1 ;扇区号</span><br><span class="line">mov dl,0 ;驱动器号 软驱a, b</span><br><span class="line">mov dh,2 ;面号</span><br><span class="line">mov ah,3 ;写入</span><br><span class="line">int 13H</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+</li>
+</ol>
+<h2 id="转移指令jmp-jcxz和retf"><a href="#转移指令jmp-jcxz和retf" class="headerlink" title="转移指令jmp ,jcxz和retf"></a>转移指令jmp ,jcxz和retf</h2><p>如果我们想要实现以下效果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mov bx,3333H ;假如这条这条指令数据所对应的物理地址为0710:0000</span><br><span class="line">mov ax,2000H ;假如这条这条指令数据所对应的物理地址为0710:0003</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">;如果我想跳过第一条指令 直接执行第二条指令 那么直接修改CS:IP的值为0710:0003即可</span><br></pre></td></tr></table></figure>
+
+<p>修改方法：</p>
+<ul>
+<li><p>调试器直接修改</p>
+</li>
+<li><p>使用<code>jmp</code>指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">jmp 0100h:8H</span><br><span class="line">mov bx,3333H </span><br><span class="line">mov ax,2000H </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">;如果在同一个段中 可以直接使用jmp+偏移地址的形式</span><br><span class="line">jmp 8H</span><br><span class="line">mov bx,3333H </span><br><span class="line">mov ax,2000H</span><br></pre></td></tr></table></figure>
+
+<p>或者使用标记</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">jmp me</span><br><span class="line">mov bx,3333H </span><br><span class="line">me:</span><br><span class="line">	mov ax,2000H</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>jcxz</code>指令</p>
+<p><code>jcxz</code> （jmp cx zero）:条件转移指令，功能和jmp一样，只是需要满足条件，也就是当cx寄存器中的值为0时，进行跳转</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mov cx,0</span><br><span class="line">jcxz me</span><br><span class="line">mov bx,3333H </span><br><span class="line">me:</span><br><span class="line">	mov ax,2000H</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>retf</code>指令</p>
+<p><code>retf</code>需要配合栈进行使用，当程序执行到<code>retf</code>这条指令时，会连续从栈中<code>pop</code>两次数据，第一次的数据赋值给<code>CS</code>，第二次的数据赋值给IP，那么如果我们想要跳转到指定的指令，需要将该指令的段地址和偏移地址分别<code>push</code>进栈中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">stack segment</span><br><span class="line">	db 128 dup(0)</span><br><span class="line">stack ends</span><br><span class="line"></span><br><span class="line">code segment</span><br><span class="line">	start:</span><br><span class="line">		mov ax,stack</span><br><span class="line">		mov ss,ax</span><br><span class="line">		mov sp,128</span><br><span class="line">		</span><br><span class="line">		mov ax,0710H ;指定段地址</span><br><span class="line">		push ax</span><br><span class="line">		mov ax,0003H ;指定偏移地址</span><br><span class="line">		push ax</span><br><span class="line">		</span><br><span class="line">		retf ;程序跳转到0710:0003H这个位置</span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<h2 id="Call和Ret进阶"><a href="#Call和Ret进阶" class="headerlink" title="Call和Ret进阶"></a>Call和Ret进阶</h2><p><code>call</code>在执行时会先将下一条指令所对应的<code>ip</code>地址入栈，然后修改<code>ip</code>的值实现跳转, <code>ret</code>指令执行的时候，将<code>ip</code>地址<code>pop</code>出来进行跳转</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">call s ;标号里面存放的是ip偏移地址 如果写成call 3H  那么意思就是跳转到CS:0003h这个位置</span><br></pre></td></tr></table></figure>
+
+<p><code>call Far ptr</code> 执行时会将下一条指令做对应的<code>cs</code>和<code>ip</code>都入栈，<code>retf</code>指令执行的时候，将<code>ip</code>和<code>cs</code>值pop出来进行跳转</p>
+<blockquote>
+<p>ret和call配套使用，retf和call Far ptr 配套使用</p>
+<p>可以通过标号(函数名称)之间数值相减计算函数体代码所占用的内存空间大小</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">code segment          </span><br><span class="line">    mov ax,func1 </span><br><span class="line">    mov bx, func2</span><br><span class="line">    sub bx,ax ;计算函数func1占用的内存空间大小</span><br><span class="line"> </span><br><span class="line">  func1: </span><br><span class="line">    mov ax,3333H </span><br><span class="line">    ret             </span><br><span class="line">  func2:       </span><br><span class="line">    mov bx,4444H</span><br><span class="line">    ret</span><br><span class="line">code ends</span><br></pre></td></tr></table></figure>
+
+<p><strong>直接从内存中获取ip地址然后跳转</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">call word ptr ds:[0] ;ds:[0]存放ip值</span><br></pre></td></tr></table></figure>
+
+<p><strong>直接从内存中获取cs和ip地址然后跳转</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">call dword ptr ds:[0] ;ds:[0]存放的是ip值， ds:[2]存放的是cs值</span><br><span class="line"></span><br><span class="line">;这种方式同样会将cs和ip入栈 可以配合retf使用</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>以上两种直接从内存中获取cs：ip的方式对于jmp指令同样有效</p>
+</blockquote>
+<p><strong><code>call</code>指令和<code>jmp</code>指令的区别</strong></p>
+<ul>
+<li><code>jmp</code>指令仅仅只是修改了<code>cs：ip</code>的值</li>
+<li><code>call</code>指令除了修改<code>cs：ip</code>的值之外，还将下一条指令的<code>ip</code>值入栈，方便<code>ret</code>指令跳转调用</li>
+</ul>
+<p><strong>iret指令:</strong></p>
+<p><code>iret</code>指令执行,将<code>ip</code>和<code>cs</code>值pop出来进行跳转，同时还执行了<code>popf</code>，相当于执行了以下三步操作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pop ip</span><br><span class="line">pop cs</span><br><span class="line">popf</span><br></pre></td></tr></table></figure>
+
+<h2 id="内中断进阶"><a href="#内中断进阶" class="headerlink" title="内中断进阶"></a>内中断进阶</h2><p>我们利用中断码段可以调用系统的功能,也就是被系统封装好的子程序</p>
+<p>中断既然能够引导<code>cpu</code>临时去执行子程序，那么势必是更改了<code>cs:ip</code>的值，也就是在内存中存放了这个子程序的入口指令地址，通过<code>int</code>关键字找出来并跳转。<strong>这里有两个先决条件，一个是子程序必须提前编写好存放在内存中，二是将入口地址存放在内存的某个位置</strong></p>
+<p>当程序执行到<code>int</code>指令时，根据中断码计算出程序入口所在的物理地址，然后然后取出来赋值给<code>cs：ip</code></p>
+<p>那么怎么通过中断码计算呢？</p>
+<p>比如 <code>int 0h</code>  会从<code>0000：0000</code>这个地址开始找出四个字节数据，由高地址往低地址分别为段地址和偏移地址</p>
+<p>由于每个中断码需要占用四个字节空间，因此<code>int 2H</code> 从<code>0000：0004</code>开始找，以此类推</p>
+<p>公式为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">IP=中断码*4</span><br><span class="line">CS=中断码*4+2</span><br></pre></td></tr></table></figure>
+
+<p>配合咱们之前学的<code>call</code>指令  <code>int 9h</code> 可以用以下指令替代:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">int 9h </span><br><span class="line"></span><br><span class="line">;相当于一下三行代码</span><br><span class="line">mov ax,0000H</span><br><span class="line">mov ds,ax</span><br><span class="line">call dword ptr ds:[9h*4]</span><br></pre></td></tr></table></figure>
+
+<h4 id="编写自定义中断"><a href="#编写自定义中断" class="headerlink" title="编写自定义中断"></a>编写自定义中断</h4><ol>
+<li><p>编写子程序</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">child:</span><br><span class="line">	mov ax,3322H</span><br><span class="line">	retf</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<ol start="2">
+<li><p>将子程序入口地址值存放到中断码对应的内存位置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">code segment</span><br><span class="line">start:</span><br><span class="line">	call write</span><br><span class="line">	</span><br><span class="line">	mov ah,4cH</span><br><span class="line">	int 21h</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">    ;=======子程序======</span><br><span class="line">    child:</span><br><span class="line">        mov ax,3322H</span><br><span class="line">        retf</span><br><span class="line">    endd: nop</span><br><span class="line">    ;=======子程序======</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    ;=======将子程序入口地址写入内存======</span><br><span class="line">    write:</span><br><span class="line">    	</span><br><span class="line">    	;子程序所在的段地址</span><br><span class="line">    	mov ax,cs</span><br><span class="line">    	;子程序所在的偏移地址</span><br><span class="line">    	mov bx,child</span><br><span class="line">    </span><br><span class="line">    	mov cx,0000H</span><br><span class="line">    	mov es,cx</span><br><span class="line">    	mov es:[9h*4],bx</span><br><span class="line">    	mov es:[9h*4+2],ax</span><br><span class="line">    	ret</span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用中断码调用子程序</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">code segment</span><br><span class="line">start:</span><br><span class="line">	call write</span><br><span class="line">	</span><br><span class="line">	;测试中断</span><br><span class="line">	int 9H</span><br><span class="line">	</span><br><span class="line">	mov ah,4cH</span><br><span class="line">	int 21h</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">    ;=======子程序======</span><br><span class="line">    child:</span><br><span class="line">        mov ax,3322H</span><br><span class="line">        retf</span><br><span class="line">    endd: nop</span><br><span class="line">    ;=======子程序======</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    ;=======将子程序入口地址写入内存======</span><br><span class="line">    write:</span><br><span class="line">    	</span><br><span class="line">    	;子程序所在的段地址</span><br><span class="line">    	mov ax,cs</span><br><span class="line">    	;子程序所在的偏移地址</span><br><span class="line">    	mov bx,child</span><br><span class="line">    </span><br><span class="line">    	mov cx,0000H</span><br><span class="line">    	mov es,cx</span><br><span class="line">    	mov es:[9h*4],bx</span><br><span class="line">    	mov es:[9h*4+2],ax</span><br><span class="line">    	ret</span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<h2 id="音乐播放"><a href="#音乐播放" class="headerlink" title="音乐播放"></a>音乐播放</h2><p>声音由震动产生,不同频率对应不同的声音,也就是<strong>音高</strong></p>
+<p>单个音高的声音不能叫音乐,只能叫音频,</p>
+<p>而音乐是由<strong>不同时长</strong>的<strong>不同音高</strong>组合而成,比如100Hz的声音持续1秒紧接着200Hz的声音持续半秒,如此反复循环,那么在听感上就是一首音乐</p>
+<p>在音乐演奏的世界里,为了表示音高,一般采用记谱的方式来代替频率,从而方便音乐家们交流,但是对于计算机而言,计算机不能识别简谱也不能识别五线谱</p>
+<h4 id="计算机的发声原理"><a href="#计算机的发声原理" class="headerlink" title="计算机的发声原理"></a>计算机的发声原理</h4><p>电信号—–&gt;驱动——-&gt;扬声器</p>
+<h4 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line">data segment</span><br><span class="line">	;音高</span><br><span class="line">	freq dw 262,262,262,196</span><br><span class="line">		 dw 330,330,330,262</span><br><span class="line">		 dw 262,330,392,392</span><br><span class="line">		 dw 349,330,294</span><br><span class="line">		 dw 294,330,349,349</span><br><span class="line">		 dw 330,294,330,262</span><br><span class="line">		 dw 262,330,294,196</span><br><span class="line">		 dw 247,294,262,-1</span><br><span class="line">	 ;时长</span><br><span class="line">	 time dw 3 dup(12,12,25,25),12,12,50</span><br><span class="line">	      dw 3 dup(12,12,25,25),12,12,50</span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line">stack segment</span><br><span class="line">	db 100H dup(0)</span><br><span class="line">stack ends</span><br><span class="line"></span><br><span class="line">code segment</span><br><span class="line">	start:</span><br><span class="line">		;主程序</span><br><span class="line">		mov ax,stack</span><br><span class="line">		mov ss,ax</span><br><span class="line">		mov sp,100H</span><br><span class="line">		mov ax,data</span><br><span class="line">		mov ds,ax</span><br><span class="line">		</span><br><span class="line">		lea si,freq</span><br><span class="line">		lea di,time</span><br><span class="line">		</span><br><span class="line">	play:</span><br><span class="line">		mov dx,[si]</span><br><span class="line">		cmp dx,-1</span><br><span class="line">		je end_play</span><br><span class="line">		call sound</span><br><span class="line">		add si,2</span><br><span class="line">		add di,2</span><br><span class="line">		jmp play</span><br><span class="line">		</span><br><span class="line">	end_play:</span><br><span class="line">		mov ah,4cH</span><br><span class="line">		int 21H</span><br><span class="line">	sound:</span><br><span class="line">    	push ax</span><br><span class="line">    	push dx</span><br><span class="line">    	push cx</span><br><span class="line">    	;定时器的设置</span><br><span class="line">    	mov al,0b6h</span><br><span class="line">    	out 43H,al</span><br><span class="line">    	mov dx,12H</span><br><span class="line">    	mov ax,34dcH</span><br><span class="line">    	div word ptr[si]</span><br><span class="line">    	out 42h,al</span><br><span class="line">    	mov al,ah</span><br><span class="line">    	out 42h,al</span><br><span class="line">    	;设置8255芯片,控制扬声器开关</span><br><span class="line">    	in al,61h</span><br><span class="line">    	mov ah,al</span><br><span class="line">    	or al ,3</span><br><span class="line">    	out 61h,al</span><br><span class="line">    	;延时一定的时长</span><br><span class="line">    	mov dx,[di]</span><br><span class="line">    wait1:</span><br><span class="line">    	mov cx,28000</span><br><span class="line">    delay:</span><br><span class="line">    	nop</span><br><span class="line">    	loop delay</span><br><span class="line">    	dec dx</span><br><span class="line">    	jnz wait1</span><br><span class="line">        ;恢复扬声器端口原值</span><br><span class="line">        mov al,ah</span><br><span class="line">        out 61h,al</span><br><span class="line">        pop cx</span><br><span class="line">        pop dx</span><br><span class="line">        pop ax</span><br><span class="line">        ret</span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="tags/汇编/" rel="tag"># 汇编</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="196.html" rel="next" title="x86汇编语言之and和or指令以及ascii码">
+                <i class="fa fa-chevron-left"></i> x86汇编语言之and和or指令以及ascii码
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="197.html" rel="prev" title="x86汇编语言之大小写快速转换">
+                x86汇编语言之大小写快速转换 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    <!-- 乱码三千文章内嵌广告 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-layout="in-article" data-ad-format="fluid" data-ad-client="ca-pub-2626449904708114" data-ad-slot="1549007621"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+  <!-- 乱码三千信息流广告 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-6t+ed+2i-1n-4w" data-ad-client="ca-pub-2626449904708114" data-ad-slot="9471729671"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">乱码三千</p>
+              <p class="site-description motion-element" itemprop="description">android程序员一枚,擅长java,kotlin,python,金融投资,欢迎交流~</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="https://code.newban.cn/archives/">
+              
+                  <span class="site-state-item-count">469</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">138</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#x86汇编语法"><span class="nav-number">1.</span> <span class="nav-text">x86汇编语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#段寄存器"><span class="nav-number">2.</span> <span class="nav-text">段寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#栈空间的操作"><span class="nav-number">3.</span> <span class="nav-text">栈空间的操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操控显存输出字符串"><span class="nav-number">4.</span> <span class="nav-text">操控显存输出字符串</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用键盘输入控制字符移动"><span class="nav-number">5.</span> <span class="nav-text">使用键盘输入控制字符移动</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#内存读写的另外一种简便方法"><span class="nav-number">5.1.</span> <span class="nav-text">内存读写的另外一种简便方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一维数组的定义"><span class="nav-number">6.</span> <span class="nav-text">一维数组的定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#外中断"><span class="nav-number">7.</span> <span class="nav-text">外中断</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#键盘中断"><span class="nav-number">7.0.1.</span> <span class="nav-text">键盘中断</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#磁盘读写"><span class="nav-number">8.</span> <span class="nav-text">磁盘读写</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#转移指令jmp-jcxz和retf"><span class="nav-number">9.</span> <span class="nav-text">转移指令jmp ,jcxz和retf</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Call和Ret进阶"><span class="nav-number">10.</span> <span class="nav-text">Call和Ret进阶</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内中断进阶"><span class="nav-number">11.</span> <span class="nav-text">内中断进阶</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#编写自定义中断"><span class="nav-number">11.0.1.</span> <span class="nav-text">编写自定义中断</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#音乐播放"><span class="nav-number">12.</span> <span class="nav-text">音乐播放</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#计算机的发声原理"><span class="nav-number">12.0.1.</span> <span class="nav-text">计算机的发声原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#示例代码"><span class="nav-number">12.0.2.</span> <span class="nav-text">示例代码</span></a></li></ol></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">乱码三千</span>
+  <div>
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+  </div>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+  <script type="text/javascript" async src="js/src/mermaid.min.js"></script>
+  <script>
+  if (window.mermaid) {
+        var mermaid_config = {
+            startOnLoad: true,
+            theme: 'default',
+            flowchart:{
+                useMaxWidth: false,
+                htmlLabels: true
+            }                
+        }
+        mermaid.initialize(mermaid_config);
+  }
+  </script>
+  
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+      <style>
+        a.gitment-editor-footer-tip { display: none; }
+        .gitment-container.gitment-footer-container { display: none; }
+      </style>
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'songjianzaina',
+            repo: 'codesan_comment',
+            
+            lang: "zh" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '75fa01da04fd1029841debfa65ce027b566a47e3',
+            
+                client_id: '01a471de64bf7a7789f3'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

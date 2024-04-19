@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+<meta name="referrer" content="never">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="汇编,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="乱码三千 – 分享实用IT技术" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="一、ARM汇编开发的两种的方式ARM汇编开发指用ARM提供的汇编指令，进行ARM程序的开发。 ARM汇编开发，有两种开发方式，一种是使用ARM汇编，一种是使用ARM GNU汇编。两种汇编开发，使用的汇编指令是完全一样的，区别是宏指令，伪指令，伪操作不一样。其实两种开发方式的区别在于所使用的编译工具不一样。 对于ARM汇编，使用的是ARM公司开发的编译器，而ARM GNU汇编，是使用GNU为ARM指">
+<meta name="keywords" content="汇编">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARM原生汇编与ARM GNU汇编的区分">
+<meta property="og:url" content="https://code.newban.cn/205.html">
+<meta property="og:site_name" content="乱码三千 – 分享实用IT技术">
+<meta property="og:description" content="一、ARM汇编开发的两种的方式ARM汇编开发指用ARM提供的汇编指令，进行ARM程序的开发。 ARM汇编开发，有两种开发方式，一种是使用ARM汇编，一种是使用ARM GNU汇编。两种汇编开发，使用的汇编指令是完全一样的，区别是宏指令，伪指令，伪操作不一样。其实两种开发方式的区别在于所使用的编译工具不一样。 对于ARM汇编，使用的是ARM公司开发的编译器，而ARM GNU汇编，是使用GNU为ARM指">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png">
+<meta property="og:updated_time" content="2024-04-08T02:36:39.175Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ARM原生汇编与ARM GNU汇编的区分">
+<meta name="twitter:description" content="一、ARM汇编开发的两种的方式ARM汇编开发指用ARM提供的汇编指令，进行ARM程序的开发。 ARM汇编开发，有两种开发方式，一种是使用ARM汇编，一种是使用ARM GNU汇编。两种汇编开发，使用的汇编指令是完全一样的，区别是宏指令，伪指令，伪操作不一样。其实两种开发方式的区别在于所使用的编译工具不一样。 对于ARM汇编，使用的是ARM公司开发的编译器，而ARM GNU汇编，是使用GNU为ARM指">
+<meta name="twitter:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+<!--谷歌广告验证代码-->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: "ca-pub-2626449904708114",
+          enable_page_level_ads: true
+     });
+</script>
+<!--谷歌广告验证代码-->
+
+<!--短链广告-->
+<!--<script type="text/javascript">
+    var adfly_id = 25792435;
+    var adfly_advert = 'banner';
+    var popunder = false;
+    var exclude_domains = ['code.newban.cn','newban.cn',  'localhost:4000'];
+</script>
+<script src="https://cdn.adf.ly/js/link-converter.js"></script>-->
+<!--短链广告-->
+
+
+
+  <link rel="canonical" href="https://code.newban.cn/205.html">
+
+
+
+
+
+  <title>ARM原生汇编与ARM GNU汇编的区分 | 乱码三千 – 分享实用IT技术</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+  
+<a href="https://www.github.com/songjianzaina" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">乱码三千 – 分享实用IT技术</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">乱码三千 – 码出一个新世界</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://www.newban.cn/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="https://code.newban.cn/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ARM原生汇编与ARM GNU汇编的区分</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-05T16:14:19+08:00">
+                2021-01-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="一、ARM汇编开发的两种的方式"><a href="#一、ARM汇编开发的两种的方式" class="headerlink" title="一、ARM汇编开发的两种的方式"></a>一、ARM汇编开发的两种的方式</h2><p>ARM汇编开发指用ARM提供的汇编指令，进行ARM程序的开发。</p>
+<p>ARM汇编开发，有两种开发方式，一种是使用ARM汇编，一种是使用ARM GNU汇编。两种汇编开发，使用的汇编指令是完全一样的，区别是宏指令，伪指令，伪操作不一样。其实两种开发方式的区别在于所使用的编译工具不一样。</p>
+<p>对于ARM汇编，使用的是ARM公司开发的编译器，而ARM GNU汇编，是使用GNU为ARM指令集开发的编译器，也就是arm-gcc。</p>
+<h2 id="二、ARM的编译开发环境"><a href="#二、ARM的编译开发环境" class="headerlink" title="二、ARM的编译开发环境"></a>二、ARM的编译开发环境</h2><p>两种常用的ARM的编译开发环境</p>
+<ul>
+<li>DS5：ARM提供的集成开发软件。使用的是ARM提供的工具链进行程序编译</li>
+<li>GNU开发环境： 由GNU的汇编器as，交叉编译器gcc，和链接器ld等组成</li>
+</ul>
+<h2 id="三、伪操作，宏指令，伪指令"><a href="#三、伪操作，宏指令，伪指令" class="headerlink" title="三、伪操作，宏指令，伪指令"></a>三、伪操作，宏指令，伪指令</h2><p>伪操作：ARM汇编语言程序里的一些特殊指令助记符，其作用主要是完成汇编程序做各种准备工作，在源程序进行汇编时由汇编程序处理，而不是在计算机运行期间由机器执行。如程序段的定义，就属于伪操作。</p>
+<p>宏指令：一段独立的程序代码，可插在源程序中，通过伪操作来定义。</p>
+<p>伪指令：ARM汇编语言程序里的一些特殊指令助记符，不在处理器运行期间执行，在汇编时，被合适的ARM的机器指令代替，从而实现真正的指令操作。</p>
+<h2 id="四、ARM原生汇编伪操作"><a href="#四、ARM原生汇编伪操作" class="headerlink" title="四、ARM原生汇编伪操作"></a>四、ARM原生汇编伪操作</h2><table>
+<thead>
+<tr>
+<th>伪操作</th>
+<th>语法格式</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GBLA</td>
+<td>GBLA  Varible</td>
+<td>声明一个全局的算术变量，并将其初始化为0</td>
+</tr>
+<tr>
+<td>GBLL</td>
+<td>GBLL  Varible</td>
+<td>声明一个全局的逻辑变量，并将其初始化成{FALSE}</td>
+</tr>
+<tr>
+<td>GBLS</td>
+<td>GBLS  Varible</td>
+<td>声明一个全局的字符串变量，并将其初始化成空串</td>
+</tr>
+<tr>
+<td>LCLA</td>
+<td>LCLA  Varible</td>
+<td>声明一个局部的算术变量，并将其初始化为0</td>
+</tr>
+<tr>
+<td>LCLL</td>
+<td>LCLL  Varible</td>
+<td>声明一个局部的逻辑变量，并将其初始化成{FALSE}</td>
+</tr>
+<tr>
+<td>LCLS</td>
+<td>LCLS  Varible</td>
+<td>声明一个局部的字符串变量，并将其初始化成空串</td>
+</tr>
+<tr>
+<td>SETA</td>
+<td>SETA  Varible  expr</td>
+<td>给一个全局或局部算术变量赋值</td>
+</tr>
+<tr>
+<td>SETL</td>
+<td>SETL  Varible  expr</td>
+<td>给一个全局或局部逻辑变量赋值</td>
+</tr>
+<tr>
+<td>SETS</td>
+<td>SETS  Varible  expr</td>
+<td>给一个全局或局部字符串变量赋值</td>
+</tr>
+<tr>
+<td>RLIST</td>
+<td>name LIST {list of registers}</td>
+<td>为一个通用寄存器列表定义名称</td>
+</tr>
+<tr>
+<td>CN</td>
+<td>name CN expr</td>
+<td>为一个协处理器的寄存器定义名称</td>
+</tr>
+<tr>
+<td>CP</td>
+<td>name CP expr</td>
+<td>为一个协处理器定义名称</td>
+</tr>
+<tr>
+<td>DN/SN</td>
+<td>name DN/SN expr</td>
+<td>DN/SN为一个双精度/单精度的VFP寄存器定义名称</td>
+</tr>
+<tr>
+<td>FN</td>
+<td>name FN  expr</td>
+<td>为一个FPA浮点寄存器定义名称</td>
+</tr>
+<tr>
+<td>LTORG</td>
+<td>LTONG</td>
+<td>声明一个数据缓冲池（文字池）的开始</td>
+</tr>
+<tr>
+<td>MAP</td>
+<td>MAP expr {, base-register}</td>
+<td>定义一个结构化的内存表(storage map)的首地址</td>
+</tr>
+<tr>
+<td>FIELD</td>
+<td>{label}  FIELF  expr</td>
+<td>定义一个结构化内存表中的数据域</td>
+</tr>
+<tr>
+<td>SPACE</td>
+<td>{label}  SPACE  expr</td>
+<td>分配一块连续内存单元，并用0初始化</td>
+</tr>
+<tr>
+<td>DCB</td>
+<td>{label}  DCB  expr {,expr}..</td>
+<td>分配一块字节内存单元，并用expr初始化</td>
+</tr>
+<tr>
+<td>DCD/ DCDU</td>
+<td>{label} DCD/DCDU expr {,expr}…</td>
+<td>分配一块字内存单元， 并用expr初始化</td>
+</tr>
+<tr>
+<td>DCDO</td>
+<td>{label}  DCDO  expr {,expr}…</td>
+<td>分配一块字对齐的字内存单元， 并用expr初始化</td>
+</tr>
+<tr>
+<td>DCFD/DCFDU</td>
+<td>{label}  DCFD{U}  fpliteral ,{,fpliteral}…</td>
+<td>为双精度的浮点数分配字对齐的内存单元</td>
+</tr>
+<tr>
+<td>DCFS/DCFSU</td>
+<td>{label}   DCFS{U}  fpliteral,{,fpliteral}…</td>
+<td>为单精度的浮点数分配字对齐的内存单元</td>
+</tr>
+<tr>
+<td>DCI</td>
+<td>{label} DCI expr, {expr}…</td>
+<td>ARM代码分配一段字对齐的内存单元，填充expr（二进制指令码），THUMB代码中，分配一段半字对齐的半字内存单元。</td>
+</tr>
+<tr>
+<td>DCQ/ DCQU</td>
+<td>{label} DCQ{U}  {-} literal, {, {-} literal}…</td>
+<td>分配一段以双字（8个字节）为单位的内存</td>
+</tr>
+<tr>
+<td>DCW/DCWU</td>
+<td>{label} DCW{U}  {-} literal, {, {-} literal}…</td>
+<td>DCW用于分配一段半字对齐的半字内存单元</td>
+</tr>
+</tbody></table>
+<h3 id="1、AREA"><a href="#1、AREA" class="headerlink" title="1、AREA"></a>1、AREA</h3><p>创建一段新的程序代码或数据区。</p>
+<p>格式 ： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AREA  name, &#123;,attr,&#125; …</span><br></pre></td></tr></table></figure>
+
+<p>其中，name是程序段名， atrr是段名属性</p>
+<p>对于属性，有以下一些：</p>
+<ul>
+<li>CODE： 用于定义代码段，默认为是READONLY</li>
+<li>DATA： 用于定于数据段，默认为READWRITE</li>
+<li>READONLY: 指定本段的内容只读</li>
+<li>READWRITE：  指定本段的内容可读可写</li>
+<li>ALIGN:  指定对齐为2次幂</li>
+<li>COMMON: 定义通用的段。不包含任何用户的代码和数据。各源文件中同名的COMMON属性段共享同一段存储单元</li>
+</ul>
+<h3 id="2、ALIGN"><a href="#2、ALIGN" class="headerlink" title="2、ALIGN"></a>2、ALIGN</h3><p>指定对齐</p>
+<p>  ALIGN  4  表示4字节地址对齐</p>
+<p>  ALIGN  8  表示8字节地址对齐</p>
+<p>  注意：在AREA中使用和单独使用ALIGN的区别，在于格式和对齐的计算不一样。</p>
+<h3 id="3、ENTRY"><a href="#3、ENTRY" class="headerlink" title="3、ENTRY"></a>3、ENTRY</h3><p>指定汇编程序的入口。</p>
+<p>一个程序至少有一个入口点，也可以有多个入口点，但是在一个源文件中，最多只能有一个ENTRY。当多个源文件均有ENTRY时，由链接器指定程序真正的入口。</p>
+<h3 id="4、END"><a href="#4、END" class="headerlink" title="4、END"></a>4、END</h3><p>表示源程序的结束</p>
+<p>所以汇编语言源文件必须以END结束，汇编器遇到END, 将结束编译。</p>
+<h3 id="5、EXPORT"><a href="#5、EXPORT" class="headerlink" title="5、EXPORT"></a>5、EXPORT</h3><p>格式：　EXPORT  标号  [,WEAK]</p>
+<p>声明一个全局标号，其他源文件可以使用这个标号。WEAK表示碰上其他同名标号时，其他标号优先。</p>
+<h3 id="6、IMPORT"><a href="#6、IMPORT" class="headerlink" title="6、IMPORT"></a>6、IMPORT</h3><p>格式:  IMPORT 标号，[,WEAK]</p>
+<p>表示该引用的标号在其他源文件中，单要在当前文件中引用。WEAK表示找不到该标号时，也不报错，一般该标号置为0，如果是B 或BL指令用到该标号，该指令置为nop。</p>
+<p>该标号会加入到当前源文件的符号表中。</p>
+<h3 id="7、EXTERN"><a href="#7、EXTERN" class="headerlink" title="7、EXTERN"></a>7、EXTERN</h3><p>和IMPORT一样，不同在于，如果当前文件没有引用该标号，该标号不会加入到当前源文件的符号表中。</p>
+<h3 id="8、GET-或INCLUDE"><a href="#8、GET-或INCLUDE" class="headerlink" title="8、GET(或INCLUDE)"></a>8、GET(或INCLUDE)</h3><p>将一个源文件含到当前的源文件中</p>
+<h3 id="9、EQU"><a href="#9、EQU" class="headerlink" title="9、EQU"></a>9、EQU</h3><p>对一个常量标号赋值</p>
+<p>格式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">name  EQU  expression</span><br></pre></td></tr></table></figure>
+
+<p>其中： name符号名， expression寄存器相关或者程序相关的固定值</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">num  EQU  2  ;  为符号赋予数字2</span><br></pre></td></tr></table></figure>
+
+<p>EQU，等同于C语言中用#define定义一个常量</p>
+<h3 id="10、SPCAE"><a href="#10、SPCAE" class="headerlink" title="10、SPCAE"></a>10、SPCAE</h3><p>用于分配一片连续内存单元，并用0初始化。SPACE可用%代替。</p>
+<p>格式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;label&#125; SPACE expr</span><br></pre></td></tr></table></figure>
+
+<p>label ： 是一个标号, 可选</p>
+<p>expr：  分配的内存字节数</p>
+<p>如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stack SPACE 100 ； 分配100个字节内存单元，并用0初始化。标号stack是这片空间的起始地址</span><br></pre></td></tr></table></figure>
+
+<h3 id="11、DCB"><a href="#11、DCB" class="headerlink" title="11、DCB"></a>11、DCB</h3><p>用于分配段字节内存单元，并用伪操作中的expr初始化。</p>
+<p>格式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;label&#125; DCB expr &#123;,expr&#125;</span><br></pre></td></tr></table></figure>
+
+<p>label： 是一个标号，可选</p>
+<p>expr： 可以是-128~255的数值或者字符串</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">string  DCB  &quot;HELLO&quot;  ;为HELLO字符串分配空间， string是这块空间的起始地址</span><br></pre></td></tr></table></figure>
+
+<h3 id="12、DCD及DCDU"><a href="#12、DCD及DCDU" class="headerlink" title="12、DCD及DCDU"></a>12、DCD及DCDU</h3><p>用于分配段字内存单元（分配的内存都是字对齐，DCDU并不严格字对齐），并用伪操作中的expr初始化。 DCD 可用 &amp; 代替。</p>
+<p>格式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;label&#125; DCD expr, &#123;,expr&#125;</span><br></pre></td></tr></table></figure>
+
+<p>label: 是一个标号，可选，表示这块内存单元的首地址</p>
+<p>expr： 数字表达式或程序中的标号</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data DCD  1,2,3,4   ;分配字对齐的字单元空间，初始化为1，2，3，4</span><br></pre></td></tr></table></figure>
+
+<h2 id="五、ARM原生汇编伪指令"><a href="#五、ARM原生汇编伪指令" class="headerlink" title="五、ARM原生汇编伪指令"></a>五、ARM原生汇编伪指令</h2><p>ARM伪指令包括： ADR, ADRL,LDR ,NOP</p>
+<p>THUMB伪指令包括：ADR, LDR, NOP</p>
+<table>
+<thead>
+<tr>
+<th>伪指令</th>
+<th>语法格式</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ADR</td>
+<td>ADR{cond} register, expr</td>
+<td>将基于PC或基于寄存器的地址值读取到寄存器中。小范围的地址读取</td>
+</tr>
+<tr>
+<td>ADRL</td>
+<td>ADRL{cond} register, expr</td>
+<td>将给予PC或基于寄存器的地址值读取到寄存器中。中等范围的地址读取</td>
+</tr>
+<tr>
+<td>LDR</td>
+<td>LDR {cond} register, =[expr|label]</td>
+<td>将一个32位的立即数或者一个地址值读取到寄存器中。大范围的地址读取</td>
+</tr>
+<tr>
+<td>NON</td>
+<td>NOP</td>
+<td>在汇编时，被替换成空操作</td>
+</tr>
+</tbody></table>
+<h2 id="六、ARM-GNU编译环境"><a href="#六、ARM-GNU编译环境" class="headerlink" title="六、ARM GNU编译环境"></a>六、ARM GNU编译环境</h2><table>
+<thead>
+<tr>
+<th>伪操作</th>
+<th>语法格式</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>.byte</td>
+<td>.byte expr {,expr}…</td>
+<td>分配一段字节内存单元，并用expr初始化</td>
+</tr>
+<tr>
+<td>.hword/.short</td>
+<td>.hword expr {,expr}…</td>
+<td>分配一段半字内存单元，并用expr初始化</td>
+</tr>
+<tr>
+<td>.ascii</td>
+<td>.ascii expr {,expr}…</td>
+<td>定义字符串expr</td>
+</tr>
+<tr>
+<td>.asciz/.string</td>
+<td>.asciz expr {,expr}…</td>
+<td>定义字符串expr（会增加/0为结束符）</td>
+</tr>
+<tr>
+<td>.floar/.single</td>
+<td>.float expr {,expr}…</td>
+<td>定义32bit IEEE浮点数expr</td>
+</tr>
+<tr>
+<td>.double</td>
+<td>.doubel expr {,expr}…</td>
+<td>定义64bit IEEE浮点数expr</td>
+</tr>
+<tr>
+<td>.word/.long/.int</td>
+<td>.word expr {,expr}…</td>
+<td>分配一段字内存单元，并用expr初始化</td>
+</tr>
+<tr>
+<td>.fill</td>
+<td>.fill  repeat {,size} {,value}</td>
+<td>分配一段字节内存单元，用sieze长度value填充repeat次</td>
+</tr>
+<tr>
+<td>.zero</td>
+<td>.zero size</td>
+<td>分配一段字节内存单元，并用0填充内存</td>
+</tr>
+<tr>
+<td>.space/.skip</td>
+<td>.space size, {,value}</td>
+<td>分配一段内存单元，用value将内存初始化</td>
+</tr>
+<tr>
+<td>.section</td>
+<td>.section expr</td>
+<td>定义一个段</td>
+</tr>
+<tr>
+<td>.text</td>
+<td>.text {subsection}</td>
+<td>代码段，</td>
+</tr>
+<tr>
+<td>.data</td>
+<td>.data{subsection}</td>
+<td>数据段</td>
+</tr>
+<tr>
+<td>.bss</td>
+<td>.bss{subsection}</td>
+<td>bss段</td>
+</tr>
+<tr>
+<td>.cond 16/.thumb</td>
+<td>.code 16/.thumb</td>
+<td>表示之后的汇编指令使用THUMB指令集</td>
+</tr>
+<tr>
+<td>.code 32/.arm</td>
+<td>.code 32/.arm</td>
+<td>表示之后的汇编指令使用ARM指令集</td>
+</tr>
+<tr>
+<td>.end</td>
+<td>.end</td>
+<td>标记汇编文件的结束</td>
+</tr>
+<tr>
+<td>.include</td>
+<td>.include “filename”</td>
+<td>将一个源文件包含到当前源文件中</td>
+</tr>
+<tr>
+<td>.align/.balign</td>
+<td>.align {alignment} {,fill},{max}</td>
+<td>通过填充字节使当前位置满足一定的对齐格式</td>
+</tr>
+</tbody></table>
+<h2 id="七、两种开发环境的区别"><a href="#七、两种开发环境的区别" class="headerlink" title="七、两种开发环境的区别"></a>七、两种开发环境的区别</h2><p>两种开发环境下的汇编代码，有较多不同的点，主要是符号及伪操作的不同。</p>
+<table>
+<thead>
+<tr>
+<th>ARM汇编的伪操作符</th>
+<th>GNU汇编的伪操作符</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>INLCUDE</td>
+<td>.include</td>
+</tr>
+<tr>
+<td>NUM   EQU  25</td>
+<td>.equ  NUM,  25</td>
+</tr>
+<tr>
+<td>EXPORT</td>
+<td>.global</td>
+</tr>
+<tr>
+<td>IMPORT</td>
+<td>.extern</td>
+</tr>
+<tr>
+<td>DCD</td>
+<td>.long</td>
+</tr>
+<tr>
+<td>IF:  DEF:</td>
+<td>.ifdef</td>
+</tr>
+<tr>
+<td>ELSE</td>
+<td>.else</td>
+</tr>
+<tr>
+<td>ENDIF</td>
+<td>.endif</td>
+</tr>
+<tr>
+<td>OR</td>
+<td>|</td>
+</tr>
+<tr>
+<td>SHL</td>
+<td>&lt;&lt;</td>
+</tr>
+<tr>
+<td>RN</td>
+<td>.req</td>
+</tr>
+<tr>
+<td>GBLA</td>
+<td>.global</td>
+</tr>
+<tr>
+<td>NUM  SETA 16</td>
+<td>.equ  NUM , 16</td>
+</tr>
+<tr>
+<td>MACRO</td>
+<td>.macro</td>
+</tr>
+<tr>
+<td>MEND</td>
+<td>.endm</td>
+</tr>
+<tr>
+<td>END</td>
+<td>.end</td>
+</tr>
+<tr>
+<td>AREA WORD, CODE, READONLY</td>
+<td>.text</td>
+</tr>
+<tr>
+<td>AREA BLOCK, DATE, READWRITE</td>
+<td>.data</td>
+</tr>
+<tr>
+<td>CODE32</td>
+<td>.arm</td>
+</tr>
+<tr>
+<td>CODE16</td>
+<td>.thumb</td>
+</tr>
+<tr>
+<td>LTORG</td>
+<td>.ltorg</td>
+</tr>
+<tr>
+<td>%</td>
+<td>.fill</td>
+</tr>
+<tr>
+<td>ENTRY</td>
+<td>ENTRY:</td>
+</tr>
+<tr>
+<td>ldr x0,=0xff</td>
+<td>ldr x0,=0xff</td>
+</tr>
+</tbody></table>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="tags/汇编/" rel="tag"># 汇编</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="204.html" rel="next" title="汇编语言之ARM32汇编">
+                <i class="fa fa-chevron-left"></i> 汇编语言之ARM32汇编
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="203.html" rel="prev" title="关于字节和字长以及半字的关系">
+                关于字节和字长以及半字的关系 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    <!-- 乱码三千文章内嵌广告 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-layout="in-article" data-ad-format="fluid" data-ad-client="ca-pub-2626449904708114" data-ad-slot="1549007621"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+  <!-- 乱码三千信息流广告 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-6t+ed+2i-1n-4w" data-ad-client="ca-pub-2626449904708114" data-ad-slot="9471729671"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">乱码三千</p>
+              <p class="site-description motion-element" itemprop="description">android程序员一枚,擅长java,kotlin,python,金融投资,欢迎交流~</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="https://code.newban.cn/archives/">
+              
+                  <span class="site-state-item-count">469</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">138</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、ARM汇编开发的两种的方式"><span class="nav-number">1.</span> <span class="nav-text">一、ARM汇编开发的两种的方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、ARM的编译开发环境"><span class="nav-number">2.</span> <span class="nav-text">二、ARM的编译开发环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、伪操作，宏指令，伪指令"><span class="nav-number">3.</span> <span class="nav-text">三、伪操作，宏指令，伪指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、ARM原生汇编伪操作"><span class="nav-number">4.</span> <span class="nav-text">四、ARM原生汇编伪操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、AREA"><span class="nav-number">4.1.</span> <span class="nav-text">1、AREA</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、ALIGN"><span class="nav-number">4.2.</span> <span class="nav-text">2、ALIGN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、ENTRY"><span class="nav-number">4.3.</span> <span class="nav-text">3、ENTRY</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4、END"><span class="nav-number">4.4.</span> <span class="nav-text">4、END</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5、EXPORT"><span class="nav-number">4.5.</span> <span class="nav-text">5、EXPORT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6、IMPORT"><span class="nav-number">4.6.</span> <span class="nav-text">6、IMPORT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7、EXTERN"><span class="nav-number">4.7.</span> <span class="nav-text">7、EXTERN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8、GET-或INCLUDE"><span class="nav-number">4.8.</span> <span class="nav-text">8、GET(或INCLUDE)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9、EQU"><span class="nav-number">4.9.</span> <span class="nav-text">9、EQU</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10、SPCAE"><span class="nav-number">4.10.</span> <span class="nav-text">10、SPCAE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11、DCB"><span class="nav-number">4.11.</span> <span class="nav-text">11、DCB</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12、DCD及DCDU"><span class="nav-number">4.12.</span> <span class="nav-text">12、DCD及DCDU</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、ARM原生汇编伪指令"><span class="nav-number">5.</span> <span class="nav-text">五、ARM原生汇编伪指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六、ARM-GNU编译环境"><span class="nav-number">6.</span> <span class="nav-text">六、ARM GNU编译环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#七、两种开发环境的区别"><span class="nav-number">7.</span> <span class="nav-text">七、两种开发环境的区别</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">乱码三千</span>
+  <div>
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+  </div>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+  <script type="text/javascript" async src="js/src/mermaid.min.js"></script>
+  <script>
+  if (window.mermaid) {
+        var mermaid_config = {
+            startOnLoad: true,
+            theme: 'default',
+            flowchart:{
+                useMaxWidth: false,
+                htmlLabels: true
+            }                
+        }
+        mermaid.initialize(mermaid_config);
+  }
+  </script>
+  
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+      <style>
+        a.gitment-editor-footer-tip { display: none; }
+        .gitment-container.gitment-footer-container { display: none; }
+      </style>
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'songjianzaina',
+            repo: 'codesan_comment',
+            
+            lang: "zh" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '75fa01da04fd1029841debfa65ce027b566a47e3',
+            
+                client_id: '01a471de64bf7a7789f3'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

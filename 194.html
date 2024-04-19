@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+<meta name="referrer" content="never">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="汇编,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="乱码三千 – 分享实用IT技术" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="寄存器CPU除了有控制器、运算器还有寄存器。其中寄存器的作用就是进行数据的临时存储。  CPU的运算速度是非常快的，为了性能CPU在内部开辟一小块临时存储区域，并在进行运算时先将数据从内存复制到这一小块临时存储区域中，运算时就在这一小快临时存储区域内进行。我们称这一小块临时存储区域为寄存器。  对于arm64系的CPU来说， 如果寄存器以x开头则表明的是一个64位的寄存器，如果以w开头则表明是一个">
+<meta name="keywords" content="汇编">
+<meta property="og:type" content="article">
+<meta property="og:title" content="汇编语言之ARM64汇编">
+<meta property="og:url" content="https://code.newban.cn/194.html">
+<meta property="og:site_name" content="乱码三千 – 分享实用IT技术">
+<meta property="og:description" content="寄存器CPU除了有控制器、运算器还有寄存器。其中寄存器的作用就是进行数据的临时存储。  CPU的运算速度是非常快的，为了性能CPU在内部开辟一小块临时存储区域，并在进行运算时先将数据从内存复制到这一小块临时存储区域中，运算时就在这一小快临时存储区域内进行。我们称这一小块临时存储区域为寄存器。  对于arm64系的CPU来说， 如果寄存器以x开头则表明的是一个64位的寄存器，如果以w开头则表明是一个">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201221150846.png">
+<meta property="og:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201222145318.png">
+<meta property="og:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png">
+<meta property="og:updated_time" content="2024-04-08T02:36:39.175Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="汇编语言之ARM64汇编">
+<meta name="twitter:description" content="寄存器CPU除了有控制器、运算器还有寄存器。其中寄存器的作用就是进行数据的临时存储。  CPU的运算速度是非常快的，为了性能CPU在内部开辟一小块临时存储区域，并在进行运算时先将数据从内存复制到这一小块临时存储区域中，运算时就在这一小快临时存储区域内进行。我们称这一小块临时存储区域为寄存器。  对于arm64系的CPU来说， 如果寄存器以x开头则表明的是一个64位的寄存器，如果以w开头则表明是一个">
+<meta name="twitter:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201221150846.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+<!--谷歌广告验证代码-->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: "ca-pub-2626449904708114",
+          enable_page_level_ads: true
+     });
+</script>
+<!--谷歌广告验证代码-->
+
+<!--短链广告-->
+<!--<script type="text/javascript">
+    var adfly_id = 25792435;
+    var adfly_advert = 'banner';
+    var popunder = false;
+    var exclude_domains = ['code.newban.cn','newban.cn',  'localhost:4000'];
+</script>
+<script src="https://cdn.adf.ly/js/link-converter.js"></script>-->
+<!--短链广告-->
+
+
+
+  <link rel="canonical" href="https://code.newban.cn/194.html">
+
+
+
+
+
+  <title>汇编语言之ARM64汇编 | 乱码三千 – 分享实用IT技术</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+  
+<a href="https://www.github.com/songjianzaina" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">乱码三千 – 分享实用IT技术</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">乱码三千 – 码出一个新世界</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://www.newban.cn/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="https://code.newban.cn/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">汇编语言之ARM64汇编</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-14T14:14:19+08:00">
+                2020-12-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a>寄存器</h3><p>CPU除了有控制器、运算器还有寄存器。其中寄存器的作用就是进行数据的临时存储。</p>
+<blockquote>
+<p>CPU的运算速度是非常快的，为了性能CPU在内部开辟一小块临时存储区域，并在进行运算时先将数据从内存复制到这一小块临时存储区域中，运算时就在这一小快临时存储区域内进行。我们称这一小块临时存储区域为寄存器。</p>
+</blockquote>
+<p>对于arm64系的CPU来说， 如果寄存器以x开头则表明的是一个64位的寄存器，如果以w开头则表明是一个32位的寄存器，在系统中没有提供16位和8位的寄存器供访问和使用。其中32位的寄存器是64位寄存器的低32位部分并不是独立存在的。</p>
+<h3 id="高速缓存"><a href="#高速缓存" class="headerlink" title="高速缓存"></a>高速缓存</h3><p>iPhoneX上搭载的ARM处理器A11它的1级缓存的容量是64KB，2级缓存的容量8M.</p>
+<blockquote>
+<p>CPU每执行一条指令前都需要从内存中将指令读取到CPU内并执行。而寄存器的运行速度相比内存读写要快很多,为了性能,CPU还集成了一个<strong>高速缓存存储区域</strong>.当程序在运行时，先将要执行的指令代码以及数据复制到高速缓存中去(由操作系统完成).CPU直接从高速缓存依次读取指令来执行.</p>
+</blockquote>
+<h3 id="通用寄存器"><a href="#通用寄存器" class="headerlink" title="通用寄存器"></a>通用寄存器</h3><ul>
+<li>ARM64拥有有31个64位的通用寄存器 x0 到 x30,这些寄存器通常用来存放一般性的数据，称为通用寄存器（有时也有特定用途） <ul>
+<li>那么w0 到 w28 这些是32位的. 因为64位CPU可以兼容32位.所以可以只使用64位寄存器的低32位.</li>
+<li>比如 w0 就是 x0的低32位!</li>
+</ul>
+</li>
+</ul>
+<h3 id="数据地址寄存器"><a href="#数据地址寄存器" class="headerlink" title="数据地址寄存器"></a>数据地址寄存器</h3><p>数据地址寄存器通常用来做数据计算的临时存储、做累加、计数、地址保存等功能。定义这些寄存器的作用主要是用于在CPU指令中保存操作数，在CPU中当做一些常规变量来使用。<br> <strong>ARM64中</strong></p>
+<ul>
+<li>64位: X0-X30, XZR(零寄存器 ,里面存放数据0)</li>
+<li>32位: W0-W30, WZR(零寄存器)</li>
+</ul>
+<blockquote>
+<p>注意:<br> 有一种特殊的寄存器段寄存器:CS,DS,SS,ES四个寄存器来保存这些段的基地址,这个属于Intel架构CPU中.在ARM中并没有</p>
+</blockquote>
+<h3 id="浮点和向量寄存器"><a href="#浮点和向量寄存器" class="headerlink" title="浮点和向量寄存器"></a>浮点和向量寄存器</h3><p>因为浮点数的存储以及其运算的特殊性,CPU中专门提供浮点数寄存器来处理浮点数</p>
+<ul>
+<li>浮点寄存器 64位: D0 - D31  32位: S0 - S31</li>
+</ul>
+<p>现在的CPU支持向量运算.(向量运算在图形处理相关的领域用得非常的多)为了支持向量计算系统了也提供了众多的向量寄存器.</p>
+<ul>
+<li>向量寄存器 128位:V0-V31</li>
+</ul>
+<h3 id="PC寄存器-program-counter"><a href="#PC寄存器-program-counter" class="headerlink" title="PC寄存器(program counter)"></a>PC寄存器(program counter)</h3><p>为指令指针寄存器, 它指示了CPU当前要读取指令的地址, 类似于x86汇编种的cs+ip</p>
+<h3 id="SP和FP寄存器"><a href="#SP和FP寄存器" class="headerlink" title="SP和FP寄存器"></a>SP和FP寄存器</h3><ul>
+<li>sp寄存器在任意时刻会保存我们栈顶的地址.</li>
+<li>fp寄存器也称为x29寄存器属于通用寄存器,但是在某些时刻我们利用它保存栈底的地址!()</li>
+</ul>
+<blockquote>
+<p>注意:ARM64开始,取消32位的 LDM,STM,PUSH,POP指令! 取而代之的是ldr\ldp  str\stp<br> ARM64里面 对栈的操作是16字节对齐的!!</p>
+</blockquote>
+<h3 id="关于内存读写指令"><a href="#关于内存读写指令" class="headerlink" title="关于内存读写指令"></a>关于内存读写指令</h3><blockquote>
+<p>注意:读/写 数据是都是往高地址读/写  也就是sp指针是从高地址往低地址移动但是指向的数据是往高地址读写，堆指针是从低往高地址移动，堆和栈各占一头，两个指针相撞则抛出堆栈内存溢出</p>
+</blockquote>
+<p><strong>str(store register)指令</strong></p>
+<p>将数据从寄存器中读出来,存到内存中.</p>
+<p><strong>ldr(load register)指令</strong></p>
+<p>将数据从内存中读出来,存到寄存器中 </p>
+<p>此ldr 和 str 的变种ldp(pair) 和 stp(pair) 还可以操作2个寄存器.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">;利用栈进行数据交换</span><br><span class="line">.text</span><br><span class="line">.global _A</span><br><span class="line">_A:</span><br><span class="line">	sub sp,sp,#0x20 ;sp=sp-0x20 开辟一个32字节的占空间</span><br><span class="line">	stp x0,x1,[sp,#0x10] ;然后将x0和x1中的数据存入sp+0x10所指向的栈空间 []相当于是获取指定地址的空间,不会改变sp原来的值,如果想改变sp的值只需在末尾加上!  也就是[sp,#0x10]! 即可</span><br><span class="line">	ldp x1,x0,[sp,#0x10] ;读取sp+0x10这块栈空间中的数据存放至x1，x0寄存器中</span><br><span class="line">	add sp,sp,#0x20 ；栈平衡， 释放内存空间</span><br><span class="line">	ret ;返回至调用指令下一行</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>stur指令:  偏移量为减时使用 . stur  w0, [x29, #0x8]  偏移量为负的  将寄存器w0的值存入x29 - 0x8 的内存地址 </p>
+<p>[sp]: sp保存栈空间的地址值, [sp]表示取值,获取所对应的空间 和8086中的[bx]是类似的</p>
+</blockquote>
+<h4 id="另外-汇编简写"><a href="#另外-汇编简写" class="headerlink" title="另外 汇编简写"></a>另外 汇编简写</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">stp x29,x30,[sp,#-0x10]! ;尾部多了一个!号</span><br><span class="line"></span><br><span class="line">;相当于一下两行代码</span><br><span class="line">sub sp,sp,#0x10</span><br><span class="line">stp x29,x30,[sp]</span><br><span class="line">;或者直接理解为加了!号的sp值会发生改变</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">ldp x29,x30 ,[sp],#x010</span><br><span class="line">;相当于以下两行代码</span><br><span class="line">ldp x29,x30,[sp]</span><br><span class="line">add sp,#0x10</span><br></pre></td></tr></table></figure>
+
+<h3 id="bl指令"><a href="#bl指令" class="headerlink" title="bl指令"></a>bl指令</h3><ul>
+<li>CPU从何处执行指令是由pc中的内容决定的，我们可以通过改变pc的内容来控制CPU执行目标指令</li>
+<li>ARM64提供了一个mov指令（传送指令），可以用来修改大部分寄存器的值，比如<ul>
+<li>mov x0,#10、mov x1,#20</li>
+</ul>
+</li>
+<li>但是，mov指令不能用于设置pc的值，ARM64没有提供这样的功能</li>
+<li>ARM64提供了另外的指令来修改PC的值，这些指令统称为转移指令，最简单的是bl指令</li>
+</ul>
+<p>类似于x86汇编中的, call</p>
+<h4 id="bl标号"><a href="#bl标号" class="headerlink" title="bl标号"></a>bl标号</h4><ul>
+<li>将下一条指令的地址放入lr(x30)寄存器</li>
+<li>转到标号处执行指令</li>
+</ul>
+<h4 id="ret"><a href="#ret" class="headerlink" title="ret"></a>ret</h4><ul>
+<li>默认使用lr(x30)寄存器的值,通过底层指令提示CPU此处作为下条指令地址!</li>
+</ul>
+<blockquote>
+<p>ARM64平台的特色指令,它面向硬件做了优化处理的</p>
+</blockquote>
+<h4 id="x30寄存器"><a href="#x30寄存器" class="headerlink" title="x30寄存器"></a>x30寄存器</h4><p>x30寄存器存放的是函数的返回地址.当ret指令执行时刻,会寻找x30寄存器保存的地址值!</p>
+<blockquote>
+<p>注意:在函数嵌套调用之前的时候.需要将x30入栈!</p>
+</blockquote>
+<h4 id="arm代码示例"><a href="#arm代码示例" class="headerlink" title="arm代码示例"></a>arm代码示例</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">.text ;代码段</span><br><span class="line">.global _A,_B ;定义两个全局函数 A和B</span><br><span class="line"></span><br><span class="line">_A:</span><br><span class="line">	mov x0 ,#0xa0 ;arm汇编中数据用#开头</span><br><span class="line">	mov x1 ,#0x00</span><br><span class="line">	add x1 ,x0,#0x14 ;x1=x0+0x14</span><br><span class="line">	ret  ;返回到bl指令所对应的下一条指令</span><br><span class="line">	</span><br><span class="line">_B:</span><br><span class="line">	add x0, x0,#0x10</span><br><span class="line">	ret</span><br></pre></td></tr></table></figure>
+
+<h4 id="寄存器和栈"><a href="#寄存器和栈" class="headerlink" title="寄存器和栈"></a>寄存器和栈</h4><p>寄存器是全局容器,所有函数共用,但是栈不一样,一个函数占用独有的栈空间, 在各个函数嵌套调用时,寄存器很容易被覆盖读写,这个时候为了保持寄存器的数据不被改变,通常结合栈临时保存寄存器中的值,然后函数ret之前将数据恢复,这样就能确保上一个函数的数据不被改变,也就是实现了将寄存器当做局部变量使用</p>
+<h2 id="栈的对齐"><a href="#栈的对齐" class="headerlink" title="栈的对齐"></a>栈的对齐</h2><p>ARM64里面 对栈的操作是16字节对齐的, 也就是一次开辟栈空间至少是16字节, 或者是16的倍数, 如果不是这个值会报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">.text ;代码段</span><br><span class="line">.global _A,_B ;定义两个全局函数 A和B</span><br><span class="line"></span><br><span class="line">_A:</span><br><span class="line">	mov x0 ,#0xaaaa ;arm汇编中数据用#开头</span><br><span class="line">	str x30,[sp,#-0x10]! ;在调用下一个函数之前临时保存lr寄存器中的地址, lr保存bl _A的下一条指令地址</span><br><span class="line">	bl _B</span><br><span class="line">	mov x0,#0xcccc</span><br><span class="line">	ldr x30,[sp],#0x10 ;lr恢复</span><br><span class="line">	ret  ;返回到bl指令所对应的下一条指令</span><br><span class="line">	</span><br><span class="line">_B:</span><br><span class="line">	add x0, x0,#0x10</span><br><span class="line">	ret</span><br></pre></td></tr></table></figure>
+
+<p>既然sp一次最少拉伸16个字节, 那么以下函数需要拉伸多少空间:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> c=<span class="number">3</span>;</span><br><span class="line">    <span class="keyword">int</span> c=<span class="number">4</span>;</span><br><span class="line">    <span class="keyword">int</span> c=<span class="number">5</span>;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于int类型的数据占用4个字节空间, 这里一共有5个int,那么需要占用5*4=20个字节的空间, 那么sp一次性拉伸0x20也就是32字节的栈空间</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">16</span>位寄存器--&gt;最大装<span class="number">2</span>个字节数据--&gt;<span class="number">0xFFFF</span></span><br><span class="line"><span class="number">32</span>位寄存器--&gt;最大装<span class="number">4</span>个字节数据--&gt;<span class="number">0xFFFFFFFF</span></span><br><span class="line"><span class="number">64</span>位寄存器--&gt;最大装<span class="number">8</span>个字节数据--&gt;<span class="number">0XFFFFFFFFFFFFFFFF</span></span><br></pre></td></tr></table></figure>
+
+<p>如果函数里面又调用了函数,那么sp拉伸多少呢?</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> c=<span class="number">3</span>;</span><br><span class="line">    <span class="keyword">int</span> c=<span class="number">4</span>;</span><br><span class="line">    <span class="keyword">int</span> c=sumb(a,b);</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于bl调用函数之前会复写x30(lr)寄存器中的值, 所以需要将x29和x30寄存器进行临时保护, 这两个寄存器占用16个字节, 加上sum函数的局部变量和参数所占的16个字节,一共是32个字节</p>
+<h2 id="叶子函数"><a href="#叶子函数" class="headerlink" title="叶子函数"></a>叶子函数</h2><p>函数体中没有调用其他函数的函数称之为叶子函数,又称为末尾函数</p>
+<p>这种函数在编写汇编代码时可以省略使用栈空间, 栈空间是为了临时保护数据不被下一个函数污染, 叶子函数不存在这种风险,所以不需要进行保护处理,直接使用寄存器即可</p>
+<h2 id="ARM64方法返回值"><a href="#ARM64方法返回值" class="headerlink" title="ARM64方法返回值"></a>ARM64方法返回值</h2><p> ARM64下,<strong>函数的参数</strong>通常情况下是存放在X0到X7(W0到W7)这8个寄存器里面的.如果超过8个参数,就会入栈.(一是跟参数个数有关,另外还更数据结构有关,指针占用8个字节刚好一个64位寄存器, 如果仓鼠类型超出8个字节,即存放到其他地方,比如栈空间)<br><strong>函数的返回值</strong>通常情况下是放在X0 寄存器里面的. </p>
+<h2 id="orr指令"><a href="#orr指令" class="headerlink" title="orr指令"></a>orr指令</h2><p>称为或指令, 进行或运算, <a href="https://blog.csdn.net/qq_39416311/article/details/102762635" target="_blank" rel="noopener">https://blog.csdn.net/qq_39416311/article/details/102762635</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">orr w8,wzr,#0x1  ;将立即数0x1和0进行或运算, 然后复制给w8</span><br></pre></td></tr></table></figure>
+
+<h3 id="函数嵌套复用"><a href="#函数嵌套复用" class="headerlink" title="函数嵌套复用"></a>函数嵌套复用</h3><p>假如有两个函数A和B,它们的调用链为:A–&gt;B–&gt;A</p>
+<p>在高级语言中,A函数进行了复用,但是在汇编当中并没有复用的概念,每调用一个函数便开辟一次栈空间, 因此哪怕是调用同一个函数,如果递归嵌套次数过多,就会造成内存溢出</p>
+<h2 id="状态寄存器-标记寄存器"><a href="#状态寄存器-标记寄存器" class="headerlink" title="状态寄存器(标记寄存器)"></a>状态寄存器(标记寄存器)</h2><p>cpsr(current program status registers)寄存器</p>
+<p>CPSR和其他寄存器不一样,其他寄存器是用来存放数据的,都是整个寄存器具有一个含义.而CPSR寄存器是按位起作用的,也就是说,它的每一位都有专门的含义,记录特定的信息.</p>
+<p>要想在算数运算是影响标记寄存器的值,必须在指令后面加上s,比如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add---&gt;adds</span><br><span class="line">sub---&gt;subs</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注:CPSR寄存器是32位的</p>
+</blockquote>
+<ul>
+<li>CPSR的低8位（包括I、F、T和M[4：0]）称为控制位，程序无法修改,除非CPU运行于特权模式下,程序才能修改控制位!</li>
+<li>N、Z、C、V均为条件码标志位。它们的内容可被算术或逻辑运算的结果所改变，并且可以决定某条指令是否被执行!意义重大!</li>
+</ul>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201221150846.png" alt></p>
+<h3 id="N（Negative）标志"><a href="#N（Negative）标志" class="headerlink" title="N（Negative）标志"></a>N（Negative）标志</h3><blockquote>
+<p>CPSR的第31位是 N，符号标志位。它记录相关指令执行后,其结果是否为负.如果为负 N = 1,如果是非负数 N = 0.</p>
+</blockquote>
+<p>   <strong>注意</strong>,在ARM64的指令集中,有的指令的执行时影响状态寄存器的,比如add\sub\or等,他们大都是运算指令(进行逻辑或算数运算)；</p>
+<h3 id="Z-Zero-标志"><a href="#Z-Zero-标志" class="headerlink" title="Z(Zero)标志"></a>Z(Zero)标志</h3><blockquote>
+<p>CPSR的第30位是Z，0标志位。它记录相关指令执行后,其结果是否为0.如果结果为0.那么Z = 1.如果结果不为0,那么Z = 0.</p>
+</blockquote>
+<p>   对于Z的值,我们可以这样来看,Z标记相关指令的计算结果是否为0,如果为0,则N要记录下”是0”这样的肯定信息.在计算机中1表示逻辑真,表示肯定.所以当结果为0的时候Z = 1,表示”结果是0”.如果结果不为0,则Z要记录下”不是0”这样的否定信息.在计算机中0表示逻辑假,表示否定,所以当结果不为0的时候Z = 0,表示”结果不为0”。</p>
+<h3 id="C-Carry-标志"><a href="#C-Carry-标志" class="headerlink" title="C(Carry)标志"></a>C(Carry)标志</h3><blockquote>
+<p>CPSR的第29位是C，进位标志位。一般情况下,进行<strong>无符号数</strong>的运算。<br> 加法运算：当运算结果产生了进位时（无符号数溢出），C=1，否则C=0。<br> 减法运算（包括CMP）：当运算时产生了借位时（无符号数溢出），C=0，否则C=1。</p>
+</blockquote>
+<p>   对于位数为N的无符号数来说，其对应的二进制信息的最高位，即第N - 1位，就是它的最高有效位，而假想存在的第N位，就是相对于最高有效位的更高位。如下图所示：</p>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201222145318.png" alt></p>
+<h3 id="进位"><a href="#进位" class="headerlink" title="进位"></a>进位</h3><p>   我们知道，当两个数据相加的时候，有可能产生从最高有效位想更高位的进位。比如两个32位数据：0xaaaaaaaa + 0xaaaaaaaa,将产生进位。由于这个进位值在32位中无法保存，我们就只是简单的说这个进位值丢失了。其实CPU在运算的时候，并不丢弃这个进位制，而是记录在一个特殊的寄存器的某一位上。ARM下就用C位来记录这个进位值。比如，下面的指令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mov w0,<span class="comment">#0xaaaaaaaa；0xa 的二进制是 1010</span></span><br><span class="line">adds w0,w0,w0； 执行后 相当于 1010 &lt;&lt; 1 进位1（无符号溢出） 所以C标记 为 1</span><br><span class="line">adds w0,w0,w0； 执行后 相当于 0101 &lt;&lt; 1 进位0（无符号没溢出） 所以C标记 为 0</span><br><span class="line">adds w0,w0,w0； 重复上面操作</span><br><span class="line">adds w0,w0,w0</span><br></pre></td></tr></table></figure>
+
+<h3 id="借位"><a href="#借位" class="headerlink" title="借位"></a>借位</h3><p>   当两个数据做减法的时候，有可能向更高位借位。再比如，两个32位数据：0x00000000 - 0x000000ff,将产生借位，借位后，相当于计算0x100000000 - 0x000000ff。得到0xffffff01 这个值。由于借了一位，所以C位 用来标记借位。C = 0.比如下面指令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mov w0,<span class="comment">#0x0</span></span><br><span class="line">subs w0,w0,<span class="comment">#0xff ;</span></span><br><span class="line">subs w0,w0,<span class="comment">#0xff</span></span><br><span class="line">subs w0,w0,<span class="comment">#0xff</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="V-Overflow-溢出标志"><a href="#V-Overflow-溢出标志" class="headerlink" title="V(Overflow)溢出标志"></a>V(Overflow)溢出标志</h3><blockquote>
+<p>CPSR的第28位是V，溢出标志位。在进行有符号数运算的时候，如果超过了机器所能标识的范围，称为溢出。</p>
+</blockquote>
+<ul>
+<li>正数 +  正数  为负数  溢出</li>
+<li>负数 +  负数  为正数  溢出</li>
+<li>正数 +  负数  不可能溢出</li>
+</ul>
+<h2 id="adrp指令"><a href="#adrp指令" class="headerlink" title="adrp指令"></a>adrp指令</h2><p><code>adrp</code>(address page):地址页,用于计算指定数据所在物理地址和当前pc地址之间的偏移量, 也就是说通过该指令计算出常量的物理地址</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">adrp x0,1</span><br><span class="line">;1.将1的值左移12位, 1 0000 0000 0000 ==0x1000</span><br><span class="line">;2.将pc寄存器的低12位清零</span><br><span class="line">;3.清零之后的值加上0x1000 然后将最后结果赋值给x0寄存器</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">;adrp指令后边的数值1为十六进制</span><br></pre></td></tr></table></figure>
+
+<h3 id="内存分区"><a href="#内存分区" class="headerlink" title="内存分区"></a>内存分区</h3><ul>
+<li>代码区:可读可写可执行</li>
+<li>栈区: 可读可写</li>
+<li>堆区:动态申请, 可读可写</li>
+<li>全局变量区:可读可写</li>
+<li>常量区:只读</li>
+</ul>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
+<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="tags/汇编/" rel="tag"># 汇编</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="451.html" rel="next" title="程序员进阶之三大架构汇编语言入门视频教程-胖薯出品">
+                <i class="fa fa-chevron-left"></i> 程序员进阶之三大架构汇编语言入门视频教程-胖薯出品
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="193.html" rel="prev" title="Android系统目前支持CPU架构都有哪些">
+                Android系统目前支持CPU架构都有哪些 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    <!-- 乱码三千文章内嵌广告 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-layout="in-article" data-ad-format="fluid" data-ad-client="ca-pub-2626449904708114" data-ad-slot="1549007621"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+  <!-- 乱码三千信息流广告 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-6t+ed+2i-1n-4w" data-ad-client="ca-pub-2626449904708114" data-ad-slot="9471729671"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">乱码三千</p>
+              <p class="site-description motion-element" itemprop="description">android程序员一枚,擅长java,kotlin,python,金融投资,欢迎交流~</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="https://code.newban.cn/archives/">
+              
+                  <span class="site-state-item-count">469</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">138</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#寄存器"><span class="nav-number">1.</span> <span class="nav-text">寄存器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高速缓存"><span class="nav-number">2.</span> <span class="nav-text">高速缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通用寄存器"><span class="nav-number">3.</span> <span class="nav-text">通用寄存器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据地址寄存器"><span class="nav-number">4.</span> <span class="nav-text">数据地址寄存器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#浮点和向量寄存器"><span class="nav-number">5.</span> <span class="nav-text">浮点和向量寄存器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PC寄存器-program-counter"><span class="nav-number">6.</span> <span class="nav-text">PC寄存器(program counter)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SP和FP寄存器"><span class="nav-number">7.</span> <span class="nav-text">SP和FP寄存器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于内存读写指令"><span class="nav-number">8.</span> <span class="nav-text">关于内存读写指令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#另外-汇编简写"><span class="nav-number">8.1.</span> <span class="nav-text">另外 汇编简写</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bl指令"><span class="nav-number">9.</span> <span class="nav-text">bl指令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#bl标号"><span class="nav-number">9.1.</span> <span class="nav-text">bl标号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ret"><span class="nav-number">9.2.</span> <span class="nav-text">ret</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#x30寄存器"><span class="nav-number">9.3.</span> <span class="nav-text">x30寄存器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#arm代码示例"><span class="nav-number">9.4.</span> <span class="nav-text">arm代码示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#寄存器和栈"><span class="nav-number">9.5.</span> <span class="nav-text">寄存器和栈</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#栈的对齐"><span class="nav-number"></span> <span class="nav-text">栈的对齐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#叶子函数"><span class="nav-number"></span> <span class="nav-text">叶子函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ARM64方法返回值"><span class="nav-number"></span> <span class="nav-text">ARM64方法返回值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#orr指令"><span class="nav-number"></span> <span class="nav-text">orr指令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#函数嵌套复用"><span class="nav-number">1.</span> <span class="nav-text">函数嵌套复用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#状态寄存器-标记寄存器"><span class="nav-number"></span> <span class="nav-text">状态寄存器(标记寄存器)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#N（Negative）标志"><span class="nav-number">1.</span> <span class="nav-text">N（Negative）标志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Z-Zero-标志"><span class="nav-number">2.</span> <span class="nav-text">Z(Zero)标志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-Carry-标志"><span class="nav-number">3.</span> <span class="nav-text">C(Carry)标志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进位"><span class="nav-number">4.</span> <span class="nav-text">进位</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#借位"><span class="nav-number">5.</span> <span class="nav-text">借位</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#V-Overflow-溢出标志"><span class="nav-number">6.</span> <span class="nav-text">V(Overflow)溢出标志</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#adrp指令"><span class="nav-number"></span> <span class="nav-text">adrp指令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#内存分区"><span class="nav-number">1.</span> <span class="nav-text">内存分区</span></a></li></ol></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">乱码三千</span>
+  <div>
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+  </div>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+  <script type="text/javascript" async src="js/src/mermaid.min.js"></script>
+  <script>
+  if (window.mermaid) {
+        var mermaid_config = {
+            startOnLoad: true,
+            theme: 'default',
+            flowchart:{
+                useMaxWidth: false,
+                htmlLabels: true
+            }                
+        }
+        mermaid.initialize(mermaid_config);
+  }
+  </script>
+  
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+      <style>
+        a.gitment-editor-footer-tip { display: none; }
+        .gitment-container.gitment-footer-container { display: none; }
+      </style>
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'songjianzaina',
+            repo: 'codesan_comment',
+            
+            lang: "zh" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '75fa01da04fd1029841debfa65ce027b566a47e3',
+            
+                client_id: '01a471de64bf7a7789f3'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

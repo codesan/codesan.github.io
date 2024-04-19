@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+<meta name="referrer" content="never">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="python,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="乱码三千 – 分享实用IT技术" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="前言说到爬取文章啥的, 最好使的肯定是python, python中有很多爬虫库可供我们使用, 方便快捷, 虽然工具很多, 但是大同小异, 我们只需要用好一个库就够了 接下来以掘金为例, 给大家演示一下如何爬取网站中的文章: 网站结构分析调出浏览器控制台, 通过分析, 我们发现掘金和简书不同, 其网站中的文章链接全部都是通过接口动态请求的, 而非以Nginx容器静态存放 由于我们需要获取多篇文章,">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用python对博客网站的文章进行爬取">
+<meta property="og:url" content="https://code.newban.cn/289.html">
+<meta property="og:site_name" content="乱码三千 – 分享实用IT技术">
+<meta property="og:description" content="前言说到爬取文章啥的, 最好使的肯定是python, python中有很多爬虫库可供我们使用, 方便快捷, 虽然工具很多, 但是大同小异, 我们只需要用好一个库就够了 接下来以掘金为例, 给大家演示一下如何爬取网站中的文章: 网站结构分析调出浏览器控制台, 通过分析, 我们发现掘金和简书不同, 其网站中的文章链接全部都是通过接口动态请求的, 而非以Nginx容器静态存放 由于我们需要获取多篇文章,">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20211201163303973.png">
+<meta property="og:image" content="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20211201163627506.png">
+<meta property="og:image" content="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20211201164332262.png">
+<meta property="og:image" content="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NjMwODkwNA==,size_16,color_FFFFFF,t_70.png">
+<meta property="og:image" content="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NjMwODkwNA==,size_16,color_FFFFFF,t_70-20211202135554142.png">
+<meta property="og:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png">
+<meta property="og:updated_time" content="2024-04-08T14:16:17.573Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用python对博客网站的文章进行爬取">
+<meta name="twitter:description" content="前言说到爬取文章啥的, 最好使的肯定是python, python中有很多爬虫库可供我们使用, 方便快捷, 虽然工具很多, 但是大同小异, 我们只需要用好一个库就够了 接下来以掘金为例, 给大家演示一下如何爬取网站中的文章: 网站结构分析调出浏览器控制台, 通过分析, 我们发现掘金和简书不同, 其网站中的文章链接全部都是通过接口动态请求的, 而非以Nginx容器静态存放 由于我们需要获取多篇文章,">
+<meta name="twitter:image" content="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20211201163303973.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+<!--谷歌广告验证代码-->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: "ca-pub-2626449904708114",
+          enable_page_level_ads: true
+     });
+</script>
+<!--谷歌广告验证代码-->
+
+<!--短链广告-->
+<!--<script type="text/javascript">
+    var adfly_id = 25792435;
+    var adfly_advert = 'banner';
+    var popunder = false;
+    var exclude_domains = ['code.newban.cn','newban.cn',  'localhost:4000'];
+</script>
+<script src="https://cdn.adf.ly/js/link-converter.js"></script>-->
+<!--短链广告-->
+
+
+
+  <link rel="canonical" href="https://code.newban.cn/289.html">
+
+
+
+
+
+  <title>使用python对博客网站的文章进行爬取 | 乱码三千 – 分享实用IT技术</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+  
+<a href="https://www.github.com/songjianzaina" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">乱码三千 – 分享实用IT技术</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">乱码三千 – 码出一个新世界</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://www.newban.cn/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="https://code.newban.cn/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用python对博客网站的文章进行爬取</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-12-01T09:14:19+08:00">
+                2021-12-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>说到爬取文章啥的, 最好使的肯定是python, python中有很多爬虫库可供我们使用, 方便快捷, 虽然工具很多, 但是大同小异, 我们只需要用好一个库就够了</p>
+<p>接下来以掘金为例, 给大家演示一下如何爬取网站中的文章:</p>
+<h3 id="网站结构分析"><a href="#网站结构分析" class="headerlink" title="网站结构分析"></a>网站结构分析</h3><p>调出浏览器控制台, 通过分析, 我们发现掘金和简书不同, 其网站中的文章链接全部都是通过接口动态请求的, 而非以<code>Nginx</code>容器静态存放</p>
+<p>由于我们需要获取多篇文章,而不是单篇, 所以文章链接我们必须先拿到手, 然后再根据链接挨个将文章爬出来</p>
+<h4 id="文章链接获取"><a href="#文章链接获取" class="headerlink" title="文章链接获取"></a>文章链接获取</h4><p>在推荐一栏通过上拉加载我们很轻松就能获取到请求的接口和参数, 我们只需要将其拷贝出来用<code>python</code>模拟请求即可</p>
+<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20211201163303973.png" alt="image-20211201163303973"></p>
+<p><strong>请求接口:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://api.juejin.cn/recommend_api/v1/article/recommend_cate_feed?aid=xxx&amp;uuid=xxx</span><br></pre></td></tr></table></figure>
+
+<p><strong>请求参数:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;id_type&quot;:2,&quot;sort_type&quot;:200,&quot;cate_id&quot;:&quot;6809637769959178254&quot;,&quot;cursor&quot;:&quot;1&quot;,&quot;limit&quot;:20&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>cursor</code>字段表示页数, 我们可以循环递增这个字段的值来源源不断地获取数据</p>
+<p><strong>响应数据:</strong></p>
+<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20211201163627506.png" alt="image-20211201163627506"></p>
+<p>这个<code>article_id</code>就是我们需要获取的值, 将这个值和<code>https://juejin.cn/post/</code>进行拼接就得到了文章的实际地址, 如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://juejin.cn/post/7016520448204603423</span><br></pre></td></tr></table></figure>
+
+<p>好了, 分析完毕后, 直接上代码实现:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"># coding:utf-8</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import codecs</span><br><span class="line">import time</span><br><span class="line">import requests</span><br><span class="line">import json</span><br><span class="line">import sys</span><br><span class="line"># 增加try except嵌套层数 避免</span><br><span class="line">sys.setrecursionlimit(10000)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">cache_file_name = &apos;temp_juejin.txt&apos;</span><br><span class="line"></span><br><span class="line">cache = []</span><br><span class="line"></span><br><span class="line">  </span><br><span class="line">def loadCache():</span><br><span class="line">    with codecs.open(cache_file_name, &quot;r&quot;, &quot;utf-8&quot;) as fr:</span><br><span class="line">        for line in fr:</span><br><span class="line">            cache.append(line)</span><br><span class="line">        #print(cache)</span><br><span class="line">        #return cache[len(cache)-1]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def startScrape():</span><br><span class="line">    </span><br><span class="line">    apiUrl=&apos;https://api.juejin.cn/recommend_api/v1/article/recommend_cate_feed?aid=2608&amp;uuid=7023196943133656589&apos;</span><br><span class="line">    HEADERS = &#123;</span><br><span class="line">        &apos;User-Agent&apos;		: &apos;Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:11.0) Gecko/20100101 Firefox/11.0&apos;,</span><br><span class="line">       </span><br><span class="line">        &apos;Accept-Encoding&apos;	: &apos;gzip,deflate,sdch&apos;,</span><br><span class="line">        &apos;Accept-Language&apos;	: &apos;zh-CN,zh;q=0.8&apos;,</span><br><span class="line">         &apos;Content-type&apos;: &apos;application/json; charset=UTF-8&apos;,</span><br><span class="line">       &apos;accept&apos;: &apos;application/json, text/plain, */*&apos;,</span><br><span class="line">          </span><br><span class="line">        &#125;</span><br><span class="line">    for index in range(1000):</span><br><span class="line">        body = &#123;&quot;id_type&quot;:2,&quot;sort_type&quot;:200,&quot;cate_id&quot;:&quot;6809637769959178254&quot;,&quot;cursor&quot;:&quot;1&quot;,&quot;limit&quot;:20&#125;</span><br><span class="line">        body[&quot;cursor&quot;]=str(index+1)</span><br><span class="line">        print(body)</span><br><span class="line">        r = requests.post(url=apiUrl, headers=HEADERS,data=json.dumps(body))</span><br><span class="line">        print(r.status_code)</span><br><span class="line">        </span><br><span class="line">        res=json.loads(r.content)</span><br><span class="line">       </span><br><span class="line">        with codecs.open(cache_file_name, &quot;a&quot;, &quot;utf-8&quot;) as f:</span><br><span class="line">            for item in res[&quot;data&quot;]:</span><br><span class="line">                print()</span><br><span class="line">                id=item[&quot;article_info&quot;][&quot;article_id&quot;]</span><br><span class="line">                link = &quot;https://juejin.cn/post/&quot;+id</span><br><span class="line">                print(link)</span><br><span class="line">                #if link not in cache: #判断存在或者不存在</span><br><span class="line">                if not any(link in s for s in cache):</span><br><span class="line">                    cache.append(link)</span><br><span class="line">                    f.write(link+&quot;\n&quot;)</span><br><span class="line">                    print(&quot;新增一条连接&quot;)</span><br><span class="line">                    #time.sleep(10)</span><br><span class="line">                    #切记 url不要加入换行 否则404</span><br><span class="line">            f.close()  </span><br><span class="line">        time.sleep(2)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def job():</span><br><span class="line"></span><br><span class="line">    loadCache()</span><br><span class="line">    startScrape()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    job()</span><br></pre></td></tr></table></figure>
+
+<p>执行该代码前先在同级目录下新建一个<code>temp_juejin.txt</code>文件, 用于存放获取到的所有文章链接, 对于初学者, 这里需要注意的是<code>json</code>的转换处理和请求头的设置, 如果没有使用<code>json.dumps</code>进行转换, 那么请求会失败, 如果请求头不加<code>Content-type</code>和<code>accept</code>或者没填对, 请求正常但是返回的不是正常的数据, 这一块是很多人极易忽视的地方</p>
+<p>代码运行后爬取的结果如下:</p>
+<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20211201164332262.png" alt="image-20211201164332262"></p>
+<p>好了, 有了文章链接, 下一步我们就开始挨个文章的爬取</p>
+<h3 id="文章爬取"><a href="#文章爬取" class="headerlink" title="文章爬取"></a>文章爬取</h3><p>爬虫框架, 我这里使用的是<code>PyQuery</code>, 关于<code>PyQuery</code>的用法, 可参见《<a href="https://code.newban.cn/291.html">Python爬虫框架之PyQuery的使用</a>》</p>
+<p>接下来我们爬取文章的标题和内容, 代码如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> pyquery <span class="keyword">import</span> PyQuery <span class="keyword">as</span> pq</span><br><span class="line"><span class="keyword">import</span> codecs</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">sys.setrecursionlimit(<span class="number">1000000</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 当前文件路径</span></span><br><span class="line">current_path = os.path.abspath(__file__)</span><br><span class="line"><span class="comment"># 父目录</span></span><br><span class="line">father_path = os.path.abspath(os.path.dirname(current_path) + os.path.sep + <span class="string">"."</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">'user-agent'</span>: <span class="string">'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'</span>,</span><br><span class="line">    <span class="string">'cookie'</span>: <span class="string">'__cfduid=d89ead99eeea979ea1f2a1a6243d186461600935008; Hm_lvt_2374bfdfe14a279e4a045267051b54e1=1600935010,1601459114; __yjsv3_shitong=1.0_7_8b1bac638e380ca12f87734ab2405afe2e94_300_1601470572844_223.104.3.46_aaa564dc; cf_chl_1=04a386244ad8d71; cf_chl_prog=x17; cf_clearance=f4af2dbdded649a7cf11a5a52d168289e98e68c6-1601470577-0-1zd4e21871z8a534313z279abd70-150; Hm_lpvt_2374bfdfe14a279e4a045267051b54e1=1601470578'</span>,</span><br><span class="line">    <span class="string">'accept'</span>: <span class="string">'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'</span>,</span><br><span class="line">   </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">session = requests.Session()</span><br><span class="line">session.headers.update(headers)</span><br><span class="line"></span><br><span class="line">origin_url_cache_file_name=<span class="string">"temp_juejin.txt"</span></span><br><span class="line"></span><br><span class="line">originUrlCache = []</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将文件中内容按行加载至列表中</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">loadCache</span><span class="params">(filename, filter_text)</span>:</span></span><br><span class="line">    cache = []</span><br><span class="line">    <span class="keyword">with</span> codecs.open(filename, <span class="string">"r"</span>, <span class="string">"utf-8"</span>) <span class="keyword">as</span> fr:</span><br><span class="line">        <span class="keyword">if</span> filter_text:</span><br><span class="line">            <span class="keyword">for</span> line <span class="keyword">in</span> fr:</span><br><span class="line">                <span class="keyword">if</span> filter_text <span class="keyword">in</span> line:</span><br><span class="line">                    cache.append(line.replace(<span class="string">"\n"</span>, <span class="string">""</span>))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">for</span> line <span class="keyword">in</span> fr:</span><br><span class="line">                cache.append(line.replace(<span class="string">"\n"</span>, <span class="string">""</span>))</span><br><span class="line">        <span class="keyword">return</span> cache</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_article_by_url</span><span class="params">(url)</span>:</span></span><br><span class="line">    rep = session.get(url)</span><br><span class="line">    d=pq(rep.text)</span><br><span class="line">    title = d(<span class="string">'h1'</span>).text()</span><br><span class="line">    content = d(<span class="string">'.markdown-body'</span>).html()</span><br><span class="line">    <span class="keyword">return</span> title, content</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">startScrape</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">for</span> link <span class="keyword">in</span> originUrlCache:</span><br><span class="line">   </span><br><span class="line">        print(link + <span class="string">"\n"</span>)</span><br><span class="line">        title, content = get_article_by_url(link)</span><br><span class="line">        print(title + <span class="string">"\n"</span>)</span><br><span class="line">        print(content)</span><br><span class="line">        </span><br><span class="line">          </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line"></span><br><span class="line">    <span class="comment">#将需要爬取的url加载到内存中</span></span><br><span class="line">    originUrlCache=loadCache(<span class="string">"&#123;parent&#125;/&#123;filename&#125;"</span>.format(parent=father_path,filename=origin_url_cache_file_name), <span class="literal">None</span>)</span><br><span class="line">    <span class="comment">#开始爬取文章</span></span><br><span class="line">    startScrape()</span><br></pre></td></tr></table></figure>
+
+<p>但是打印结果全部为<code>None</code>, 去控台一查发现掘金文章页面内容是通过<code>js</code>动态渲染的, 如果直接获取<code>html</code>是无法通过<code>PyQuery</code>获取到我们想要的内容的, 那这咋办?</p>
+<p>想一下, 如果我们能拿到渲染完成后的<code>html</code>, 然后再通过<code>PyQuery</code>进行查找, 不就完事了</p>
+<p>问题在于如何获取到渲染完成后的页面源码, 单纯的<code>Get</code>请求肯定是不行的, 我们需要模拟浏览器渲染才行,</p>
+<p>这个时候我们就需要用到一个<code>Web</code>自动化框架, 也就是大名鼎鼎的<code>selenium</code>, 它可以模拟真实的浏览器访问和查找甚至是点击操作, 这里我们只需要利用它得到页面源码即可, 关于<code>selenium</code>的详细使用, 可参见《<a href="https://code.newban.cn/292.html">Web自动化框架selenium的介绍与使用</a>》</p>
+<p>于是代码修改成如下模样:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> pyquery <span class="keyword">import</span> PyQuery <span class="keyword">as</span> pq</span><br><span class="line"><span class="keyword">import</span> codecs</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">chrome_options = webdriver.ChromeOptions()</span><br><span class="line"><span class="comment"># 使用headless无界面浏览器模式</span></span><br><span class="line">chrome_options.add_argument(<span class="string">'--headless'</span>) <span class="comment">#增加无界面选项</span></span><br><span class="line">chrome_options.add_argument(<span class="string">'--disable-gpu'</span>) <span class="comment">#如果不加这个选项，有时定位会出现问题</span></span><br><span class="line"></span><br><span class="line">browser = webdriver.Chrome(chrome_options=chrome_options)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">sys.setrecursionlimit(<span class="number">1000000</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 当前文件路径</span></span><br><span class="line">current_path = os.path.abspath(__file__)</span><br><span class="line"><span class="comment"># 父目录</span></span><br><span class="line">father_path = os.path.abspath(os.path.dirname(current_path) + os.path.sep + <span class="string">"."</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">origin_url_cache_file_name=<span class="string">"temp_juejin.txt"</span></span><br><span class="line"></span><br><span class="line">originUrlCache = []</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将文件中内容按行加载至列表中</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">loadCache</span><span class="params">(filename, filter_text)</span>:</span></span><br><span class="line">    cache = []</span><br><span class="line">    <span class="keyword">with</span> codecs.open(filename, <span class="string">"r"</span>, <span class="string">"utf-8"</span>) <span class="keyword">as</span> fr:</span><br><span class="line">        <span class="keyword">if</span> filter_text:</span><br><span class="line">            <span class="keyword">for</span> line <span class="keyword">in</span> fr:</span><br><span class="line">                <span class="keyword">if</span> filter_text <span class="keyword">in</span> line:</span><br><span class="line">                    cache.append(line.replace(<span class="string">"\n"</span>, <span class="string">""</span>))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">for</span> line <span class="keyword">in</span> fr:</span><br><span class="line">                cache.append(line.replace(<span class="string">"\n"</span>, <span class="string">""</span>))</span><br><span class="line">        <span class="keyword">return</span> cache</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_article_by_url</span><span class="params">(url)</span>:</span></span><br><span class="line">    browser.get(url)</span><br><span class="line">    d = pq(browser.page_source)</span><br><span class="line">    title = d(<span class="string">'h1'</span>).text()</span><br><span class="line">    content = d(<span class="string">'.markdown-body'</span>).html()</span><br><span class="line">    <span class="keyword">return</span> title, content</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">startScrape</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">for</span> link <span class="keyword">in</span> originUrlCache:</span><br><span class="line">   </span><br><span class="line">        print(link + <span class="string">"\n"</span>)</span><br><span class="line">        title, content = get_article_by_url(link)</span><br><span class="line">        print(title + <span class="string">"\n"</span>)</span><br><span class="line">        print(content)</span><br><span class="line">        </span><br><span class="line">          </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line"></span><br><span class="line">    <span class="comment">#将需要爬取的url加载到内存中</span></span><br><span class="line">    originUrlCache=loadCache(<span class="string">"&#123;parent&#125;/&#123;filename&#125;"</span>.format(parent=father_path,filename=origin_url_cache_file_name), <span class="literal">None</span>)</span><br><span class="line">    <span class="comment">#开始爬取文章</span></span><br><span class="line">    startScrape()</span><br></pre></td></tr></table></figure>
+
+<p>该代码运行的前提是需要安装谷歌浏览器</p>
+<p>运行时如果提示<code>This version of ChromeDriver only supports Chrome version</code>, 那么说明浏览器版本和驱动版本不一致, 需要下载与浏览器相匹配的驱动</p>
+<p>查看谷歌浏览器版本:</p>
+<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NjMwODkwNA==,size_16,color_FFFFFF,t_70.png" alt="在这里插入图片描述"></p>
+<p>然后下载驱动:</p>
+<p><a href="http://chromedriver.storage.googleapis.com/index.html" target="_blank" rel="noopener">ChromeDriver下载地址</a></p>
+<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NjMwODkwNA==,size_16,color_FFFFFF,t_70-20211202135554142.png" alt="在这里插入图片描述"></p>
+<p>将下载的驱动解压到以下目录:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Win：复制webdriver到Python安装目录下</span><br><span class="line">Mac：复制webdriver到/usr/local/bin目录下</span><br></pre></td></tr></table></figure>
+
+<p>至此, 我们成功爬取到指定文章地址的标题和内容</p>
+<p>既然获取到了想要的数据, 那么接下来你可以考虑将其存放到本地, 或者上传到你的<code>wordpress</code></p>
+<p>关于<code>wordpress</code>文章的上传,可参考文章《<a href="https://code.newban.cn/29.html">如何将python采集到的文章保存到wordpress</a>》</p>
+<h3 id="文章上传到wordpress"><a href="#文章上传到wordpress" class="headerlink" title="文章上传到wordpress"></a>文章上传到wordpress</h3><p>秉着善始善终的原则, 以上面的代码为例给大家补充上上传<code>wordpress</code>后的最终代码:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">from</span> lxml <span class="keyword">import</span> html</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> pyquery <span class="keyword">import</span> PyQuery <span class="keyword">as</span> pq</span><br><span class="line"><span class="keyword">import</span> codecs</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">from</span> wordpress_xmlrpc <span class="keyword">import</span> Client, WordPressPost</span><br><span class="line"><span class="keyword">from</span> wordpress_xmlrpc.methods.posts <span class="keyword">import</span> GetPosts,NewPost</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver</span><br><span class="line"><span class="keyword">import</span> time  </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">chrome_options = webdriver.ChromeOptions()</span><br><span class="line"><span class="comment"># 使用headless无界面浏览器模式</span></span><br><span class="line">chrome_options.add_argument(<span class="string">'--headless'</span>) <span class="comment">#增加无界面选项</span></span><br><span class="line">chrome_options.add_argument(<span class="string">'--disable-gpu'</span>) <span class="comment">#如果不加这个选项，有时定位会出现问题</span></span><br><span class="line"></span><br><span class="line">browser = webdriver.Chrome(chrome_options=chrome_options)</span><br><span class="line"></span><br><span class="line">sys.setrecursionlimit(<span class="number">1000000</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 当前文件路径</span></span><br><span class="line">current_path = os.path.abspath(__file__)</span><br><span class="line"><span class="comment"># 父目录</span></span><br><span class="line">father_path = os.path.abspath(os.path.dirname(current_path) + os.path.sep + <span class="string">"."</span>)</span><br><span class="line"></span><br><span class="line">pushed_cache_file_name=<span class="string">"temp_juejin_pushed_url.txt"</span></span><br><span class="line">origin_url_cache_file_name=<span class="string">"temp_juejin.txt"</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">pushedCache = []</span><br><span class="line">originUrlCache = []</span><br><span class="line">wp = Client(<span class="string">'http://您的域名/xmlrpc.php'</span>, <span class="string">'wordpress用户名'</span>, <span class="string">'wordpress登录密码'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将文件中内容按行加载至列表中</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">loadCache</span><span class="params">(filename, filter_text)</span>:</span></span><br><span class="line">    cache = []</span><br><span class="line">    <span class="keyword">with</span> codecs.open(filename, <span class="string">"r"</span>, <span class="string">"utf-8"</span>) <span class="keyword">as</span> fr:</span><br><span class="line">        <span class="keyword">if</span> filter_text:</span><br><span class="line">            <span class="keyword">for</span> line <span class="keyword">in</span> fr:</span><br><span class="line">                <span class="keyword">if</span> filter_text <span class="keyword">in</span> line:</span><br><span class="line">                    cache.append(line.replace(<span class="string">"\n"</span>, <span class="string">""</span>))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">for</span> line <span class="keyword">in</span> fr:</span><br><span class="line">                cache.append(line.replace(<span class="string">"\n"</span>, <span class="string">""</span>))</span><br><span class="line">        <span class="keyword">return</span> cache</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">push_article</span><span class="params">(post_title,post_content_html)</span>:</span></span><br><span class="line">    post = WordPressPost()</span><br><span class="line">    post.title = post_title</span><br><span class="line">    post.slug = post_title</span><br><span class="line">    post.content = post_content_html</span><br><span class="line">    post.terms_names = &#123;</span><br><span class="line">      <span class="string">'post_tag'</span>: post_title.split(<span class="string">" "</span>),</span><br><span class="line">      <span class="string">'category'</span>: [<span class="string">"itarticle"</span>]</span><br><span class="line">        &#125;</span><br><span class="line">    post.post_status = <span class="string">'publish'</span></span><br><span class="line">    wp.call(NewPost(post))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_article_by_url</span><span class="params">(url)</span>:</span></span><br><span class="line">    browser.get(url)</span><br><span class="line">    d = pq(browser.page_source)</span><br><span class="line">    browser.quit</span><br><span class="line">    title = d(<span class="string">'h1'</span>).text()</span><br><span class="line">    content = d(<span class="string">'.markdown-body'</span>).html()</span><br><span class="line">    <span class="keyword">return</span> title, content</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">startScrape</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">for</span> link <span class="keyword">in</span> originUrlCache:</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> any(link <span class="keyword">in</span> s <span class="keyword">for</span> s <span class="keyword">in</span> pushedCache):</span><br><span class="line">            print(link + <span class="string">"\n"</span>)</span><br><span class="line">            title, content = get_article_by_url(link)</span><br><span class="line">            print(title + <span class="string">"\n"</span>)</span><br><span class="line">            print(content)</span><br><span class="line">            push_article(title,content)</span><br><span class="line">            time.sleep(<span class="number">2</span>)</span><br><span class="line">            <span class="keyword">with</span> codecs.open(<span class="string">"&#123;parent&#125;/&#123;filename&#125;"</span>.format(parent=father_path,filename=pushed_cache_file_name), <span class="string">'a'</span>, <span class="string">"utf-8"</span>) <span class="keyword">as</span> fw:</span><br><span class="line">                fw.write(link + <span class="string">"\n"</span>)</span><br><span class="line">                fw.close()</span><br><span class="line">          </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    <span class="comment">#将已经爬取过的url加载到内存中</span></span><br><span class="line">    pushedCache=loadCache(<span class="string">"&#123;parent&#125;/&#123;filename&#125;"</span>.format(parent=father_path,filename=pushed_cache_file_name), <span class="literal">None</span>)</span><br><span class="line">    <span class="comment">#将需要爬取的url加载到内存中</span></span><br><span class="line">    originUrlCache=loadCache(<span class="string">"&#123;parent&#125;/&#123;filename&#125;"</span>.format(parent=father_path,filename=origin_url_cache_file_name), <span class="literal">None</span>)</span><br><span class="line">    <span class="comment">#开始爬取文章</span></span><br><span class="line">    startScrape()</span><br></pre></td></tr></table></figure>
+
+<p>只要将域名, 用户名和密码替换成你自己的就行</p>
+<p>注意<code>wordpress_xmlrpc</code>库的安装:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install python-wordpress-xmlrpc</span><br></pre></td></tr></table></figure>
+
+<h3 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h3><p>另外 上面获取文章链接环节也可以直接使用<code>selenium</code>进行获取, 虽然不如调接口来的快, 但是碰上接口被加密的情况, 那么<code>selenium</code>的方式能快速解决 </p>
+<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="tags/python/" rel="tag"># python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="288.html" rel="next" title="越来越火的网络请求Fetch和Axios到底有什么区别">
+                <i class="fa fa-chevron-left"></i> 越来越火的网络请求Fetch和Axios到底有什么区别
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="290.html" rel="prev" title="Android原生格斗游戏开发">
+                Android原生格斗游戏开发 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    <!-- 乱码三千文章内嵌广告 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-layout="in-article" data-ad-format="fluid" data-ad-client="ca-pub-2626449904708114" data-ad-slot="1549007621"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+  <!-- 乱码三千信息流广告 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-6t+ed+2i-1n-4w" data-ad-client="ca-pub-2626449904708114" data-ad-slot="9471729671"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">乱码三千</p>
+              <p class="site-description motion-element" itemprop="description">android程序员一枚,擅长java,kotlin,python,金融投资,欢迎交流~</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="https://code.newban.cn/archives/">
+              
+                  <span class="site-state-item-count">469</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">138</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网站结构分析"><span class="nav-number">2.</span> <span class="nav-text">网站结构分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#文章链接获取"><span class="nav-number">2.1.</span> <span class="nav-text">文章链接获取</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文章爬取"><span class="nav-number">3.</span> <span class="nav-text">文章爬取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文章上传到wordpress"><span class="nav-number">4.</span> <span class="nav-text">文章上传到wordpress</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#补充"><span class="nav-number">5.</span> <span class="nav-text">补充</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">乱码三千</span>
+  <div>
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+  </div>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+  <script type="text/javascript" async src="js/src/mermaid.min.js"></script>
+  <script>
+  if (window.mermaid) {
+        var mermaid_config = {
+            startOnLoad: true,
+            theme: 'default',
+            flowchart:{
+                useMaxWidth: false,
+                htmlLabels: true
+            }                
+        }
+        mermaid.initialize(mermaid_config);
+  }
+  </script>
+  
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+      <style>
+        a.gitment-editor-footer-tip { display: none; }
+        .gitment-container.gitment-footer-container { display: none; }
+      </style>
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'songjianzaina',
+            repo: 'codesan_comment',
+            
+            lang: "zh" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '75fa01da04fd1029841debfa65ce027b566a47e3',
+            
+                client_id: '01a471de64bf7a7789f3'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
