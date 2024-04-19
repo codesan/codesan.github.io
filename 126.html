@@ -82,19 +82,19 @@
 
 
 
-<meta name="description" content="什么是“索引覆盖”？简单来的说，就是让查询的字段（包括where子句中的字段），都是索引字段。索引覆盖的好处是什么？好处是极大的、极大的、极大的提高查询的效率！重要的说三遍！ 特别说明：  where条件中如果使用like关键词，即使字段是索引中的，也不构成索引覆盖。 单个字段的索引，对于搜索单个where条件有较好的效果。但索引覆盖需要使用多字列索引。  假设创建一个zaho_user表： 12">
+<meta name="description" content="&amp;#x4EC0;&amp;#x4E48;&amp;#x662F;&amp;#x201C;&amp;#x7D22;&amp;#x5F15;&amp;#x8986;&amp;#x76D6;&amp;#x201D;&amp;#xFF1F;&amp;#x7B80;&amp;#x5355;&amp;#x6765;&amp;#x7684;&amp;#x8BF4;&amp;#xFF0C;&amp;#x5C31;&amp;#x662F;&amp;#x8BA9;&amp;#x67E5;&amp;#x8BE2;&amp;#x7684;&amp;#x5B57;&amp;#x6BB5;&amp;#xFF08;">
 <meta name="keywords" content="mysql">
 <meta property="og:type" content="article">
 <meta property="og:title" content="mysql百万数据字符串匹配查询速度优化之覆盖索引法">
 <meta property="og:url" content="https://code.newban.cn/126.html">
 <meta property="og:site_name" content="乱码三千 – 分享实用IT技术">
-<meta property="og:description" content="什么是“索引覆盖”？简单来的说，就是让查询的字段（包括where子句中的字段），都是索引字段。索引覆盖的好处是什么？好处是极大的、极大的、极大的提高查询的效率！重要的说三遍！ 特别说明：  where条件中如果使用like关键词，即使字段是索引中的，也不构成索引覆盖。 单个字段的索引，对于搜索单个where条件有较好的效果。但索引覆盖需要使用多字列索引。  假设创建一个zaho_user表： 12">
+<meta property="og:description" content="&amp;#x4EC0;&amp;#x4E48;&amp;#x662F;&amp;#x201C;&amp;#x7D22;&amp;#x5F15;&amp;#x8986;&amp;#x76D6;&amp;#x201D;&amp;#xFF1F;&amp;#x7B80;&amp;#x5355;&amp;#x6765;&amp;#x7684;&amp;#x8BF4;&amp;#xFF0C;&amp;#x5C31;&amp;#x662F;&amp;#x8BA9;&amp;#x67E5;&amp;#x8BE2;&amp;#x7684;&amp;#x5B57;&amp;#x6BB5;&amp;#xFF08;">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png">
 <meta property="og:updated_time" content="2024-04-08T02:36:39.176Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="mysql百万数据字符串匹配查询速度优化之覆盖索引法">
-<meta name="twitter:description" content="什么是“索引覆盖”？简单来的说，就是让查询的字段（包括where子句中的字段），都是索引字段。索引覆盖的好处是什么？好处是极大的、极大的、极大的提高查询的效率！重要的说三遍！ 特别说明：  where条件中如果使用like关键词，即使字段是索引中的，也不构成索引覆盖。 单个字段的索引，对于搜索单个where条件有较好的效果。但索引覆盖需要使用多字列索引。  假设创建一个zaho_user表： 12">
+<meta name="twitter:description" content="&amp;#x4EC0;&amp;#x4E48;&amp;#x662F;&amp;#x201C;&amp;#x7D22;&amp;#x5F15;&amp;#x8986;&amp;#x76D6;&amp;#x201D;&amp;#xFF1F;&amp;#x7B80;&amp;#x5355;&amp;#x6765;&amp;#x7684;&amp;#x8BF4;&amp;#xFF0C;&amp;#x5C31;&amp;#x662F;&amp;#x8BA9;&amp;#x67E5;&amp;#x8BE2;&amp;#x7684;&amp;#x5B57;&amp;#x6BB5;&amp;#xFF08;">
 <meta name="twitter:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png">
 
 
@@ -367,38 +367,38 @@
       
 
       
-        <h2 id="什么是“索引覆盖”？"><a href="#什么是“索引覆盖”？" class="headerlink" title="什么是“索引覆盖”？"></a>什么是“索引覆盖”？</h2><p>简单来的说，就是让查询的字段（包括where子句中的字段），都是索引字段。索引覆盖的好处是什么？好处是极大的、极大的、极大的提高查询的效率！重要的说三遍！</p>
-<p><strong>特别说明：</strong></p>
+        <h2 id="&#x4EC0;&#x4E48;&#x662F;&#x201C;&#x7D22;&#x5F15;&#x8986;&#x76D6;&#x201D;&#xFF1F;"><a href="#&#x4EC0;&#x4E48;&#x662F;&#x201C;&#x7D22;&#x5F15;&#x8986;&#x76D6;&#x201D;&#xFF1F;" class="headerlink" title="&#x4EC0;&#x4E48;&#x662F;&#x201C;&#x7D22;&#x5F15;&#x8986;&#x76D6;&#x201D;&#xFF1F;"></a>&#x4EC0;&#x4E48;&#x662F;&#x201C;&#x7D22;&#x5F15;&#x8986;&#x76D6;&#x201D;&#xFF1F;</h2><p>&#x7B80;&#x5355;&#x6765;&#x7684;&#x8BF4;&#xFF0C;&#x5C31;&#x662F;&#x8BA9;&#x67E5;&#x8BE2;&#x7684;&#x5B57;&#x6BB5;&#xFF08;&#x5305;&#x62EC;where&#x5B50;&#x53E5;&#x4E2D;&#x7684;&#x5B57;&#x6BB5;&#xFF09;&#xFF0C;&#x90FD;&#x662F;&#x7D22;&#x5F15;&#x5B57;&#x6BB5;&#x3002;&#x7D22;&#x5F15;&#x8986;&#x76D6;&#x7684;&#x597D;&#x5904;&#x662F;&#x4EC0;&#x4E48;&#xFF1F;&#x597D;&#x5904;&#x662F;&#x6781;&#x5927;&#x7684;&#x3001;&#x6781;&#x5927;&#x7684;&#x3001;&#x6781;&#x5927;&#x7684;&#x63D0;&#x9AD8;&#x67E5;&#x8BE2;&#x7684;&#x6548;&#x7387;&#xFF01;&#x91CD;&#x8981;&#x7684;&#x8BF4;&#x4E09;&#x904D;&#xFF01;</p>
+<p><strong>&#x7279;&#x522B;&#x8BF4;&#x660E;&#xFF1A;</strong></p>
 <ol>
-<li>where条件中如果使用like关键词，即使字段是索引中的，也不构成索引覆盖。</li>
-<li>单个字段的索引，对于搜索单个where条件有较好的效果。但索引覆盖需要使用多字列索引。</li>
+<li>where&#x6761;&#x4EF6;&#x4E2D;&#x5982;&#x679C;&#x4F7F;&#x7528;like&#x5173;&#x952E;&#x8BCD;&#xFF0C;&#x5373;&#x4F7F;&#x5B57;&#x6BB5;&#x662F;&#x7D22;&#x5F15;&#x4E2D;&#x7684;&#xFF0C;&#x4E5F;&#x4E0D;&#x6784;&#x6210;&#x7D22;&#x5F15;&#x8986;&#x76D6;&#x3002;</li>
+<li>&#x5355;&#x4E2A;&#x5B57;&#x6BB5;&#x7684;&#x7D22;&#x5F15;&#xFF0C;&#x5BF9;&#x4E8E;&#x641C;&#x7D22;&#x5355;&#x4E2A;where&#x6761;&#x4EF6;&#x6709;&#x8F83;&#x597D;&#x7684;&#x6548;&#x679C;&#x3002;&#x4F46;&#x7D22;&#x5F15;&#x8986;&#x76D6;&#x9700;&#x8981;&#x4F7F;&#x7528;&#x591A;&#x5B57;&#x5217;&#x7D22;&#x5F15;&#x3002;</li>
 </ol>
-<p>假设创建一个zaho_user表：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> CREATE TABLE `zaho_user` (</span><br><span class="line"> `u_id` int(11) NOT NULL AUTO_INCREMENT,</span><br><span class="line"> `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,</span><br><span class="line"> `u_name` varchar(20) NOT NULL DEFAULT &apos;&apos; COMMENT &apos;用户名&apos;,</span><br><span class="line"> `u_sex` tinyint(4) NOT NULL DEFAULT &apos;1&apos; COMMENT &apos;性别&apos;,</span><br><span class="line"> `u_desc` varchar(200) NOT NULL DEFAULT &apos;&apos; COMMENT &apos;介绍&apos;</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT &apos;用户表&apos;;</span><br></pre></td></tr></table></figure>
+<p>&#x5047;&#x8BBE;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;zaho_user&#x8868;&#xFF1A;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> CREATE TABLE `zaho_user` (</span><br><span class="line"> `u_id` int(11) NOT NULL AUTO_INCREMENT,</span><br><span class="line"> `insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,</span><br><span class="line"> `u_name` varchar(20) NOT NULL DEFAULT &apos;&apos; COMMENT &apos;&#x7528;&#x6237;&#x540D;&apos;,</span><br><span class="line"> `u_sex` tinyint(4) NOT NULL DEFAULT &apos;1&apos; COMMENT &apos;&#x6027;&#x522B;&apos;,</span><br><span class="line"> `u_desc` varchar(200) NOT NULL DEFAULT &apos;&apos; COMMENT &apos;&#x4ECB;&#x7ECD;&apos;</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT &apos;&#x7528;&#x6237;&#x8868;&apos;;</span><br></pre></td></tr></table></figure>
 
-<p>这里我们创建一个索引：</p>
+<p>&#x8FD9;&#x91CC;&#x6211;&#x4EEC;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x7D22;&#x5F15;&#xFF1A;</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter table `zaho_user` add index (`u_name`,`insert_time`,`u_sex`);</span><br></pre></td></tr></table></figure>
 
-<p>那么，我们执行如下查询时，效率将会非常高：</p>
+<p>&#x90A3;&#x4E48;&#xFF0C;&#x6211;&#x4EEC;&#x6267;&#x884C;&#x5982;&#x4E0B;&#x67E5;&#x8BE2;&#x65F6;&#xFF0C;&#x6548;&#x7387;&#x5C06;&#x4F1A;&#x975E;&#x5E38;&#x9AD8;&#xFF1A;</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select `u_name`,`insert_time` from `zaho_user` where `u_sex`=1</span><br></pre></td></tr></table></figure>
 
-<p>例子中的三个字段：<code>u_name</code>,<code>insert_time</code>,<code>u_sex</code>创建了一个多列索引，而SQL查询时形成了索引覆盖。 在百万数据量匹配查询时速度提升非常可观</p>
-<h3 id="网站速度优化"><a href="#网站速度优化" class="headerlink" title="网站速度优化"></a>网站速度优化</h3><p>为什么网站访问很慢, 想优化可以参考以下方式, 优先级由高到低:</p>
+<p>&#x4F8B;&#x5B50;&#x4E2D;&#x7684;&#x4E09;&#x4E2A;&#x5B57;&#x6BB5;&#xFF1A;<code>u_name</code>,<code>insert_time</code>,<code>u_sex</code>&#x521B;&#x5EFA;&#x4E86;&#x4E00;&#x4E2A;&#x591A;&#x5217;&#x7D22;&#x5F15;&#xFF0C;&#x800C;SQL&#x67E5;&#x8BE2;&#x65F6;&#x5F62;&#x6210;&#x4E86;&#x7D22;&#x5F15;&#x8986;&#x76D6;&#x3002; &#x5728;&#x767E;&#x4E07;&#x6570;&#x636E;&#x91CF;&#x5339;&#x914D;&#x67E5;&#x8BE2;&#x65F6;&#x901F;&#x5EA6;&#x63D0;&#x5347;&#x975E;&#x5E38;&#x53EF;&#x89C2;</p>
+<h3 id="&#x7F51;&#x7AD9;&#x901F;&#x5EA6;&#x4F18;&#x5316;"><a href="#&#x7F51;&#x7AD9;&#x901F;&#x5EA6;&#x4F18;&#x5316;" class="headerlink" title="&#x7F51;&#x7AD9;&#x901F;&#x5EA6;&#x4F18;&#x5316;"></a>&#x7F51;&#x7AD9;&#x901F;&#x5EA6;&#x4F18;&#x5316;</h3><p>&#x4E3A;&#x4EC0;&#x4E48;&#x7F51;&#x7AD9;&#x8BBF;&#x95EE;&#x5F88;&#x6162;, &#x60F3;&#x4F18;&#x5316;&#x53EF;&#x4EE5;&#x53C2;&#x8003;&#x4EE5;&#x4E0B;&#x65B9;&#x5F0F;, &#x4F18;&#x5148;&#x7EA7;&#x7531;&#x9AD8;&#x5230;&#x4F4E;:</p>
 <ol>
-<li><strong>数据库位置优化 (优先采用内网访问而非外网)</strong></li>
-<li><strong>硬盘优化 (优先固态硬盘)</strong></li>
-<li><strong>SQL语句优化</strong></li>
-<li><strong>服务器硬件和外网带宽升级</strong></li>
-<li><strong>应用代码优化</strong></li>
-<li><strong>定期重启mysql 连接优化 (亲测效果明显)</strong> </li>
+<li><strong>&#x6570;&#x636E;&#x5E93;&#x4F4D;&#x7F6E;&#x4F18;&#x5316; (&#x4F18;&#x5148;&#x91C7;&#x7528;&#x5185;&#x7F51;&#x8BBF;&#x95EE;&#x800C;&#x975E;&#x5916;&#x7F51;)</strong></li>
+<li><strong>&#x786C;&#x76D8;&#x4F18;&#x5316; (&#x4F18;&#x5148;&#x56FA;&#x6001;&#x786C;&#x76D8;)</strong></li>
+<li><strong>SQL&#x8BED;&#x53E5;&#x4F18;&#x5316;</strong></li>
+<li><strong>&#x670D;&#x52A1;&#x5668;&#x786C;&#x4EF6;&#x548C;&#x5916;&#x7F51;&#x5E26;&#x5BBD;&#x5347;&#x7EA7;</strong></li>
+<li><strong>&#x5E94;&#x7528;&#x4EE3;&#x7801;&#x4F18;&#x5316;</strong></li>
+<li><strong>&#x5B9A;&#x671F;&#x91CD;&#x542F;mysql &#x8FDE;&#x63A5;&#x4F18;&#x5316; (&#x4EB2;&#x6D4B;&#x6548;&#x679C;&#x660E;&#x663E;)</strong> </li>
 </ol>
-<h3 id="网站维护记录"><a href="#网站维护记录" class="headerlink" title="网站维护记录"></a>网站维护记录</h3><p>本人有一个博客采集站, 内置文章3万左右, 访问和渲染速度非常快, 后来爬取文章增量到6万左右, 感觉网站速度明显变慢, 起初以为是内容过多导致, 可是也才6万就这么慢了那百万数据岂不没法玩了</p>
-<p>我甚至在想 可能是服务器配置以及博客程序有限导致的 也没再管它</p>
-<p>直到有一天 数据库容器挂了 , 重启数据库后, 网站恢复访问, 速度竟惊人地变快, 和最开始没两样, 于是乎我否断了之前的猜测, 之前速度慢有可能仅仅是数据库连接过多 垃圾缓存导致的</p>
-<p>因此 定期重启数据库 似乎可以纳入我的定时任务计划中 </p>
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<h3 id="&#x7F51;&#x7AD9;&#x7EF4;&#x62A4;&#x8BB0;&#x5F55;"><a href="#&#x7F51;&#x7AD9;&#x7EF4;&#x62A4;&#x8BB0;&#x5F55;" class="headerlink" title="&#x7F51;&#x7AD9;&#x7EF4;&#x62A4;&#x8BB0;&#x5F55;"></a>&#x7F51;&#x7AD9;&#x7EF4;&#x62A4;&#x8BB0;&#x5F55;</h3><p>&#x672C;&#x4EBA;&#x6709;&#x4E00;&#x4E2A;&#x535A;&#x5BA2;&#x91C7;&#x96C6;&#x7AD9;, &#x5185;&#x7F6E;&#x6587;&#x7AE0;3&#x4E07;&#x5DE6;&#x53F3;, &#x8BBF;&#x95EE;&#x548C;&#x6E32;&#x67D3;&#x901F;&#x5EA6;&#x975E;&#x5E38;&#x5FEB;, &#x540E;&#x6765;&#x722C;&#x53D6;&#x6587;&#x7AE0;&#x589E;&#x91CF;&#x5230;6&#x4E07;&#x5DE6;&#x53F3;, &#x611F;&#x89C9;&#x7F51;&#x7AD9;&#x901F;&#x5EA6;&#x660E;&#x663E;&#x53D8;&#x6162;, &#x8D77;&#x521D;&#x4EE5;&#x4E3A;&#x662F;&#x5185;&#x5BB9;&#x8FC7;&#x591A;&#x5BFC;&#x81F4;, &#x53EF;&#x662F;&#x4E5F;&#x624D;6&#x4E07;&#x5C31;&#x8FD9;&#x4E48;&#x6162;&#x4E86;&#x90A3;&#x767E;&#x4E07;&#x6570;&#x636E;&#x5C82;&#x4E0D;&#x6CA1;&#x6CD5;&#x73A9;&#x4E86;</p>
+<p>&#x6211;&#x751A;&#x81F3;&#x5728;&#x60F3; &#x53EF;&#x80FD;&#x662F;&#x670D;&#x52A1;&#x5668;&#x914D;&#x7F6E;&#x4EE5;&#x53CA;&#x535A;&#x5BA2;&#x7A0B;&#x5E8F;&#x6709;&#x9650;&#x5BFC;&#x81F4;&#x7684; &#x4E5F;&#x6CA1;&#x518D;&#x7BA1;&#x5B83;</p>
+<p>&#x76F4;&#x5230;&#x6709;&#x4E00;&#x5929; &#x6570;&#x636E;&#x5E93;&#x5BB9;&#x5668;&#x6302;&#x4E86; , &#x91CD;&#x542F;&#x6570;&#x636E;&#x5E93;&#x540E;, &#x7F51;&#x7AD9;&#x6062;&#x590D;&#x8BBF;&#x95EE;, &#x901F;&#x5EA6;&#x7ADF;&#x60CA;&#x4EBA;&#x5730;&#x53D8;&#x5FEB;, &#x548C;&#x6700;&#x5F00;&#x59CB;&#x6CA1;&#x4E24;&#x6837;, &#x4E8E;&#x662F;&#x4E4E;&#x6211;&#x5426;&#x65AD;&#x4E86;&#x4E4B;&#x524D;&#x7684;&#x731C;&#x6D4B;, &#x4E4B;&#x524D;&#x901F;&#x5EA6;&#x6162;&#x6709;&#x53EF;&#x80FD;&#x4EC5;&#x4EC5;&#x662F;&#x6570;&#x636E;&#x5E93;&#x8FDE;&#x63A5;&#x8FC7;&#x591A; &#x5783;&#x573E;&#x7F13;&#x5B58;&#x5BFC;&#x81F4;&#x7684;</p>
+<p>&#x56E0;&#x6B64; &#x5B9A;&#x671F;&#x91CD;&#x542F;&#x6570;&#x636E;&#x5E93; &#x4F3C;&#x4E4E;&#x53EF;&#x4EE5;&#x7EB3;&#x5165;&#x6211;&#x7684;&#x5B9A;&#x65F6;&#x4EFB;&#x52A1;&#x8BA1;&#x5212;&#x4E2D; </p>
+<p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B; &#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
 <p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+<p><em>&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</em></p>
 
       
     </div>

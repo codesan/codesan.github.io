@@ -82,20 +82,20 @@
 
 
 
-<meta name="description" content="场景复现公司有10个项目正在开发, 以后会陆陆续续增加新项目, 而这些项目都用到公共的一些类库, 如果你是技术负责人, 你会选择哪个方案? 方案一: 将公共类库依次拷贝至10个项目中 (不推荐  一旦类库需要修改, 你需要修改不只10遍) 方案二: 将公共类库封装成第三方框架, 放在公共仓库, 每个项目各自引入,(使用方便, 但是不方便修改源代码 不推荐) 方案三: 将公共类库源代码放在公有仓库">
+<meta name="description" content="&amp;#x573A;&amp;#x666F;&amp;#x590D;&amp;#x73B0;&amp;#x516C;&amp;#x53F8;&amp;#x6709;10&amp;#x4E2A;&amp;#x9879;&amp;#x76EE;&amp;#x6B63;&amp;#x5728;&amp;#x5F00;&amp;#x53D1;, &amp;#x4EE5;&amp;#x540E;&amp;#x4F1A;&amp;#x9646;&amp;#x9646;&amp;#x7EED;&amp;#x7EED;&amp;#x589E;&amp;#x52A0;&amp;#x65B0;&amp;#x">
 <meta name="keywords" content="Git">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Git Submodule的介绍与使用">
 <meta property="og:url" content="https://code.newban.cn/80.html">
 <meta property="og:site_name" content="乱码三千 – 分享实用IT技术">
-<meta property="og:description" content="场景复现公司有10个项目正在开发, 以后会陆陆续续增加新项目, 而这些项目都用到公共的一些类库, 如果你是技术负责人, 你会选择哪个方案? 方案一: 将公共类库依次拷贝至10个项目中 (不推荐  一旦类库需要修改, 你需要修改不只10遍) 方案二: 将公共类库封装成第三方框架, 放在公共仓库, 每个项目各自引入,(使用方便, 但是不方便修改源代码 不推荐) 方案三: 将公共类库源代码放在公有仓库">
+<meta property="og:description" content="&amp;#x573A;&amp;#x666F;&amp;#x590D;&amp;#x73B0;&amp;#x516C;&amp;#x53F8;&amp;#x6709;10&amp;#x4E2A;&amp;#x9879;&amp;#x76EE;&amp;#x6B63;&amp;#x5728;&amp;#x5F00;&amp;#x53D1;, &amp;#x4EE5;&amp;#x540E;&amp;#x4F1A;&amp;#x9646;&amp;#x9646;&amp;#x7EED;&amp;#x7EED;&amp;#x589E;&amp;#x52A0;&amp;#x65B0;&amp;#x">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/20200106104558.png">
 <meta property="og:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png">
 <meta property="og:updated_time" content="2024-04-08T14:16:17.600Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Git Submodule的介绍与使用">
-<meta name="twitter:description" content="场景复现公司有10个项目正在开发, 以后会陆陆续续增加新项目, 而这些项目都用到公共的一些类库, 如果你是技术负责人, 你会选择哪个方案? 方案一: 将公共类库依次拷贝至10个项目中 (不推荐  一旦类库需要修改, 你需要修改不只10遍) 方案二: 将公共类库封装成第三方框架, 放在公共仓库, 每个项目各自引入,(使用方便, 但是不方便修改源代码 不推荐) 方案三: 将公共类库源代码放在公有仓库">
+<meta name="twitter:description" content="&amp;#x573A;&amp;#x666F;&amp;#x590D;&amp;#x73B0;&amp;#x516C;&amp;#x53F8;&amp;#x6709;10&amp;#x4E2A;&amp;#x9879;&amp;#x76EE;&amp;#x6B63;&amp;#x5728;&amp;#x5F00;&amp;#x53D1;, &amp;#x4EE5;&amp;#x540E;&amp;#x4F1A;&amp;#x9646;&amp;#x9646;&amp;#x7EED;&amp;#x7EED;&amp;#x589E;&amp;#x52A0;&amp;#x65B0;&amp;#x">
 <meta name="twitter:image" content="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/20200106104558.png">
 
 
@@ -369,49 +369,49 @@
 
       
         <p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/20200106104558.png" alt></p>
-<h2 id="场景复现"><a href="#场景复现" class="headerlink" title="场景复现"></a>场景复现</h2><p>公司有10个项目正在开发, 以后会陆陆续续增加新项目, 而这些项目都用到公共的一些类库, 如果你是技术负责人, 你会选择哪个方案?</p>
-<p><strong>方案一</strong>: 将公共类库依次拷贝至10个项目中 <strong>(不推荐  一旦类库需要修改, 你需要修改不只10遍)</strong></p>
-<p><strong>方案二</strong>: 将公共类库封装成第三方框架, 放在公共仓库, 每个项目各自引入,<strong>(使用方便, 但是不方便修改源代码 不推荐)</strong></p>
-<p><strong>方案三</strong>: 将公共类库源代码放在公有仓库, 每个项目下分别clone, <strong>( 方便修改类库代码, 也方便同步修改,但是主工程项目会将类库代码并入主工程提交, 两个仓库独立性不够, 有时候我可能只想先pull没有类库的代码, 这个时候就不方便了)</strong></p>
-<h2 id="引出Git-Submodule"><a href="#引出Git-Submodule" class="headerlink" title="引出Git Submodule"></a>引出Git Submodule</h2><p>为了增加公共类库与主项目的独立性, Git 给大家提供了子模块功能 允许你将一个 Git 仓库作为另一个 Git 仓库的子目录 ,  它能让你将另一个仓库克隆到自己的项目中，同时还保持提交的独立 </p>
-<h2 id="开始使用"><a href="#开始使用" class="headerlink" title="开始使用"></a>开始使用</h2><h4 id="添加子模块"><a href="#添加子模块" class="headerlink" title="添加子模块"></a>添加子模块</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule add &lt;仓库地址&gt; &lt;本地路径&gt;//如果不指定本地路径 默认放在当前目录下</span><br></pre></td></tr></table></figure>
+<h2 id="&#x573A;&#x666F;&#x590D;&#x73B0;"><a href="#&#x573A;&#x666F;&#x590D;&#x73B0;" class="headerlink" title="&#x573A;&#x666F;&#x590D;&#x73B0;"></a>&#x573A;&#x666F;&#x590D;&#x73B0;</h2><p>&#x516C;&#x53F8;&#x6709;10&#x4E2A;&#x9879;&#x76EE;&#x6B63;&#x5728;&#x5F00;&#x53D1;, &#x4EE5;&#x540E;&#x4F1A;&#x9646;&#x9646;&#x7EED;&#x7EED;&#x589E;&#x52A0;&#x65B0;&#x9879;&#x76EE;, &#x800C;&#x8FD9;&#x4E9B;&#x9879;&#x76EE;&#x90FD;&#x7528;&#x5230;&#x516C;&#x5171;&#x7684;&#x4E00;&#x4E9B;&#x7C7B;&#x5E93;, &#x5982;&#x679C;&#x4F60;&#x662F;&#x6280;&#x672F;&#x8D1F;&#x8D23;&#x4EBA;, &#x4F60;&#x4F1A;&#x9009;&#x62E9;&#x54EA;&#x4E2A;&#x65B9;&#x6848;?</p>
+<p><strong>&#x65B9;&#x6848;&#x4E00;</strong>: &#x5C06;&#x516C;&#x5171;&#x7C7B;&#x5E93;&#x4F9D;&#x6B21;&#x62F7;&#x8D1D;&#x81F3;10&#x4E2A;&#x9879;&#x76EE;&#x4E2D; <strong>(&#x4E0D;&#x63A8;&#x8350;  &#x4E00;&#x65E6;&#x7C7B;&#x5E93;&#x9700;&#x8981;&#x4FEE;&#x6539;, &#x4F60;&#x9700;&#x8981;&#x4FEE;&#x6539;&#x4E0D;&#x53EA;10&#x904D;)</strong></p>
+<p><strong>&#x65B9;&#x6848;&#x4E8C;</strong>: &#x5C06;&#x516C;&#x5171;&#x7C7B;&#x5E93;&#x5C01;&#x88C5;&#x6210;&#x7B2C;&#x4E09;&#x65B9;&#x6846;&#x67B6;, &#x653E;&#x5728;&#x516C;&#x5171;&#x4ED3;&#x5E93;, &#x6BCF;&#x4E2A;&#x9879;&#x76EE;&#x5404;&#x81EA;&#x5F15;&#x5165;,<strong>(&#x4F7F;&#x7528;&#x65B9;&#x4FBF;, &#x4F46;&#x662F;&#x4E0D;&#x65B9;&#x4FBF;&#x4FEE;&#x6539;&#x6E90;&#x4EE3;&#x7801; &#x4E0D;&#x63A8;&#x8350;)</strong></p>
+<p><strong>&#x65B9;&#x6848;&#x4E09;</strong>: &#x5C06;&#x516C;&#x5171;&#x7C7B;&#x5E93;&#x6E90;&#x4EE3;&#x7801;&#x653E;&#x5728;&#x516C;&#x6709;&#x4ED3;&#x5E93;, &#x6BCF;&#x4E2A;&#x9879;&#x76EE;&#x4E0B;&#x5206;&#x522B;clone, <strong>( &#x65B9;&#x4FBF;&#x4FEE;&#x6539;&#x7C7B;&#x5E93;&#x4EE3;&#x7801;, &#x4E5F;&#x65B9;&#x4FBF;&#x540C;&#x6B65;&#x4FEE;&#x6539;,&#x4F46;&#x662F;&#x4E3B;&#x5DE5;&#x7A0B;&#x9879;&#x76EE;&#x4F1A;&#x5C06;&#x7C7B;&#x5E93;&#x4EE3;&#x7801;&#x5E76;&#x5165;&#x4E3B;&#x5DE5;&#x7A0B;&#x63D0;&#x4EA4;, &#x4E24;&#x4E2A;&#x4ED3;&#x5E93;&#x72EC;&#x7ACB;&#x6027;&#x4E0D;&#x591F;, &#x6709;&#x65F6;&#x5019;&#x6211;&#x53EF;&#x80FD;&#x53EA;&#x60F3;&#x5148;pull&#x6CA1;&#x6709;&#x7C7B;&#x5E93;&#x7684;&#x4EE3;&#x7801;, &#x8FD9;&#x4E2A;&#x65F6;&#x5019;&#x5C31;&#x4E0D;&#x65B9;&#x4FBF;&#x4E86;)</strong></p>
+<h2 id="&#x5F15;&#x51FA;Git-Submodule"><a href="#&#x5F15;&#x51FA;Git-Submodule" class="headerlink" title="&#x5F15;&#x51FA;Git Submodule"></a>&#x5F15;&#x51FA;Git Submodule</h2><p>&#x4E3A;&#x4E86;&#x589E;&#x52A0;&#x516C;&#x5171;&#x7C7B;&#x5E93;&#x4E0E;&#x4E3B;&#x9879;&#x76EE;&#x7684;&#x72EC;&#x7ACB;&#x6027;, Git &#x7ED9;&#x5927;&#x5BB6;&#x63D0;&#x4F9B;&#x4E86;&#x5B50;&#x6A21;&#x5757;&#x529F;&#x80FD; &#x5141;&#x8BB8;&#x4F60;&#x5C06;&#x4E00;&#x4E2A; Git &#x4ED3;&#x5E93;&#x4F5C;&#x4E3A;&#x53E6;&#x4E00;&#x4E2A; Git &#x4ED3;&#x5E93;&#x7684;&#x5B50;&#x76EE;&#x5F55; ,  &#x5B83;&#x80FD;&#x8BA9;&#x4F60;&#x5C06;&#x53E6;&#x4E00;&#x4E2A;&#x4ED3;&#x5E93;&#x514B;&#x9686;&#x5230;&#x81EA;&#x5DF1;&#x7684;&#x9879;&#x76EE;&#x4E2D;&#xFF0C;&#x540C;&#x65F6;&#x8FD8;&#x4FDD;&#x6301;&#x63D0;&#x4EA4;&#x7684;&#x72EC;&#x7ACB; </p>
+<h2 id="&#x5F00;&#x59CB;&#x4F7F;&#x7528;"><a href="#&#x5F00;&#x59CB;&#x4F7F;&#x7528;" class="headerlink" title="&#x5F00;&#x59CB;&#x4F7F;&#x7528;"></a>&#x5F00;&#x59CB;&#x4F7F;&#x7528;</h2><h4 id="&#x6DFB;&#x52A0;&#x5B50;&#x6A21;&#x5757;"><a href="#&#x6DFB;&#x52A0;&#x5B50;&#x6A21;&#x5757;" class="headerlink" title="&#x6DFB;&#x52A0;&#x5B50;&#x6A21;&#x5757;"></a>&#x6DFB;&#x52A0;&#x5B50;&#x6A21;&#x5757;</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule add &lt;&#x4ED3;&#x5E93;&#x5730;&#x5740;&gt; &lt;&#x672C;&#x5730;&#x8DEF;&#x5F84;&gt;//&#x5982;&#x679C;&#x4E0D;&#x6307;&#x5B9A;&#x672C;&#x5730;&#x8DEF;&#x5F84; &#x9ED8;&#x8BA4;&#x653E;&#x5728;&#x5F53;&#x524D;&#x76EE;&#x5F55;&#x4E0B;</span><br></pre></td></tr></table></figure>
 
-<h4 id="将子模块代码同步至远程仓库"><a href="#将子模块代码同步至远程仓库" class="headerlink" title="将子模块代码同步至远程仓库"></a>将子模块代码同步至远程仓库</h4><p>进入到子模块目录下, 指定分支:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout master //这里以master分支为例</span><br></pre></td></tr></table></figure>
+<h4 id="&#x5C06;&#x5B50;&#x6A21;&#x5757;&#x4EE3;&#x7801;&#x540C;&#x6B65;&#x81F3;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;"><a href="#&#x5C06;&#x5B50;&#x6A21;&#x5757;&#x4EE3;&#x7801;&#x540C;&#x6B65;&#x81F3;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;" class="headerlink" title="&#x5C06;&#x5B50;&#x6A21;&#x5757;&#x4EE3;&#x7801;&#x540C;&#x6B65;&#x81F3;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;"></a>&#x5C06;&#x5B50;&#x6A21;&#x5757;&#x4EE3;&#x7801;&#x540C;&#x6B65;&#x81F3;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;</h4><p>&#x8FDB;&#x5165;&#x5230;&#x5B50;&#x6A21;&#x5757;&#x76EE;&#x5F55;&#x4E0B;, &#x6307;&#x5B9A;&#x5206;&#x652F;:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout master //&#x8FD9;&#x91CC;&#x4EE5;master&#x5206;&#x652F;&#x4E3A;&#x4F8B;</span><br></pre></td></tr></table></figure>
 
-<p>然后</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git commit -am <span class="string">"修改类库"</span></span><br><span class="line">git push</span><br></pre></td></tr></table></figure>
+<p>&#x7136;&#x540E;</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git commit -am <span class="string">&quot;&#x4FEE;&#x6539;&#x7C7B;&#x5E93;&quot;</span></span><br><span class="line">git push</span><br></pre></td></tr></table></figure>
 
-<h3 id="从远程仓库更新代码"><a href="#从远程仓库更新代码" class="headerlink" title="从远程仓库更新代码"></a>从远程仓库更新代码</h3><p>在父模块目录下执行以下命令:</p>
+<h3 id="&#x4ECE;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;&#x66F4;&#x65B0;&#x4EE3;&#x7801;"><a href="#&#x4ECE;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;&#x66F4;&#x65B0;&#x4EE3;&#x7801;" class="headerlink" title="&#x4ECE;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;&#x66F4;&#x65B0;&#x4EE3;&#x7801;"></a>&#x4ECE;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;&#x66F4;&#x65B0;&#x4EE3;&#x7801;</h3><p>&#x5728;&#x7236;&#x6A21;&#x5757;&#x76EE;&#x5F55;&#x4E0B;&#x6267;&#x884C;&#x4EE5;&#x4E0B;&#x547D;&#x4EE4;:</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule update --remote</span><br></pre></td></tr></table></figure>
 
-<p>或者</p>
-<p>直接进入到子模块目录下:</p>
+<p>&#x6216;&#x8005;</p>
+<p>&#x76F4;&#x63A5;&#x8FDB;&#x5165;&#x5230;&#x5B50;&#x6A21;&#x5757;&#x76EE;&#x5F55;&#x4E0B;:</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git pull</span><br></pre></td></tr></table></figure>
 
-<p>两者效果都是一样的</p>
-<p>除此之外还可以使用以下指令对多个子模块进行批量更新:</p>
+<p>&#x4E24;&#x8005;&#x6548;&#x679C;&#x90FD;&#x662F;&#x4E00;&#x6837;&#x7684;</p>
+<p>&#x9664;&#x6B64;&#x4E4B;&#x5916;&#x8FD8;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x4EE5;&#x4E0B;&#x6307;&#x4EE4;&#x5BF9;&#x591A;&#x4E2A;&#x5B50;&#x6A21;&#x5757;&#x8FDB;&#x884C;&#x6279;&#x91CF;&#x66F4;&#x65B0;:</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule foreach --recursive git pull</span><br></pre></td></tr></table></figure>
 
-<p>或者</p>
+<p>&#x6216;&#x8005;</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git pull --recurse-submodules</span><br></pre></td></tr></table></figure>
 
-<p><strong>注意:如果你的子模块内部也包含了一个子模块, 你可以使用:</strong></p>
+<p><strong>&#x6CE8;&#x610F;:&#x5982;&#x679C;&#x4F60;&#x7684;&#x5B50;&#x6A21;&#x5757;&#x5185;&#x90E8;&#x4E5F;&#x5305;&#x542B;&#x4E86;&#x4E00;&#x4E2A;&#x5B50;&#x6A21;&#x5757;, &#x4F60;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;:</strong></p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule foreach git submodule update</span><br></pre></td></tr></table></figure>
 
-<p>进行遍历更新</p>
-<h4 id="删除子模块"><a href="#删除子模块" class="headerlink" title="删除子模块"></a>删除子模块</h4><ol>
-<li><p>首先执行以下命令移除子模块引用:</p>
+<p>&#x8FDB;&#x884C;&#x904D;&#x5386;&#x66F4;&#x65B0;</p>
+<h4 id="&#x5220;&#x9664;&#x5B50;&#x6A21;&#x5757;"><a href="#&#x5220;&#x9664;&#x5B50;&#x6A21;&#x5757;" class="headerlink" title="&#x5220;&#x9664;&#x5B50;&#x6A21;&#x5757;"></a>&#x5220;&#x9664;&#x5B50;&#x6A21;&#x5757;</h4><ol>
+<li><p>&#x9996;&#x5148;&#x6267;&#x884C;&#x4EE5;&#x4E0B;&#x547D;&#x4EE4;&#x79FB;&#x9664;&#x5B50;&#x6A21;&#x5757;&#x5F15;&#x7528;:</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule deinit &lt;submodule_path&gt;</span><br></pre></td></tr></table></figure>
 
-<p>其中，<code>&lt;submodule_path&gt;</code> 是子模块的相对路径或<code>URL</code>。这将取消子模块的连接，并使其变回普通的目录。</p>
+<p>&#x5176;&#x4E2D;&#xFF0C;<code>&lt;submodule_path&gt;</code> &#x662F;&#x5B50;&#x6A21;&#x5757;&#x7684;&#x76F8;&#x5BF9;&#x8DEF;&#x5F84;&#x6216;<code>URL</code>&#x3002;&#x8FD9;&#x5C06;&#x53D6;&#x6D88;&#x5B50;&#x6A21;&#x5757;&#x7684;&#x8FDE;&#x63A5;&#xFF0C;&#x5E76;&#x4F7F;&#x5176;&#x53D8;&#x56DE;&#x666E;&#x901A;&#x7684;&#x76EE;&#x5F55;&#x3002;</p>
 </li>
-<li><p>执行以下命令来从 <code>.gitmodules</code> 文件中移除子模块的记录：</p>
+<li><p>&#x6267;&#x884C;&#x4EE5;&#x4E0B;&#x547D;&#x4EE4;&#x6765;&#x4ECE; <code>.gitmodules</code> &#x6587;&#x4EF6;&#x4E2D;&#x79FB;&#x9664;&#x5B50;&#x6A21;&#x5757;&#x7684;&#x8BB0;&#x5F55;&#xFF1A;</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rm --cached &lt;submodule_path&gt;</span><br></pre></td></tr></table></figure>
 
-<p>同样，<code>&lt;submodule_path&gt;</code> 是子模块的相对路径或 URL。该命令会将子模块的相关配置从<code>Git</code>仓库中移除。</p>
+<p>&#x540C;&#x6837;&#xFF0C;<code>&lt;submodule_path&gt;</code> &#x662F;&#x5B50;&#x6A21;&#x5757;&#x7684;&#x76F8;&#x5BF9;&#x8DEF;&#x5F84;&#x6216; URL&#x3002;&#x8BE5;&#x547D;&#x4EE4;&#x4F1A;&#x5C06;&#x5B50;&#x6A21;&#x5757;&#x7684;&#x76F8;&#x5173;&#x914D;&#x7F6E;&#x4ECE;<code>Git</code>&#x4ED3;&#x5E93;&#x4E2D;&#x79FB;&#x9664;&#x3002;</p>
 </li>
-<li><p>执行以下命令删除子模块的相关目录和文件</p>
+<li><p>&#x6267;&#x884C;&#x4EE5;&#x4E0B;&#x547D;&#x4EE4;&#x5220;&#x9664;&#x5B50;&#x6A21;&#x5757;&#x7684;&#x76F8;&#x5173;&#x76EE;&#x5F55;&#x548C;&#x6587;&#x4EF6;</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git rm &lt;submodule_path&gt;</span><br><span class="line">rm &lt;submodule_path&gt;</span><br></pre></td></tr></table></figure>
 
 
@@ -421,61 +421,61 @@
 
 </li>
 </ol>
-<h4 id="移动子模块"><a href="#移动子模块" class="headerlink" title="移动子模块"></a>移动子模块</h4><p>要将 <code>Git</code> 中的子模块移动到另一个目录，可以按照以下步骤进行操作：</p>
+<h4 id="&#x79FB;&#x52A8;&#x5B50;&#x6A21;&#x5757;"><a href="#&#x79FB;&#x52A8;&#x5B50;&#x6A21;&#x5757;" class="headerlink" title="&#x79FB;&#x52A8;&#x5B50;&#x6A21;&#x5757;"></a>&#x79FB;&#x52A8;&#x5B50;&#x6A21;&#x5757;</h4><p>&#x8981;&#x5C06; <code>Git</code> &#x4E2D;&#x7684;&#x5B50;&#x6A21;&#x5757;&#x79FB;&#x52A8;&#x5230;&#x53E6;&#x4E00;&#x4E2A;&#x76EE;&#x5F55;&#xFF0C;&#x53EF;&#x4EE5;&#x6309;&#x7167;&#x4EE5;&#x4E0B;&#x6B65;&#x9AA4;&#x8FDB;&#x884C;&#x64CD;&#x4F5C;&#xFF1A;</p>
 <ol>
-<li><p>进入包含子模块的 Git 仓库的根目录。</p>
+<li><p>&#x8FDB;&#x5165;&#x5305;&#x542B;&#x5B50;&#x6A21;&#x5757;&#x7684; Git &#x4ED3;&#x5E93;&#x7684;&#x6839;&#x76EE;&#x5F55;&#x3002;</p>
 </li>
-<li><p>执行以下命令来修改子模块的路径：</p>
+<li><p>&#x6267;&#x884C;&#x4EE5;&#x4E0B;&#x547D;&#x4EE4;&#x6765;&#x4FEE;&#x6539;&#x5B50;&#x6A21;&#x5757;&#x7684;&#x8DEF;&#x5F84;&#xFF1A;</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git mv &lt;current_submodule_path&gt; &lt;new_submodule_path&gt;</span><br></pre></td></tr></table></figure>
 
-<p>其中，<code>&lt;current_submodule_path&gt;</code> 是当前子模块的路径，<code>&lt;new_submodule_path&gt;</code> 是你想要将子模块移动到的新路径。该命令会将子模块在 Git 仓库中的路径更改为新路径。</p>
+<p>&#x5176;&#x4E2D;&#xFF0C;<code>&lt;current_submodule_path&gt;</code> &#x662F;&#x5F53;&#x524D;&#x5B50;&#x6A21;&#x5757;&#x7684;&#x8DEF;&#x5F84;&#xFF0C;<code>&lt;new_submodule_path&gt;</code> &#x662F;&#x4F60;&#x60F3;&#x8981;&#x5C06;&#x5B50;&#x6A21;&#x5757;&#x79FB;&#x52A8;&#x5230;&#x7684;&#x65B0;&#x8DEF;&#x5F84;&#x3002;&#x8BE5;&#x547D;&#x4EE4;&#x4F1A;&#x5C06;&#x5B50;&#x6A21;&#x5757;&#x5728; Git &#x4ED3;&#x5E93;&#x4E2D;&#x7684;&#x8DEF;&#x5F84;&#x66F4;&#x6539;&#x4E3A;&#x65B0;&#x8DEF;&#x5F84;&#x3002;</p>
 </li>
-<li><p>修改包含子模块的父项目中 <code>.gitmodules</code> 文件中子模块的路径记录。打开该文件，并将与子模块相关的路径修改为新的路径。</p>
+<li><p>&#x4FEE;&#x6539;&#x5305;&#x542B;&#x5B50;&#x6A21;&#x5757;&#x7684;&#x7236;&#x9879;&#x76EE;&#x4E2D; <code>.gitmodules</code> &#x6587;&#x4EF6;&#x4E2D;&#x5B50;&#x6A21;&#x5757;&#x7684;&#x8DEF;&#x5F84;&#x8BB0;&#x5F55;&#x3002;&#x6253;&#x5F00;&#x8BE5;&#x6587;&#x4EF6;&#xFF0C;&#x5E76;&#x5C06;&#x4E0E;&#x5B50;&#x6A21;&#x5757;&#x76F8;&#x5173;&#x7684;&#x8DEF;&#x5F84;&#x4FEE;&#x6539;&#x4E3A;&#x65B0;&#x7684;&#x8DEF;&#x5F84;&#x3002;</p>
 </li>
-<li><p>提交代码变更：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add .gitmodules</span><br><span class="line">git commit -m <span class="string">"Move submodule to new directory"</span></span><br></pre></td></tr></table></figure>
+<li><p>&#x63D0;&#x4EA4;&#x4EE3;&#x7801;&#x53D8;&#x66F4;&#xFF1A;</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add .gitmodules</span><br><span class="line">git commit -m <span class="string">&quot;Move submodule to new directory&quot;</span></span><br></pre></td></tr></table></figure>
 </li>
-<li><p>更新子模块引用：</p>
+<li><p>&#x66F4;&#x65B0;&#x5B50;&#x6A21;&#x5757;&#x5F15;&#x7528;&#xFF1A;</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule sync --recursive</span><br></pre></td></tr></table></figure>
 
-<p>这将使父项目更新其对子模块的引用，以适应新的路径。</p>
+<p>&#x8FD9;&#x5C06;&#x4F7F;&#x7236;&#x9879;&#x76EE;&#x66F4;&#x65B0;&#x5176;&#x5BF9;&#x5B50;&#x6A21;&#x5757;&#x7684;&#x5F15;&#x7528;&#xFF0C;&#x4EE5;&#x9002;&#x5E94;&#x65B0;&#x7684;&#x8DEF;&#x5F84;&#x3002;</p>
 </li>
-<li><p>执行以下命令来完成子模块路径的更新：</p>
+<li><p>&#x6267;&#x884C;&#x4EE5;&#x4E0B;&#x547D;&#x4EE4;&#x6765;&#x5B8C;&#x6210;&#x5B50;&#x6A21;&#x5757;&#x8DEF;&#x5F84;&#x7684;&#x66F4;&#x65B0;&#xFF1A;</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure>
 
-<p>该命令会更新父项目中的子模块路径，并将子模块检出到新的目录中。</p>
+<p>&#x8BE5;&#x547D;&#x4EE4;&#x4F1A;&#x66F4;&#x65B0;&#x7236;&#x9879;&#x76EE;&#x4E2D;&#x7684;&#x5B50;&#x6A21;&#x5757;&#x8DEF;&#x5F84;&#xFF0C;&#x5E76;&#x5C06;&#x5B50;&#x6A21;&#x5757;&#x68C0;&#x51FA;&#x5230;&#x65B0;&#x7684;&#x76EE;&#x5F55;&#x4E2D;&#x3002;</p>
 </li>
 </ol>
-<h4 id="将本地仓库添加为子模块"><a href="#将本地仓库添加为子模块" class="headerlink" title="将本地仓库添加为子模块"></a>将本地仓库添加为子模块</h4><p>如果你的本地已经有了一个仓库，并希望将其设置为某个项目的子模块，而不重新下载该仓库，可以按照以下步骤操作：</p>
+<h4 id="&#x5C06;&#x672C;&#x5730;&#x4ED3;&#x5E93;&#x6DFB;&#x52A0;&#x4E3A;&#x5B50;&#x6A21;&#x5757;"><a href="#&#x5C06;&#x672C;&#x5730;&#x4ED3;&#x5E93;&#x6DFB;&#x52A0;&#x4E3A;&#x5B50;&#x6A21;&#x5757;" class="headerlink" title="&#x5C06;&#x672C;&#x5730;&#x4ED3;&#x5E93;&#x6DFB;&#x52A0;&#x4E3A;&#x5B50;&#x6A21;&#x5757;"></a>&#x5C06;&#x672C;&#x5730;&#x4ED3;&#x5E93;&#x6DFB;&#x52A0;&#x4E3A;&#x5B50;&#x6A21;&#x5757;</h4><p>&#x5982;&#x679C;&#x4F60;&#x7684;&#x672C;&#x5730;&#x5DF2;&#x7ECF;&#x6709;&#x4E86;&#x4E00;&#x4E2A;&#x4ED3;&#x5E93;&#xFF0C;&#x5E76;&#x5E0C;&#x671B;&#x5C06;&#x5176;&#x8BBE;&#x7F6E;&#x4E3A;&#x67D0;&#x4E2A;&#x9879;&#x76EE;&#x7684;&#x5B50;&#x6A21;&#x5757;&#xFF0C;&#x800C;&#x4E0D;&#x91CD;&#x65B0;&#x4E0B;&#x8F7D;&#x8BE5;&#x4ED3;&#x5E93;&#xFF0C;&#x53EF;&#x4EE5;&#x6309;&#x7167;&#x4EE5;&#x4E0B;&#x6B65;&#x9AA4;&#x64CD;&#x4F5C;&#xFF1A;</p>
 <ol>
-<li><p>在父项目的根目录下打开命令行工具。</p>
+<li><p>&#x5728;&#x7236;&#x9879;&#x76EE;&#x7684;&#x6839;&#x76EE;&#x5F55;&#x4E0B;&#x6253;&#x5F00;&#x547D;&#x4EE4;&#x884C;&#x5DE5;&#x5177;&#x3002;</p>
 </li>
-<li><p>使用 <code>git submodule add</code> 命令添加子模块，但是在这里我们指定本地路径作为子模块的位置而不是远程仓库的<code>URL</code>。例如：</p>
+<li><p>&#x4F7F;&#x7528; <code>git submodule add</code> &#x547D;&#x4EE4;&#x6DFB;&#x52A0;&#x5B50;&#x6A21;&#x5757;&#xFF0C;&#x4F46;&#x662F;&#x5728;&#x8FD9;&#x91CC;&#x6211;&#x4EEC;&#x6307;&#x5B9A;&#x672C;&#x5730;&#x8DEF;&#x5F84;&#x4F5C;&#x4E3A;&#x5B50;&#x6A21;&#x5757;&#x7684;&#x4F4D;&#x7F6E;&#x800C;&#x4E0D;&#x662F;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;&#x7684;<code>URL</code>&#x3002;&#x4F8B;&#x5982;&#xFF1A;</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule add /path/to/local/repo path/to/submodule</span><br></pre></td></tr></table></figure>
 
-<p>将 <code>/path/to/local/repo</code>替换为你本地仓库的实际路径，<code>path/to/submodule</code> 替换为你希望子模块存放的相对路径（相对于父项目的根目录）。</p>
+<p>&#x5C06; <code>/path/to/local/repo</code>&#x66FF;&#x6362;&#x4E3A;&#x4F60;&#x672C;&#x5730;&#x4ED3;&#x5E93;&#x7684;&#x5B9E;&#x9645;&#x8DEF;&#x5F84;&#xFF0C;<code>path/to/submodule</code> &#x66FF;&#x6362;&#x4E3A;&#x4F60;&#x5E0C;&#x671B;&#x5B50;&#x6A21;&#x5757;&#x5B58;&#x653E;&#x7684;&#x76F8;&#x5BF9;&#x8DEF;&#x5F84;&#xFF08;&#x76F8;&#x5BF9;&#x4E8E;&#x7236;&#x9879;&#x76EE;&#x7684;&#x6839;&#x76EE;&#x5F55;&#xFF09;&#x3002;</p>
 </li>
-<li><p>接下来将子模块的引用地址改为远程仓库地址</p>
-<p>进入父项目的根目录，在命令行工具中执行以下命令来修改子模块的引用地址：</p>
+<li><p>&#x63A5;&#x4E0B;&#x6765;&#x5C06;&#x5B50;&#x6A21;&#x5757;&#x7684;&#x5F15;&#x7528;&#x5730;&#x5740;&#x6539;&#x4E3A;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;&#x5730;&#x5740;</p>
+<p>&#x8FDB;&#x5165;&#x7236;&#x9879;&#x76EE;&#x7684;&#x6839;&#x76EE;&#x5F55;&#xFF0C;&#x5728;&#x547D;&#x4EE4;&#x884C;&#x5DE5;&#x5177;&#x4E2D;&#x6267;&#x884C;&#x4EE5;&#x4E0B;&#x547D;&#x4EE4;&#x6765;&#x4FEE;&#x6539;&#x5B50;&#x6A21;&#x5757;&#x7684;&#x5F15;&#x7528;&#x5730;&#x5740;&#xFF1A;</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git submodule <span class="built_in">set</span>-url &lt;submodule_path&gt; &lt;remote_repository_url&gt;</span><br></pre></td></tr></table></figure>
 
-<p>其中 <code>&lt;submodule_path&gt;</code> 是子模块所在的路径（相对于父项目的根目录），<code>&lt;remote_repository_url&gt;</code>是子模块的远程仓库地址</p>
+<p>&#x5176;&#x4E2D; <code>&lt;submodule_path&gt;</code> &#x662F;&#x5B50;&#x6A21;&#x5757;&#x6240;&#x5728;&#x7684;&#x8DEF;&#x5F84;&#xFF08;&#x76F8;&#x5BF9;&#x4E8E;&#x7236;&#x9879;&#x76EE;&#x7684;&#x6839;&#x76EE;&#x5F55;&#xFF09;&#xFF0C;<code>&lt;remote_repository_url&gt;</code>&#x662F;&#x5B50;&#x6A21;&#x5757;&#x7684;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;&#x5730;&#x5740;</p>
 </li>
 </ol>
 <ol start="4">
-<li>运行上述命令后，Git 会将本地仓库的当前状态作为子模块的初始状态，而无需重新下载。</li>
+<li>&#x8FD0;&#x884C;&#x4E0A;&#x8FF0;&#x547D;&#x4EE4;&#x540E;&#xFF0C;Git &#x4F1A;&#x5C06;&#x672C;&#x5730;&#x4ED3;&#x5E93;&#x7684;&#x5F53;&#x524D;&#x72B6;&#x6001;&#x4F5C;&#x4E3A;&#x5B50;&#x6A21;&#x5757;&#x7684;&#x521D;&#x59CB;&#x72B6;&#x6001;&#xFF0C;&#x800C;&#x65E0;&#x9700;&#x91CD;&#x65B0;&#x4E0B;&#x8F7D;&#x3002;</li>
 </ol>
-<p><strong>注意:</strong> <code>git submodule set-url是``Git</code> 2.25以上版本才有的功能, 使用前需要先检查一下您当前的<code>git</code>版本</p>
-<h4 id="工程克隆"><a href="#工程克隆" class="headerlink" title="工程克隆"></a>工程克隆</h4><p>团队开发的时候, 进来一个新的成员, 他首次clone项目的时候, 并不会将子模块一并clone进来</p>
-<p>这个时候, 需要先初始化子模块:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 用来初始化本地配置文件</span></span><br><span class="line">git submodule init</span><br><span class="line"><span class="comment"># 从该项目中抓取所有数据并检出父项目中列出的合适的提交(指定的提交)。</span></span><br><span class="line">git submodule update</span><br><span class="line">(以上两条命令也可以合并成一条组合命令：git submodule update --init --recursive)</span><br></pre></td></tr></table></figure>
+<p><strong>&#x6CE8;&#x610F;:</strong> <code>git submodule set-url&#x662F;``Git</code> 2.25&#x4EE5;&#x4E0A;&#x7248;&#x672C;&#x624D;&#x6709;&#x7684;&#x529F;&#x80FD;, &#x4F7F;&#x7528;&#x524D;&#x9700;&#x8981;&#x5148;&#x68C0;&#x67E5;&#x4E00;&#x4E0B;&#x60A8;&#x5F53;&#x524D;&#x7684;<code>git</code>&#x7248;&#x672C;</p>
+<h4 id="&#x5DE5;&#x7A0B;&#x514B;&#x9686;"><a href="#&#x5DE5;&#x7A0B;&#x514B;&#x9686;" class="headerlink" title="&#x5DE5;&#x7A0B;&#x514B;&#x9686;"></a>&#x5DE5;&#x7A0B;&#x514B;&#x9686;</h4><p>&#x56E2;&#x961F;&#x5F00;&#x53D1;&#x7684;&#x65F6;&#x5019;, &#x8FDB;&#x6765;&#x4E00;&#x4E2A;&#x65B0;&#x7684;&#x6210;&#x5458;, &#x4ED6;&#x9996;&#x6B21;clone&#x9879;&#x76EE;&#x7684;&#x65F6;&#x5019;, &#x5E76;&#x4E0D;&#x4F1A;&#x5C06;&#x5B50;&#x6A21;&#x5757;&#x4E00;&#x5E76;clone&#x8FDB;&#x6765;</p>
+<p>&#x8FD9;&#x4E2A;&#x65F6;&#x5019;, &#x9700;&#x8981;&#x5148;&#x521D;&#x59CB;&#x5316;&#x5B50;&#x6A21;&#x5757;:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x7528;&#x6765;&#x521D;&#x59CB;&#x5316;&#x672C;&#x5730;&#x914D;&#x7F6E;&#x6587;&#x4EF6;</span></span><br><span class="line">git submodule init</span><br><span class="line"><span class="comment"># &#x4ECE;&#x8BE5;&#x9879;&#x76EE;&#x4E2D;&#x6293;&#x53D6;&#x6240;&#x6709;&#x6570;&#x636E;&#x5E76;&#x68C0;&#x51FA;&#x7236;&#x9879;&#x76EE;&#x4E2D;&#x5217;&#x51FA;&#x7684;&#x5408;&#x9002;&#x7684;&#x63D0;&#x4EA4;(&#x6307;&#x5B9A;&#x7684;&#x63D0;&#x4EA4;)&#x3002;</span></span><br><span class="line">git submodule update</span><br><span class="line">(&#x4EE5;&#x4E0A;&#x4E24;&#x6761;&#x547D;&#x4EE4;&#x4E5F;&#x53EF;&#x4EE5;&#x5408;&#x5E76;&#x6210;&#x4E00;&#x6761;&#x7EC4;&#x5408;&#x547D;&#x4EE4;&#xFF1A;git submodule update --init --recursive)</span><br></pre></td></tr></table></figure>
 
-<p>或者直接:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># clone 父仓库的时候加上 --recursive，会自动初始化并更新仓库中的每一个子模块</span></span><br><span class="line">git <span class="built_in">clone</span> --recursive https://gitee.com/xiaomumaozi/SubModule_Test.git</span><br></pre></td></tr></table></figure>
+<p>&#x6216;&#x8005;&#x76F4;&#x63A5;:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># clone &#x7236;&#x4ED3;&#x5E93;&#x7684;&#x65F6;&#x5019;&#x52A0;&#x4E0A; --recursive&#xFF0C;&#x4F1A;&#x81EA;&#x52A8;&#x521D;&#x59CB;&#x5316;&#x5E76;&#x66F4;&#x65B0;&#x4ED3;&#x5E93;&#x4E2D;&#x7684;&#x6BCF;&#x4E00;&#x4E2A;&#x5B50;&#x6A21;&#x5757;</span></span><br><span class="line">git <span class="built_in">clone</span> --recursive https://gitee.com/xiaomumaozi/SubModule_Test.git</span><br></pre></td></tr></table></figure>
 
-<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B; &#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
 <p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
-<p><em>乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</em></p>
+<p><em>&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</em></p>
 
       
     </div>

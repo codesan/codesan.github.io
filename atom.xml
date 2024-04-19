@@ -213,30 +213,6 @@
   </entry>
   
   <entry>
-    <title>使用ffmpeg将本地的flv视频压制转换成小体积的MP4</title>
-    <link href="https://code.newban.cn/461.html"/>
-    <id>https://code.newban.cn/461.html</id>
-    <published>2024-04-13T02:14:19.000Z</published>
-    <updated>2024-04-14T07:41:02.534Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>关于<code>ffmpeg</code>的下载, 可查阅上一篇文章《<a href="https://code.newban.cn/460.html">Mac平台如何下载ffmpeg并对m3u8视频进行下载转换成MP4</a>》</p><p>本文将给大家介绍如何使用<code>ffmpeg</code>将本地的<code>flv</code>视频压制转换成小体积的<code>MP4</code></p><h2 id="格式转换"><a href="#格式转换" class="headerlink" title="格式转换"></a>格式转换</h2><p>如果只是单纯的进行格式转换 可以直接使用以下指令来实现:</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.flv -vcodec copy -acodec copy output.mp4</span><br></pre></td></tr></table></figure><p>这种方式通常体积不会有太大的改变 </p><h2 id="转换格式并压缩视频体积"><a href="#转换格式并压缩视频体积" class="headerlink" title="转换格式并压缩视频体积"></a>转换格式并压缩视频体积</h2><p>如果需要将视频进行压缩 以减少空间的占用 可以参考以下指令:</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.flv -c:v libx264 -crf 26 -c:a aac -strict experimental -b:a 128k output.mp4</span><br></pre></td></tr></table></figure><p><strong>解释各选项含义：</strong></p><ul><li><code>-i input.flv</code>：指定输入文件名为<code>input.flv</code>。</li><li><code>-c:v libx264</code>：使用<code>H.264</code>编码来压缩视频。</li><li><code>-crf 28</code>：设置<code>CRF</code>（常量速率因子）的值为23。低值表示更好的质量，但文件会更大；高值会降低质量。范围是从0（无损）到51（最糟），通常使用18到28, <code>27</code>通常是用于<code>MP4</code>格式的视频质量很好的平衡</li><li><code>-c:a aac</code>：使用<code>AAC</code>编码来压缩音频。</li><li><code>-strict experimental</code>：允许使用实验性的编码器。</li><li><code>-b:a 128k</code>：设置音频比特率为128k。根据需求可以调整大小。</li></ul><p>我们需要找到一个合适的参数平衡点 确保视频画面的质量的同时尽可能地压缩视频体积</p><p>如果我们想要快速压制 减少等待时间 还可以指定编码器预设 如下:</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.flv -c:v libx264 -preset veryfast -crf 24 -c:a aac -b:a 128k output.mp4</span><br></pre></td></tr></table></figure><p><strong>解释选项含义：</strong></p><ul><li><code>-preset veryfast</code>：指定编码器预设，<code>veryfast</code>提供快速但质量较低的编码, 除此之外 还有<code>fast</code>、<code>HQ</code>、 <code>SuperHQ</code>等预设。</li></ul><h2 id="ffmpeg-截取视频"><a href="#ffmpeg-截取视频" class="headerlink" title="ffmpeg 截取视频"></a>ffmpeg 截取视频</h2><p>要使用<code>FFmpeg</code>截取视频 可以使用以下指令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.mp4 -ss 00:00:10 -t 00:00:30 -c copy output.mp4</span><br></pre></td></tr></table></figure><p><strong>解释各选项含义：</strong></p><ul><li><code>-i input.mp4</code> 指定输入视频文件。</li><li><code>-ss 00:00:10</code> 表示从视频的指定时间点开始截取，这里是从10秒处开始。</li><li><code>-t 00:00:30</code> 表示截取的时长，这里是30秒。</li><li><code>-c copy</code> 表示复制编码器，即不重新编码，直接复制视频流和音频流。</li><li><code>output.mp4</code> 是输出文件的名称。</li></ul><p>请根据实际需求调整时间参数。如果需要不同的起始时间或时长，只需修改<code>-ss</code>和<code>-t</code>参数即可。如果需要对视频进行重编码，可以去掉<code>-c copy</code>参数或指定其他编码器选项。</p><p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p><p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p><p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;关于&lt;code&gt;ffmpeg&lt;/code&gt;的下载, 可查阅上一篇文章《&lt;a href=&quot;https://code.newban.cn/460
-      
-    
-    </summary>
-    
-    
-    
-      <category term="m3u8" scheme="https://code.newban.cn/tags/m3u8/"/>
-    
-  </entry>
-  
-  <entry>
     <title>如何开发hexo插件</title>
     <link href="https://code.newban.cn/462.html"/>
     <id>https://code.newban.cn/462.html</id>
@@ -258,6 +234,30 @@
     
     
       <category term="hexo" scheme="https://code.newban.cn/tags/hexo/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用ffmpeg将本地的flv视频压制转换成小体积的MP4</title>
+    <link href="https://code.newban.cn/461.html"/>
+    <id>https://code.newban.cn/461.html</id>
+    <published>2024-04-13T02:14:19.000Z</published>
+    <updated>2024-04-14T07:41:02.534Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>关于<code>ffmpeg</code>的下载, 可查阅上一篇文章《<a href="https://code.newban.cn/460.html">Mac平台如何下载ffmpeg并对m3u8视频进行下载转换成MP4</a>》</p><p>本文将给大家介绍如何使用<code>ffmpeg</code>将本地的<code>flv</code>视频压制转换成小体积的<code>MP4</code></p><h2 id="格式转换"><a href="#格式转换" class="headerlink" title="格式转换"></a>格式转换</h2><p>如果只是单纯的进行格式转换 可以直接使用以下指令来实现:</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.flv -vcodec copy -acodec copy output.mp4</span><br></pre></td></tr></table></figure><p>这种方式通常体积不会有太大的改变 </p><h2 id="转换格式并压缩视频体积"><a href="#转换格式并压缩视频体积" class="headerlink" title="转换格式并压缩视频体积"></a>转换格式并压缩视频体积</h2><p>如果需要将视频进行压缩 以减少空间的占用 可以参考以下指令:</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.flv -c:v libx264 -crf 26 -c:a aac -strict experimental -b:a 128k output.mp4</span><br></pre></td></tr></table></figure><p><strong>解释各选项含义：</strong></p><ul><li><code>-i input.flv</code>：指定输入文件名为<code>input.flv</code>。</li><li><code>-c:v libx264</code>：使用<code>H.264</code>编码来压缩视频。</li><li><code>-crf 28</code>：设置<code>CRF</code>（常量速率因子）的值为23。低值表示更好的质量，但文件会更大；高值会降低质量。范围是从0（无损）到51（最糟），通常使用18到28, <code>27</code>通常是用于<code>MP4</code>格式的视频质量很好的平衡</li><li><code>-c:a aac</code>：使用<code>AAC</code>编码来压缩音频。</li><li><code>-strict experimental</code>：允许使用实验性的编码器。</li><li><code>-b:a 128k</code>：设置音频比特率为128k。根据需求可以调整大小。</li></ul><p>我们需要找到一个合适的参数平衡点 确保视频画面的质量的同时尽可能地压缩视频体积</p><p>如果我们想要快速压制 减少等待时间 还可以指定编码器预设 如下:</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.flv -c:v libx264 -preset veryfast -crf 24 -c:a aac -b:a 128k output.mp4</span><br></pre></td></tr></table></figure><p><strong>解释选项含义：</strong></p><ul><li><code>-preset veryfast</code>：指定编码器预设，<code>veryfast</code>提供快速但质量较低的编码, 除此之外 还有<code>fast</code>、<code>HQ</code>、 <code>SuperHQ</code>等预设。</li></ul><h2 id="ffmpeg-截取视频"><a href="#ffmpeg-截取视频" class="headerlink" title="ffmpeg 截取视频"></a>ffmpeg 截取视频</h2><p>要使用<code>FFmpeg</code>截取视频 可以使用以下指令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.mp4 -ss 00:00:10 -t 00:00:30 -c copy output.mp4</span><br></pre></td></tr></table></figure><p><strong>解释各选项含义：</strong></p><ul><li><code>-i input.mp4</code> 指定输入视频文件。</li><li><code>-ss 00:00:10</code> 表示从视频的指定时间点开始截取，这里是从10秒处开始。</li><li><code>-t 00:00:30</code> 表示截取的时长，这里是30秒。</li><li><code>-c copy</code> 表示复制编码器，即不重新编码，直接复制视频流和音频流。</li><li><code>output.mp4</code> 是输出文件的名称。</li></ul><p>请根据实际需求调整时间参数。如果需要不同的起始时间或时长，只需修改<code>-ss</code>和<code>-t</code>参数即可。如果需要对视频进行重编码，可以去掉<code>-c copy</code>参数或指定其他编码器选项。</p><p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p><p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p><p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;关于&lt;code&gt;ffmpeg&lt;/code&gt;的下载, 可查阅上一篇文章《&lt;a href=&quot;https://code.newban.cn/460
+      
+    
+    </summary>
+    
+    
+    
+      <category term="m3u8" scheme="https://code.newban.cn/tags/m3u8/"/>
     
   </entry>
   

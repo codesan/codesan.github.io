@@ -82,13 +82,13 @@
 
 
 
-<meta name="description" content="背景最近在使用netlify的静态网站托管服务, 如果需要自定义域名的话 需要提供https证书, 如下图:  SSL证书介绍是一种配置在服务器上的数字证书, 由可信的数字证书颁发机构（CA）颁发, 类似于我们的驾驶证, 它具有服务器身份验证和数据传输加密功能。 证书实际上就是几串字符密钥 以文本的形式存放在诸如.key  .cer   .csr 结尾的文件中:  文件介绍:  .key文件: 证">
+<meta name="description" content="&amp;#x80CC;&amp;#x666F;&amp;#x6700;&amp;#x8FD1;&amp;#x5728;&amp;#x4F7F;&amp;#x7528;netlify&amp;#x7684;&amp;#x9759;&amp;#x6001;&amp;#x7F51;&amp;#x7AD9;&amp;#x6258;&amp;#x7BA1;&amp;#x670D;&amp;#x52A1;, &amp;#x5982;&amp;#x679C;&amp;#x9700;&amp;#x8981;&amp;#x81EA;&amp;#x5B9A;&amp;#x4E49;&amp;#x57DF">
 <meta name="keywords" content="ssl">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用ACME搭配freessl网站实现免费https证书的生成和更新">
 <meta property="og:url" content="https://code.newban.cn/355.html">
 <meta property="og:site_name" content="乱码三千 – 分享实用IT技术">
-<meta property="og:description" content="背景最近在使用netlify的静态网站托管服务, 如果需要自定义域名的话 需要提供https证书, 如下图:  SSL证书介绍是一种配置在服务器上的数字证书, 由可信的数字证书颁发机构（CA）颁发, 类似于我们的驾驶证, 它具有服务器身份验证和数据传输加密功能。 证书实际上就是几串字符密钥 以文本的形式存放在诸如.key  .cer   .csr 结尾的文件中:  文件介绍:  .key文件: 证">
+<meta property="og:description" content="&amp;#x80CC;&amp;#x666F;&amp;#x6700;&amp;#x8FD1;&amp;#x5728;&amp;#x4F7F;&amp;#x7528;netlify&amp;#x7684;&amp;#x9759;&amp;#x6001;&amp;#x7F51;&amp;#x7AD9;&amp;#x6258;&amp;#x7BA1;&amp;#x670D;&amp;#x52A1;, &amp;#x5982;&amp;#x679C;&amp;#x9700;&amp;#x8981;&amp;#x81EA;&amp;#x5B9A;&amp;#x4E49;&amp;#x57DF">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220902113147959.png">
 <meta property="og:image" content="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220902121037323.png">
@@ -105,7 +105,7 @@
 <meta property="og:updated_time" content="2024-04-08T14:16:17.564Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用ACME搭配freessl网站实现免费https证书的生成和更新">
-<meta name="twitter:description" content="背景最近在使用netlify的静态网站托管服务, 如果需要自定义域名的话 需要提供https证书, 如下图:  SSL证书介绍是一种配置在服务器上的数字证书, 由可信的数字证书颁发机构（CA）颁发, 类似于我们的驾驶证, 它具有服务器身份验证和数据传输加密功能。 证书实际上就是几串字符密钥 以文本的形式存放在诸如.key  .cer   .csr 结尾的文件中:  文件介绍:  .key文件: 证">
+<meta name="twitter:description" content="&amp;#x80CC;&amp;#x666F;&amp;#x6700;&amp;#x8FD1;&amp;#x5728;&amp;#x4F7F;&amp;#x7528;netlify&amp;#x7684;&amp;#x9759;&amp;#x6001;&amp;#x7F51;&amp;#x7AD9;&amp;#x6258;&amp;#x7BA1;&amp;#x670D;&amp;#x52A1;, &amp;#x5982;&amp;#x679C;&amp;#x9700;&amp;#x8981;&amp;#x81EA;&amp;#x5B9A;&amp;#x4E49;&amp;#x57DF">
 <meta name="twitter:image" content="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220902113147959.png">
 
 
@@ -378,74 +378,74 @@
       
 
       
-        <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>最近在使用<code>netlify</code>的静态网站托管服务, 如果需要自定义域名的话 需要提供<code>https</code>证书, 如下图:</p>
+        <h3 id="&#x80CC;&#x666F;"><a href="#&#x80CC;&#x666F;" class="headerlink" title="&#x80CC;&#x666F;"></a>&#x80CC;&#x666F;</h3><p>&#x6700;&#x8FD1;&#x5728;&#x4F7F;&#x7528;<code>netlify</code>&#x7684;&#x9759;&#x6001;&#x7F51;&#x7AD9;&#x6258;&#x7BA1;&#x670D;&#x52A1;, &#x5982;&#x679C;&#x9700;&#x8981;&#x81EA;&#x5B9A;&#x4E49;&#x57DF;&#x540D;&#x7684;&#x8BDD; &#x9700;&#x8981;&#x63D0;&#x4F9B;<code>https</code>&#x8BC1;&#x4E66;, &#x5982;&#x4E0B;&#x56FE;:</p>
 <p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220902113147959.png" alt="image-20220902113147959"></p>
-<h3 id="SSL证书介绍"><a href="#SSL证书介绍" class="headerlink" title="SSL证书介绍"></a>SSL证书介绍</h3><p>是一种配置在服务器上的数字证书, 由可信的数字证书颁发机构（CA）颁发, 类似于我们的驾驶证, 它具有服务器身份验证和数据传输加密功能。</p>
-<p>证书实际上就是几串字符密钥 以文本的形式存放在诸如<code>.key</code>  <code>.cer</code>   <code>.csr</code> 结尾的文件中:</p>
+<h3 id="SSL&#x8BC1;&#x4E66;&#x4ECB;&#x7ECD;"><a href="#SSL&#x8BC1;&#x4E66;&#x4ECB;&#x7ECD;" class="headerlink" title="SSL&#x8BC1;&#x4E66;&#x4ECB;&#x7ECD;"></a>SSL&#x8BC1;&#x4E66;&#x4ECB;&#x7ECD;</h3><p>&#x662F;&#x4E00;&#x79CD;&#x914D;&#x7F6E;&#x5728;&#x670D;&#x52A1;&#x5668;&#x4E0A;&#x7684;&#x6570;&#x5B57;&#x8BC1;&#x4E66;, &#x7531;&#x53EF;&#x4FE1;&#x7684;&#x6570;&#x5B57;&#x8BC1;&#x4E66;&#x9881;&#x53D1;&#x673A;&#x6784;&#xFF08;CA&#xFF09;&#x9881;&#x53D1;, &#x7C7B;&#x4F3C;&#x4E8E;&#x6211;&#x4EEC;&#x7684;&#x9A7E;&#x9A76;&#x8BC1;, &#x5B83;&#x5177;&#x6709;&#x670D;&#x52A1;&#x5668;&#x8EAB;&#x4EFD;&#x9A8C;&#x8BC1;&#x548C;&#x6570;&#x636E;&#x4F20;&#x8F93;&#x52A0;&#x5BC6;&#x529F;&#x80FD;&#x3002;</p>
+<p>&#x8BC1;&#x4E66;&#x5B9E;&#x9645;&#x4E0A;&#x5C31;&#x662F;&#x51E0;&#x4E32;&#x5B57;&#x7B26;&#x5BC6;&#x94A5; &#x4EE5;&#x6587;&#x672C;&#x7684;&#x5F62;&#x5F0F;&#x5B58;&#x653E;&#x5728;&#x8BF8;&#x5982;<code>.key</code>  <code>.cer</code>   <code>.csr</code> &#x7ED3;&#x5C3E;&#x7684;&#x6587;&#x4EF6;&#x4E2D;:</p>
 <p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220902121037323.png" alt="image-20220902121037323"></p>
-<p>文件介绍:</p>
+<p>&#x6587;&#x4EF6;&#x4ECB;&#x7ECD;:</p>
 <ul>
-<li><code>.key</code>文件: 证书私钥</li>
-<li><code>.cer</code>文件: <code>certificate</code>的缩写,这就是数字证书</li>
-<li><code>.csr</code>文件:<code>certificate signing request</code>的缩写 证书签名请求文件，含有公钥信息</li>
+<li><code>.key</code>&#x6587;&#x4EF6;: &#x8BC1;&#x4E66;&#x79C1;&#x94A5;</li>
+<li><code>.cer</code>&#x6587;&#x4EF6;: <code>certificate</code>&#x7684;&#x7F29;&#x5199;,&#x8FD9;&#x5C31;&#x662F;&#x6570;&#x5B57;&#x8BC1;&#x4E66;</li>
+<li><code>.csr</code>&#x6587;&#x4EF6;:<code>certificate signing request</code>&#x7684;&#x7F29;&#x5199; &#x8BC1;&#x4E66;&#x7B7E;&#x540D;&#x8BF7;&#x6C42;&#x6587;&#x4EF6;&#xFF0C;&#x542B;&#x6709;&#x516C;&#x94A5;&#x4FE1;&#x606F;</li>
 </ul>
-<p>这些文件需要存放在服务器中, 当浏览器通过域名对服务器进行访问时, 可获取服务器中的证书, 证书中含有公钥</p>
-<p>那么浏览器和服务器  一个持有私钥一个持有公钥  进行加密会话 保证数据安全</p>
-<h3 id="自制SSL证书"><a href="#自制SSL证书" class="headerlink" title="自制SSL证书"></a>自制SSL证书</h3><p>既然所谓的证书就是<code>RSA</code>密钥, 那我们自然可以自己生成, 比如:</p>
-<p><a href="https://myssl.com/csr_create.html" target="_blank" rel="noopener">在线生成SSL证书</a></p>
+<p>&#x8FD9;&#x4E9B;&#x6587;&#x4EF6;&#x9700;&#x8981;&#x5B58;&#x653E;&#x5728;&#x670D;&#x52A1;&#x5668;&#x4E2D;, &#x5F53;&#x6D4F;&#x89C8;&#x5668;&#x901A;&#x8FC7;&#x57DF;&#x540D;&#x5BF9;&#x670D;&#x52A1;&#x5668;&#x8FDB;&#x884C;&#x8BBF;&#x95EE;&#x65F6;, &#x53EF;&#x83B7;&#x53D6;&#x670D;&#x52A1;&#x5668;&#x4E2D;&#x7684;&#x8BC1;&#x4E66;, &#x8BC1;&#x4E66;&#x4E2D;&#x542B;&#x6709;&#x516C;&#x94A5;</p>
+<p>&#x90A3;&#x4E48;&#x6D4F;&#x89C8;&#x5668;&#x548C;&#x670D;&#x52A1;&#x5668;  &#x4E00;&#x4E2A;&#x6301;&#x6709;&#x79C1;&#x94A5;&#x4E00;&#x4E2A;&#x6301;&#x6709;&#x516C;&#x94A5;  &#x8FDB;&#x884C;&#x52A0;&#x5BC6;&#x4F1A;&#x8BDD; &#x4FDD;&#x8BC1;&#x6570;&#x636E;&#x5B89;&#x5168;</p>
+<h3 id="&#x81EA;&#x5236;SSL&#x8BC1;&#x4E66;"><a href="#&#x81EA;&#x5236;SSL&#x8BC1;&#x4E66;" class="headerlink" title="&#x81EA;&#x5236;SSL&#x8BC1;&#x4E66;"></a>&#x81EA;&#x5236;SSL&#x8BC1;&#x4E66;</h3><p>&#x65E2;&#x7136;&#x6240;&#x8C13;&#x7684;&#x8BC1;&#x4E66;&#x5C31;&#x662F;<code>RSA</code>&#x5BC6;&#x94A5;, &#x90A3;&#x6211;&#x4EEC;&#x81EA;&#x7136;&#x53EF;&#x4EE5;&#x81EA;&#x5DF1;&#x751F;&#x6210;, &#x6BD4;&#x5982;:</p>
+<p><a href="/external_links/8e03370855f020c1a108685f792821b2.html" target="blank" rel="noopener">&#x5728;&#x7EBF;&#x751F;&#x6210;SSL&#x8BC1;&#x4E66;</a></p>
 <p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220902142026451.png" alt="image-20220902142026451"></p>
-<p>但是这种自己颁发的证书是不被浏览器认可的, 就好比自己给自己手写一张驾驶证, 完全没有任何法律效力</p>
-<p>因此我们只能向<code>CA</code>机构申请证书, 国际知名的<code>CA</code>机构有<code>GeoTrust</code>、<code>Comodo</code>、<code>DigiCert</code>、<code>Sectigo</code>、<code>Thawte</code>、<code>GlobalSign</code>、<code>Symantec</code>、<code>AlphaSSL</code>等 </p>
-<p>大部分都是收费的, 那么我们要用免费的话, 可以退而求其次,<code>freessl</code>这个平台是个不错的选择</p>
-<h3 id="freessl-cn"><a href="#freessl-cn" class="headerlink" title="freessl.cn"></a>freessl.cn</h3><p>该网站免费提供由<code>Let&#39;s Encrypt</code> 与 <code>TrustAsia</code>两家<code>CA</code>机构颁发的<code>SSL</code>证书, 我们注册后即可免费申请, 但是证书有效期只有三个月, 到期后需要重新申请</p>
-<p>为了解决自动续期的问题 我们需要用到一个工具, 那就是<code>acme.sh</code></p>
-<h3 id="ACME-SH"><a href="#ACME-SH" class="headerlink" title="ACME.SH"></a>ACME.SH</h3><p><code>acme.sh</code>是一个数字证书管理工具, 利用它我们可以:</p>
+<p>&#x4F46;&#x662F;&#x8FD9;&#x79CD;&#x81EA;&#x5DF1;&#x9881;&#x53D1;&#x7684;&#x8BC1;&#x4E66;&#x662F;&#x4E0D;&#x88AB;&#x6D4F;&#x89C8;&#x5668;&#x8BA4;&#x53EF;&#x7684;, &#x5C31;&#x597D;&#x6BD4;&#x81EA;&#x5DF1;&#x7ED9;&#x81EA;&#x5DF1;&#x624B;&#x5199;&#x4E00;&#x5F20;&#x9A7E;&#x9A76;&#x8BC1;, &#x5B8C;&#x5168;&#x6CA1;&#x6709;&#x4EFB;&#x4F55;&#x6CD5;&#x5F8B;&#x6548;&#x529B;</p>
+<p>&#x56E0;&#x6B64;&#x6211;&#x4EEC;&#x53EA;&#x80FD;&#x5411;<code>CA</code>&#x673A;&#x6784;&#x7533;&#x8BF7;&#x8BC1;&#x4E66;, &#x56FD;&#x9645;&#x77E5;&#x540D;&#x7684;<code>CA</code>&#x673A;&#x6784;&#x6709;<code>GeoTrust</code>&#x3001;<code>Comodo</code>&#x3001;<code>DigiCert</code>&#x3001;<code>Sectigo</code>&#x3001;<code>Thawte</code>&#x3001;<code>GlobalSign</code>&#x3001;<code>Symantec</code>&#x3001;<code>AlphaSSL</code>&#x7B49; </p>
+<p>&#x5927;&#x90E8;&#x5206;&#x90FD;&#x662F;&#x6536;&#x8D39;&#x7684;, &#x90A3;&#x4E48;&#x6211;&#x4EEC;&#x8981;&#x7528;&#x514D;&#x8D39;&#x7684;&#x8BDD;, &#x53EF;&#x4EE5;&#x9000;&#x800C;&#x6C42;&#x5176;&#x6B21;,<code>freessl</code>&#x8FD9;&#x4E2A;&#x5E73;&#x53F0;&#x662F;&#x4E2A;&#x4E0D;&#x9519;&#x7684;&#x9009;&#x62E9;</p>
+<h3 id="freessl-cn"><a href="#freessl-cn" class="headerlink" title="freessl.cn"></a>freessl.cn</h3><p>&#x8BE5;&#x7F51;&#x7AD9;&#x514D;&#x8D39;&#x63D0;&#x4F9B;&#x7531;<code>Let&apos;s Encrypt</code> &#x4E0E; <code>TrustAsia</code>&#x4E24;&#x5BB6;<code>CA</code>&#x673A;&#x6784;&#x9881;&#x53D1;&#x7684;<code>SSL</code>&#x8BC1;&#x4E66;, &#x6211;&#x4EEC;&#x6CE8;&#x518C;&#x540E;&#x5373;&#x53EF;&#x514D;&#x8D39;&#x7533;&#x8BF7;, &#x4F46;&#x662F;&#x8BC1;&#x4E66;&#x6709;&#x6548;&#x671F;&#x53EA;&#x6709;&#x4E09;&#x4E2A;&#x6708;, &#x5230;&#x671F;&#x540E;&#x9700;&#x8981;&#x91CD;&#x65B0;&#x7533;&#x8BF7;</p>
+<p>&#x4E3A;&#x4E86;&#x89E3;&#x51B3;&#x81EA;&#x52A8;&#x7EED;&#x671F;&#x7684;&#x95EE;&#x9898; &#x6211;&#x4EEC;&#x9700;&#x8981;&#x7528;&#x5230;&#x4E00;&#x4E2A;&#x5DE5;&#x5177;, &#x90A3;&#x5C31;&#x662F;<code>acme.sh</code></p>
+<h3 id="ACME-SH"><a href="#ACME-SH" class="headerlink" title="ACME.SH"></a>ACME.SH</h3><p><code>acme.sh</code>&#x662F;&#x4E00;&#x4E2A;&#x6570;&#x5B57;&#x8BC1;&#x4E66;&#x7BA1;&#x7406;&#x5DE5;&#x5177;, &#x5229;&#x7528;&#x5B83;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;:</p>
 <ul>
-<li>辅助申请<code>SSL</code>证书文件到本地</li>
-<li>内置定时程序 到期自动申请证书</li>
-<li>安装证书到指定目录</li>
+<li>&#x8F85;&#x52A9;&#x7533;&#x8BF7;<code>SSL</code>&#x8BC1;&#x4E66;&#x6587;&#x4EF6;&#x5230;&#x672C;&#x5730;</li>
+<li>&#x5185;&#x7F6E;&#x5B9A;&#x65F6;&#x7A0B;&#x5E8F; &#x5230;&#x671F;&#x81EA;&#x52A8;&#x7533;&#x8BF7;&#x8BC1;&#x4E66;</li>
+<li>&#x5B89;&#x88C5;&#x8BC1;&#x4E66;&#x5230;&#x6307;&#x5B9A;&#x76EE;&#x5F55;</li>
 </ul>
-<p><a href="https://github.com/acmesh-official/acme.sh" target="_blank" rel="noopener">GitHub地址</a></p>
-<h5 id="工具使用"><a href="#工具使用" class="headerlink" title="工具使用"></a>工具使用</h5><ol>
-<li><p><strong>工具安装</strong></p>
+<p><a href="/external_links/255e5ecf10ac4f2be54ff3fed5c78982.html" target="blank" rel="noopener">GitHub&#x5730;&#x5740;</a></p>
+<h5 id="&#x5DE5;&#x5177;&#x4F7F;&#x7528;"><a href="#&#x5DE5;&#x5177;&#x4F7F;&#x7528;" class="headerlink" title="&#x5DE5;&#x5177;&#x4F7F;&#x7528;"></a>&#x5DE5;&#x5177;&#x4F7F;&#x7528;</h5><ol>
+<li><p><strong>&#x5DE5;&#x5177;&#x5B89;&#x88C5;</strong></p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> https://github.com/acmesh-official/acme.sh.git</span><br><span class="line">$ <span class="built_in">cd</span> ./acme.sh</span><br><span class="line">$ ./acme.sh --install -m my@example.com</span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>证书申请</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">acme.sh --issue -d 域名 -w 证书存放目录</span><br></pre></td></tr></table></figure>
+<li><p><strong>&#x8BC1;&#x4E66;&#x7533;&#x8BF7;</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">acme.sh --issue -d &#x57DF;&#x540D; -w &#x8BC1;&#x4E66;&#x5B58;&#x653E;&#x76EE;&#x5F55;</span><br></pre></td></tr></table></figure>
 
-<p><code>acme.sh</code> 默认会从<a href="https://zerossl.com/" target="_blank" rel="noopener">zerossl</a>获取证书, <code>zerossl</code>和<code>freessl.cn</code>一样, 也是一个证书中介网站 ,<code>zerossl</code>提供由<code>Let&#39;s Encrypt</code> 颁发的数字证书, 每个注册账户可以申请三个免费证书</p>
+<p><code>acme.sh</code> &#x9ED8;&#x8BA4;&#x4F1A;&#x4ECE;<a href="/external_links/33a74bc3a5d45da92630a8fc22b24e53.html" target="blank" rel="noopener">zerossl</a>&#x83B7;&#x53D6;&#x8BC1;&#x4E66;, <code>zerossl</code>&#x548C;<code>freessl.cn</code>&#x4E00;&#x6837;, &#x4E5F;&#x662F;&#x4E00;&#x4E2A;&#x8BC1;&#x4E66;&#x4E2D;&#x4ECB;&#x7F51;&#x7AD9; ,<code>zerossl</code>&#x63D0;&#x4F9B;&#x7531;<code>Let&apos;s Encrypt</code> &#x9881;&#x53D1;&#x7684;&#x6570;&#x5B57;&#x8BC1;&#x4E66;, &#x6BCF;&#x4E2A;&#x6CE8;&#x518C;&#x8D26;&#x6237;&#x53EF;&#x4EE5;&#x7533;&#x8BF7;&#x4E09;&#x4E2A;&#x514D;&#x8D39;&#x8BC1;&#x4E66;</p>
 <p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220902150909721.png" alt="image-20220902150909721"></p>
-<p>但是 由于免费的数量有限 所以我们不选择从<code>zerossl</code>获取</p>
-<p>如果只是临时测试用的话 可以用一用 直接在官网申请并下载证书<code>zip</code>包即可:</p>
+<p>&#x4F46;&#x662F; &#x7531;&#x4E8E;&#x514D;&#x8D39;&#x7684;&#x6570;&#x91CF;&#x6709;&#x9650; &#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x4E0D;&#x9009;&#x62E9;&#x4ECE;<code>zerossl</code>&#x83B7;&#x53D6;</p>
+<p>&#x5982;&#x679C;&#x53EA;&#x662F;&#x4E34;&#x65F6;&#x6D4B;&#x8BD5;&#x7528;&#x7684;&#x8BDD; &#x53EF;&#x4EE5;&#x7528;&#x4E00;&#x7528; &#x76F4;&#x63A5;&#x5728;&#x5B98;&#x7F51;&#x7533;&#x8BF7;&#x5E76;&#x4E0B;&#x8F7D;&#x8BC1;&#x4E66;<code>zip</code>&#x5305;&#x5373;&#x53EF;:</p>
 <p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220902151803041.png" alt="image-20220902151803041"></p>
 <p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220902152401511.png" alt="image-20220902152401511"></p>
-<p>考虑到长期使用, 因此我们选择<code>freessl.cn</code></p>
+<p>&#x8003;&#x8651;&#x5230;&#x957F;&#x671F;&#x4F7F;&#x7528;, &#x56E0;&#x6B64;&#x6211;&#x4EEC;&#x9009;&#x62E9;<code>freessl.cn</code></p>
 </li>
-<li><p><strong>从<code>freessl.cn</code>获取证书</strong></p>
-<p><code>freessl</code>支持<code>acme</code>自动化</p>
-<p>在网站输入域名并且进行校验后会生成一个<code>acme</code>地址, 这个地址相当于账号凭证, 利用这个它我们可以借助<code>acme.sh</code>快速获取证书:</p>
+<li><p><strong>&#x4ECE;<code>freessl.cn</code>&#x83B7;&#x53D6;&#x8BC1;&#x4E66;</strong></p>
+<p><code>freessl</code>&#x652F;&#x6301;<code>acme</code>&#x81EA;&#x52A8;&#x5316;</p>
+<p>&#x5728;&#x7F51;&#x7AD9;&#x8F93;&#x5165;&#x57DF;&#x540D;&#x5E76;&#x4E14;&#x8FDB;&#x884C;&#x6821;&#x9A8C;&#x540E;&#x4F1A;&#x751F;&#x6210;&#x4E00;&#x4E2A;<code>acme</code>&#x5730;&#x5740;, &#x8FD9;&#x4E2A;&#x5730;&#x5740;&#x76F8;&#x5F53;&#x4E8E;&#x8D26;&#x53F7;&#x51ED;&#x8BC1;, &#x5229;&#x7528;&#x8FD9;&#x4E2A;&#x5B83;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x501F;&#x52A9;<code>acme.sh</code>&#x5FEB;&#x901F;&#x83B7;&#x53D6;&#x8BC1;&#x4E66;:</p>
 <p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220902152759063.png" alt="image-20220902152759063"></p>
-<p>具体指令如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">acme.sh --issue -d 域名  --dns dns_dp --server 你的acme地址</span><br></pre></td></tr></table></figure>
+<p>&#x5177;&#x4F53;&#x6307;&#x4EE4;&#x5982;&#x4E0B;:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">acme.sh --issue -d &#x57DF;&#x540D;  --dns dns_dp --server &#x4F60;&#x7684;acme&#x5730;&#x5740;</span><br></pre></td></tr></table></figure>
 
-<p>执行后自动将证书下载到本地:</p>
+<p>&#x6267;&#x884C;&#x540E;&#x81EA;&#x52A8;&#x5C06;&#x8BC1;&#x4E66;&#x4E0B;&#x8F7D;&#x5230;&#x672C;&#x5730;:</p>
 <p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220902113332949.png" alt="image-20220902113332949"></p>
-<p>最后我们将证书密钥拷贝至托管服务器中, 这里以<code>netlify</code>为例:</p>
+<p>&#x6700;&#x540E;&#x6211;&#x4EEC;&#x5C06;&#x8BC1;&#x4E66;&#x5BC6;&#x94A5;&#x62F7;&#x8D1D;&#x81F3;&#x6258;&#x7BA1;&#x670D;&#x52A1;&#x5668;&#x4E2D;, &#x8FD9;&#x91CC;&#x4EE5;<code>netlify</code>&#x4E3A;&#x4F8B;:</p>
 <p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220902154250607.png" alt="image-20220902154250607"></p>
-<p>填写完后点击安装, 证书成功识别</p>
+<p>&#x586B;&#x5199;&#x5B8C;&#x540E;&#x70B9;&#x51FB;&#x5B89;&#x88C5;, &#x8BC1;&#x4E66;&#x6210;&#x529F;&#x8BC6;&#x522B;</p>
 <p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220902113754771.png" alt="image-20220902113754771"></p>
-<p>此时 我们即可通过自定义域名访问<code>netlify</code>中的静态网站了, 在浏览器中可以查看当前获取到的证书信息:</p>
+<p>&#x6B64;&#x65F6; &#x6211;&#x4EEC;&#x5373;&#x53EF;&#x901A;&#x8FC7;&#x81EA;&#x5B9A;&#x4E49;&#x57DF;&#x540D;&#x8BBF;&#x95EE;<code>netlify</code>&#x4E2D;&#x7684;&#x9759;&#x6001;&#x7F51;&#x7AD9;&#x4E86;, &#x5728;&#x6D4F;&#x89C8;&#x5668;&#x4E2D;&#x53EF;&#x4EE5;&#x67E5;&#x770B;&#x5F53;&#x524D;&#x83B7;&#x53D6;&#x5230;&#x7684;&#x8BC1;&#x4E66;&#x4FE1;&#x606F;:</p>
 <p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220902141040045.png" alt="image-20220902141040045"></p>
 </li>
 </ol>
-<h3 id="关于自动更新"><a href="#关于自动更新" class="headerlink" title="关于自动更新"></a>关于自动更新</h3><p>通常我们会将<code>acme.sh</code>安装至服务器中, 然后实现证书的自动更新, 由于我这边使用的是<code>netlify</code>, 所以三个月到期后需要手动执行一下代码</p>
-<p>更多关于<code>acme.sh</code>自动化的用法, 可以参见《<a href="https://code.newban.cn/356.html">acme.sh证书自动部署教程</a>》</p>
-<h3 id="其他可以获取免费SSL证书的网站"><a href="#其他可以获取免费SSL证书的网站" class="headerlink" title="其他可以获取免费SSL证书的网站"></a>其他可以获取免费SSL证书的网站</h3><ul>
-<li><strong>OHTTPS</strong>: <a href="https://ohttps.com/" target="_blank" rel="noopener">https://ohttps.com/</a></li>
+<h3 id="&#x5173;&#x4E8E;&#x81EA;&#x52A8;&#x66F4;&#x65B0;"><a href="#&#x5173;&#x4E8E;&#x81EA;&#x52A8;&#x66F4;&#x65B0;" class="headerlink" title="&#x5173;&#x4E8E;&#x81EA;&#x52A8;&#x66F4;&#x65B0;"></a>&#x5173;&#x4E8E;&#x81EA;&#x52A8;&#x66F4;&#x65B0;</h3><p>&#x901A;&#x5E38;&#x6211;&#x4EEC;&#x4F1A;&#x5C06;<code>acme.sh</code>&#x5B89;&#x88C5;&#x81F3;&#x670D;&#x52A1;&#x5668;&#x4E2D;, &#x7136;&#x540E;&#x5B9E;&#x73B0;&#x8BC1;&#x4E66;&#x7684;&#x81EA;&#x52A8;&#x66F4;&#x65B0;, &#x7531;&#x4E8E;&#x6211;&#x8FD9;&#x8FB9;&#x4F7F;&#x7528;&#x7684;&#x662F;<code>netlify</code>, &#x6240;&#x4EE5;&#x4E09;&#x4E2A;&#x6708;&#x5230;&#x671F;&#x540E;&#x9700;&#x8981;&#x624B;&#x52A8;&#x6267;&#x884C;&#x4E00;&#x4E0B;&#x4EE3;&#x7801;</p>
+<p>&#x66F4;&#x591A;&#x5173;&#x4E8E;<code>acme.sh</code>&#x81EA;&#x52A8;&#x5316;&#x7684;&#x7528;&#x6CD5;, &#x53EF;&#x4EE5;&#x53C2;&#x89C1;&#x300A;<a href="https://code.newban.cn/356.html">acme.sh&#x8BC1;&#x4E66;&#x81EA;&#x52A8;&#x90E8;&#x7F72;&#x6559;&#x7A0B;</a>&#x300B;</p>
+<h3 id="&#x5176;&#x4ED6;&#x53EF;&#x4EE5;&#x83B7;&#x53D6;&#x514D;&#x8D39;SSL&#x8BC1;&#x4E66;&#x7684;&#x7F51;&#x7AD9;"><a href="#&#x5176;&#x4ED6;&#x53EF;&#x4EE5;&#x83B7;&#x53D6;&#x514D;&#x8D39;SSL&#x8BC1;&#x4E66;&#x7684;&#x7F51;&#x7AD9;" class="headerlink" title="&#x5176;&#x4ED6;&#x53EF;&#x4EE5;&#x83B7;&#x53D6;&#x514D;&#x8D39;SSL&#x8BC1;&#x4E66;&#x7684;&#x7F51;&#x7AD9;"></a>&#x5176;&#x4ED6;&#x53EF;&#x4EE5;&#x83B7;&#x53D6;&#x514D;&#x8D39;SSL&#x8BC1;&#x4E66;&#x7684;&#x7F51;&#x7AD9;</h3><ul>
+<li><strong>OHTTPS</strong>: <a href="/external_links/2badd3b3e603406747ab2748804dcea4.html" target="blank" rel="noopener">https://ohttps.com/</a></li>
 </ul>
-<p><strong>本文为作者原创转载时请注明出处 谢谢</strong></p>
+<p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B;&#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
 <p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+<p><em><a href="https://code.newban.cn/">&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</a></em></p>
 
       
     </div>
