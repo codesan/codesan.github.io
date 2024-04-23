@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+<meta name="referrer" content="never">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="无人直播,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="乱码三千 – 分享实用IT技术" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="&amp;#x524D;&amp;#x8A00;&amp;#x4E4B;&amp;#x524D;&amp;#x6587;&amp;#x7AE0;&amp;#x7ED9;&amp;#x5927;&amp;#x5BB6;&amp;#x4ECB;&amp;#x7ECD;&amp;#x4E86;&amp;#x5728;ubuntu&amp;#x670D;&amp;#x52A1;&amp;#x5668;&amp;#x4E0A;&amp;#x5B89;&amp;#x88C5;&amp;#x5E76;&amp;#x4F7F;&amp;#x7528;kplayer, &amp;#x8BE6;&amp;">
+<meta name="keywords" content="无人直播">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Docker安装kplayer实现无人直播">
+<meta property="og:url" content="https://code.newban.cn/474.html">
+<meta property="og:site_name" content="乱码三千 – 分享实用IT技术">
+<meta property="og:description" content="&amp;#x524D;&amp;#x8A00;&amp;#x4E4B;&amp;#x524D;&amp;#x6587;&amp;#x7AE0;&amp;#x7ED9;&amp;#x5927;&amp;#x5BB6;&amp;#x4ECB;&amp;#x7ECD;&amp;#x4E86;&amp;#x5728;ubuntu&amp;#x670D;&amp;#x52A1;&amp;#x5668;&amp;#x4E0A;&amp;#x5B89;&amp;#x88C5;&amp;#x5E76;&amp;#x4F7F;&amp;#x7528;kplayer, &amp;#x8BE6;&amp;">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png">
+<meta property="og:updated_time" content="2024-04-23T11:39:34.773Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Docker安装kplayer实现无人直播">
+<meta name="twitter:description" content="&amp;#x524D;&amp;#x8A00;&amp;#x4E4B;&amp;#x524D;&amp;#x6587;&amp;#x7AE0;&amp;#x7ED9;&amp;#x5927;&amp;#x5BB6;&amp;#x4ECB;&amp;#x7ECD;&amp;#x4E86;&amp;#x5728;ubuntu&amp;#x670D;&amp;#x52A1;&amp;#x5668;&amp;#x4E0A;&amp;#x5B89;&amp;#x88C5;&amp;#x5E76;&amp;#x4F7F;&amp;#x7528;kplayer, &amp;#x8BE6;&amp;">
+<meta name="twitter:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+<!--谷歌广告验证代码-->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: "ca-pub-2626449904708114",
+          enable_page_level_ads: true
+     });
+</script>
+<!--谷歌广告验证代码-->
+
+<!--短链广告-->
+<!--<script type="text/javascript">
+    var adfly_id = 25792435;
+    var adfly_advert = 'banner';
+    var popunder = false;
+    var exclude_domains = ['code.newban.cn','newban.cn',  'localhost:4000'];
+</script>
+<script src="https://cdn.adf.ly/js/link-converter.js"></script>-->
+<!--短链广告-->
+
+
+
+  <link rel="canonical" href="https://code.newban.cn/474.html">
+
+
+
+
+
+  <title>使用Docker安装kplayer实现无人直播 | 乱码三千 – 分享实用IT技术</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+  
+<a href="https://www.github.com/songjianzaina" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">乱码三千 – 分享实用IT技术</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">乱码三千 – 码出一个新世界</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://www.newban.cn/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="https://code.newban.cn/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用Docker安装kplayer实现无人直播</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-04-23T13:14:19+08:00">
+                2024-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="&#x524D;&#x8A00;"><a href="#&#x524D;&#x8A00;" class="headerlink" title="&#x524D;&#x8A00;"></a>&#x524D;&#x8A00;</h2><p>&#x4E4B;&#x524D;&#x6587;&#x7AE0;&#x7ED9;&#x5927;&#x5BB6;&#x4ECB;&#x7ECD;&#x4E86;&#x5728;<code>ubuntu</code>&#x670D;&#x52A1;&#x5668;&#x4E0A;&#x5B89;&#x88C5;&#x5E76;&#x4F7F;&#x7528;<code>kplayer</code>, &#x8BE6;&#x60C5;&#x53C2;&#x89C1;&#x300A;<a href="https://code.newban.cn/472.html">&#x4F7F;&#x7528;kplayer&#x5B9E;&#x73B0;&#x65E0;&#x4EBA;&#x76F4;&#x64AD;</a>&#x300B;</p>
+<p>&#x4ECA;&#x5929;&#x7ED9;&#x5927;&#x5BB6;&#x4ECB;&#x7ECD;<code>kplayer</code>&#x7684;<code>docker</code>&#x5B89;&#x88C5;&#x4E0E;&#x4F7F;&#x7528;, &#x5176;&#x5B9E;&#x5927;&#x540C;&#x5C0F;&#x5F02; &#x5982;&#x679C;&#x4F60;&#x5E73;&#x5E38;&#x7528;&#x60EF;&#x4E86;<code>docker</code>  &#x90A3;&#x4E48;&#x4F7F;&#x7528;&#x5BB9;&#x5668;&#x90E8;&#x7F72;&#x7684;&#x65B9;&#x5F0F;&#x4F1A;&#x66F4;&#x52A0;&#x7B80;&#x5355;</p>
+<h2 id="&#x65E0;&#x4EBA;&#x76F4;&#x64AD;&#x524D;&#x7F6E;&#x9700;&#x6C42;"><a href="#&#x65E0;&#x4EBA;&#x76F4;&#x64AD;&#x524D;&#x7F6E;&#x9700;&#x6C42;" class="headerlink" title="&#x65E0;&#x4EBA;&#x76F4;&#x64AD;&#x524D;&#x7F6E;&#x9700;&#x6C42;"></a>&#x65E0;&#x4EBA;&#x76F4;&#x64AD;&#x524D;&#x7F6E;&#x9700;&#x6C42;</h2><ul>
+<li>&#x4E91;&#x670D;&#x52A1;&#x5668;&#x4E00;&#x53F0; &#x6216;&#x8005;24&#x5F00;&#x673A;&#x8054;&#x7F51;&#x8FD0;&#x884C;&#x7684;&#x672C;&#x5730;&#x7535;&#x8111;</li>
+<li><code>ffmpeg</code></li>
+<li>&#x63A8;&#x6D41;&#x5730;&#x5740; (B&#x7AD9;&#x3001;&#x6296;&#x97F3;&#x3001;&#x6597;&#x9C7C;&#x2026;)</li>
+<li>&#x51C6;&#x5907;&#x597D;&#x4E0D;&#x6D89;&#x53CA;&#x4FB5;&#x6743;&#x7684;&#x89C6;&#x9891;&#x5185;&#x5BB9;</li>
+</ul>
+<h2 id="&#x5B9E;&#x73B0;&#x6B65;&#x9AA4;"><a href="#&#x5B9E;&#x73B0;&#x6B65;&#x9AA4;" class="headerlink" title="&#x5B9E;&#x73B0;&#x6B65;&#x9AA4;"></a>&#x5B9E;&#x73B0;&#x6B65;&#x9AA4;</h2><p>&#x8FD9;&#x8FB9;&#x4F7F;&#x7528;<code>docker</code>&#x5BB9;&#x5668;&#x5FEB;&#x901F;&#x5B89;&#x88C5;&#x4F7F;&#x7528;</p>
+<ol>
+<li><p>&#x641C;&#x7D22;<code>ant-media-server</code>&#x955C;&#x50CF;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker search kplayer</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>&#x62C9;&#x53D6;<code>ant-media-server</code>&#x955C;&#x50CF;</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull bytelang/kplayer:latest</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>&#x521B;&#x5EFA;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x7528;&#x4E8E;&#x6620;&#x5C04;</p>
+<p> &#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x5B58;&#x653E;&#x76EE;&#x5F55;&#x81EA;&#x5B9A;&#x4E49; &#x8FD9;&#x91CC;&#x6211;&#x653E;&#x5728;<code>/root/config/</code>&#x76EE;&#x5F55;&#x4E0B; &#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x540D;&#x4E3A;<code>config.json</code>&#x7684;&#x6587;&#x4EF6;</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">touch config.json</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>&#x5B9A;&#x4E49;&#x63A8;&#x6D41;&#x914D;&#x7F6E;&#x4FE1;&#x606F;</p>
+<p> &#x5728;<code>config.json</code>&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x4E2D;&#x8BBE;&#x7F6E;&#x63A8;&#x6D41;&#x4FE1;&#x606F;</p>
+ <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">{</span><br><span class="line">    <span class="attr">&quot;version&quot;</span>: <span class="string">&quot;2.0.0&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;resource&quot;</span>: {</span><br><span class="line">        <span class="attr">&quot;lists&quot;</span>: [</span><br><span class="line">            <span class="string">&quot;/video/example_1.mp4&quot;</span>,</span><br><span class="line">            <span class="string">&quot;/video/example_2.mp4&quot;</span></span><br><span class="line">        ]</span><br><span class="line">    },</span><br><span class="line">    <span class="attr">&quot;output&quot;</span>: {</span><br><span class="line">        <span class="attr">&quot;lists&quot;</span>: [</span><br><span class="line">            {</span><br><span class="line">                <span class="attr">&quot;path&quot;</span>: <span class="string">&quot;rtmp://127.0.0.1:1935/push&quot;</span></span><br><span class="line">            }</span><br><span class="line">        ]</span><br><span class="line">    },</span><br><span class="line">      <span class="attr">&quot;play&quot;</span>: {</span><br><span class="line">	    <span class="attr">&quot;play_model&quot;</span>: <span class="string">&quot;loop&quot;</span>,</span><br><span class="line">	    <span class="attr">&quot;cache_on&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">	     <span class="attr">&quot;encode&quot;</span>: {</span><br><span class="line">		      <span class="attr">&quot;video_width&quot;</span>: <span class="number">854</span>,</span><br><span class="line">		      <span class="attr">&quot;video_height&quot;</span>: <span class="number">480</span>,</span><br><span class="line">		      <span class="attr">&quot;video_fps&quot;</span>: <span class="number">25</span>,</span><br><span class="line">		      <span class="attr">&quot;audio_channel_layout&quot;</span>: <span class="number">3</span>,</span><br><span class="line">		      <span class="attr">&quot;audio_sample_rate&quot;</span>: <span class="number">44100</span>,</span><br><span class="line">		      <span class="attr">&quot;bit_rate&quot;</span>: <span class="number">0</span>,</span><br><span class="line">		      <span class="attr">&quot;avg_quality&quot;</span>: <span class="number">0</span></span><br><span class="line">		    }</span><br><span class="line">	  }</span><br><span class="line"></span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p> <strong>&#x53C2;&#x6570;&#x89E3;&#x91CA;:</strong></p>
+<ul>
+<li><code>play_model</code> : &#x8BBE;&#x7F6E;&#x64AD;&#x653E;&#x6A21;&#x5F0F; &#x8FD9;&#x91CC;&#x6211;&#x9009;&#x62E9;<code>loop</code>&#x5FAA;&#x73AF;&#x64AD;&#x653E;</li>
+<li><code>cache_on</code> : &#x662F;&#x5426;&#x5F00;&#x542F;&#x7F13;&#x5B58;&#x6A21;&#x5F0F; &#x5F00;&#x542F;&#x540E;&#x964D;&#x4F4E;&#x673A;&#x5668;&#x8D44;&#x6E90;&#x5360;&#x7528; &#x63D0;&#x5347;&#x63A8;&#x6D41;&#x6027;&#x80FD;</li>
+<li><code>encode</code>: &#x89C6;&#x9891;&#x7F16;&#x7801;&#x914D;&#x7F6E; &#x6BD4;&#x5982;&#x5E27;&#x7387;&#x3001;&#x7801;&#x7387;&#x3001;&#x58F0;&#x97F3;&#x97F3;&#x8D28;&#x7B49;&#x7B49;</li>
+<li><code>resource-&gt;lists</code>&#x4E2D;&#x586B;&#x5199;&#x9700;&#x8981;&#x8FDB;&#x884C;&#x64AD;&#x653E;&#x7684;&#x89C6;&#x9891;</li>
+<li><code>output-&gt;lists</code>&#x586B;&#x5199;&#x9700;&#x8981;&#x63A8;&#x6D41;&#x7684;&#x5E73;&#x53F0; &#x8FD9;&#x91CC;&#x652F;&#x6301;&#x591A;&#x5E73;&#x53F0;&#x540C;&#x65F6;&#x63A8;&#x6D41;</li>
+</ul>
+</li>
+<li><p>&#x521B;&#x5EFA;&#x5E76;&#x8FD0;&#x884C;&#x5BB9;&#x5668; &#x5E76;&#x914D;&#x7F6E;&#x6620;&#x5C04;&#x7AEF;&#x53E3;</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker run -id \</span><br><span class="line"> -v /root/video:/video \</span><br><span class="line"> -v /root/config/config.json:/kplayer/config.json \</span><br><span class="line">--name=c_kplayer \</span><br><span class="line">-h c_kplayer \</span><br><span class="line">bytelang/kplayer:latest</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<ol start="6">
+<li><p>&#x6548;&#x679C;&#x6D4B;&#x8BD5;</p>
+<p> &#x6B64;&#x65F6; &#x6211;&#x4EEC;&#x80FD;&#x770B;&#x5230;&#x5DF2;&#x7ECF;&#x53EF;&#x4EE5;&#x63A5;&#x6536;&#x5230;&#x76F4;&#x64AD;&#x5185;&#x5BB9;&#x4E86;</p>
+<p><a href="/external_links/cfa910228760877bfbbd1298f962919b.html" target="blank" rel="noopener">&#x70B9;&#x51FB;&#x8FDB;&#x5165;&#x76F4;&#x64AD;&#x95F4;</a></p>
+</li>
+</ol>
+<h2 id="&#x52A8;&#x6001;&#x914D;&#x7F6E;&#x53C2;&#x6570;"><a href="#&#x52A8;&#x6001;&#x914D;&#x7F6E;&#x53C2;&#x6570;" class="headerlink" title="&#x52A8;&#x6001;&#x914D;&#x7F6E;&#x53C2;&#x6570;"></a>&#x52A8;&#x6001;&#x914D;&#x7F6E;&#x53C2;&#x6570;</h2><p>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x60F3;&#x5728;&#x89C6;&#x9891;&#x64AD;&#x653E;&#x8FC7;&#x7A0B;&#x4E2D;&#x52A8;&#x6001;&#x6DFB;&#x52A0;&#x4E00;&#x4E9B;&#x89C6;&#x9891;&#x6216;&#x8005;&#x589E;&#x52A0;&#x63A8;&#x6D41;&#x5730;&#x5740;&#x7B49; &#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x4EE5;&#x4E0B;&#x65B9;&#x6CD5;</p>
+<p>&#x9996;&#x5148;&#x9700;&#x8981;&#x8FDB;&#x5165;&#x5230;<code>kplayer</code>&#x5BB9;&#x5668;&#x4E2D;:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it c_kplayer /bin/sh</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p>&#x52A8;&#x6001;&#x589E;&#x52A0;&#x63A8;&#x6D41;&#x5730;&#x5740;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kplayer output add <span class="string">&quot;rtmp://127.0.0.1/live/new&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>&#x52A8;&#x6001;&#x589E;&#x52A0;&#x89C6;&#x9891;</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kplayer resource add <span class="string">&quot;/home/user/video/xxx.mp4&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>&#x52A8;&#x6001;&#x6DFB;&#x52A0;&#x63D2;&#x4EF6;</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kplayer plugin add show-text mytext --param <span class="string">&quot;fontsize=60&quot;</span> --param <span class="string">&quot;text=newban.cn&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<h2 id="&#x76F8;&#x5173;&#x6587;&#x7AE0;"><a href="#&#x76F8;&#x5173;&#x6587;&#x7AE0;" class="headerlink" title="&#x76F8;&#x5173;&#x6587;&#x7AE0;"></a>&#x76F8;&#x5173;&#x6587;&#x7AE0;</h2><p>&#x300A;<a href="https://code.newban.cn/473.html">&#x4F7F;&#x7528;Ant Media&#x5B9E;&#x73B0;&#x65E0;&#x4EBA;&#x76F4;&#x64AD;</a>&#x300B;</p>
+<p>&#x300A;<a href="https://code.newban.cn/471.html">&#x4F7F;&#x7528;ffmpeg&#x5B9E;&#x73B0;&#x65E0;&#x4EBA;&#x76F4;&#x64AD;</a>&#x300B;</p>
+<p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B; &#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</a></em></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="tags/无人直播/" rel="tag"># 无人直播</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="473.html" rel="next" title="使用Ant Media实现无人直播">
+                <i class="fa fa-chevron-left"></i> 使用Ant Media实现无人直播
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="475.html" rel="prev" title="自建直播推流服务器">
+                自建直播推流服务器 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    <!-- 乱码三千文章内嵌广告 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-layout="in-article" data-ad-format="fluid" data-ad-client="ca-pub-2626449904708114" data-ad-slot="1549007621"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+  <!-- 乱码三千信息流广告 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-6t+ed+2i-1n-4w" data-ad-client="ca-pub-2626449904708114" data-ad-slot="9471729671"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">乱码三千</p>
+              <p class="site-description motion-element" itemprop="description">android程序员一枚,擅长java,kotlin,python,金融投资,欢迎交流~</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="https://code.newban.cn/archives/">
+              
+                  <span class="site-state-item-count">475</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">139</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#无人直播前置需求"><span class="nav-number">2.</span> <span class="nav-text">无人直播前置需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现步骤"><span class="nav-number">3.</span> <span class="nav-text">实现步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态配置参数"><span class="nav-number">4.</span> <span class="nav-text">动态配置参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关文章"><span class="nav-number">5.</span> <span class="nav-text">相关文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">乱码三千</span>
+  <div>
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+  </div>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+  <script type="text/javascript" async src="js/src/mermaid.min.js"></script>
+  <script>
+  if (window.mermaid) {
+        var mermaid_config = {
+            startOnLoad: true,
+            theme: 'default',
+            flowchart:{
+                useMaxWidth: false,
+                htmlLabels: true
+            }                
+        }
+        mermaid.initialize(mermaid_config);
+  }
+  </script>
+  
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+      <style>
+        a.gitment-editor-footer-tip { display: none; }
+        .gitment-container.gitment-footer-container { display: none; }
+      </style>
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'songjianzaina',
+            repo: 'codesan_comment',
+            
+            lang: "zh" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '75fa01da04fd1029841debfa65ce027b566a47e3',
+            
+                client_id: '01a471de64bf7a7789f3'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
