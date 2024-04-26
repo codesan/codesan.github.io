@@ -288,6 +288,162 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../369.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../369.html" itemprop="url">关于使用ssh进行仓库clone端口号非22的解决办法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-19T18:04:19+08:00">
+                2022-09-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="&#x95EE;&#x9898;"><a href="#&#x95EE;&#x9898;" class="headerlink" title="&#x95EE;&#x9898;"></a>&#x95EE;&#x9898;</h3><p>&#x6211;&#x4EEC;&#x5728;&#x4F7F;&#x7528;<code>docker</code>&#x642D;&#x5EFA;&#x79C1;&#x6709;<code>git</code>&#x4ED3;&#x5E93;&#x65F6;, &#x4F1A;&#x5C06;&#x5BB9;&#x5668;&#x7684;<code>22</code>&#x7AEF;&#x53E3;&#x6620;&#x5C04;&#x5230;&#x5BBF;&#x4E3B;&#x7684;&#x5176;&#x4ED6;&#x7AEF;&#x53E3;&#x4E0A;, &#x6B64;&#x65F6;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x4F7F;&#x7528;<code>ssh</code>&#x5730;&#x5740;&#x8FDB;&#x884C;&#x4ED3;&#x5E93;<code>clone</code>, &#x5219;&#x4F1A;&#x62A5;&#x9519; &#x63D0;&#x793A;<code>ssh: connect to host localhost port 22: Connection refused</code>:</p>
+<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220920121534132.png" alt="image-20220920121534132"></p>
+<p>&#x5047;&#x8BBE;&#x6620;&#x5C04;&#x5230;&#x5BBF;&#x4E3B;&#x7684;&#x7AEF;&#x53E3;&#x53F7;&#x4E3A;<code>10022</code>, &#x90A3;&#x4E48;&#x89E3;&#x51B3;&#x65B9;&#x6848;&#x5982;&#x4E0B;:</p>
+<h3 id="&#x89E3;&#x51B3;&#x65B9;&#x6848;"><a href="#&#x89E3;&#x51B3;&#x65B9;&#x6848;" class="headerlink" title="&#x89E3;&#x51B3;&#x65B9;&#x6848;"></a>&#x89E3;&#x51B3;&#x65B9;&#x6848;</h3><ol>
+<li><p><strong>&#x7B2C;&#x4E00;&#x79CD; <code>clone</code>&#x65F6;&#x6307;&#x5B9A;&#x7AEF;&#x53E3;&#x53F7;:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone ssh://git@localhost:10022/songjian/ggg.git</span><br></pre></td></tr></table></figure>
+
+<p>&#x6CE8;&#x610F;: &#x9700;&#x8981;&#x5E26;&#x4E0A;<code>ssh://</code>&#x8FD9;&#x4E2A;&#x534F;&#x8BAE;&#x5934;</p>
+</li>
+<li><p><strong>&#x7B2C;&#x4E8C;&#x79CD; &#x5728;<code>.ssh</code>&#x76EE;&#x5F55;&#x4E0B;&#x7684;<code>config</code>&#x6587;&#x4EF6;&#x4E2D;&#x589E;&#x52A0;<code>port</code>&#x5B57;&#x6BB5;&#x6307;&#x5B9A;&#x7AEF;&#x53E3;&#x8BBF;&#x95EE;:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Host localhost</span><br><span class="line">HostName localhost</span><br><span class="line">Port 10022</span><br><span class="line">PreferredAuthentications publickey</span><br><span class="line">IdentityFile ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
+
+<p>&#x7531;&#x4E8E;<code>git</code>&#x9ED8;&#x8BA4;<code>port</code>&#x662F;<code>22</code>, &#x6B64;&#x65F6;&#x6211;&#x4EEC;&#x4FEE;&#x6539;&#x540E;&#x5219;&#x53EF;&#x4EE5;&#x6309;&#x7167;&#x6B63;&#x5E38;&#x7684;&#x5F62;&#x5F0F;&#x8FDB;&#x884C;&#x4ED3;&#x5E93;&#x7684;&#x514B;&#x9686;:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone git@localhost/songjian/ggg.git</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>&#x7B2C;&#x4E09;&#x79CD; &#x4F7F;&#x7528;<code>nginx</code>&#x53CD;&#x5411;&#x4EE3;&#x7406;</strong></p>
+<p>&#x5728;<code>nginx.conf</code>&#x6587;&#x4EF6;&#x4E2D;&#x914D;&#x7F6E;&#x5982;&#x4E0B;:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">stream {</span><br><span class="line">    upstream ssh-proxy {</span><br><span class="line">      server &#x670D;&#x52A1;&#x5668;ip:10022;</span><br><span class="line">    }</span><br><span class="line">    server {</span><br><span class="line">      listen 22;</span><br><span class="line">      proxy_pass ssh-proxy;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x914D;&#x7F6E;&#x597D;&#x540E;, &#x76F4;&#x63A5;&#x6B63;&#x5E38;&#x5F62;&#x5F0F;<code>clone</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone git@localhost/songjian/ggg.git</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+</li>
+</ol>
+<p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B;&#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../368.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1464,158 +1620,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../361.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../361.html" itemprop="url">使用Git同时将代码推送到多个仓库</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-16T11:04:19+08:00">
-                2022-09-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="&#x524D;&#x8A00;"><a href="#&#x524D;&#x8A00;" class="headerlink" title="&#x524D;&#x8A00;"></a>&#x524D;&#x8A00;</h3><p>&#x968F;&#x7740;<code>GitHub</code>&#x7684;&#x5236;&#x88C1;, &#x6211;&#x5F00;&#x59CB;&#x8003;&#x8651;&#x5C06;&#x4E00;&#x4E9B;&#x4EE3;&#x7801;&#x540C;&#x6B65;&#x63A8;&#x9001;&#x5230;&#x56FD;&#x5185;&#x7684;&#x4E00;&#x4E9B;&#x4EE3;&#x7801;&#x6258;&#x7BA1;&#x5382;&#x5546;, &#x6BD4;&#x5982;<code>gitee</code>&#x6216;&#x8005;<code>codingnet</code></p>
-<p><code>gitee</code>&#x53EF;&#x4EE5;&#x76F4;&#x63A5;&#x5BF9;<code>github</code>&#x4E0A;&#x7684;&#x4ED3;&#x5E93;&#x8FDB;&#x884C;&#x514B;&#x9686;&#x548C;&#x66F4;&#x65B0;, &#x8FD9;&#x4E00;&#x70B9;&#x8FD8;&#x662F;&#x6BD4;&#x8F83;&#x65B9;&#x4FBF;&#x7684;, &#x4E0D;&#x8FC7;&#x624B;&#x52A8;&#x540C;&#x6B65;&#x4EE3;&#x7801;&#x603B;&#x662F;&#x9EBB;&#x70E6;&#x4E00;&#x4E9B;, &#x800C;&#x4E14;&#x5BB9;&#x6613;&#x9057;&#x5FD8;, &#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x8003;&#x8651;&#x5728;<code>push</code>&#x7684;&#x65F6;&#x5019;&#x5C06;&#x4EE3;&#x7801;&#x540C;&#x65F6;&#x63A8;&#x9001;&#x5230;&#x591A;&#x4E2A;&#x4ED3;&#x5E93;</p>
-<p>&#x5177;&#x4F53;&#x5B9E;&#x73B0;&#x5982;&#x4E0B;:</p>
-<h3 id="&#x5177;&#x4F53;&#x5B9E;&#x73B0;"><a href="#&#x5177;&#x4F53;&#x5B9E;&#x73B0;" class="headerlink" title="&#x5177;&#x4F53;&#x5B9E;&#x73B0;"></a>&#x5177;&#x4F53;&#x5B9E;&#x73B0;</h3><ol>
-<li><p>&#x9996;&#x5148;&#x5B9A;&#x4E49;&#x4E00;&#x4E2A;&#x4ED3;&#x5E93;&#x5730;&#x5740;&#x5408;&#x96C6;, &#x540D;&#x5B57;&#x81EA;&#x5B9A;&#x4E49;, &#x6211;&#x4EEC;&#x5C06;&#x5176;&#x547D;&#x540D;&#x4E3A;<code>all</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote add all git@github.com:xxx/xxx.git</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>&#x7136;&#x540E;&#x5C06;&#x9700;&#x8981;&#x540C;&#x65F6;&#x63A8;&#x9001;&#x7684;&#x4ED3;&#x5E93;&#x5730;&#x5740;&#x8FFD;&#x52A0;&#x8FDB;&#x5165;&#x8BE5;&#x5408;&#x96C6;&#x4E2D;</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote set-url --add all git@gitee.com:xxx/xxx.git</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>&#x6B64;&#x65F6;&#x6211;&#x4EEC;&#x8F93;&#x5165;<code>git remote -v</code>&#x53EF;&#x4EE5;&#x67E5;&#x770B;&#x5F53;&#x524D;&#x4ED3;&#x5E93;&#x6240;&#x6709;&#x5730;&#x5740;&#x4FE1;&#x606F;, &#x5982;&#x4E0B;:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">all	git@github.com:xxx/xxx.git (fetch)</span></span><br><span class="line"><span class="meta">$</span><span class="bash">all	git@github.com:xxx/xxx.git (push)</span></span><br><span class="line"><span class="meta">$</span><span class="bash">all	git@gitee.com:xxx/xxx.git (push)</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>&#x6700;&#x540E;&#x63A8;&#x9001;&#x4ED3;&#x5E93;&#x5230;&#x8FDC;&#x7A0B;</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push all master</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>&#x5982;&#x679C;&#x4F60;&#x60F3;&#x79FB;&#x9664;&#x67D0;&#x4E2A;&#x4ED3;&#x5E93;&#x5408;&#x96C6;</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote rm all</span><br></pre></td></tr></table></figure>
-
-
-
-</li>
-</ol>
-<h3 id="&#x9644;&#x52A0;"><a href="#&#x9644;&#x52A0;" class="headerlink" title="&#x9644;&#x52A0;"></a>&#x9644;&#x52A0;</h3><p>&#x5173;&#x4E8E;&#x4ED3;&#x5E93;&#x5730;&#x5740;&#x7684;&#x914D;&#x7F6E;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x76F4;&#x63A5;&#x5728; <code>.git/config</code> &#x67E5;&#x770B;,<code>git</code>&#x9ED8;&#x8BA4;&#x5408;&#x96C6;&#x540D;&#x4E3A;<code>origin</code> </p>
-<p>&#x5982;&#x679C;&#x4F60;&#x4E60;&#x60EF;&#x4E86;&#x8F93;&#x5165;<code>git push origin master</code>&#x6765;&#x63A8;&#x9001;&#x4ED3;&#x5E93;, &#x90A3;&#x4E48;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x76F4;&#x63A5;&#x6253;&#x5F00;<code>config</code>&#x6587;&#x4EF6;&#x7136;&#x540E;&#x5728;<code>origin</code>&#x5408;&#x96C6;&#x4E0B;&#x8FFD;&#x52A0;&#x5176;&#x4ED6;&#x4ED3;&#x5E93;&#x7684;&#x5730;&#x5740;, &#x5982;&#x4E0B;:</p>
-<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220915173750105.png" alt="image-20220915173750105"></p>
-<p>&#x4FDD;&#x5B58;&#x540E;, &#x6211;&#x4EEC;&#x5C31;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x5566; </p>
-<p>&#x5982;&#x679C;&#x4F60;&#x62C5;&#x5FC3;&#x6587;&#x672C;&#x8F93;&#x5165;&#x51FA;&#x9519;, &#x4E5F;&#x53EF;&#x4EE5;&#x91C7;&#x7528;&#x547D;&#x4EE4;&#x884C;&#x7684;&#x5F62;&#x5F0F;&#x8FDB;&#x884C;&#x5730;&#x5740;&#x8FFD;&#x52A0;:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote set-url --add origin git@gitee.com:xxx/xxx.git</span><br></pre></td></tr></table></figure>
-
-<p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B;&#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
-<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
-<p><em><a href="https://code.newban.cn/">&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</a></em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../360.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1779,7 +1783,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../359.html">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../361.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="乱码三千">
@@ -1798,7 +1802,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="../../359.html" itemprop="url">使用netlify部署静态博客网站</a></h1>
+                <a class="post-title-link" href="../../361.html" itemprop="url">使用Git同时将代码推送到多个仓库</a></h1>
         
 
         <div class="post-meta">
@@ -1810,8 +1814,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-15T11:04:19+08:00">
-                2022-09-15
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-16T11:04:19+08:00">
+                2022-09-16
               </time>
             
 
@@ -1850,50 +1854,36 @@
       
         
           
-            <h3 id="&#x524D;&#x8A00;"><a href="#&#x524D;&#x8A00;" class="headerlink" title="&#x524D;&#x8A00;"></a>&#x524D;&#x8A00;</h3><p>&#x6700;&#x8FD1;&#x6211;&#x90E8;&#x7F72;&#x5728;<code>github</code>&#x4E0A;&#x7684;&#x4E00;&#x4E2A;&#x9759;&#x6001;&#x7F51;&#x7AD9;&#x7A81;&#x7136;&#x4E0D;&#x80FD;&#x8BBF;&#x95EE;&#x4E86;, &#x6392;&#x67E5;&#x4E00;&#x770B;&#x539F;&#x6765;&#x662F;<code>github</code>&#x8D26;&#x6237;&#x88AB;&#x5C01;&#x7981;&#x4E86;, &#x6211;&#x60F3;&#x6709;&#x53EF;&#x80FD;&#x662F;&#x53D7;&#x5230;&#x4E86;&#x6700;&#x8FD1;&#x4FC4;&#x7F57;&#x65AF;&#x5236;&#x88C1;&#x7684;&#x5F71;&#x54CD;, &#x56E0;&#x4E3A;&#x8FD9;&#x4E2A;&#x8D26;&#x53F7;&#x6211;&#x5F53;&#x521D;&#x662F;&#x7528;&#x68AF;&#x5B50;&#x6CE8;&#x518C;&#x7684;, &#x5BF9;&#x65B9;&#x53EF;&#x80FD;&#x4EE5;&#x4E3A;&#x6211;&#x662F;&#x4FC4;&#x7F57;&#x65AF;&#x4EBA;</p>
-<p>&#x95EE;&#x9898;&#x627E;&#x5230;&#x4E4B;&#x540E; &#x6211;&#x51B3;&#x5B9A;&#x6682;&#x65F6;&#x5148;&#x4E0D;&#x6CE8;&#x518C;&#x65B0;<code>Github</code>&#x8D26;&#x53F7;&#x4E86;, &#x76F4;&#x63A5;&#x6362;&#x6210;<code>netlify</code></p>
-<p><code>netlify</code>&#x6709;&#x5F88;&#x591A;&#x4F18;&#x52BF;:</p>
-<ul>
-<li>&#x5355;&#x8D26;&#x53F7;&#x4E0D;&#x9650;&#x5236;&#x7F51;&#x7AD9;&#x6570;&#x91CF;</li>
-<li>&#x53EF;&#x76F4;&#x63A5;&#x4ECE;<code>github</code>&#x6216;&#x8005;<code>gitlab</code>&#x4ED3;&#x5E93;&#x4E2D;&#x62C9;&#x53D6;&#x4EE3;&#x7801;&#x81EA;&#x52A8;&#x90E8;&#x7F72;</li>
-<li>&#x652F;&#x6301;<code>HTTPS</code>&#x8BBF;&#x95EE;</li>
-<li>&#x56FD;&#x5185;&#x8BBF;&#x95EE;&#x901F;&#x5EA6;&#x4E0D;&#x6BD4;<code>gitpages</code>&#x5DEE;</li>
-</ul>
-<p>&#x4E8E;&#x662F;&#x6211;&#x76F4;&#x63A5;&#x5C06;&#x7F51;&#x7AD9;&#x9759;&#x6001;&#x6587;&#x4EF6;&#x4E0A;&#x4F20;&#x5230;&#x4E86;<code>netlify</code>, &#x5173;&#x4E8E;&#x90E8;&#x7F72;&#x7684;&#x5177;&#x4F53;&#x6D41;&#x7A0B; &#x8BE6;&#x89C1;&#x5982;&#x4E0B;:</p>
-<h3 id="&#x5F00;&#x59CB;&#x4F7F;&#x7528;"><a href="#&#x5F00;&#x59CB;&#x4F7F;&#x7528;" class="headerlink" title="&#x5F00;&#x59CB;&#x4F7F;&#x7528;"></a>&#x5F00;&#x59CB;&#x4F7F;&#x7528;</h3><p>&#x9996;&#x5148;&#x767B;&#x9646;<code>netlify</code>&#x7F51;&#x7AD9;&#x5E76;&#x767B;&#x5F55;, &#x5982;&#x679C;&#x4F60;&#x7684;&#x535A;&#x5BA2;&#x6E90;&#x7801;&#x653E;&#x5728;&#x4E86;<code>Github</code>&#x4E0A;, &#x90A3;&#x4E48;&#x53EF;&#x4EE5;&#x76F4;&#x63A5;&#x4F7F;&#x7528;<code>Github</code>&#x8D26;&#x53F7;&#x5173;&#x8054;&#x767B;&#x5F55;</p>
-<p><a href="/external_links/b892b5a813390da33a8644cf46434713.html" target="blank" rel="noopener">&#x70B9;&#x51FB;&#x8FDB;&#x5165;netlify&#x5B98;&#x7F51;</a></p>
-<p>&#x767B;&#x5F55;&#x4E4B;&#x540E;&#x4F1A;&#x51FA;&#x73B0;&#x4EE5;&#x4E0B;&#x9762;&#x677F;, &#x6211;&#x4EEC;&#x70B9;&#x51FB;<code>Add new site</code>&#x6309;&#x94AE;&#x6DFB;&#x52A0;&#x4E00;&#x4E2A;&#x65B0;&#x7AD9;&#x70B9;:</p>
-<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220915123216935.png" alt="image-20220915123216935"></p>
-<p>&#x70B9;&#x51FB;&#x540E;&#x51FA;&#x73B0;&#x591A;&#x4E2A;&#x9009;&#x9879;:</p>
-<ul>
-<li><code>import an existing project</code>:&#x8868;&#x793A;&#x4ECE;Github&#x4E2D;&#x7684;&#x4ED3;&#x5E93;&#x4E2D;&#x76F4;&#x63A5;&#x62C9;&#x53D6;&#x4EE3;&#x7801;</li>
-<li><code>start from a template</code>: &#x8868;&#x793A;&#x57FA;&#x4E8E;&#x67D0;&#x4E2A;&#x6A21;&#x677F;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x65B0;&#x7684;&#x4ED3;&#x5E93;</li>
-<li><code>Deploy manually</code>: &#x8868;&#x793A;&#x624B;&#x52A8;&#x4E0A;&#x4F20;&#x7F51;&#x7AD9;&#x9759;&#x6001;&#x6587;&#x4EF6;</li>
-</ul>
-<p>&#x63A5;&#x4E0B;&#x6765; &#x6211;&#x4EE5;<code>hexo</code>&#x535A;&#x5BA2;&#x4E3A;&#x4F8B;, &#x4ECB;&#x7ECD;&#x7B2C;&#x4E00;&#x79CD;&#x548C;&#x7B2C;&#x4E09;&#x79CD;&#x7684;&#x7528;&#x6CD5;</p>
-<h3 id="&#x7B2C;&#x4E00;&#x79CD;-import-an-existing-project"><a href="#&#x7B2C;&#x4E00;&#x79CD;-import-an-existing-project" class="headerlink" title="&#x7B2C;&#x4E00;&#x79CD; import an existing project"></a>&#x7B2C;&#x4E00;&#x79CD; <code>import an existing project</code></h3><p>&#x70B9;&#x51FB;&#x540E;&#x8FDB;&#x5165;&#x4ED3;&#x5E93;&#x9009;&#x62E9;&#x9875;&#x9762;, &#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x9009;&#x62E9;&#x4ECE;&#x6307;&#x5B9A;&#x7684;&#x6258;&#x7BA1;&#x5382;&#x5546;&#x62C9;&#x53D6;&#x7F51;&#x7AD9;&#x6E90;&#x7801;:</p>
-<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220915121740890.png" alt="image-20220915121740890"></p>
-<p>&#x7531;&#x4E8E;&#x6211;&#x7F51;&#x7AD9;&#x6E90;&#x7801;&#x6258;&#x7BA1;&#x5728;&#x4E86;<code>Github</code>, &#x4E8E;&#x662F;&#x6211;&#x70B9;&#x51FB;<code>Github</code>&#x9009;&#x9879;, &#x8FDB;&#x5165;&#x5230;&#x4ED3;&#x5E93;&#x9009;&#x62E9;&#x9875;&#x9762;:</p>
-<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220915121922914.png" alt="image-20220915121922914"></p>
-<p>&#x9009;&#x62E9;&#x597D;&#x540E;&#x8FDB;&#x5165;&#x7F51;&#x7AD9;&#x90E8;&#x7F72;&#x914D;&#x7F6E;&#x9875;&#x9762;, &#x586B;&#x5165;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x8BA9;<code>netlify</code>&#x5728;&#x62C9;&#x53D6;&#x6211;&#x4EEC;&#x7684;&#x4ED3;&#x5E93;&#x540E;&#x8FDB;&#x884C;&#x7684;&#x6307;&#x4EE4;&#x64CD;&#x4F5C;,<code>hexo g</code>&#x751F;&#x6210;&#x9759;&#x6001;&#x6587;&#x4EF6; &#x7136;&#x540E;&#x5C06;&#x751F;&#x6210;&#x7684;&#x9759;&#x6001;&#x6587;&#x4EF6;&#x4E0A;&#x4F20;&#x5230;<code>netlify</code>:</p>
-<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220915122130743.png" alt="image-20220915122130743"></p>
-<p>&#x586B;&#x597D;&#x540E;&#x70B9;&#x51FB;<code>Deploy site</code>, &#x7136;&#x540E;<code>netlify</code>&#x4F1A;&#x81EA;&#x52A8;&#x62C9;&#x53D6;&#x4EE3;&#x7801;&#x5E76;&#x90E8;&#x7F72;&#x7F51;&#x7AD9;</p>
-<p>&#x7D27;&#x63A5;&#x7740; &#x6211;&#x4EEC;&#x6765;&#x5230;&#x7F51;&#x7AD9;&#x8BBE;&#x7F6E;&#x9009;&#x9879;&#x5361;&#x4E2D;&#x914D;&#x7F6E;&#x81EA;&#x5B9A;&#x4E49;&#x57DF;&#x540D;:</p>
-<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220915122650516.png" alt="image-20220915122650516"></p>
-<p>&#x9700;&#x8981;&#x5C06;&#x81EA;&#x5B9A;&#x4E49;&#x57DF;&#x540D;&#x4EE5;<code>CNAME</code>&#x7684;&#x65B9;&#x5F0F;&#x89E3;&#x6790;&#x5230;<code>xxxxx.netlify.app</code>, &#x5982;&#x679C;&#x4F60;&#x7684;&#x57DF;&#x540D;&#x662F;&#x963F;&#x91CC;&#x4E91;&#x6CE8;&#x518C;&#x7684;, &#x76F4;&#x63A5;&#x53BB;&#x963F;&#x91CC;&#x4E91;&#x63A7;&#x53F0;&#x914D;&#x7F6E;&#x5373;&#x53EF;</p>
-<p>&#x89E3;&#x6790;&#x914D;&#x7F6E;&#x5B8C;&#x6BD5;&#x540E;, <code>netlify</code>&#x4F1A;&#x81EA;&#x52A8;&#x7ED9;&#x7F51;&#x7AD9;&#x914D;&#x7F6E;<code>SSL</code>&#x8BC1;&#x4E66;&#x5B9E;&#x73B0;&#x57DF;&#x540D;<code>https</code>&#x8BBF;&#x95EE;:</p>
-<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220915122938054.png" alt="image-20220915122938054"></p>
-<p>&#x6B64;&#x65F6; &#x6211;&#x4EEC;&#x5C31;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x57DF;&#x540D;&#x6B63;&#x5E38;&#x8BBF;&#x95EE;&#x6211;&#x4EEC;&#x7684;&#x7F51;&#x7AD9;&#x5566;:</p>
-<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220915123105502.png" alt="image-20220915123105502"></p>
-<h3 id="&#x7B2C;&#x4E09;&#x79CD;-Deploy-manually"><a href="#&#x7B2C;&#x4E09;&#x79CD;-Deploy-manually" class="headerlink" title="&#x7B2C;&#x4E09;&#x79CD; Deploy manually"></a>&#x7B2C;&#x4E09;&#x79CD; <code>Deploy manually</code></h3><p>&#x8FD9;&#x4E2A;&#x5C31;&#x6BD4;&#x8F83;&#x7B80;&#x5355;&#x4E86;, &#x70B9;&#x51FB;&#x540E;&#x4F1A;&#x8FDB;&#x5165;&#x5230;&#x5982;&#x4E0B;&#x9875;&#x9762;:</p>
-<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220915123323777.png" alt="image-20220915123323777"></p>
-<p>&#x6211;&#x4EEC;&#x53EA;&#x9700;&#x5C06;<code>public</code>&#x6587;&#x4EF6;&#x5939;&#x62D6;&#x62FD;&#x5230;&#x9875;&#x9762; &#x5373;&#x53EF;&#x81EA;&#x52A8;&#x4E0A;&#x4F20;&#x90E8;&#x7F72;</p>
-<p>&#x4E0A;&#x4F20;&#x5B8C;&#x540E;&#x56DE;&#x5230;<code>netlify</code>&#x4E3B;&#x9875;&#x5C31;&#x80FD;&#x770B;&#x5230;&#x7F51;&#x7AD9;&#x4E86;, &#x7136;&#x540E;&#x8FDB;&#x884C;&#x81EA;&#x5B9A;&#x4E49;&#x7684;&#x57DF;&#x540D;&#x914D;&#x7F6E;&#x5373;&#x53EF;&#x6B63;&#x5E38;&#x8BBF;&#x95EE; </p>
-<p>&#x5F53;&#x7136;&#x4E86; &#x5982;&#x679C;&#x4E0D;&#x7528;&#x81EA;&#x5B9A;&#x4E49;&#x57DF;&#x540D; &#x76F4;&#x63A5;&#x4F7F;&#x7528;<code>netlify</code>&#x63D0;&#x4F9B;&#x7684;&#x4E8C;&#x7EA7;&#x57DF;&#x540D;&#x4E5F;&#x80FD;&#x8BBF;&#x95EE;, &#x8FD9;&#x4E2A;&#x5927;&#x5BB6;&#x90FD;&#x660E;&#x767D; &#x5C31;&#x4E0D;&#x591A;&#x8D58;&#x8FF0;&#x4E86;</p>
-<h3 id="&#x7F51;&#x7AD9;&#x6D4B;&#x901F;"><a href="#&#x7F51;&#x7AD9;&#x6D4B;&#x901F;" class="headerlink" title="&#x7F51;&#x7AD9;&#x6D4B;&#x901F;"></a>&#x7F51;&#x7AD9;&#x6D4B;&#x901F;</h3><p>&#x4EE5;&#x4E0B;&#x662F;&#x56FD;&#x5185;&#x8BBF;&#x95EE;&#x6D4B;&#x901F;&#x56FE;, &#x603B;&#x4F53;&#x8FD8;&#x4E0D;&#x9519; :</p>
-<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220915123913425.png" alt="image-20220915123913425"></p>
-<h3 id="&#x601D;&#x8003;"><a href="#&#x601D;&#x8003;" class="headerlink" title="&#x601D;&#x8003;"></a>&#x601D;&#x8003;</h3><p>&#x7ECF;&#x8FC7;&#x6B64;&#x6B21;&#x8D26;&#x53F7;&#x5C01;&#x7981;, &#x6211;&#x5F00;&#x59CB;&#x62C5;&#x5FE7;&#x81EA;&#x5DF1;&#x5B58;&#x653E;&#x5728;<code>Github</code>&#x4E0A;&#x7684;&#x6570;&#x636E;&#x5B89;&#x5168;&#x6027;&#x95EE;&#x9898;&#x4E86;, &#x4E07;&#x4E00;&#x56FD;&#x5185;&#x5F00;&#x53D1;&#x8005;&#x6536;&#x5230;&#x5236;&#x88C1;  <code>Github</code>&#x6765;&#x4E2A;&#x5927;&#x626B;&#x9664;, &#x5C82;&#x4E0D;&#x662F;&#x5B8C;&#x86CB;, &#x4E0D;&#x8FC7; &#x8FD9;&#x5BF9;&#x4E8E;&#x56FD;&#x5185;&#x7684;&#x4EE3;&#x7801;&#x6258;&#x7BA1;&#x5382;&#x5546;&#x800C;&#x8A00;&#x4E5F;&#x8BB8;&#x662F;&#x4E2A;&#x96BE;&#x5F97;&#x7684;&#x673A;&#x4F1A;</p>
-<p>&#x6240;&#x4EE5;&#x6211;&#x63A5;&#x4E0B;&#x6253;&#x7B97; &#x5C06;&#x91CD;&#x8981;&#x6570;&#x636E;&#x505A;&#x4E2A;&#x591A;&#x5730;&#x5907;&#x4EFD;&#x5904;&#x7406;</p>
+            <h3 id="&#x524D;&#x8A00;"><a href="#&#x524D;&#x8A00;" class="headerlink" title="&#x524D;&#x8A00;"></a>&#x524D;&#x8A00;</h3><p>&#x968F;&#x7740;<code>GitHub</code>&#x7684;&#x5236;&#x88C1;, &#x6211;&#x5F00;&#x59CB;&#x8003;&#x8651;&#x5C06;&#x4E00;&#x4E9B;&#x4EE3;&#x7801;&#x540C;&#x6B65;&#x63A8;&#x9001;&#x5230;&#x56FD;&#x5185;&#x7684;&#x4E00;&#x4E9B;&#x4EE3;&#x7801;&#x6258;&#x7BA1;&#x5382;&#x5546;, &#x6BD4;&#x5982;<code>gitee</code>&#x6216;&#x8005;<code>codingnet</code></p>
+<p><code>gitee</code>&#x53EF;&#x4EE5;&#x76F4;&#x63A5;&#x5BF9;<code>github</code>&#x4E0A;&#x7684;&#x4ED3;&#x5E93;&#x8FDB;&#x884C;&#x514B;&#x9686;&#x548C;&#x66F4;&#x65B0;, &#x8FD9;&#x4E00;&#x70B9;&#x8FD8;&#x662F;&#x6BD4;&#x8F83;&#x65B9;&#x4FBF;&#x7684;, &#x4E0D;&#x8FC7;&#x624B;&#x52A8;&#x540C;&#x6B65;&#x4EE3;&#x7801;&#x603B;&#x662F;&#x9EBB;&#x70E6;&#x4E00;&#x4E9B;, &#x800C;&#x4E14;&#x5BB9;&#x6613;&#x9057;&#x5FD8;, &#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x8003;&#x8651;&#x5728;<code>push</code>&#x7684;&#x65F6;&#x5019;&#x5C06;&#x4EE3;&#x7801;&#x540C;&#x65F6;&#x63A8;&#x9001;&#x5230;&#x591A;&#x4E2A;&#x4ED3;&#x5E93;</p>
+<p>&#x5177;&#x4F53;&#x5B9E;&#x73B0;&#x5982;&#x4E0B;:</p>
+<h3 id="&#x5177;&#x4F53;&#x5B9E;&#x73B0;"><a href="#&#x5177;&#x4F53;&#x5B9E;&#x73B0;" class="headerlink" title="&#x5177;&#x4F53;&#x5B9E;&#x73B0;"></a>&#x5177;&#x4F53;&#x5B9E;&#x73B0;</h3><ol>
+<li><p>&#x9996;&#x5148;&#x5B9A;&#x4E49;&#x4E00;&#x4E2A;&#x4ED3;&#x5E93;&#x5730;&#x5740;&#x5408;&#x96C6;, &#x540D;&#x5B57;&#x81EA;&#x5B9A;&#x4E49;, &#x6211;&#x4EEC;&#x5C06;&#x5176;&#x547D;&#x540D;&#x4E3A;<code>all</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote add all git@github.com:xxx/xxx.git</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>&#x7136;&#x540E;&#x5C06;&#x9700;&#x8981;&#x540C;&#x65F6;&#x63A8;&#x9001;&#x7684;&#x4ED3;&#x5E93;&#x5730;&#x5740;&#x8FFD;&#x52A0;&#x8FDB;&#x5165;&#x8BE5;&#x5408;&#x96C6;&#x4E2D;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote set-url --add all git@gitee.com:xxx/xxx.git</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>&#x6B64;&#x65F6;&#x6211;&#x4EEC;&#x8F93;&#x5165;<code>git remote -v</code>&#x53EF;&#x4EE5;&#x67E5;&#x770B;&#x5F53;&#x524D;&#x4ED3;&#x5E93;&#x6240;&#x6709;&#x5730;&#x5740;&#x4FE1;&#x606F;, &#x5982;&#x4E0B;:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">all	git@github.com:xxx/xxx.git (fetch)</span></span><br><span class="line"><span class="meta">$</span><span class="bash">all	git@github.com:xxx/xxx.git (push)</span></span><br><span class="line"><span class="meta">$</span><span class="bash">all	git@gitee.com:xxx/xxx.git (push)</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>&#x6700;&#x540E;&#x63A8;&#x9001;&#x4ED3;&#x5E93;&#x5230;&#x8FDC;&#x7A0B;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push all master</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>&#x5982;&#x679C;&#x4F60;&#x60F3;&#x79FB;&#x9664;&#x67D0;&#x4E2A;&#x4ED3;&#x5E93;&#x5408;&#x96C6;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote rm all</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<h3 id="&#x9644;&#x52A0;"><a href="#&#x9644;&#x52A0;" class="headerlink" title="&#x9644;&#x52A0;"></a>&#x9644;&#x52A0;</h3><p>&#x5173;&#x4E8E;&#x4ED3;&#x5E93;&#x5730;&#x5740;&#x7684;&#x914D;&#x7F6E;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x76F4;&#x63A5;&#x5728; <code>.git/config</code> &#x67E5;&#x770B;,<code>git</code>&#x9ED8;&#x8BA4;&#x5408;&#x96C6;&#x540D;&#x4E3A;<code>origin</code> </p>
+<p>&#x5982;&#x679C;&#x4F60;&#x4E60;&#x60EF;&#x4E86;&#x8F93;&#x5165;<code>git push origin master</code>&#x6765;&#x63A8;&#x9001;&#x4ED3;&#x5E93;, &#x90A3;&#x4E48;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x76F4;&#x63A5;&#x6253;&#x5F00;<code>config</code>&#x6587;&#x4EF6;&#x7136;&#x540E;&#x5728;<code>origin</code>&#x5408;&#x96C6;&#x4E0B;&#x8FFD;&#x52A0;&#x5176;&#x4ED6;&#x4ED3;&#x5E93;&#x7684;&#x5730;&#x5740;, &#x5982;&#x4E0B;:</p>
+<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220915173750105.png" alt="image-20220915173750105"></p>
+<p>&#x4FDD;&#x5B58;&#x540E;, &#x6211;&#x4EEC;&#x5C31;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x5566; </p>
+<p>&#x5982;&#x679C;&#x4F60;&#x62C5;&#x5FC3;&#x6587;&#x672C;&#x8F93;&#x5165;&#x51FA;&#x9519;, &#x4E5F;&#x53EF;&#x4EE5;&#x91C7;&#x7528;&#x547D;&#x4EE4;&#x884C;&#x7684;&#x5F62;&#x5F0F;&#x8FDB;&#x884C;&#x5730;&#x5740;&#x8FFD;&#x52A0;:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote set-url --add origin git@gitee.com:xxx/xxx.git</span><br></pre></td></tr></table></figure>
+
 <p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B;&#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
 <p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
 <p><em><a href="https://code.newban.cn/">&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</a></em></p>
@@ -1982,7 +1972,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">475</span>
+                  <span class="site-state-item-count">476</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
