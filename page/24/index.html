@@ -288,6 +288,698 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../242.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../242.html" itemprop="url">springboot整合mybatis访问mysql数据库</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-12T13:14:19+08:00">
+                2021-08-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="&#x73AF;&#x5883;"><a href="#&#x73AF;&#x5883;" class="headerlink" title="&#x73AF;&#x5883;"></a>&#x73AF;&#x5883;</h2><ul>
+<li><strong>&#x6784;&#x5EFA;&#x5DE5;&#x5177;</strong>:Gradle</li>
+<li><strong>&#x5F00;&#x53D1;&#x8BED;&#x8A00;</strong>:Kotlin</li>
+<li><strong>mysql&#x7248;&#x672C;</strong>: 8.0</li>
+</ul>
+<h2 id="&#x914D;&#x7F6E;&#x6B65;&#x9AA4;"><a href="#&#x914D;&#x7F6E;&#x6B65;&#x9AA4;" class="headerlink" title="&#x914D;&#x7F6E;&#x6B65;&#x9AA4;"></a>&#x914D;&#x7F6E;&#x6B65;&#x9AA4;</h2><h4 id="1-&#x5F15;&#x5165;&#x4F9D;&#x8D56;"><a href="#1-&#x5F15;&#x5165;&#x4F9D;&#x8D56;" class="headerlink" title="1.&#x5F15;&#x5165;&#x4F9D;&#x8D56;"></a>1.&#x5F15;&#x5165;&#x4F9D;&#x8D56;</h4><p>&#x5728;build,gradle&#x6587;&#x4EF6;&#x5F15;&#x5165;mybatis-spring-boot-starter-web&#x7684;&#x4F9D;&#x8D56;&#xFF1A;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation &quot;org.springframework.boot:spring-boot-starter-web:2.4.9&quot;</span><br></pre></td></tr></table></figure>
+
+<p>&#x5F15;&#x5165;&#x6570;&#x636E;&#x5E93;&#x8FDE;&#x63A5;&#x4F9D;&#x8D56;&#xFF1A;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation &quot;mysql:mysql-connector-java:8.0.26&quot;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-&#x5F15;&#x5165;&#x6570;&#x636E;&#x6E90;"><a href="#2-&#x5F15;&#x5165;&#x6570;&#x636E;&#x6E90;" class="headerlink" title="2.&#x5F15;&#x5165;&#x6570;&#x636E;&#x6E90;"></a>2.&#x5F15;&#x5165;&#x6570;&#x636E;&#x6E90;</h4><p><code>application.yml</code>&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x4E2D;&#x5F15;&#x5165;&#x6570;&#x636E;&#x6E90;&#xFF1A;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  datasource:</span><br><span class="line">    url: jdbc:mysql://localhost:3306/test?characterEncoding=utf-8&amp;useSSL=false</span><br><span class="line">    username: root</span><br><span class="line">    password: 123456</span><br><span class="line">    driver: com.mysql.cj.jdbc.Driver</span><br></pre></td></tr></table></figure>
+
+<p>&#x8FD9;&#x6837;&#xFF0C;<code>springboot</code>&#x5C31;&#x53EF;&#x4EE5;&#x8BBF;&#x95EE;&#x6570;&#x636E;&#x4E86;&#x3002;</p>
+<h4 id="3-&#x521B;&#x5EFA;&#x6570;&#x636E;&#x5E93;&#x8868;"><a href="#3-&#x521B;&#x5EFA;&#x6570;&#x636E;&#x5E93;&#x8868;" class="headerlink" title="3.&#x521B;&#x5EFA;&#x6570;&#x636E;&#x5E93;&#x8868;"></a>3.&#x521B;&#x5EFA;&#x6570;&#x636E;&#x5E93;&#x8868;</h4><p>&#x5EFA;&#x8868;&#x8BED;&#x53E5;&#xFF1A;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">-- create table `account`</span><br><span class="line"># DROP TABLE `account` IF EXISTS</span><br><span class="line">CREATE TABLE `account` (</span><br><span class="line">  `id` int(11) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` varchar(20) NOT NULL,</span><br><span class="line">  `money` double DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;</span><br><span class="line">INSERT INTO `account` VALUES (&apos;1&apos;, &apos;aaa&apos;, &apos;1000&apos;);</span><br><span class="line">INSERT INTO `account` VALUES (&apos;2&apos;, &apos;bbb&apos;, &apos;1000&apos;);</span><br><span class="line">INSERT INTO `account` VALUES (&apos;3&apos;, &apos;ccc&apos;, &apos;1000&apos;);</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-&#x5177;&#x4F53;&#x5B9E;&#x73B0;"><a href="#4-&#x5177;&#x4F53;&#x5B9E;&#x73B0;" class="headerlink" title="4.&#x5177;&#x4F53;&#x5B9E;&#x73B0;"></a>4.&#x5177;&#x4F53;&#x5B9E;&#x73B0;</h4><p>&#x8FD9;&#x7BC7;&#x6587;&#x7BC7;&#x901A;&#x8FC7;&#x6CE8;&#x89E3;&#x7684;&#x5F62;&#x5F0F;&#x5B9E;&#x73B0;&#x3002;</p>
+<h5 id="5-&#x521B;&#x5EFA;&#x5B9E;&#x4F53;&#xFF1A;"><a href="#5-&#x521B;&#x5EFA;&#x5B9E;&#x4F53;&#xFF1A;" class="headerlink" title="5.&#x521B;&#x5EFA;&#x5B9E;&#x4F53;&#xFF1A;"></a>5.&#x521B;&#x5EFA;&#x5B9E;&#x4F53;&#xFF1A;</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">data class Account (</span><br><span class="line">    var id:Int = 0,</span><br><span class="line">    var name: String? = null,</span><br><span class="line">    var money :Double= 0.0</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h5 id="6-Dao&#x5C42;"><a href="#6-Dao&#x5C42;" class="headerlink" title="6.Dao&#x5C42;"></a>6.Dao&#x5C42;</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">@Mapperpublic interface AccountMapper {</span><br><span class="line"></span><br><span class="line">    @Insert(&quot;insert into account(name, money) values(#{name}, #{money})&quot;)</span><br><span class="line">    int add(@Param(&quot;name&quot;) String name, @Param(&quot;money&quot;) double money);</span><br><span class="line"></span><br><span class="line">    @Update(&quot;update account set name = #{name}, money = #{money} where id = #{id}&quot;)</span><br><span class="line">    int update(@Param(&quot;name&quot;) String name, @Param(&quot;money&quot;) double money, @Param(&quot;id&quot;) int  id);</span><br><span class="line"></span><br><span class="line">    @Delete(&quot;delete from account where id = #{id}&quot;)</span><br><span class="line">    int delete(int id);</span><br><span class="line"></span><br><span class="line">    @Select(&quot;select id, name as name, money as money from account where id = #{id}&quot;)</span><br><span class="line">    Account findAccount(@Param(&quot;id&quot;) int id);</span><br><span class="line"></span><br><span class="line">    @Select(&quot;select id, name as name, money as money from account&quot;)</span><br><span class="line">    List&lt;Account&gt; findAccountList();}</span><br></pre></td></tr></table></figure>
+
+<h4 id="7-service&#x5C42;"><a href="#7-service&#x5C42;" class="headerlink" title="7.service&#x5C42;"></a>7.service&#x5C42;</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">@Mapper</span><br><span class="line">interface AccountMapper {</span><br><span class="line">    @Insert(&quot;insert into account(name, money) values(#{name}, #{money})&quot;)</span><br><span class="line">    fun add(@Param(&quot;name&quot;) name: String?, @Param(&quot;money&quot;) money: Double): Int</span><br><span class="line"></span><br><span class="line">    @Update(&quot;update account set name = #{name}, money = #{money} where id = #{id}&quot;)</span><br><span class="line">    fun update(</span><br><span class="line">        @Param(&quot;name&quot;) name: String?,</span><br><span class="line">        @Param(&quot;money&quot;) money: Double,</span><br><span class="line">        @Param(&quot;id&quot;) id: Int</span><br><span class="line">    ): Int</span><br><span class="line"></span><br><span class="line">    @Delete(&quot;delete from account where id = #{id}&quot;)</span><br><span class="line">    fun delete(id: Int): Int</span><br><span class="line"></span><br><span class="line">    @Select(&quot;select id, name as name, money as money from account where id = #{id}&quot;)</span><br><span class="line">    fun findAccount(@Param(&quot;id&quot;) id: Int): Account?</span><br><span class="line"></span><br><span class="line">    @Select(&quot;select id, name as name, money as money from account&quot;)</span><br><span class="line">    fun findAccountList(): List&lt;Account?&gt;?</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h4 id="8-controller&#x5C42;&#xFF0C;&#x6784;&#x5EFA;restful-API"><a href="#8-controller&#x5C42;&#xFF0C;&#x6784;&#x5EFA;restful-API" class="headerlink" title="8.controller&#x5C42;&#xFF0C;&#x6784;&#x5EFA;restful API"></a>8.controller&#x5C42;&#xFF0C;&#x6784;&#x5EFA;restful API</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">@CrossOrigin</span><br><span class="line">@RestController</span><br><span class="line">class MainControl {</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    @Autowired</span><br><span class="line">    lateinit var accountService: AccountService</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @GetMapping(value = [&quot;/list&quot;])</span><br><span class="line">    fun getAccounts(): List&lt;Account&gt; {</span><br><span class="line">        return accountService.findAccountList()</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    @GetMapping(value = [&quot;/{id}&quot;])</span><br><span class="line">    fun getAccountById(@PathVariable(&quot;id&quot;) id: Int): Account? {</span><br><span class="line">        return accountService.findAccount(id)</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    @PutMapping(value = [&quot;/{id}&quot;])</span><br><span class="line">    fun updateAccount(</span><br><span class="line">        @PathVariable(&quot;id&quot;) id: Int, @RequestParam(value = &quot;name&quot;, required = true) name: String?,</span><br><span class="line">        @RequestParam(value = &quot;money&quot;, required = true) money: Double</span><br><span class="line">    ): String {</span><br><span class="line">        val t = accountService.update(name, money, id)</span><br><span class="line">        return if (t == 1) {</span><br><span class="line">            &quot;success&quot;</span><br><span class="line">        } else {</span><br><span class="line">            &quot;fail&quot;</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    @DeleteMapping(value = [&quot;/{id}&quot;])</span><br><span class="line">    fun delete(@PathVariable(value = &quot;id&quot;) id: Int): String {</span><br><span class="line">        val t = accountService.delete(id)</span><br><span class="line">        return if (t == 1) {</span><br><span class="line">            &quot;success&quot;</span><br><span class="line">        } else {</span><br><span class="line">            &quot;fail&quot;</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x914D;&#x7F6E;&#x5B8C;&#x6BD5;</p>
+<p>&#x6700;&#x540E;&#x542F;&#x52A8;&#x7A0B;&#x5E8F;, &#x6D4F;&#x89C8;&#x5668;&#x8BBF;&#x95EE;:<a href="/external_links/f5b363c0cd07f7bab5d459066d515e76.html" target="blank" rel="noopener">http://localhost:8080/list&#x8FDB;&#x884C;&#x6D4B;&#x8BD5;</a></p>
+<p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B; &#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt="img"></p>
+<p><em><a href="https://code.newban.cn/">&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../241.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../241.html" itemprop="url">SQL修改字段属性</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-11T15:14:19+08:00">
+                2021-08-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>1.&#x589E;&#x52A0;&#x5B57;&#x6BB5;</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE tableName ADD COLUMN columnName VARCHAR(20) DEFAULT NULL --&#x589E;&#x52A0;&#x4E00;&#x4E2A;&#x5B57;&#x6BB5;&#xFF0C;&#x9ED8;&#x8BA4;&#x4E3A;&#x7A7A;</span><br><span class="line">ALTER TABLE tableName ADD COLUMN columnName VARCHAR(20) NOT NULL     --&#x589E;&#x52A0;&#x4E00;&#x4E2A;&#x5B57;&#x6BB5;&#xFF0C;&#x9ED8;&#x8BA4;&#x4E0D;&#x80FD;&#x4E3A;&#x7A7A;</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.&#x5220;&#x9664;&#x5B57;&#x6BB5;</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE tableName DROP COLUMN columnName --&#x5220;&#x9664;&#x4E00;&#x4E2A;&#x5B57;&#x6BB5;</span><br></pre></td></tr></table></figure>
+
+<p><strong>3.&#x4FEE;&#x6539;&#x5B57;&#x6BB5;&#x7C7B;&#x578B;</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE tableName MODIFY COLUMN columnName VARCHAR(10) --&#x4FEE;&#x6539;&#x4E00;&#x4E2A;&#x5B57;&#x6BB5;&#x7684;&#x7C7B;&#x578B;</span><br></pre></td></tr></table></figure>
+
+<p><strong>4.&#x5220;&#x9664;&#x4E3B;&#x952E;</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Declare @Pk varChar(100);</span><br><span class="line">Select @Pk=Name from sysobjects where Parent_Obj=OBJECT_ID(&apos;tableName&apos;) and xtype=&apos;PK&apos;;</span><br><span class="line">if @Pk is not null</span><br><span class="line">exec(&apos;Alter table tableName Drop &apos;+ @Pk)</span><br></pre></td></tr></table></figure>
+
+<p><strong>5.&#x7ED9;&#x5DF2;&#x7ECF;&#x5EFA;&#x597D;&#x7684;&#x8868;&#x5B57;&#x6BB5;&#x6DFB;&#x52A0;&#x552F;&#x4E00;&#x6027;&#x7EA6;&#x675F;</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter table &#x8868;&#x540D; add unique(&#x5B57;&#x6BB5;&#x540D;);</span><br></pre></td></tr></table></figure>
+
+<p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B; &#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt="img"></p>
+<p><em><a href="https://code.newban.cn/">&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../240.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../240.html" itemprop="url">Android开发者快速上手Web前端开发</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-06T10:14:19+08:00">
+                2021-08-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="&#x524D;&#x8A00;"><a href="#&#x524D;&#x8A00;" class="headerlink" title="&#x524D;&#x8A00;"></a>&#x524D;&#x8A00;</h4><p>&#x6211;&#x4EEC;&#x90FD;&#x77E5;&#x9053;Web&#x524D;&#x7AEF;&#x4E3B;&#x8981;&#x7531;<strong>HTML</strong> <strong>CSS</strong> &#x548C;<strong>JS</strong>&#x4E09;&#x90E8;&#x5206;&#x8BED;&#x8A00;&#x7EC4;&#x6210;, &#x5176;&#x4E2D;<strong>HTML</strong>&#x548C;<strong>CSS</strong>&#x8D1F;&#x8D23;&#x754C;&#x9762;, <strong>JS</strong>&#x8D1F;&#x8D23;&#x4E8B;&#x4EF6;&#x903B;&#x8F91;</p>
+<p>&#x4EFB;&#x4F55;&#x4E00;&#x4E2A;&#x5E94;&#x7528;, &#x65E0;&#x975E;&#x5C31;&#x662F;&#x754C;&#x9762;&#x548C;&#x4E8B;&#x4EF6;&#x4E24;&#x5927;&#x5757;&#x7EC4;&#x6210;, &#x672C;&#x6587;&#x4E3B;&#x8981;&#x4ECB;&#x7ECD;&#x5982;&#x4F55;&#x5FEB;&#x901F;&#x4E0A;&#x624B;&#x754C;&#x9762;&#x7684;&#x7F16;&#x5199;</p>
+<h4 id="&#x63A7;&#x4EF6;&#x5BF9;&#x6BD4;"><a href="#&#x63A7;&#x4EF6;&#x5BF9;&#x6BD4;" class="headerlink" title="&#x63A7;&#x4EF6;&#x5BF9;&#x6BD4;"></a>&#x63A7;&#x4EF6;&#x5BF9;&#x6BD4;</h4><p><code>Android</code>&#x5E94;&#x7528;&#x754C;&#x9762;&#x7684;&#x7F16;&#x5199;&#x4E3B;&#x8981;&#x901A;&#x8FC7;&#x63A7;&#x4EF6;&#x7684;&#x6392;&#x5217;&#x7EC4;&#x5408;, &#x5E38;&#x7528;&#x7684;&#x63A7;&#x4EF6;&#x6709;<code>TextView</code>, <code>EditText</code>, <code>ImageView</code>, &#x90A3;&#x4E48;&#x5728;<code>Web</code>&#x524D;&#x7AEF;&#x4E2D;&#x4E5F;&#x6709;&#x7C7B;&#x4F3C;&#x4E8E;<code>Android</code>&#x4E2D;&#x7684;&#x63A7;&#x4EF6;,&#x53EA;&#x4E0D;&#x8FC7;&#x5728;&#x524D;&#x7AEF;&#x4E2D;&#x4E0D;&#x53EB;&#x63A7;&#x4EF6;, &#x800C;&#x53EB;&#x6807;&#x7B7E;, &#x90E8;&#x5206;&#x5BF9;&#x6BD4;&#x5982;&#x4E0B;:</p>
+<table>
+<thead>
+<tr>
+<th align="center">Html&#x6807;&#x7B7E;</th>
+<th align="center">Android&#x63A7;&#x4EF6;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">img&#x6807;&#x7B7E;</td>
+<td align="center">ImageView</td>
+</tr>
+<tr>
+<td align="center">input&#x6807;&#x7B7E;&#x548C;textarea&#x6807;&#x7B7E;</td>
+<td align="center">EditText</td>
+</tr>
+<tr>
+<td align="center">button&#x6807;&#x7B7E;</td>
+<td align="center">Button</td>
+</tr>
+<tr>
+<td align="center">h&#x7CFB;&#x5217;&#x6807;&#x7B7E;,p&#x6807;&#x7B7E;,span&#x6807;&#x7B7E;</td>
+<td align="center">&#x7C7B;&#x4F3C;&#x4E8E;TextView</td>
+</tr>
+<tr>
+<td align="center">div&#x6807;&#x7B7E;</td>
+<td align="center">&#x7C7B;&#x4F3C;&#x4E8E;&#x6C34;&#x5E73;&#x65B9;&#x5411;&#x7684;LinearLayout</td>
+</tr>
+</tbody></table>
+<p><strong>&#x5BB9;&#x5668;&#x6807;&#x7B7E;&#x548C;&#x6587;&#x672C;&#x6807;&#x7B7E;&#x4EE5;&#x53CA;&#x53F6;&#x5B50;&#x6807;&#x7B7E;&#x7684;&#x533A;&#x522B;</strong>:</p>
+<ul>
+<li><strong>&#x5BB9;&#x5668;&#x6807;&#x7B7E;</strong>: &#x91CC;&#x9762;&#x53EF;&#x4EE5;&#x5D4C;&#x5957;&#x5176;&#x4ED6;&#x6807;&#x7B7E;, &#x6BD4;&#x5982;<code>div</code>&#x6807;&#x7B7E;</li>
+<li><strong>&#x6587;&#x672C;&#x6807;&#x7B7E;</strong>: &#x91CC;&#x9762;&#x53EF;&#x4EE5;&#x586B;&#x5145;&#x6587;&#x672C;&#x663E;&#x793A;, &#x6BD4;&#x5982;<code>p</code>&#x6807;&#x7B7E;</li>
+<li><strong>&#x53F6;&#x5B50;&#x6807;&#x7B7E;</strong>:&#x91CC;&#x9762;&#x65E2;&#x4E0D;&#x53EF;&#x4EE5;&#x5D4C;&#x5957;&#x6807;&#x7B7E;&#x4E5F;&#x4E0D;&#x53EF;&#x4EE5;&#x5D4C;&#x5957;&#x6587;&#x672C;, &#x6BD4;&#x5982;<code>img</code>&#x6807;&#x7B7E;</li>
+</ul>
+<p>&#x5F53;&#x7136;, &#x6709;&#x4E9B;&#x6807;&#x7B7E;<strong>&#x65E2;&#x662F;&#x5BB9;&#x5668;&#x6807;&#x7B7E;&#x53C8;&#x662F;&#x6587;&#x672C;&#x6807;&#x7B7E;</strong>:</p>
+<table>
+<thead>
+<tr>
+<th align="center">&#x6807;&#x7B7E;</th>
+<th align="center">&#x5BB9;&#x5668;&#x6807;&#x7B7E;</th>
+<th align="center">&#x6587;&#x672C;&#x6807;&#x7B7E;</th>
+<th align="center">&#x53F6;&#x5B50;&#x6807;&#x7B7E;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">div</td>
+<td align="center">&#x221A;</td>
+<td align="center">&#x221A;</td>
+<td align="center">&#xD7;</td>
+</tr>
+<tr>
+<td align="center">p</td>
+<td align="center">&#xD7;</td>
+<td align="center">&#x221A;</td>
+<td align="center">&#xD7;</td>
+</tr>
+<tr>
+<td align="center">span</td>
+<td align="center">&#x221A;</td>
+<td align="center">&#x221A;</td>
+<td align="center">&#xD7;</td>
+</tr>
+<tr>
+<td align="center">h&#x7CFB;&#x5217;</td>
+<td align="center">&#x221A;</td>
+<td align="center">&#x221A;</td>
+<td align="center">&#xD7;</td>
+</tr>
+<tr>
+<td align="center">button</td>
+<td align="center">&#x221A;</td>
+<td align="center">&#x221A;</td>
+<td align="center">x</td>
+</tr>
+<tr>
+<td align="center">img</td>
+<td align="center">&#xD7;</td>
+<td align="center">&#xD7;</td>
+<td align="center">&#x221A;</td>
+</tr>
+<tr>
+<td align="center">audio</td>
+<td align="center">&#xD7;</td>
+<td align="center">&#xD7;</td>
+<td align="center">&#x221A;</td>
+</tr>
+<tr>
+<td align="center">video</td>
+<td align="center">&#xD7;</td>
+<td align="center">&#xD7;</td>
+<td align="center">&#x221A;</td>
+</tr>
+</tbody></table>
+<p>&#x9664;&#x6B64;&#x4E4B;&#x5916;, &#x6709;&#x7684;<strong>&#x6807;&#x7B7E;&#x672C;&#x8EAB;&#x81EA;&#x5E26;&#x6362;&#x884C;&#x7B26;</strong>:</p>
+<table>
+<thead>
+<tr>
+<th align="center">&#x6807;&#x7B7E;</th>
+<th align="center">&#x5F00;&#x5934;&#x81EA;&#x5E26;&#x6362;&#x884C;&#x7B26;</th>
+<th align="center">&#x7ED3;&#x5C3E;&#x81EA;&#x5E26;&#x6362;&#x884C;&#x7B26;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">div</td>
+<td align="center">&#x221A;</td>
+<td align="center">&#x221A;</td>
+</tr>
+<tr>
+<td align="center">h&#x7CFB;&#x5217;</td>
+<td align="center">&#x221A;</td>
+<td align="center">&#x221A;</td>
+</tr>
+<tr>
+<td align="center">button</td>
+<td align="center">x</td>
+<td align="center">x</td>
+</tr>
+<tr>
+<td align="center">p</td>
+<td align="center">&#x221A;</td>
+<td align="center">&#xD7;</td>
+</tr>
+<tr>
+<td align="center">ul</td>
+<td align="center">&#x221A;</td>
+<td align="center">&#x221A;</td>
+</tr>
+<tr>
+<td align="center">span</td>
+<td align="center">&#xD7;</td>
+<td align="center">&#xD7;</td>
+</tr>
+<tr>
+<td align="center">img</td>
+<td align="center">&#xD7;</td>
+<td align="center">&#xD7;</td>
+</tr>
+<tr>
+<td align="center">audio</td>
+<td align="center">&#xD7;</td>
+<td align="center">&#xD7;</td>
+</tr>
+<tr>
+<td align="center">video</td>
+<td align="center">&#xD7;</td>
+<td align="center">&#xD7;</td>
+</tr>
+</tbody></table>
+<p><strong>&#x5173;&#x4E8E;&#x63A7;&#x4EF6;&#x7684;&#x5BBD;&#x9AD8;&#x663E;&#x793A;</strong>:</p>
+<table>
+<thead>
+<tr>
+<th align="center">&#x6837;&#x5F0F;&#x5C5E;&#x6027;</th>
+<th align="center">Android&#x5BBD;&#x9AD8;&#x5C5E;&#x6027;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">display:block</td>
+<td align="center">android:layout_width=&#x201D;match_parent&#x201D;</td>
+</tr>
+<tr>
+<td align="center">display:inline</td>
+<td align="center">android:layout_width=&#x201D;wrap_content&#x201D;<br>android:layout_height=&#x201D;wrap_content&#x201D;</td>
+</tr>
+<tr>
+<td align="center">display:inline-block</td>
+<td align="center">android:layout_width=&#x201D;&#x81EA;&#x5B9A;&#x4E49;&#x201D; <br>android:layout_height=&#x201D;&#x81EA;&#x5B9A;&#x4E49;&#x201D;</td>
+</tr>
+</tbody></table>
+<p><strong>&#x5173;&#x4E8E;&#x5143;&#x7D20;&#x7684;&#x4F4D;&#x7F6E;&#x5B9A;&#x4F4D;:</strong></p>
+<table>
+<thead>
+<tr>
+<th>&#x6807;&#x7B7E;</th>
+<th>Android&#x63A7;&#x4EF6;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>position:absolute<br>&#x5143;&#x7D20;&#x7684;&#x4F4D;&#x7F6E;&#x4EE5;&#x6D4F;&#x89C8;&#x5668;&#x7A97;&#x53E3;&#x4E3A;&#x53C2;&#x7167;&#x6446;&#x653E;</td>
+<td>&#x76F8;&#x5F53;&#x4E8E;&#x8BBE;&#x7F6E;&#x6210;&#x4E3A;Framelayout&#x7684;&#x5B50;&#x63A7;&#x4EF6;</td>
+</tr>
+<tr>
+<td>position:relative<br>&#x5143;&#x7D20;&#x4F4D;&#x7F6E;&#x4EE5;&#x90BB;&#x8FD1;&#x5143;&#x7D20;&#x4E3A;&#x53C2;&#x7167;&#x6446;&#x653E;</td>
+<td>&#x76F8;&#x5F53;&#x4E8E;&#x8BBE;&#x7F6E;&#x6210;&#x4E3A;LinearLayout&#x7684;&#x5B50;&#x63A7;&#x4EF6;</td>
+</tr>
+<tr>
+<td>position:fixed<br>&#x5143;&#x7D20;&#x7684;&#x4F4D;&#x7F6E;&#x4EE5;&#x6D4F;&#x89C8;&#x5668;&#x7A97;&#x53E3;&#x4E3A;&#x53C2;&#x7167;&#x6446;&#x653E;, &#x4F46;&#x662F;&#x4E0D;&#x968F;&#x6EDA;&#x52A8;&#x6761;&#x79FB;&#x52A8;</td>
+<td>&#x76F8;&#x5F53;&#x4E8E;&#x5728;ScrollView&#x4E0A;&#x5C42;&#x589E;&#x52A0;&#x4E00;&#x4E2A;&#x56FA;&#x5B9A;&#x63A7;&#x4EF6;</td>
+</tr>
+<tr>
+<td>position: sticky<br>&#x7C98;&#x6027;&#x5B9A;&#x4F4D;, &#x5143;&#x7D20;&#x6EDA;&#x52A8;&#x8D85;&#x51FA;&#x9875;&#x9762;&#x65F6;&#x5207;&#x6362;&#x4E3A;fixed&#x6A21;&#x5F0F;</td>
+<td>&#x548C;Android&#x4E2D;&#x7C98;&#x6027;&#x63A7;&#x4EF6;&#x4E00;&#x6837;</td>
+</tr>
+<tr>
+<td>position: static<br>&#x9ED8;&#x8BA4;&#x72B6;&#x6001;,&#x6B64;&#x65F6;top left right bottom&#x7B49;&#x5C5E;&#x6027;&#x5747;&#x65E0;&#x6548;</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>&#x4E5F;&#x5C31;&#x662F;&#x8BF4;, <code>top left right bottom</code>&#x8FD9;&#x51E0;&#x4E2A;&#x5C5E;&#x6027;&#x9700;&#x8981;&#x548C;<code>position</code>&#x914D;&#x5408;&#x4F7F;&#x7528;</p>
+<p><strong>&#x5173;&#x4E8E;&#x81EA;&#x5B9A;&#x4E49;&#x63A7;&#x4EF6;(&#x6807;&#x7B7E;)</strong></p>
+<p>&#x5728;<code>Android</code>&#x4E2D;&#x9664;&#x4E86;&#x5B98;&#x65B9;&#x63D0;&#x4F9B;&#x7684;&#x539F;&#x751F;&#x63A7;&#x4EF6;&#x5916;, &#x6211;&#x4EEC;&#x8FD8;&#x53EF;&#x4EE5;&#x81EA;&#x5B9A;&#x4E49;&#x63A7;&#x4EF6;, &#x90A3;&#x4E48;<code>Web</code>&#x524D;&#x7AEF;&#x53EF;&#x4EE5;&#x5417;?</p>
+<p>&#x5982;&#x679C;&#x653E;&#x5728;&#x4EE5;&#x524D;&#x80AF;&#x5B9A;&#x4E0D;&#x884C;, &#x53EA;&#x80FD;&#x4F7F;&#x7528;&#x5B98;&#x65B9;&#x63D0;&#x4F9B;&#x7684;<code>html</code>&#x6807;&#x7B7E;, &#x73B0;&#x5728;<strong>nodejs&#x73AF;&#x5883;&#x4E0B;&#x53EF;&#x4EE5;&#x5B9E;&#x73B0;&#x81EA;&#x5B9A;&#x4E49;&#x6807;&#x7B7E;</strong>, &#x6BD4;&#x5982;<code>vue</code>&#x4E2D;:</p>
+<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20210806111608395.png" alt="image-20210806111608395"></p>
+<p>&#x5728;<code>Android</code>&#x4E2D;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5BF9;&#x63A7;&#x4EF6;&#x8BBE;&#x7F6E;&#x76F8;&#x5E94;&#x7684;&#x5C5E;&#x6027;, &#x5E76;&#x4E14;&#x628A;&#x5171;&#x540C;&#x7684;&#x5C5E;&#x6027;&#x62BD;&#x53D6;&#x5230;<code>style</code>&#x6587;&#x4EF6;&#x4E2D;</p>
+<p>&#x90A3;&#x4E48;<code>Web</code>&#x524D;&#x7AEF;&#x4E5F;&#x4E00;&#x6837;, &#x53EA;&#x4E0D;&#x8FC7;&#x5C5E;&#x6027;&#x548C;&#x6837;&#x5F0F;&#x5206;&#x5F00;&#x5904;&#x7406;,&#x62BD;&#x53D6;&#x51FA;&#x6765;&#x6837;&#x5F0F;&#x653E;&#x7F6E;&#x5728;<code>style</code>&#x6807;&#x7B7E;&#x4E0B;, &#x5982;&#x679C;&#x5355;&#x72EC;&#x653E;&#x5230;&#x4E00;&#x4E2A;&#x6587;&#x4EF6;&#x4E2D;, &#x90A3;&#x4E48;&#x8FD9;&#x4E2A;&#x6587;&#x4EF6;&#x7684;&#x540E;&#x7F00;&#x5FC5;&#x987B;&#x4E3A;<code>.css</code>, &#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x53C8;&#x79F0;&#x4E4B;&#x4E3A;<code>CSS</code>&#x6837;&#x5F0F;&#x8868; &#x6216;&#x8005;<code>CSS</code>&#x8BED;&#x8A00;</p>
+<p>&#x4E8B;&#x5B9E;&#x4E0A;, &#x6211;&#x4EEC;&#x4F1A;&#x53D1;&#x73B0;, <strong>Android&#x7684;&#x754C;&#x9762;&#x7F16;&#x5199;&#x65B9;&#x5F0F;&#x5F88;&#x591A;&#x90FD;&#x662F;&#x53C2;&#x8003;&#x7684;Web&#x524D;&#x7AEF;</strong></p>
+<p><strong>&#x5C0F;&#x7EC3;&#x4E60;:</strong></p>
+<ol>
+<li><p>&#x5199;&#x4E00;&#x4E2A;&#x5DE6;&#x4FA7;&#x5E26;&#x56FE;&#x6807;&#x7684;&#x6587;&#x672C;:</p>
+<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20210806122728724.png" alt="image-20210806122728724"></p>
+<p>&#x53EA;&#x8981;&#x4E00;&#x4E2A;<code>img</code>&#x6807;&#x7B7E;&#x548C;&#x4E00;&#x4E2A;<code>span</code>&#x6807;&#x7B7E;&#x591F;&#x4E86;:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">style</span>=<span class="string">&quot;max-width: 26px; max-height: 26px&quot;</span> <span class="attr">src</span>=<span class="string">&quot;./assets/logo.png&quot;</span>&gt;</span> <span class="tag">&lt;<span class="name">span</span>&gt;</span>&#x6210;&#x58A8;&#x6587;&#x6863;<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x6548;&#x679C;&#x5982;&#x4E0B;:</p>
+<p><img style="max-width: 26px; max-height: 26px" src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/logo.82b9c7a5.png"> <span>&#x6210;&#x58A8;&#x6587;&#x6863;</span></p>
+<p>&#x63A5;&#x4E0B;&#x6765;&#x9700;&#x8981;&#x7ED9;&#x5185;&#x5BB9;&#x589E;&#x52A0;&#x4E00;&#x4E2A;&#x8D85;&#x94FE;&#x63A5;, &#x6240;&#x4EE5;&#x5728;&#x6700;&#x5916;&#x5C42;&#x5305;&#x88F9;&#x4E00;&#x4E2A;<code>a</code>&#x6807;&#x7B7E;</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span>&gt;</span><span class="tag">&lt;<span class="name">img</span> <span class="attr">style</span>=<span class="string">&quot;max-width: 26px; max-height: 26px&quot;</span> <span class="attr">src</span>=<span class="string">&quot;./assets/logo.png&quot;</span>&gt;</span> <span class="tag">&lt;<span class="name">span</span>&gt;</span>&#x6210;&#x58A8;&#x6587;&#x6863;<span class="tag">&lt;/<span class="name">span</span>&gt;</span><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x6548;&#x679C;&#x5982;&#x4E0B;:</p>
+<p><a><img style="max-width: 26px; max-height: 26px" src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/logo.82b9c7a5.png"> <span>&#x6210;&#x58A8;&#x6587;&#x6863;</span></a></p>
+<p>&#x8003;&#x8651;&#x5230;&#x8FD9;&#x4E2A;&#x5185;&#x5BB9;&#x5C5E;&#x4E8E;&#x7F51;&#x7AD9;&#x7684;&#x7F51;&#x7AD9;&#x6807;&#x9898;, &#x4E3A;&#x4E86;&#x5229;&#x4E8E;<code>seo</code> &#x56E0;&#x6B64;&#x6700;&#x5916;&#x5C42;&#x518D;&#x5305;&#x88F9;&#x4E00;&#x4E2A;<code>h1</code>&#x6807;&#x7B7E;, &#x6B64;&#x65F6;&#x6587;&#x672C;&#x4E5F;&#x53D8;&#x5927;</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;navbar-brand&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/web/homepage/index&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">img</span> <span class="attr">style</span>=<span class="string">&quot;max-width: 26px; max-height: 26px&quot;</span> <span class="attr">src</span>=<span class="string">&quot;./assets/logo.png&quot;</span>&gt;</span> <span class="tag">&lt;<span class="name">span</span>&gt;</span>&#x6210;&#x58A8;&#x6587;&#x6863;<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x6548;&#x679C;&#x5982;&#x4E0B;:</p>
+<h1>
+  <a class="navbar-brand" href="/web/homepage/index">
+  <img style="max-width: 26px; max-height: 26px" src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/logo.82b9c7a5.png"> <span>&#x6210;&#x58A8;&#x6587;&#x6863;</span>
+  </a>
+  </h1>
+</li>
+<li><p>&#x5199;&#x4E00;&#x4E2A;&#x7F51;&#x7AD9;&#x5BFC;&#x822A;&#x6761;:</p>
+<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20210806154307953.png" alt="image-20210806154307953"></p>
+<p>html&#x4EE3;&#x7801;&#x5982;&#x4E0B;:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span>  <span class="attr">id</span>=<span class="string">&quot;navbar&quot;</span>&gt;</span></span><br><span class="line">   </span><br><span class="line">   <span class="tag">&lt;<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;navbar-brand&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/web/homepage/index&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">style</span>=<span class="string">&quot;max-width: 26px; max-height: 26px&quot;</span> <span class="attr">src</span>=<span class="string">&quot;./assets/logo.png&quot;</span>&gt;</span> <span class="tag">&lt;<span class="name">span</span>&gt;</span>&#x6210;&#x58A8;&#x6587;&#x6863;<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">      </span><br><span class="line">        <span class="tag">&lt;<span class="name">ul</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;/web/homepage/index&quot;</span>&gt;</span>&#x9996;&#x9875;<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">target</span>=<span class="string">&quot;_blank&quot;</span> <span class="attr">href</span>=<span class="string">&quot;https://www.xxx.com/pricing&quot;</span>&gt;</span>&#x4EF7;&#x683C;<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;http://blog.xxx.com/&quot;</span>&gt;</span>&#x535A;&#x5BA2;<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://docs.xxx.com/#/&quot;</span>&gt;</span>&#x5E2E;&#x52A9;&#x6587;&#x6863;<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;/web/homepage/apidoc&quot;</span>&gt;</span>API<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">li</span> <span class="attr">class</span>=<span class="string">&quot;long-li nav-item&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;/web/signup/sign_up&quot;</span> <span class="attr">id</span>=<span class="string">&quot;btn-register&quot;</span>&gt;</span>&#x514D;&#x8D39;&#x6CE8;&#x518C;<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">li</span> <span class="attr">class</span>=<span class="string">&quot;short-li nav-item&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;/web/login&quot;</span>&gt;</span>&#x767B;&#x5F55;<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x6548;&#x679C;&#x5982;&#x4E0B;:</p>
+</li>
+</ol>
+   <h1>
+     <a class="navbar-brand" href="/web/homepage/index">
+     <img style="max-width: 26px; max-height: 26px" src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/logo.82b9c7a5.png"> <span>&#x6210;&#x58A8;&#x6587;&#x6863;</span>
+     </a>
+     </h1>
+
+
+<pre><code>&lt;ul &gt;
+   &lt;li&gt;&lt;a href=&quot;/web/homepage/index&quot;&gt;&#x9996;&#x9875;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.xxx.com/pricing&quot;&gt;&#x4EF7;&#x683C;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://blog.xxx.com/&quot;&gt;&#x535A;&#x5BA2;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.xxx.com/#/&quot;&gt;&#x5E2E;&#x52A9;&#x6587;&#x6863;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;/web/homepage/apidoc&quot;&gt;API&lt;/a&gt;&lt;/li&gt;
+&lt;li class=&quot;long-li nav-item&quot;&gt;&lt;a href=&quot;/web/signup/sign_up&quot; id=&quot;btn-register&quot;&gt;&#x514D;&#x8D39;&#x6CE8;&#x518C;&lt;/a&gt;&lt;/li&gt;
+&lt;li class=&quot;short-li nav-item&quot;&gt;&lt;a href=&quot;/web/login&quot;&gt;&#x767B;&#x5F55;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</code></pre><p>   &#x6211;&#x4EEC;&#x9700;&#x8981;&#x7ED9;&#x5176;&#x6DFB;&#x52A0;&#x76F8;&#x5E94;&#x7684;&#x6837;&#x5F0F;:</p>
+   <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="selector-tag">style</span> &gt;</span><br><span class="line">   <span class="selector-id">#navbar</span>{</span><br><span class="line"> <span class="comment">/*&#x56FA;&#x5B9A;&#x5728;&#x9876;&#x90E8;*/</span></span><br><span class="line">   <span class="attribute">position</span>: fixed;</span><br><span class="line">   <span class="attribute">top</span>:<span class="number">0px</span>;</span><br><span class="line">   <span class="attribute">left</span>:<span class="number">0px</span>;</span><br><span class="line">   <span class="attribute">width</span>:<span class="number">100%</span>;</span><br><span class="line">   <span class="attribute">height</span>:<span class="number">64px</span>;</span><br><span class="line">   <span class="attribute">background-color</span>:<span class="number">#AAAAAA</span>;</span><br><span class="line">   <span class="attribute">padding-left</span>:<span class="number">50px</span>;</span><br><span class="line">   <span class="attribute">padding-right</span>:<span class="number">20px</span>;</span><br><span class="line">   <span class="attribute">display</span>:flex;</span><br><span class="line">       <span class="attribute">align-items</span>:center;<span class="comment">/*&#x6307;&#x5B9A;&#x5782;&#x76F4;&#x5C45;&#x4E2D;*/</span></span><br><span class="line">   }</span><br><span class="line"><span class="selector-tag">ul</span>{</span><br><span class="line"></span><br><span class="line">  <span class="attribute">display</span>: inline-block;</span><br><span class="line">     <span class="comment">/*&#x5217;&#x8868;&#x5411;&#x53F3;&#x6D6E;&#x52A8;*/</span></span><br><span class="line">			<span class="attribute">float</span>: right;</span><br><span class="line">}</span><br><span class="line"><span class="selector-tag">h1</span>{</span><br><span class="line">  <span class="attribute">display</span>:inline;</span><br><span class="line">}</span><br><span class="line"><span class="selector-tag">li</span>{</span><br><span class="line">  <span class="comment">/*&#x53BB;&#x9664;&#x5217;&#x8868;&#x4E2D;&#x7684;&#x539F;&#x70B9;&#x6837;&#x5F0F;*/</span></span><br><span class="line">  <span class="attribute">list-style</span>: none; </span><br><span class="line">  </span><br><span class="line"> </span><br><span class="line">   <span class="comment">/*&#x5217;&#x8868;&#x4ECE;&#x5DE6;&#x5411;&#x53F3;&#x6D6E;&#x52A8;*/</span></span><br><span class="line">			<span class="attribute">float</span>: left;</span><br><span class="line">    <span class="attribute">margin-left</span>: <span class="number">40px</span>;</span><br><span class="line">} </span><br><span class="line"></span><br><span class="line"><span class="selector-tag">a</span>{</span><br><span class="line">  <span class="comment">/*&#x53D6;&#x6D88;&#x8D85;&#x94FE;&#x63A5;&#x4E0B;&#x5212;&#x7EBF;*/</span>	</span><br><span class="line">  <span class="attribute">text-decoration</span>: none;</span><br><span class="line"></span><br><span class="line">}</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+
+<p>&#x4EE5;&#x4E0A;&#x662F;&#x6BD4;&#x8F83;&#x57FA;&#x7840;&#x7684;&#x7EC3;&#x4E60;, &#x719F;&#x6089;&#x7684;&#x5DEE;&#x4E0D;&#x591A;&#x4E86;&#x540E;, &#x6211;&#x4EEC;&#x5F00;&#x59CB;&#x8FDB;&#x5165;&#x5230;&#x4F7F;&#x7528;vue&#x7684;&#x5F00;&#x53D1;&#x9636;&#x6BB5;</p>
+<h4 id="Vue&#x5FEB;&#x901F;&#x4E0A;&#x624B;"><a href="#Vue&#x5FEB;&#x901F;&#x4E0A;&#x624B;" class="headerlink" title="Vue&#x5FEB;&#x901F;&#x4E0A;&#x624B;"></a>Vue&#x5FEB;&#x901F;&#x4E0A;&#x624B;</h4><p><strong>&#x73AF;&#x5883;&#x914D;&#x7F6E;</strong>:</p>
+<ul>
+<li><a href="/external_links/6beddfb18e5c313f047aeccdd653ca50.html" target="blank" rel="noopener">nodejs</a></li>
+<li><a href="/external_links/540db7d85547ef5be41677f2bcfff64c.html" target="blank" rel="noopener">@vue/cli</a></li>
+</ul>
+<p><strong>vue&#x9879;&#x76EE;&#x521B;&#x5EFA;</strong>:</p>
+<p>&#x7B2C;&#x4E00;&#x6B65; &#x5B89;&#x88C5;vue:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g @vue/cli-service-global</span><br></pre></td></tr></table></figure>
+
+<p>&#x7B2C;&#x4E8C;&#x6B65; &#x521B;&#x5EFA;&#x811A;&#x624B;&#x67B6;(&#x6A21;&#x677F;&#x5DE5;&#x7A0B;)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vue create hello-world</span><br><span class="line"></span><br><span class="line"><span class="comment">#&#x6216;&#x8005;&#x76F4;&#x63A5;&#x4F7F;&#x7528;&#x56FE;&#x5F62;&#x5316;&#x754C;&#x9762;&#x521B;&#x5EFA;</span></span><br><span class="line">vue ui</span><br></pre></td></tr></table></figure>
+
+<p>&#x8FD9;&#x91CC;&#x76F4;&#x63A5;&#x4F7F;&#x7528;&#x56FE;&#x5F62;&#x5316;&#x521B;&#x5EFA;:</p>
+<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20210806115245063.png" alt="image-20210806115245063"></p>
+<p>&#x521B;&#x5EFA;&#x540E;&#x81EA;&#x52A8;&#x751F;&#x6210;&#x76F8;&#x5E94;&#x7684;&#x6587;&#x4EF6;&#x548C;&#x76EE;&#x5F55;, &#x76EE;&#x5F55;&#x7ED3;&#x6784;&#x5982;&#x4E0B;:</p>
+<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20210806115856398.png" alt="image-20210806115856398"></p>
+<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20210806162357285.png" alt="image-20210806162357285"></p>
+<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20210806170246960.png" alt="image-20210806170246960"></p>
+<p>&#x5927;&#x90E8;&#x5206;&#x548C;&#x539F;&#x751F;&#x76F8;&#x6BD4;&#x5DEE;&#x522B;&#x4E0D;&#x5927;, &#x4F46;&#x662F;&#x5F00;&#x53D1;&#x4E0A;&#x66F4;&#x52A0;&#x9AD8;&#x6548;,&#x5177;&#x4F53;&#x53C2;&#x8003;:</p>
+<p><a href="https://code.newban.cn/239.html">Vue&#x5165;&#x95E8;&#x57FA;&#x7840;&#x8BED;&#x6CD5;</a></p>
+<h4 id="&#x4E3A;&#x4EC0;&#x4E48;&#x9009;&#x62E9;vue"><a href="#&#x4E3A;&#x4EC0;&#x4E48;&#x9009;&#x62E9;vue" class="headerlink" title="&#x4E3A;&#x4EC0;&#x4E48;&#x9009;&#x62E9;vue"></a>&#x4E3A;&#x4EC0;&#x4E48;&#x9009;&#x62E9;vue</h4><p><strong>vue&#x53EA;&#x662F;&#x4E00;&#x4E2A;&#x5F00;&#x53D1;&#x6846;&#x67B6; &#x6216;&#x8005;&#x7406;&#x89E3;&#x4E3A;&#x4E00;&#x4E2A;&#x4E2D;&#x95F4;&#x4EBA;</strong>, &#x5B83;&#x501F;&#x52A9;&#x4E8E;<code>nodejs</code>&#x73AF;&#x5883;, &#x4F7F;&#x5F97;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x91C7;&#x7528;<code>MVVM</code>&#x7684;&#x6A21;&#x578B;, &#x540C;&#x65F6;&#x96C6;&#x6210;&#x7B2C;&#x4E09;&#x65B9;&#x5404;&#x79CD;&#x63D2;&#x4EF6;, &#x65B9;&#x4FBF;&#x800C;&#x53C8;&#x5FEB;&#x901F;&#x5730;&#x7EC4;&#x4EF6;&#x5316;&#x5F00;&#x53D1;, &#x76F8;&#x6BD4;&#x539F;&#x751F;&#x800C;&#x8A00;&#x6574;&#x4F53;&#x7684;&#x67B6;&#x6784;&#x4E5F;&#x66F4;&#x52A0;&#x6E05;&#x6670;, &#x540E;&#x671F;&#x7EF4;&#x62A4;&#x4E5F;&#x5F97;&#x5FC3;&#x5E94;&#x624B;</p>
+<p>&#x5F53;&#x7136;, &#x4F60;&#x4E5F;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x5176;&#x4ED6;&#x524D;&#x7AEF;&#x6846;&#x67B6;, &#x6BD4;&#x5982;<code>Facebook</code>&#x7684;<code>React</code>&#x6846;&#x67B6;, &#x6216;&#x8005;<code>Google</code>&#x63A8;&#x51FA;&#x7684;<code>Angular</code>&#x6846;&#x67B6;, &#x672A;&#x6765;&#x4E5F;&#x53EF;&#x80FD;&#x51FA;&#x73B0;&#x65B0;&#x7684;&#x6846;&#x67B6;, &#x4F46;&#x6709;&#x4E00;&#x70B9;&#x662F;&#x4E0D;&#x4F1A;&#x53D8;&#x7684;, &#x4E0D;&#x7BA1;&#x662F;&#x4EC0;&#x4E48;&#x6846;&#x67B6;, &#x5B83;&#x7F16;&#x8BD1;&#x51FA;&#x6765;&#x6700;&#x7EC8;&#x6587;&#x4EF6;&#x8FD8;&#x662F;<code>html</code> <code>css</code>&#x548C;<code>js</code>, &#x56E0;&#x4E3A; &#x76EE;&#x524D;&#x6D4F;&#x89C8;&#x5668;&#x53EA;&#x8BC6;&#x522B;&#x8FD9;&#x4E09;&#x79CD;&#x6587;&#x4EF6;</p>
+<p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B; &#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt="img"></p>
+<p><em><a href="https://code.newban.cn/">&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</a></em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../238.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1425,469 +2117,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../232.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../232.html" itemprop="url">关于android scheme跳转配置中pathPattern的使用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-03T10:14:19+08:00">
-                2021-06-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="Scheme&#x534F;&#x8BAE;&#x5728;Android&#x4E2D;&#x4F7F;&#x7528;&#x573A;&#x666F;"><a href="#Scheme&#x534F;&#x8BAE;&#x5728;Android&#x4E2D;&#x4F7F;&#x7528;&#x573A;&#x666F;" class="headerlink" title="Scheme&#x534F;&#x8BAE;&#x5728;Android&#x4E2D;&#x4F7F;&#x7528;&#x573A;&#x666F;"></a>Scheme&#x534F;&#x8BAE;&#x5728;Android&#x4E2D;&#x4F7F;&#x7528;&#x573A;&#x666F;</h4><ol>
-<li><p>H5&#x9875;&#x9762;&#x548C;Native&#x9875;&#x9762;&#x7684;&#x4EA4;&#x4E92;</p>
-</li>
-<li><p>&#x5BA2;&#x6237;&#x7AEF;&#x83B7;&#x53D6;push&#x6D88;&#x606F;&#x4E2D;&#x540E;&#xFF0C;&#x70B9;&#x51FB;&#x6D88;&#x606F;&#x8DF3;&#x8F6C;&#x5230;APP&#x5185;&#x90E8;&#x9875;&#x9762;</p>
-</li>
-<li><p>APP&#x6839;&#x636E;URL&#x8DF3;&#x8F6C;&#x5230;&#x53E6;&#x5916;&#x4E00;&#x4E2A;APP&#x6307;&#x5B9A;&#x9875;&#x9762;</p>
-</li>
-<li><p>&#x5916;&#x90E8;&#x6D4F;&#x89C8;&#x5668;&#x5524;&#x9192;App</p>
-</li>
-</ol>
-<h4 id="Scheme&#x534F;&#x8BAE;&#x7684;&#x4F7F;&#x7528;"><a href="#Scheme&#x534F;&#x8BAE;&#x7684;&#x4F7F;&#x7528;" class="headerlink" title="Scheme&#x534F;&#x8BAE;&#x7684;&#x4F7F;&#x7528;"></a>Scheme&#x534F;&#x8BAE;&#x7684;&#x4F7F;&#x7528;</h4><ol>
-<li><strong>&#x573A;&#x666F;&#x4E00; &#x5916;&#x90E8;&#x6D4F;&#x89C8;&#x5668;&#x5524;&#x9192;app</strong></li>
-</ol>
-<p>&#x4EE5;<code>app://test/good?goodsId=3</code>&#x8FD9;&#x4E2A;&#x5185;&#x94FE;&#x4E3A;&#x4F8B;, &#x5047;&#x8BBE;&#x6D4F;&#x89C8;&#x5668;&#x4E2D;&#x70B9;&#x51FB;&#x8BE5;&#x5185;&#x94FE;&#x9700;&#x8981;&#x8DF3;&#x8F6C;&#x5230;&#x5E94;&#x7528;&#x7684;&#x6307;&#x5B9A;Activity</p>
-<p>&#x90A3;&#x4E48;,&#x9996;&#x5148;&#x5728;&#x6E05;&#x5355;&#x6587;&#x4EF6;&#x4E2D;&#x5BF9;&#x6307;&#x5B9A;Activity&#x8FDB;&#x884C;intent&#x8FC7;&#x6EE4;&#x914D;&#x7F6E;:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;activity</span><br><span class="line">          android:name=&quot;.ui.login.LoginActivity&quot;</span><br><span class="line">          android:screenOrientation=&quot;portrait&quot;&gt;</span><br><span class="line">          &lt;intent-filter&gt;</span><br><span class="line">          &lt;!--&#x53EF;&#x4EE5;&#x6839;&#x636E;&#x7528;&#x6237;&#x7684;&#x6570;&#x636E;&#x7C7B;&#x578B;&#xFF0C;&#x6253;&#x5F00;&#x76F8;&#x5E94;&#x7684;Activity--&gt;</span><br><span class="line">              &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;</span><br><span class="line">              &lt;!--&#x754C;&#x9762;&#x53EF;&#x4EE5;&#x88AB;&#x9690;&#x5F0F;&#x8C03;&#x7528;--&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;</span><br><span class="line">              &lt;!--&#x754C;&#x9762;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x6D4F;&#x89C8;&#x5668;&#x7684;&#x8FDE;&#x63A5;&#x542F;&#x52A8;--&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; /&gt;</span><br><span class="line">              &lt;!--&#x534F;&#x8BAE;&#x90E8;&#x5206;&#xFF0C;&#x4E3B;&#x8981;&#x662F;&#x914D;&#x7F6E;scheme&#x548C;host--&gt;</span><br><span class="line">              &lt;data</span><br><span class="line">              		android:path=&quot;/good&quot;</span><br><span class="line">                  android:host=&quot;test&quot;</span><br><span class="line">                  android:scheme=&quot;app&quot; /&gt;</span><br><span class="line">          &lt;/intent-filter&gt;</span><br><span class="line">      &lt;/activity&gt;</span><br></pre></td></tr></table></figure>
-
-<p>&#x7136;&#x540E;&#x5728;<code>Activity</code>&#x7684;<code>onCreate</code>&#x65B9;&#x6CD5;&#x4E2D;&#x8FDB;&#x884C;&#x53C2;&#x6570;&#x7684;&#x83B7;&#x53D6;&#x548C;&#x903B;&#x8F91;&#x7684;&#x5904;&#x7406;:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Uri data = getIntent().getData();</span><br><span class="line">String param = data.getQueryParameter(&quot;goodsId&quot;);//&#x83B7;&#x53D6;&#x6307;&#x5B9A;key&#x4E0B;&#x7684;&#x53C2;&#x6570;</span><br></pre></td></tr></table></figure>
-
-<p>&#x6700;&#x540E;&#x6D4B;&#x8BD5;&#x8DF3;&#x8F6C;&#x5373;&#x53EF;</p>
-<ol start="2">
-<li><p><strong>&#x573A;&#x666F;&#x4E8C; &#x5E94;&#x7528;&#x5185;&#x90E8;H5&#x4EA4;&#x4E92;(&#x9875;&#x9762;&#x8DF3;&#x8F6C;)</strong></p>
-<p>&#x8FD8;&#x662F;&#x4EE5;<code>app://test/good?goodsId=3</code>&#x8FD9;&#x4E2A;&#x5185;&#x94FE;&#x4E3A;&#x4F8B;, &#x5047;&#x8BBE;WebView&#x4E2D;&#x70B9;&#x51FB;&#x8BE5;&#x5185;&#x94FE;&#x9700;&#x8981;&#x8DF3;&#x8F6C;&#x5230;&#x5E94;&#x7528;&#x7684;&#x6307;&#x5B9A;Activity</p>
-<p>&#x9996;&#x5148;&#x8FD8;&#x662F;&#x5728;&#x6E05;&#x5355;&#x6587;&#x4EF6;&#x4E2D;&#x914D;&#x7F6E;,&#x5982;&#x4E0A;</p>
-<p>&#x7136;&#x540E;&#x914D;&#x7F6E;webview:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {</span><br><span class="line">startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))</span><br><span class="line">  return true</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-
-<p>&#x56E0;&#x4E3A;webview&#x5C5E;&#x4E8E;&#x5F00;&#x53D1;&#x8005;&#x81EA;&#x5B9A;&#x4E49;, &#x56E0;&#x6B64;&#x5185;&#x94FE;&#x8DF3;&#x8F6C;&#x903B;&#x8F91;&#x9700;&#x8981;&#x5728;<code>shouldOverrideUrlLoading</code>&#x65B9;&#x6CD5;&#x4E2D;&#x81EA;&#x884C;&#x5904;&#x7406;</p>
-</li>
-<li><p><strong>&#x573A;&#x666F;&#x4E09; &#x5E94;&#x7528;&#x5185;&#x90E8;H5&#x4EA4;&#x4E92;(&#x975E;&#x9875;&#x9762;&#x8DF3;&#x8F6C;)</strong></p>
-<p>&#x6709;&#x65F6;&#x5019;&#x9700;&#x6C42;&#x4E0D;&#x5355;&#x5355;&#x662F;&#x9875;&#x9762;&#x7684;&#x8DF3;&#x8F6C;, &#x53EF;&#x80FD;&#x8FD8;&#x6D89;&#x53CA;&#x5230;&#x5176;&#x4ED6;ui&#x6216;&#x8005;&#x903B;&#x8F91;&#x7684;&#x4EA4;&#x4E92;, &#x6BD4;&#x5982;&#x8DF3;&#x8F6C;&#x5230;&#x652F;&#x4ED8;&#x5B9D;&#x5931;&#x8D25;&#x540E;&#x5F39;&#x51FA;&#x5F39;&#x7A97;&#x7B49;&#x7B49;, &#x8FD9;&#x4E2A;&#x65F6;&#x5019;,&#x6211;&#x4EEC;&#x9700;&#x8981;&#x5728;<code>shouldOverrideUrlLoading</code>&#x65B9;&#x6CD5;&#x4E2D;&#x8FDB;&#x884C;&#x4E0D;&#x540C;scheme&#x7684;&#x5904;&#x7406;:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {</span><br><span class="line">                 if (url.startsWith(&quot;alipay&quot;)) {</span><br><span class="line">                        try {</span><br><span class="line">                            startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))</span><br><span class="line">                        } catch (e: Exception) {</span><br><span class="line">                            e.printStackTrace()</span><br><span class="line">                            AlertDialog.Builder(requireContext())</span><br><span class="line">                                .setMessage(&quot;&#x672A;&#x68C0;&#x6D4B;&#x5230;&#x652F;&#x4ED8;&#x5B9D;&#x5BA2;&#x6237;&#x7AEF;&#xFF0C;&#x8BF7;&#x5B89;&#x88C5;&#x540E;&#x91CD;&#x8BD5;&#x3002;&quot;)</span><br><span class="line">                                .setPositiveButton(&quot;&quot;) { _, _ -&gt;</span><br><span class="line">                                    startActivity(</span><br><span class="line">                                        Intent(</span><br><span class="line">                                            Intent.ACTION_VIEW,</span><br><span class="line">                                            &quot;https://d.alipay.com&quot;.toUri()</span><br><span class="line">                                        )</span><br><span class="line">                                    )</span><br><span class="line">                                }</span><br><span class="line">                                .setNegativeButton(&quot;&#x53D6;&#x6D88;&quot;, null).show()</span><br><span class="line">                        }</span><br><span class="line">                    } </span><br><span class="line">                    return true</span><br><span class="line">                    }</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>&#x573A;&#x666F;&#x56DB; &#x5E94;&#x7528;&#x5185;Activity&#x4E4B;&#x95F4;&#x7684;&#x8DF3;&#x8F6C;</strong></p>
-<p>&#x9996;&#x5148;&#x4F9D;&#x7136;&#x5728;&#x6E05;&#x5355;&#x6587;&#x4EF6;&#x4E2D;&#x914D;&#x7F6E;</p>
-<p>&#x7136;&#x540E;&#x4F7F;&#x7528;&#x9690;&#x5F0F;&#x8DF3;&#x8F6C;:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(&quot;`app://test/good?goodsId=3`&quot;)))</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<h4 id="&#x591A;&#x4E2A;&#x4E0D;&#x540C;scheme&#x8DF3;&#x8F6C;&#x540C;&#x4E00;&#x4E2A;&#x9875;&#x9762;"><a href="#&#x591A;&#x4E2A;&#x4E0D;&#x540C;scheme&#x8DF3;&#x8F6C;&#x540C;&#x4E00;&#x4E2A;&#x9875;&#x9762;" class="headerlink" title="&#x591A;&#x4E2A;&#x4E0D;&#x540C;scheme&#x8DF3;&#x8F6C;&#x540C;&#x4E00;&#x4E2A;&#x9875;&#x9762;"></a>&#x591A;&#x4E2A;&#x4E0D;&#x540C;scheme&#x8DF3;&#x8F6C;&#x540C;&#x4E00;&#x4E2A;&#x9875;&#x9762;</h4><p>&#x53EA;&#x9700;&#x8981;&#x5728;&#x6E05;&#x5355;&#x6587;&#x4EF6;&#x589E;&#x52A0;&#x591A;&#x4E2A;<code>data</code>&#x6807;&#x7B7E;&#x5373;&#x53EF;:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;activity</span><br><span class="line">          android:name=&quot;.ui.login.LoginActivity&quot;</span><br><span class="line">          android:screenOrientation=&quot;portrait&quot;&gt;</span><br><span class="line">          &lt;intent-filter&gt;</span><br><span class="line">              &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;</span><br><span class="line">              &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; /&gt;</span><br><span class="line">					</span><br><span class="line">              &lt;data</span><br><span class="line">              		android:path=&quot;/good&quot;</span><br><span class="line">                  android:host=&quot;test&quot;</span><br><span class="line">                  android:scheme=&quot;app&quot; /&gt;</span><br><span class="line">                  </span><br><span class="line">					</span><br><span class="line">              &lt;data</span><br><span class="line">                  android:host=&quot;test2&quot;</span><br><span class="line">                  android:scheme=&quot;app&quot; /&gt;</span><br><span class="line">          &lt;/intent-filter&gt;</span><br><span class="line">      &lt;/activity&gt;</span><br></pre></td></tr></table></figure>
-
-<h4 id="&#x4F7F;&#x7528;pathPattern&#x5339;&#x914D;&#x6A21;&#x5F0F;"><a href="#&#x4F7F;&#x7528;pathPattern&#x5339;&#x914D;&#x6A21;&#x5F0F;" class="headerlink" title="&#x4F7F;&#x7528;pathPattern&#x5339;&#x914D;&#x6A21;&#x5F0F;"></a>&#x4F7F;&#x7528;pathPattern&#x5339;&#x914D;&#x6A21;&#x5F0F;</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;data</span><br><span class="line">                   android:pathPattern=&quot;/.*&quot;</span><br><span class="line">                   android:host=&quot;test&quot;</span><br><span class="line">                   android:scheme=&quot;app&quot; /&gt;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x8868;&#x793A;&#x5339;&#x914D;&#x4EFB;&#x610F;&#x5B57;&#x7B26; *&#x8868;&#x793A;&#x5339;&#x914D;0&#x6B21;&#x6216;&#x591A;&#x6B21;  &#x9057;&#x61BE;&#x7684;&#x662F;pathPattern&#x65E0;&#x6CD5;&#x4F7F;&#x7528;&#x6807;&#x51C6;&#x7684;&#x6B63;&#x5219;&#x8868;&#x8FBE;&#x5F0F; &#x53EA;&#x6709;* &#x548C;.&#x53EF;&#x7528;</span><br></pre></td></tr></table></figure>
-
-<h4 id="&#x5173;&#x4E8E;sspPattern&#x5339;&#x914D;&#x6A21;&#x5F0F;"><a href="#&#x5173;&#x4E8E;sspPattern&#x5339;&#x914D;&#x6A21;&#x5F0F;" class="headerlink" title="&#x5173;&#x4E8E;sspPattern&#x5339;&#x914D;&#x6A21;&#x5F0F;"></a>&#x5173;&#x4E8E;sspPattern&#x5339;&#x914D;&#x6A21;&#x5F0F;</h4><p>&#x6211;&#x4EEC;&#x4F7F;&#x7528;&#x5185;&#x94FE;&#x7684;&#x683C;&#x5F0F;&#x4E00;&#x822C;&#x548C;<code>url</code>&#x683C;&#x5F0F;&#x4E00;&#x81F4;,&#x6BD4;&#x5982;<code>app://test</code>, &#x5982;&#x679C;&#x6211;&#x4EEC;&#x60F3;&#x4F7F;&#x7528;&#x81EA;&#x5B9A;&#x4E49;&#x683C;&#x5F0F;&#x6BD4;&#x5982;&#x8FD9;&#x79CD;<code>app:test</code>, &#x90A3;&#x5E38;&#x89C4;&#x7684;&#x65B9;&#x6CD5;&#x5219;&#x4E0D;&#x594F;&#x6548;,&#x6B64;&#x65F6;<code>sspPattern</code>&#x5C31;&#x53EF;&#x4EE5;&#x6D3E;&#x4E0A;&#x7528;&#x573A;</p>
-<p>&#x6211;&#x4EEC;&#x5728;&#x6E05;&#x5355;&#x6587;&#x4EF6;&#x4E2D;&#x5982;&#x4E0B;&#x914D;&#x7F6E;&#x5373;&#x53EF;:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;data</span><br><span class="line">                   android:ssp=&quot;test&quot;</span><br><span class="line">                   android:scheme=&quot;app&quot; /&gt;</span><br></pre></td></tr></table></figure>
-
-<p>&#x540C;&#x6837;&#x8BE5;&#x6A21;&#x5F0F;&#x4E0B;&#x5BF9;&#x5E94;&#x4E09;&#x4E2A;&#x5C5E;&#x6027;:</p>
-<ul>
-<li>ssp :&#x5B57;&#x9762;&#x503C;&#x5339;&#x914D;&#x6A21;&#x5F0F;(PATTERN_LITERAL) &#x5185;&#x90E8;&#x91C7;&#x7528;equals&#x51FD;&#x6570;</li>
-<li>sspPrefix &#x524D;&#x7F00;&#x5339;&#x914D;&#x6A21;&#x5F0F;(PATTERN_PREFIX) &#x5185;&#x90E8;&#x91C7;&#x7528;startWith&#x51FD;&#x6570;</li>
-<li>sspPattern &#x5168;&#x5C40;&#x5339;&#x914D;&#x6A21;&#x5F0F;(PATTERN_GLOB) glob&#x89C4;&#x5219;&#x662F;&#x4E00;&#x79CD;&#x7B80;&#x5316;&#x7684;&#x6A21;&#x5F0F;&#xFF0C;&#x53EA;&#x652F;&#x6301;&#x201C;*&#x201D;&#x548C;&#x201C;.&#x201D;&#x4F5C;&#x4E3A;&#x901A;&#x914D;&#x7B26; </li>
-</ul>
-<p>&#x5B9E;&#x9645;&#x4E0A;&#x7C7B;&#x4F3C;&#x4E8E;url&#x683C;&#x5F0F;&#x7684;&#x5185;&#x94FE;, &#x6BD4;&#x5982;<code>app://test</code>&#x4E5F;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;<code>ssp</code>&#x8FDB;&#x884C;&#x5339;&#x914D;:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;data</span><br><span class="line">                    android:ssp=&quot;//test&quot;</span><br><span class="line">                    android:scheme=&quot;app&quot; /&gt;</span><br></pre></td></tr></table></figure>
-
-<p>&#x4E0D;&#x8FC7;&#x4E00;&#x822C;&#x6211;&#x4EEC;&#x4E0D;&#x4F1A;&#x8FD9;&#x4E48;&#x505A;, &#x56E0;&#x4E3A;&#x76F4;&#x63A5;&#x4F7F;&#x7528;<code>host</code>&#x5C5E;&#x6027;&#x66F4;&#x52A0;&#x7B80;&#x6D01;</p>
-<p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B; &#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
-<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt="img"></p>
-<p><em>&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../231.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../231.html" itemprop="url">Mac平台下adb连接网易MuMu模拟器</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-26T17:14:19+08:00">
-                2021-05-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>&#x7B2C;&#x4E09;&#x65B9;&#x6A21;&#x62DF;&#x5668;<code>adb</code>&#x65E0;&#x6CD5;&#x81EA;&#x52A8;&#x8BC6;&#x522B;, &#x6BCF;&#x4E2A;&#x6A21;&#x62DF;&#x5668;&#x90FD;&#x6709;&#x5404;&#x81EA;&#x7684;&#x7AEF;&#x53E3;&#x5360;&#x7528;</p>
-<p>&#x5728;<code>Mac</code>&#x5E73;&#x53F0;&#x4E0B;, &#x53EF;&#x4EE5;&#x8F93;&#x5165;&#x4EE5;&#x4E0B;&#x6307;&#x4EE4;&#x8FDE;&#x63A5;<code>MuMu</code>&#x6A21;&#x62DF;&#x5668;&#x5E76;&#x8C03;&#x8BD5;</p>
-<h4 id="&#x6307;&#x4EE4;"><a href="#&#x6307;&#x4EE4;" class="headerlink" title="&#x6307;&#x4EE4;"></a>&#x6307;&#x4EE4;</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb connect 127.0.0.1:5555</span><br></pre></td></tr></table></figure>
-
-<h4 id="WatchDog"><a href="#WatchDog" class="headerlink" title="WatchDog"></a>WatchDog</h4><p>&#x7F51;&#x6613;&#x6A21;&#x62DF;&#x5668;&#x81EA;&#x5E26;&#x5E94;&#x7528;&#x5D29;&#x6E83;&#x65E5;&#x5FD7;&#x6536;&#x96C6;&#x529F;&#x80FD;, &#x53EF;&#x4EE5;&#x5FEB;&#x901F;&#x5B9A;&#x4F4D;<code>crash</code>&#x539F;&#x56E0;, &#x9488;&#x5BF9;&#x4E00;&#x4E9B;&#x7B2C;&#x4E09;&#x65B9;&#x7684;<code>App</code>, &#x53EF;&#x4EE5;&#x6709;&#x6548;&#x6293;&#x51FA;&#x5F02;&#x5E38;</p>
-<p><img src="https://gitee.com/songjianzaina/lunanzb_img/raw/master/img/image-20220719122152894.png" alt="image-20220719122152894"></p>
-<p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B; &#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
-<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt="img"></p>
-<p><em>&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../230.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../230.html" itemprop="url">Linux下查看目录和文件大小以及隐藏文件</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-25T17:14:19+08:00">
-                2021-05-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="&#x67E5;&#x770B;&#x5F53;&#x524D;&#x76EE;&#x5F55;&#x4E0B;&#x7684;&#x9690;&#x85CF;&#x6587;&#x4EF6;"><a href="#&#x67E5;&#x770B;&#x5F53;&#x524D;&#x76EE;&#x5F55;&#x4E0B;&#x7684;&#x9690;&#x85CF;&#x6587;&#x4EF6;" class="headerlink" title="&#x67E5;&#x770B;&#x5F53;&#x524D;&#x76EE;&#x5F55;&#x4E0B;&#x7684;&#x9690;&#x85CF;&#x6587;&#x4EF6;"></a>&#x67E5;&#x770B;&#x5F53;&#x524D;&#x76EE;&#x5F55;&#x4E0B;&#x7684;&#x9690;&#x85CF;&#x6587;&#x4EF6;</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -a</span><br></pre></td></tr></table></figure>
-
-<h3 id="&#x79FB;&#x52A8;&#x9690;&#x85CF;&#x6587;&#x4EF6;"><a href="#&#x79FB;&#x52A8;&#x9690;&#x85CF;&#x6587;&#x4EF6;" class="headerlink" title="&#x79FB;&#x52A8;&#x9690;&#x85CF;&#x6587;&#x4EF6;"></a>&#x79FB;&#x52A8;&#x9690;&#x85CF;&#x6587;&#x4EF6;</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv xxx/.[^.]*</span><br></pre></td></tr></table></figure>
-
-<h4 id="&#x67E5;&#x770B;&#x76EE;&#x5F55;&#x548C;&#x6587;&#x4EF6;&#x5927;&#x5C0F;"><a href="#&#x67E5;&#x770B;&#x76EE;&#x5F55;&#x548C;&#x6587;&#x4EF6;&#x5927;&#x5C0F;" class="headerlink" title="&#x67E5;&#x770B;&#x76EE;&#x5F55;&#x548C;&#x6587;&#x4EF6;&#x5927;&#x5C0F;"></a>&#x67E5;&#x770B;&#x76EE;&#x5F55;&#x548C;&#x6587;&#x4EF6;&#x5927;&#x5C0F;</h4><ol>
-<li><p>&#x4EE5;&#x5B57;&#x8282;&#x5F62;&#x5F0F;&#x663E;&#x793A;</p>
- <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -ll</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>&#x4EE5;KB MB&#x7B49;&#x5355;&#x4F4D;&#x663E;&#x793A;(&#x63A8;&#x8350;)</p>
- <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -lh</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>&#x904D;&#x5386;&#x5F53;&#x524D;&#x76EE;&#x5F55;&#x4E0B;&#x6240;&#x6709;&#x5B50;&#x76EE;&#x5F55;&#x5927;&#x5C0F;</p>
- <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">du -h </span><br><span class="line"><span class="comment"># &#x6216;&#x6307;&#x5B9A;&#x5C42;&#x7EA7;&#x904D;&#x5386;(*&#x8868;&#x793A;&#x904D;&#x5386;&#x6240;&#x6709;&#x5B50;&#x76EE;&#x5F55;)</span></span><br><span class="line">du -h &#x2013;max-depth=1 *</span><br><span class="line"><span class="comment"># &#x6216;&#x6307;&#x5B9A;&#x67D0;&#x4E2A;&#x5B50;&#x76EE;&#x5F55;&#x4E0B;&#x7684;&#x5C42;&#x7EA7;</span></span><br><span class="line">du -h &#x2013;max-depth=1 software/</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>&#x53EA;&#x67E5;&#x770B;&#x5F53;&#x524D;&#x76EE;&#x5F55;&#x603B;&#x5927;&#x5C0F;</p>
- <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">du -sh</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>&#x67E5;&#x770B;&#x5F53;&#x524D;&#x76EE;&#x5F55;&#x4E0B;&#x6240;&#x6709;&#x6587;&#x4EF6;&#x5939;&#x7684;&#x5927;&#x5C0F;</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">du -sh *</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>&#x67E5;&#x770B;&#x5F53;&#x524D;&#x76EE;&#x5F55;&#x4E0B;&#x9664;&#x67D0;&#x4E9B;&#x76EE;&#x5F55;&#x4EE5;&#x5916;&#x7684;&#x6240;&#x6709;&#x6587;&#x4EF6;&#x5939;&#x5927;&#x5C0F;</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">du -sh --exclude=dir1 --exclude=dir2 *</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-</li>
-</ol>
-<p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B; &#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
-<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt="img"></p>
-<p><em>&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1938,7 +2167,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">476</span>
+                  <span class="site-state-item-count">479</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

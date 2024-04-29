@@ -288,6 +288,426 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../166.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../166.html" itemprop="url">8086汇编语言之数据段和代码段以及栈段的理解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-01T16:14:19+08:00">
+                2020-11-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="&#x6570;&#x636E;&#x6BB5;DS&#xFF0B;&#x504F;&#x79FB;&#x5730;&#x5740;&#x6BB5;BX"><a href="#&#x6570;&#x636E;&#x6BB5;DS&#xFF0B;&#x504F;&#x79FB;&#x5730;&#x5740;&#x6BB5;BX" class="headerlink" title="&#x6570;&#x636E;&#x6BB5;DS&#xFF0B;&#x504F;&#x79FB;&#x5730;&#x5740;&#x6BB5;BX"></a>&#x6570;&#x636E;&#x6BB5;DS&#xFF0B;&#x504F;&#x79FB;&#x5730;&#x5740;&#x6BB5;BX</h2><p><strong>&#x6570;&#x636E;&#x6BB5;&#x53EF;&#x4EE5;&#x901A;&#x4FD7;&#x7406;&#x89E3;&#x4E3A;&#x6570;&#x636E;&#x5BB9;&#x5668;&#x6307;&#x9488;</strong></p>
+<p>&#x6BD4;&#x5982;&#xFF1A;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">MOV AX 0220H</span><br><span class="line">MOV DS AX</span><br><span class="line">MOV BX 0</span><br><span class="line">MOV AX [BX]</span><br><span class="line">;&#x6211;&#x4EEC;&#x53D1;&#x73B0; DS&#x6570;&#x636E;&#x6BB5;&#x4E00;&#x76F4;&#x90FD;&#x662F;&#x5728;&#x7ED9;&#x4E0D;&#x540C;&#x5730;&#x5740;&#x7684;&#x5BB9;&#x5668;&#x8D4B;&#x503C;</span><br></pre></td></tr></table></figure>
+
+<h2 id="&#x4EE3;&#x7801;&#x6BB5;CS-&#x504F;&#x79FB;&#x5730;&#x5740;&#x6BB5;IP"><a href="#&#x4EE3;&#x7801;&#x6BB5;CS-&#x504F;&#x79FB;&#x5730;&#x5740;&#x6BB5;IP" class="headerlink" title="&#x4EE3;&#x7801;&#x6BB5;CS+&#x504F;&#x79FB;&#x5730;&#x5740;&#x6BB5;IP"></a>&#x4EE3;&#x7801;&#x6BB5;CS+&#x504F;&#x79FB;&#x5730;&#x5740;&#x6BB5;IP</h2><p><strong>&#x4EE3;&#x7801;&#x6BB5;&#x53EF;&#x4EE5;&#x901A;&#x4FD7;&#x7406;&#x89E3;&#x4E3A;&#x6C47;&#x7F16;&#x4EE3;&#x7801;&#x6307;&#x9488;</strong></p>
+<p>&#x6BD4;&#x5982;:</p>
+<p>&#x4EE3;&#x7801;&#x4ECE; <code>MOV AX 0220H</code> &#x5F00;&#x59CB;,&#x90A3;&#x4E48;&#x4EE3;&#x7801;&#x6BB5;&#x6307;&#x5411;&#x8FD9;&#x884C;&#x4EE3;&#x7801;&#x5730;&#x5740;, &#x5982;&#x679C;&#x60F3;&#x8981;&#x8DF3;&#x8FC7;&#x8FD9;&#x884C;&#x4EE3;&#x7801;&#x7684;&#x6267;&#x884C;,&#x90A3;&#x4E48;&#x8FDB;&#x884C;&#x4EE3;&#x7801;&#x6BB5;&#x504F;&#x79FB;</p>
+<p><strong>&#x5728;&#x901A;&#x8FC7;debug&#x6A21;&#x5F0F;&#x914D;&#x5408;-u&#x6307;&#x4EE4;&#x67E5;&#x770B;&#x6C47;&#x7F16;&#x4EE3;&#x7801;&#x65F6;,&#x53EF;&#x4EE5;&#x6839;&#x636E;CS&#x8FDB;&#x884C;&#x8303;&#x56F4;&#x67E5;&#x770B;:</strong></p>
+<p>&#x6BD4;&#x5982;:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#&#x4EE5;&#x4E0B;&#x6A21;&#x62DF;&#x63A7;&#x5236;&#x53F0;&#x8F93;&#x51FA;</span><br><span class="line">-r</span><br><span class="line">AX=0000 BX=0000.....</span><br><span class="line">DS=13DB ES=13DB SS=13EB CS=13EB IP=0000</span><br><span class="line">-u 13eb:0</span><br><span class="line">13BE:0000 B8FFFF MOV   AX,FFFF</span><br></pre></td></tr></table></figure>
+
+<h2 id="&#x6808;&#x6BB5;SS-&#x504F;&#x79FB;&#x5730;&#x5740;&#x6BB5;SP"><a href="#&#x6808;&#x6BB5;SS-&#x504F;&#x79FB;&#x5730;&#x5740;&#x6BB5;SP" class="headerlink" title="&#x6808;&#x6BB5;SS+&#x504F;&#x79FB;&#x5730;&#x5740;&#x6BB5;SP"></a>&#x6808;&#x6BB5;SS+&#x504F;&#x79FB;&#x5730;&#x5740;&#x6BB5;SP</h2><p><strong>&#x6808;&#x6BB5;&#x53EF;&#x4EE5;&#x901A;&#x4FD7;&#x7406;&#x89E3;&#x4E3A;&#x6808;&#x6307;&#x9488;</strong></p>
+<h2 id="&#x4EC0;&#x4E48;&#x662F;&#x6BB5;"><a href="#&#x4EC0;&#x4E48;&#x662F;&#x6BB5;" class="headerlink" title="&#x4EC0;&#x4E48;&#x662F;&#x6BB5;"></a>&#x4EC0;&#x4E48;&#x662F;&#x6BB5;</h2><p> &#x9996;&#x5148;&#x5185;&#x5B58;&#x5E76;&#x6CA1;&#x6709;&#x5206;&#x6BB5;&#xFF0C;&#x6BB5;&#x7684;&#x5212;&#x5206;&#x6765;&#x81EA;CPU&#xFF0C;&#x6765;&#x81EA;&#x6211;&#x4EEC;&#x81EA;&#x5DF1;&#x5BF9;&#x5185;&#x5B58;&#x7684;&#x64CD;&#x4F5C;&#x3002;&#x7531;8086CPU</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#xFF08;&#x6BB5;&#x5730;&#x5740;+&#x504F;&#x79FB;&#x5730;&#x5740;=&#x201C;&#x7269;&#x7406;&#x5730;&#x5740;&#x201D;&#xFF09;</span><br></pre></td></tr></table></figure>
+
+<p>&#x7684;&#x65B9;&#x5F0F;&#x7ED9;&#x51FA;&#x5185;&#x5B58;&#x5355;&#x5143;&#x7684;&#x7269;&#x7406;&#x5730;&#x5740;&#xFF0C;&#x4F7F;&#x5F97;&#x6211;&#x4EEC;&#x7528;&#x5206;&#x6BB5;&#x7684;&#x65B9;&#x5F0F;&#x7BA1;&#x7406;&#x5185;&#x5B58;</p>
+<p>&#x53EF;&#x4EE5;&#x5C06;&#x6BB5;&#x901A;&#x4FD7;&#x7406;&#x89E3;&#x4E3A;&#x5C0F;&#x533A;&#x7684;&#x4E00;&#x680B;&#x697C;,&#x504F;&#x79FB;&#x5730;&#x5740;&#x4E3A;&#x8FD9;&#x680B;&#x697C;&#x7684;&#x4F4F;&#x6237;&#x95E8;&#x724C;&#x53F7;.&#x6BD4;&#x5982;&#x4E94;&#x53F7;&#x697C;101&#x623F;,&#x90A3;&#x4E48;&#x5F62;&#x8C61;&#x6BD4;&#x55BB;:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x4E94;&#x53F7;&#x697C;----&gt;&#x6BB5;&#x5730;&#x5740;  101&#x623F;----&gt;&#x504F;&#x79FB;&#x5730;&#x5740;</span><br></pre></td></tr></table></figure>
+
+<h2 id="&#x4E3A;&#x4EC0;&#x4E48;&#x8981;&#x8FD9;&#x6837;&#x5212;&#x5206;"><a href="#&#x4E3A;&#x4EC0;&#x4E48;&#x8981;&#x8FD9;&#x6837;&#x5212;&#x5206;" class="headerlink" title="&#x4E3A;&#x4EC0;&#x4E48;&#x8981;&#x8FD9;&#x6837;&#x5212;&#x5206;?"></a>&#x4E3A;&#x4EC0;&#x4E48;&#x8981;&#x8FD9;&#x6837;&#x5212;&#x5206;?</h2><p>&#x76F4;&#x63A5;&#x4F7F;&#x7528;&#x4E00;&#x4E2A;&#x7269;&#x7406;&#x5730;&#x5740;&#x5C82;&#x4E0D;&#x662F;&#x66F4;&#x7B80;&#x5355;,&#x4F55;&#x5FC5;&#x62C6;&#x5206;&#x6210;&#x6BB5;&#x5730;&#x5740;+&#x7269;&#x7406;&#x5730;&#x5740;?</p>
+<p>&#x8FD9;&#x662F;&#x7531;&#x4E8E;8086cpu16&#x4F4D;&#x5BC4;&#x5B58;&#x5668;&#x5C40;&#x9650;&#x6027;&#x9020;&#x6210;&#x7684;, &#x7531;&#x4E8E;16&#x4F4D;&#x7684;&#x5BC4;&#x5B58;&#x5668;&#x6700;&#x5927;&#x53EA;&#x80FD;&#x5B58;&#x653E;0xFFFF &#x5982;&#x679C;&#x5B58;&#x653E;&#x8D85;&#x8FC7;&#x4E94;&#x4F4D;&#x7684;&#x5730;&#x5740;&#x6BD4;&#x5982;0xFFFFA &#x5219;&#x65E0;&#x6CD5;&#x5B58;&#x653E;, &#x4E3A;&#x4E86;&#x89E3;&#x51B3;&#x8FD9;&#x4E2A;&#x95EE;&#x9898;, cup&#x8BBE;&#x8BA1;&#x8005;&#x60F3;&#x51FA;&#x4E86; <strong>&#x6BB5;&#x5730;&#x5740;*16+&#x504F;&#x79FB;&#x5730;&#x5740;</strong>&#x7684;&#x65B9;&#x6CD5;&#x5B8C;&#x7F8E;&#x89E3;&#x51B3;&#x8FD9;&#x4E2A;&#x95EE;&#x9898; </p>
+<p><strong>&#x7269;&#x7406;&#x5730;&#x5740;</strong>=<strong>&#x6BB5;&#x5730;&#x5740;*16+&#x504F;&#x79FB;&#x5730;&#x5740;</strong></p>
+<p>&#x4E00;&#x4E2A;&#x7269;&#x7406;&#x5730;&#x5740;&#x53EF;&#x4EE5;&#x6709;&#x56DB;&#x79CD;&#x5199;&#x6CD5;, &#x6BD4;&#x5982;0xFFFFA:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">0xFFFFA=0xFFFF0*16+0x000A</span><br><span class="line"></span><br><span class="line">0xFFFFA=0xFFF00*16+0x00FA</span><br><span class="line"></span><br><span class="line">0xFFFFA=0xFF000*16+0x0FFA</span><br><span class="line"></span><br><span class="line">0xFFFFA=0xF0000*16+0xFFFA</span><br></pre></td></tr></table></figure>
+
+<h2 id="&#x6BB5;&#x7684;&#x8D4B;&#x503C;"><a href="#&#x6BB5;&#x7684;&#x8D4B;&#x503C;" class="headerlink" title="&#x6BB5;&#x7684;&#x8D4B;&#x503C;"></a>&#x6BB5;&#x7684;&#x8D4B;&#x503C;</h2><p><strong>&#x4EE3;&#x7801;&#x6BB5;CS &#x6570;&#x636E;&#x6BB5;DS &#x6808;&#x6BB5;SS &#x4E0D;&#x80FD;&#x76F4;&#x63A5;&#x8D4B;&#x503C;</strong>, &#x5FC5;&#x987B;&#x901A;&#x8FC7;&#x901A;&#x7528;&#x5BC4;&#x5B58;&#x5668;&#x4E2D;&#x8F6C;&#x8D4B;&#x503C;</p>
+<p>&#x504F;&#x79FB;&#x5730;&#x5740;&#x53EF;&#x4EE5;&#x76F4;&#x63A5;&#x8D4B;&#x503C;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mov ax ,2000H</span><br><span class="line">mov ss ,ax</span><br><span class="line">mov sp ,10H</span><br></pre></td></tr></table></figure>
+
+<p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B; &#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
+<p><em>&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../168.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../168.html" itemprop="url">8086语言之申请栈空间的方法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-01T16:14:19+08:00">
+                2020-11-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="&#x7B2C;&#x4E00;&#x79CD;"><a href="#&#x7B2C;&#x4E00;&#x79CD;" class="headerlink" title="&#x7B2C;&#x4E00;&#x79CD;"></a>&#x7B2C;&#x4E00;&#x79CD;</h2><p>&#x4F7F;&#x7528;<code>dw</code>&#x6216;&#x8005;<code>db</code>&#x76F4;&#x63A5;&#x7533;&#x8BF7;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">assume cs:cscode</span><br><span class="line">cscode segment</span><br><span class="line">	dw 0,0,0,0,0,0,0,0 ;&#x5B9A;&#x4E49;8&#x4E2A;&#x5B57;&#x578B;&#x6570;&#x636E;,&#x5728;&#x7A0B;&#x5E8F;&#x52A0;&#x8F7D;&#x540E;,&#x5C06;&#x53D6;&#x5F97;8&#x4E2A;&#x5B57;&#x7684;&#x5185;&#x5B58;&#x7A7A;&#x95F4;,&#x53EF;&#x5F53;&#x505A;&#x6808;&#x7A7A;&#x95F4;&#x4F7F;&#x7528;</span><br><span class="line">start:mov ax,cs</span><br><span class="line">	...</span><br><span class="line">cscode ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure>
+
+<p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B; &#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
+<p><em>&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../170.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="../../170.html" itemprop="url">java和smali语言互转流程图</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-01T16:14:19+08:00">
+                2020-11-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/%E6%97%A0%E6%A0%87%E9%A2%98.png" alt></p>
+<h2 id="baksmali&#x548C;smali-jar&#x5DE5;&#x5177;&#x4E0B;&#x8F7D;"><a href="#baksmali&#x548C;smali-jar&#x5DE5;&#x5177;&#x4E0B;&#x8F7D;" class="headerlink" title="baksmali&#x548C;smali.jar&#x5DE5;&#x5177;&#x4E0B;&#x8F7D;"></a>baksmali&#x548C;smali.jar&#x5DE5;&#x5177;&#x4E0B;&#x8F7D;</h2><p><a href="/external_links/1c13ac7009271b51e06c6b94046b7213.html" target="blank" rel="noopener">https://bitbucket.org/JesusFreke/smali/downloads/</a></p>
+<p><a href="/external_links/1c13ac7009271b51e06c6b94046b7213.html" target="blank" rel="noopener">&#x70B9;&#x6B64;&#x4E0B;&#x8F7D;</a></p>
+<h2 id="class&#x8F6C;dex&#x6307;&#x4EE4;"><a href="#class&#x8F6C;dex&#x6307;&#x4EE4;" class="headerlink" title=".class&#x8F6C;dex&#x6307;&#x4EE4;"></a>.class&#x8F6C;dex&#x6307;&#x4EE4;</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dx.bat --dex --output=./aa.dex Test.class</span><br></pre></td></tr></table></figure>
+
+<h2 id="dex&#x8F6C;smali&#x6307;&#x4EE4;"><a href="#dex&#x8F6C;smali&#x6307;&#x4EE4;" class="headerlink" title="dex&#x8F6C;smali&#x6307;&#x4EE4;"></a>dex&#x8F6C;smali&#x6307;&#x4EE4;</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar baksmali-2.4.0.jar d test.dex</span><br></pre></td></tr></table></figure>
+
+<h2 id="smali&#x8F6C;dex&#x6307;&#x4EE4;"><a href="#smali&#x8F6C;dex&#x6307;&#x4EE4;" class="headerlink" title="smali&#x8F6C;dex&#x6307;&#x4EE4;"></a>smali&#x8F6C;dex&#x6307;&#x4EE4;</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar smali-2.4.0.jar a smali&#x6587;&#x4EF6;&#x6216;&#x76EE;&#x5F55; -o &#x8F93;&#x51FA;&#x76EE;&#x5F55;/xxx.dex</span><br></pre></td></tr></table></figure>
+
+<h2 id="dex&#x8F6C;class&#x6307;&#x4EE4;"><a href="#dex&#x8F6C;class&#x6307;&#x4EE4;" class="headerlink" title="dex&#x8F6C;class&#x6307;&#x4EE4;"></a>dex&#x8F6C;class&#x6307;&#x4EE4;</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">d2j-dex2jar.bat xxx.dex</span><br></pre></td></tr></table></figure>
+
+<h2 id="class&#x8F6C;java"><a href="#class&#x8F6C;java" class="headerlink" title="class&#x8F6C;java"></a>class&#x8F6C;java</h2><ol>
+<li>&#x76F4;&#x63A5;&#x4F7F;&#x7528;jad-gui&#x6216;&#x8005;jadx</li>
+<li>&#x4F7F;&#x7528;javap -p xxx.class&#x67E5;&#x770B;</li>
+</ol>
+<h2 id="&#x53E6;&#x5916;"><a href="#&#x53E6;&#x5916;" class="headerlink" title="&#x53E6;&#x5916;"></a>&#x53E6;&#x5916;</h2><ol>
+<li><p>&#x5982;&#x679C;&#x4F60;&#x5ACC;&#x9EBB;&#x70E6; &#x53EF;&#x4EE5;&#x76F4;&#x63A5;&#x4F7F;&#x7528;dex2jar&#x5185;&#x90E8;&#x7684;&#x5DE5;&#x5177; &#x91CC;&#x9762;&#x8FDB;&#x884C;&#x4E86;&#x76F8;&#x5E94;&#x7684;&#x5C01;&#x88C5;</p>
+</li>
+<li><p>android studio&#x81EA;&#x5E26;&#x7684;.class&#x8F6C;smali&#x5C31;&#x975E;&#x5E38;&#x597D;&#x7528;,&#x5982;&#x56FE;:</p>
+</li>
+</ol>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201104143153.png" alt></p>
+<p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B; &#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
+<p><em>&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../162.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1223,508 +1643,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../155.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../155.html" itemprop="url">android NDK编译涉及的cpu架构种类</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-28T16:14:19+08:00">
-                2020-10-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>&#x5728;&#x4F7F;&#x7528;NDK&#x7F16;&#x8BD1;&#x8FC7;&#x7A0B;&#x4E2D;&#x53D1;&#x73B0;&#x9488;&#x5BF9;&#x4E0D;&#x540C;&#x7684;CPU&#x67B6;&#x6784;&#xFF0C;&#x90E8;&#x5206;&#x652F;&#x6301;&#x7F16;&#x8BD1;&#x8C03;&#x8BD5;&#xFF0C;&#x90E8;&#x5206;&#x4E0D;&#x652F;&#x6301;&#x8C03;&#x8BD5;&#xFF0C;&#x6545;&#x8BB0;&#x5F55;&#x4E0B;&#x6765;&#xFF0C;&#x4EE5;&#x9632;&#x5FD8;&#x8BB0;</p>
-</blockquote>
-<p>&#x5728;Application.mk&#x6587;&#x4EF6;&#x4E2D;&#x6709;&#x4E2A;&#x9884;&#x5B9A;&#x4E49;&#x547D;&#x4EE4;&#x53C2;&#x6570;APP_ABI&#xFF0C;&#x662F;&#x6307;&#x660E;&#x7F16;&#x8BD1;&#x4E0E;&#x8C03;&#x8BD5;&#x7684;CPU&#x67B6;&#x6784;&#x3002;</p>
-<p>&#x76EE;&#x524D;Android&#x7CFB;&#x7EDF;&#x652F;&#x6301;&#x4EE5;&#x4E0B;&#x4E03;&#x79CD;&#x4E0D;&#x540C;&#x7684;CPU&#x67B6;&#x6784;&#xFF1A;<strong>ARMv5</strong>&#xFF0C;<strong>ARMv7</strong>&#xFF08;&#x4ECE;2010&#x5E74;&#x8D77;&#xFF09;&#xFF0C;<strong>x86</strong>&#xFF08;&#x4ECE;2011&#x5E74;&#xFF09;&#xFF0C;<strong>MIPS</strong>&#xFF08;&#x4ECE;2012&#x5E74;&#xFF09;&#xFF0C;<strong>ARMv8</strong>&#xFF0C;<strong>MIPS64</strong>&#x548C;<strong>x86_64</strong>&#xFF08;&#x4ECE;2014&#x5E74;&#xFF09;&#xFF0C;&#x6BCF;&#x4E00;&#x79CD;&#x90FD;&#x5BF9;&#x5E94;&#x76F8;&#x5E94;&#x7684;ABI&#x3002;</p>
-<table>
-<thead>
-<tr>
-<th>CPU&#x67B6;&#x6784;</th>
-<th>ABI</th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>ARMv5</td>
-<td>armeabi</td>
-<td>32&#x4F4D;&#xFF0C;&#x4ECE;2010&#x5E74;</td>
-</tr>
-<tr>
-<td>ARMv7</td>
-<td>armeabi-v7a</td>
-<td>32&#x4F4D;&#xFF0C;&#x4ECE;2010&#x5E74;</td>
-</tr>
-<tr>
-<td>x86</td>
-<td>x86</td>
-<td>32&#x4F4D;&#xFF0C;&#x4ECE;2011&#x5E74;</td>
-</tr>
-<tr>
-<td>MIPS</td>
-<td>mips</td>
-<td>32&#x4F4D;&#xFF0C;&#x4ECE;2012&#x5E74;</td>
-</tr>
-<tr>
-<td>ARMv8</td>
-<td>arm64-v8a</td>
-<td>64&#x4F4D;&#xFF0C;&#x4ECE;2014&#x5E74;</td>
-</tr>
-<tr>
-<td>MIPS64</td>
-<td>mips64</td>
-<td>64&#x4F4D;&#xFF0C;&#x4ECE;2014&#x5E74;</td>
-</tr>
-<tr>
-<td>x86_64</td>
-<td>x86_64</td>
-<td>64&#x4F4D;&#xFF0C;&#x4ECE;2014&#x5E74;</td>
-</tr>
-</tbody></table>
-<p><strong>&#x76F8;&#x5E94;&#x751F;&#x6210;arm64-v8a&#xFF0C;mips64&#xFF0C;x86_64&#x4E0B;&#x7684;&#x6587;&#x4EF6;&#x9700;&#x8981;NDK_r10&#x4EE5;&#x4E0A;&#x7248;&#x672C;&#x652F;&#x6301;</strong>&#x3002;&#x5728;Application.mk&#x6587;&#x4EF6;&#x91CC;&#x914D;&#x7F6E;APP_ABI&#x7684;&#x5185;&#x5BB9;&#x3002;&#x4F8B;&#x5982;&#x6307;&#x660E;&#x67D0;&#x4E2A;&#x5177;&#x4F53;&#x7684;CPU&#x67B6;&#x6784;</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">APP_ABI := arm64-v8a</span><br></pre></td></tr></table></figure>
-
-<p>&#x6216;&#x8005;&#x76F4;&#x63A5;&#x751F;&#x6210;&#x6240;&#x6709;&#x7684;&#x7248;&#x672C;</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">APP_ABI := all</span><br></pre></td></tr></table></figure>
-
-<p>&#x6CE8;&#x610F;&#xFF1A;&#x6839;&#x636E;&#x4E0D;&#x540C;&#x7684;NDK&#x7248;&#x672C;&#xFF0C;APP_ABI := all&#x4EC5;&#x80FD;&#x751F;&#x6210;&#x5F53;&#x524D;&#x7248;&#x672C;&#x652F;&#x6301;&#x7684;ABI&#x4FE1;&#x606F;&#x5E93;&#x6587;&#x4EF6;&#xFF0C;&#x5982;&#x679C;&#x9700;&#x8981;&#x751F;&#x6210;&#x6700;&#x65B0;&#x7684;&#x5FC5;&#x987B;&#x66F4;&#x65B0;&#x76F8;&#x5E94;&#x7684;NDK&#x7248;&#x672C;&#x3002;</p>
-<p>&#x6216;&#x8005;&#x660E;&#x786E;&#x5199;&#x660E;&#x652F;&#x6301;&#x7684;CPU&#x67B6;&#x6784;</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">APP_ABI := armeabi&#xFF0C;armeabi-v7a&#xFF0C;x86&#xFF0C;mips&#xFF0C;arm64-v8a&#xFF0C;mips64&#xFF0C;x86_64</span><br></pre></td></tr></table></figure>
-
-<p>&#x5EFA;&#x8BAE;&#x91C7;&#x7528;&#x8BE5;&#x65B9;&#x6CD5;</p>
-<p>&#x6CE8;&#x610F;&#xFF1A;&#x7531;&#x4E8E;&#x76EE;&#x524D;&#x7248;&#x672C;&#x652F;&#x6301;&#x7684;&#x95EE;&#x9898;&#xFF0C;&#x91C7;&#x7528;Eclipse+NDK+Windows&#x96C6;&#x6210;&#x65B9;&#x5F0F;&#x5F00;&#x53D1;&#xFF0C;&#x5BF9;&#x5E94;&#x7F16;&#x8BD1;&#x751F;&#x6210;&#x5BF9;&#x5E94;CPU&#x67B6;&#x6784;&#x7684;so&#x6587;&#x4EF6;&#x662F;&#x6CA1;&#x6709;&#x95EE;&#x9898;&#x7684;&#x3002;&#x4F46;&#x662F;&#x4E0D;&#x4E00;&#x5B9A;&#x53EF;&#x4EE5;&#x6267;&#x884C;&#x8C03;&#x8BD5;&#x5DE5;&#x4F5C;&#xFF0C;&#x542F;&#x52A8;NDK&#x8C03;&#x8BD5;&#x6A21;&#x5F0F;&#x65F6;&#x5C06;&#x4F1A;&#x63D0;&#x793A;&#x65E0;&#x6CD5;&#x8BC6;&#x522B;&#x5BF9;&#x5E94;&#x7684;ABI&#x3002;</p>
-<p>&#x6CE8;&#x610F;&#xFF1A;</p>
-<p>(1)&#x3001;&#x76EE;&#x524D;&#x6A21;&#x62DF;&#x5668;&#x53EA;&#x6709;x86_64&#x7684;&#x6CA1;&#x6709;arm64-v8a&#x7684;&#xFF1B;</p>
-<p>(2)&#x3001;&#x5728;&#x7528;&#x771F;&#x673A;&#x6D4B;&#x8BD5;armv8-a&#x65F6;&#xFF0C;&#x6700;&#x597D;&#x5148;&#x901A;&#x8FC7;<code>adb shell</code>&#xFF0C; <code>cat /proc/cpuinfo</code> &#xFF0C;&#x6765;&#x67E5;&#x770B;&#x4E0B;&#x771F;&#x673A;&#x662F;&#x5426;&#x662F;&#x652F;&#x6301;armv8-a&#xFF1B;</p>
-<p>(3)&#x3001;arm32&#x548C;arm64&#x6709;&#x4E9B;&#x914D;&#x7F6E;&#x53C2;&#x6570;&#x4E0D;&#x80FD;&#x5171;&#x5B58;&#xFF0C;&#x5982;-msoft-float&#x4EC5;&#x5728;arm32&#x4F4D;&#x4E0B;&#x652F;&#x6301;&#xFF0C;&#x5728;arm64&#x4F4D;&#x4E0B;&#x662F;&#x4E0D;&#x652F;&#x6301;&#x7684;. </p>
-<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
-<p><em>&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../156.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../156.html" itemprop="url">Termux：Android 上的一款终端神器</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-28T16:14:19+08:00">
-                2020-10-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="/external_links/8403abc988645b871db95234aaad3bef.html" target="blank" rel="noopener">Termux</a> &#x662F;&#x4E00;&#x6B3E;&#x57FA;&#x4E8E; Android &#x5E73;&#x53F0;&#x7684;&#x5F00;&#x6E90; Linux &#x7EC8;&#x7AEF;&#x6A21;&#x62DF;&#x5668;&#xFF0C;&#x4F7F;&#x7528; pkg(apt) &#x8FDB;&#x884C;&#x8F6F;&#x4EF6;&#x5305;&#x7684;&#x7BA1;&#x7406;&#x3002;&#x6700;&#x91CD;&#x8981;&#x7684;&#x662F;&#xFF0C;&#x5B83;&#x65E0;&#x9700; root &#x6743;&#x9650;&#xFF0C;&#x56E0;&#x6B64;&#xFF0C;&#x7EDD;&#x5927;&#x591A;&#x6570; Android &#x90FD;&#x53EF;&#x4EE5;&#x8FD0;&#x884C;&#x3002;</p>
-<p>&#x76EE;&#x524D;&#x6765;&#x8BF4;&#xFF0C;&#x5B83;&#x80FD;&#x505A;&#x4E00;&#x4E9B;&#x7B80;&#x5355;&#x7684; Linux &#x4EFB;&#x52A1;&#xFF1A;</p>
-<ul>
-<li>&#x4EAB;&#x53D7; Bash &#x548C; Zsh</li>
-<li>&#x4F7F;&#x7528; Vim &#x7F16;&#x8F91;&#x6587;&#x4EF6;</li>
-<li>&#x901A;&#x8FC7; SSH &#x8BBF;&#x95EE;&#x670D;&#x52A1;&#x5668;</li>
-<li>&#x4F7F;&#x7528; GCC &#x548C; Clang &#x7F16;&#x8BD1;&#x4EE3;&#x7801;</li>
-<li>&#x4F7F;&#x7528; Git &#x68C0;&#x67E5;&#x9879;&#x76EE;</li>
-<li>&#x8FD0;&#x884C; MySQL&#xFF0C;Redis &#x7B49;&#x670D;&#x52A1;&#x5668;</li>
-<li>&#x2026;</li>
-</ul>
-<h2 id="&#x4F7F;&#x7528;&#x65B9;&#x6CD5;"><a href="#&#x4F7F;&#x7528;&#x65B9;&#x6CD5;" class="headerlink" title="&#x4F7F;&#x7528;&#x65B9;&#x6CD5;"></a>&#x4F7F;&#x7528;&#x65B9;&#x6CD5;</h2><p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201028110821.png" alt></p>
-<p>&#x56E0;&#x4E3A; Termux &#x662F;&#x4E00;&#x6B3E; Linux &#x7EC8;&#x7AEF;&#x6A21;&#x62DF;&#x5668;&#xFF0C;&#x56E0;&#x6B64;&#xFF0C;&#x5728;&#x547D;&#x4EE4;&#x7684;&#x4F7F;&#x7528;&#x65B9;&#x9762;&#x548C; Linux &#x662F;&#x4E00;&#x81F4;&#x7684;&#x3002;&#x5728;&#x8FD9;&#x91CC;&#xFF0C;&#x6211;&#x5C06;&#x4ECB;&#x7ECD;&#x4E00;&#x4E9B;&#x9488;&#x5BF9; Termux &#x5DE5;&#x5177;&#x7684;&#x4E00;&#x4E9B;&#x4F7F;&#x7528;&#x65B9;&#x6CD5;&#x3002;</p>
-<h3 id="&#x521D;&#x6B21;&#x4F7F;&#x7528;&#x7684;&#x51C6;&#x5907;&#x5DE5;&#x4F5C;"><a href="#&#x521D;&#x6B21;&#x4F7F;&#x7528;&#x7684;&#x51C6;&#x5907;&#x5DE5;&#x4F5C;" class="headerlink" title="&#x521D;&#x6B21;&#x4F7F;&#x7528;&#x7684;&#x51C6;&#x5907;&#x5DE5;&#x4F5C;"></a>&#x521D;&#x6B21;&#x4F7F;&#x7528;&#x7684;&#x51C6;&#x5907;&#x5DE5;&#x4F5C;</h3><p>&#x4E1A;&#x5185;&#x5DF2;&#x7ECF;&#x6709;&#x4E86;&#x4E00;&#x79CD;&#x5171;&#x8BC6;&#xFF0C;&#x5728;&#x6D89;&#x53CA;&#x5305;&#x7BA1;&#x7406;&#x65B9;&#x9762;&#xFF0C;&#x5C3D;&#x91CF;&#x90FD;&#x4F1A;&#x5C06;&#x5B98;&#x65B9;&#x6E90;&#x66FF;&#x6362;&#x6210;&#x56FD;&#x5185;&#x955C;&#x50CF;&#x6E90;&#xFF0C;Termux &#x4E5F;&#x4E0D;&#x4F8B;&#x5916;&#x3002;&#x521D;&#x6B21;&#x8FDB;&#x5165; Termux &#x540E;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x4F7F;&#x7528; TUNA &#x7684; <a href="/external_links/293cd5dba1c1c478bebbf1d74c63d517.html" target="blank" rel="noopener">Termux &#x955C;&#x50CF;</a>&#xFF1A;</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sed -i &apos;s@^\(deb.*stable main\)$@#\1\ndeb https://mirrors.tuna.tsinghua.edu.cn/termux stable main@&apos; $PREFIX/etc/apt/sources.list # &#x66F4;&#x6362;&#x6E90;&#x6587;&#x4EF6;$ pkg up # &#x66F4;&#x65B0;&#x6E90;&#x6587;&#x4EF6;$ pkg udpate -y &amp;&amp; pkge upgrade # &#x66F4;&#x65B0;&#x7CFB;&#x7EDF;&#x53CA;&#x8F6F;&#x4EF6;</span><br></pre></td></tr></table></figure>
-
-<p>&#x66FF;&#x6362;&#x4E3A;&#x56FD;&#x5185;&#x955C;&#x50CF;&#x540E;&#xFF0C;&#x63A5;&#x4E0B;&#x6765;&#xFF0C;&#x9700;&#x8981;&#x5F00;&#x542F; Termux &#x7684;&#x5B58;&#x50A8;&#x6743;&#x9650;&#xFF1A;</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ termux-setup-storage</span><br></pre></td></tr></table></figure>
-
-<p>&#x6267;&#x884C;&#x547D;&#x4EE4;&#x4E4B;&#x540E;&#xFF0C;&#x4F1A;&#x5F39;&#x51FA;&#x6743;&#x9650;&#x786E;&#x8BA4;&#x7A97;&#x53E3;&#xFF0C;&#x9009;&#x62E9;&#x300C;&#x59CB;&#x7EC8;&#x5141;&#x8BB8;&#x300D;&#x5373;&#x53EF;&#x3002;</p>
-<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201028110806.png" alt>&#x6743;&#x9650;&#x786E;&#x8BA4;</p>
-<h3 id="pkg-&#x4F7F;&#x7528;&#x547D;&#x4EE4;&#x901F;&#x8BB0;"><a href="#pkg-&#x4F7F;&#x7528;&#x547D;&#x4EE4;&#x901F;&#x8BB0;" class="headerlink" title="pkg &#x4F7F;&#x7528;&#x547D;&#x4EE4;&#x901F;&#x8BB0;"></a>pkg &#x4F7F;&#x7528;&#x547D;&#x4EE4;&#x901F;&#x8BB0;</h3><ul>
-<li>pkg search <query>    &#x641C;&#x7D22;&#x5305;</query></li>
-<li>pkg install <query> &#x5B89;&#x88C5;&#x5305;</query></li>
-<li>pkg uninstall <query> &#x5378;&#x8F7D;&#x5305;</query></li>
-<li>pkg update &#x66F4;&#x65B0;&#x6E90;</li>
-<li>pkg upgrade &#x5347;&#x7EA7;&#x8F6F;&#x4EF6;&#x5305;</li>
-<li>pkg shoe <packge> &#x663E;&#x793A;&#x67D0;&#x4E2A;&#x5305;&#x7684;&#x8BE6;&#x7EC6;&#x4FE1;&#x606F;</packge></li>
-</ul>
-<h3 id="&#x957F;&#x6309;&#x5C4F;&#x5E55;"><a href="#&#x957F;&#x6309;&#x5C4F;&#x5E55;" class="headerlink" title="&#x957F;&#x6309;&#x5C4F;&#x5E55;"></a>&#x957F;&#x6309;&#x5C4F;&#x5E55;</h3><p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201028110752.png" alt></p>
-<p>&#x5982;&#x679C;&#x9700;&#x8981;&#x5BF9; Termux &#x4E2D;&#x7684;&#x5185;&#x5BB9;&#x8FDB;&#x884C;&#x590D;&#x5236;&#x4EE5;&#x53CA;&#x7C98;&#x8D34;&#x5185;&#x5BB9;&#x81F3; Termux&#xFF0C;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x957F;&#x6309;&#x5C4F;&#x5E55;&#x5B9E;&#x73B0;&#x3002;</p>
-<h3 id="&#x989D;&#x5916;&#x6309;&#x952E;&#x89C6;&#x56FE;"><a href="#&#x989D;&#x5916;&#x6309;&#x952E;&#x89C6;&#x56FE;" class="headerlink" title="&#x989D;&#x5916;&#x6309;&#x952E;&#x89C6;&#x56FE;"></a>&#x989D;&#x5916;&#x6309;&#x952E;&#x89C6;&#x56FE;</h3><p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201028110737.png" alt></p>
-<p>&#x53EF;&#x4EE5;&#x770B;&#x5230;&#xFF0C;&#x5728;&#x6B63;&#x5E38;&#x7684;&#x952E;&#x76D8;&#x4E0A;&#x65B9;&#xFF0C;&#x8FD8;&#x6709;&#x4E00;&#x76D8;&#x989D;&#x5916;&#x7684;&#x529F;&#x80FD;&#x952E;&#xFF0C;&#x5206;&#x522B;&#x662F;&#xFF1A;ESC &#x952E;&#xFF0C;Tab &#x952E;&#xFF0C;CTRL &#x952E;&#xFF0C;ALT &#x952E;&#xFF0C;- &#x7B26;&#x53F7;&#xFF0C;&#x5411;&#x4E0B;&#x4EE5;&#x53CA;&#x5411;&#x4E0A;&#x529F;&#x80FD;&#x952E;&#x3002;&#x6709;&#x4E86;&#x8FD9;&#x4E00;&#x884C;&#x989D;&#x5916;&#x89C6;&#x56FE;&#xFF0C;&#x53EF;&#x4EE5;&#x66F4;&#x52A0;&#x65B9;&#x4FBF;&#x5730;&#x5B9E;&#x73B0; Android &#x952E;&#x76D8;&#x4E0A;&#x6CA1;&#x6709;&#xFF0C;&#x800C;&#x7535;&#x8111;&#x952E;&#x76D8;&#x4E0A;&#x6709;&#x7684;&#x529F;&#x80FD;&#x3002;</p>
-<h3 id="&#x97F3;&#x91CF;-&#x7EC4;&#x5408;"><a href="#&#x97F3;&#x91CF;-&#x7EC4;&#x5408;" class="headerlink" title="&#x97F3;&#x91CF;+&#x7EC4;&#x5408;"></a>&#x97F3;&#x91CF;+&#x7EC4;&#x5408;</h3><p>&#x56E0;&#x4E3A; Android &#x952E;&#x76D8;&#x6CA1;&#x6709;&#x7535;&#x8111;&#x952E;&#x76D8;&#x4E0A;&#x7684;&#x4E00;&#x4E9B;&#x529F;&#x80FD;&#x6309;&#x952E;&#xFF0C;&#x6B64;&#x65F6;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x6309;&#x4F4F;&#x97F3;&#x91CF;&#x952E;+&#xFF0C;&#x518D;&#x8F93;&#x5165;&#x952E;&#x76D8;&#x67D0;&#x4E2A;&#x5B57;&#x6BCD;&#x6570;&#x5B57;&#x952E;&#xFF0C;&#x53EF;&#x4EE5;&#x8FBE;&#x5230;&#x4E00;&#x4E9B;&#x529F;&#x80FD;&#x952E;&#x7684;&#x4F5C;&#x7528;&#x3002;</p>
-<ul>
-<li>&#x97F3;&#x91CF;+ Q&#xFF1A;&#x663E;&#x793A;/&#x9690;&#x85CF;&#x989D;&#x5916;&#x6309;&#x952E;&#x89C6;&#x56FE;</li>
-<li>&#x97F3;&#x91CF;+&#x6570;&#x5B57;&#x952E;&#xFF1A;Fx&#xFF08;&#x7535;&#x8111;&#x952E;&#x76D8;&#x4E0A;&#x7684;&#x6570;&#x5B57;&#x529F;&#x80FD;&#x952E;)</li>
-<li>&#x97F3;&#x91CF;+L&#xFF1A;|&#xFF08;&#x7BA1;&#x9053;&#x5B57;&#x7B26;&#xFF09;</li>
-<li>&#x97F3;&#x91CF;+H&#xFF1A;~&#xFF08;&#x6CE2;&#x6D6A;&#x5B57;&#x7B26;&#xFF09;</li>
-<li>&#x97F3;&#x91CF;+U&#xFF1A;_&#xFF08;&#x4E0B;&#x5212;&#x7EBF;&#x5B57;&#x7B26;&#xFF09;</li>
-<li>&#x97F3;&#x91CF;+P&#xFF1A;&#x4E0A;&#x4E00;&#x9875;</li>
-<li>&#x97F3;&#x91CF;+N&#xFF1A;&#x4E0B;&#x4E00;&#x9875;</li>
-</ul>
-<h2 id="&#x4E00;&#x4E9B;&#x7B80;&#x5355;&#x7684;&#x5E94;&#x7528;"><a href="#&#x4E00;&#x4E9B;&#x7B80;&#x5355;&#x7684;&#x5E94;&#x7528;" class="headerlink" title="&#x4E00;&#x4E9B;&#x7B80;&#x5355;&#x7684;&#x5E94;&#x7528;"></a>&#x4E00;&#x4E9B;&#x7B80;&#x5355;&#x7684;&#x5E94;&#x7528;</h2><h3 id="HTTP-Server"><a href="#HTTP-Server" class="headerlink" title="HTTP Server"></a>HTTP Server</h3><p>&#x6709;&#x4E9B;&#x65F6;&#x5019;&#xFF0C;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x5C06; Android &#x4E0A;&#x7684;&#x67D0;&#x4E9B;&#x6587;&#x4EF6;&#x53D1;&#x9001;&#x5230;&#x5176;&#x4ED6;&#x8BBE;&#x5907;&#xFF08;&#x4F8B;&#x5982;&#x7B14;&#x8BB0;&#x672C;&#xFF0C;&#x5206;&#x4EAB;&#xFF09;&#x3002;&#x4EE5;&#x5F80;&#x7684;&#x89E3;&#x51B3;&#x65B9;&#x6848;&#x4E00;&#x822C;&#x662F;&#x7528;&#x5FAE;&#x4FE1;&#x6216;&#x8005; QQ &#x6765;&#x4F5C;&#x4E3A;&#x4E2D;&#x8F6C;&#x7AD9;&#xFF0C;&#x73B0;&#x5728;&#xFF0C;&#x53EF;&#x4EE5;&#x5229;&#x7528; Termux &#x642D;&#x5EFA;&#x4E00;&#x4E2A;&#x7B80;&#x5355;&#x7684;&#x6587;&#x4EF6;&#x670D;&#x52A1;&#x5668;&#x6765;&#x5B9E;&#x73B0;&#x3002;</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pkg install python -y # &#x9700;&#x8981;&#x4F7F;&#x7528; Python$ ifconfig wlan0 # &#x67E5;&#x770B; Android &#x5728;&#x5C40;&#x57DF;&#x7F51;&#x4E2D;&#x7684; IP &#x5730;&#x5740;&#xFF08;&#x6211;&#x7684;&#x4E3A; 192.168.2.104&#xFF09;$ python -m http.serverServing HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/)...</span><br></pre></td></tr></table></figure>
-
-<p>&#x547D;&#x4EE4;&#x6210;&#x529F;&#x8FD0;&#x884C;&#x4E4B;&#x540E;&#xFF0C;&#x53EF;&#x4EE5;&#x770B;&#x5230;&#x8F93;&#x51FA;&#x4FE1;&#x606F;&#x4E2D;&#x5305;&#x542B;&#x4E86;&#x7AEF;&#x53E3;&#x5730;&#x5740;&#xFF08;&#x6211;&#x8FD9;&#x91CC;&#x662F; 8000&#xFF09;&#x3002;&#x6B64;&#x65F6;&#xFF0C;&#x7528;&#x53E6;&#x5916;&#x4E00;&#x53F0;&#x5904;&#x4E8E;&#x76F8;&#x540C;&#x5C40;&#x57DF;&#x7F51;&#xFF08;&#x4F8B;&#x5982; Wi-Fi&#xFF09;&#x7684;&#x8BBE;&#x5907;&#x5728;&#x6D4F;&#x89C8;&#x5668;&#x5730;&#x5740;&#x8F93;&#x5165; <code>192.168.2.104:8000</code> &#x5373;&#x53EF;&#x8BBF;&#x95EE;&#x6587;&#x4EF6;&#x670D;&#x52A1;&#x5668;&#x4E86;&#x3002;</p>
-<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201028110721.png" alt></p>
-<h3 id="&#x770B;&#x8D77;&#x6765;&#x50CF;&#x9ED1;&#x5BA2;"><a href="#&#x770B;&#x8D77;&#x6765;&#x50CF;&#x9ED1;&#x5BA2;" class="headerlink" title="&#x770B;&#x8D77;&#x6765;&#x50CF;&#x9ED1;&#x5BA2;"></a>&#x770B;&#x8D77;&#x6765;&#x50CF;&#x9ED1;&#x5BA2;</h3><p>&#x4E00;&#x63D0;&#x5230;&#x547D;&#x4EE4;&#x884C;&#xFF0C;&#x600E;&#x80FD;&#x5C11;&#x5F97;&#x4E86;&#x90A3;&#x4E9B;&#x9177;&#x70AB;&#x7684;&#x5B57;&#x7B26;&#x5982;&#x964D;&#x96E8;&#x4E00;&#x822C;&#xFF0C;&#x8FD9;&#x770B;&#x8D77;&#x6765;&#x5C31;&#x5F88;&#x9ED1;&#x5BA2;&#x3002;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x5B89;&#x88C5; <code>pkg install cmartix</code> &#x6765;&#x5B9E;&#x73B0;&#x8FD9;&#x79CD;&#x6548;&#x679C;&#x3002;</p>
-<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201028110658.png" alt></p>
-<h3 id="&#x53C2;&#x8003;&#x6587;&#x7AE0;"><a href="#&#x53C2;&#x8003;&#x6587;&#x7AE0;" class="headerlink" title="&#x53C2;&#x8003;&#x6587;&#x7AE0;"></a>&#x53C2;&#x8003;&#x6587;&#x7AE0;</h3><p><a href="/external_links/41a3b49249c1db336321d0639b4facf2.html" target="blank" rel="noopener">Learn Termux</a></p>
-<p><a href="/external_links/6efcee439e512789c70440bbe0e29bd7.html" target="blank" rel="noopener">Termux &#x9AD8;&#x7EA7;&#x7EC8;&#x7AEF;&#x5B89;&#x88C5;&#x4F7F;&#x7528;&#x914D;&#x7F6E;&#x6559;&#x7A0B;</a></p>
-<p><a href="/external_links/65d78af489a149157e8058d338a18069.html" target="blank" rel="noopener">Termux &#x5165;&#x95E8;&#x6559;&#x7A0B;&#xFF1A;&#x67B6;&#x8BBE;&#x624B;&#x673A; Server &#x4E0B;&#x8F7D;&#x6587;&#x4EF6;</a></p>
-<p>&#x672C;&#x6587;&#x8F6C;&#x81EA;:<a href="/external_links/c38437afbae5c9d3c2ffc5e51eaf2e87.html" target="blank" rel="noopener">https://sspai.com/post/56031</a></p>
-<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
-<p><em>&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://code.newban.cn../../150.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="乱码三千">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="../../images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="../../150.html" itemprop="url">apk逆向工具之脱壳神器反射大师（附脱壳环境搭建、脱壳实战）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-27T16:14:19+08:00">
-                2020-10-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>&#x76F8;&#x4FE1;&#x70B9;&#x51FB;&#x8FDB;&#x5165;&#x8FD9;&#x7BC7;&#x535A;&#x5BA2;&#x7684;&#x5C0F;&#x4F19;&#x4F34;&#x90FD;&#x77E5;&#x9053;&#x5E76;&#x4E14;&#x641E;&#x8FC7;<code>App</code>&#x9006;&#x5411;&#xFF0C;&#x4E0D;&#x8FC7;&#x6709;&#x65F6;&#x5019;&#x4F1A;&#x9047;&#x5230;&#x5404;&#x79CD;&#x52A0;&#x58F3;&#x7684;<code>App</code>&#xFF0C;&#x4E0D;&#x8BA9;&#x4F60;&#x53CD;&#x7F16;&#x8BD1;&#x3002;&#x4F46;&#x662F;<code>&#x9053;&#x9AD8;&#x4E00;&#x5C3A;&#xFF0C;&#x9B54;&#x9AD8;&#x4E00;&#x4E08;</code>&#xFF0C;&#x6709;<code>&#x6B63;&#x5411;&#x52A0;&#x5BC6;</code>&#xFF0C;&#x5C31;&#x6709;<code>&#x9006;&#x5411;&#x89E3;&#x5BC6;</code>&#x3002;&#x6B64;&#x7BC7;&#x535A;&#x5BA2;&#x535A;&#x4E3B;&#x5E26;&#x5927;&#x5BB6;&#x642D;&#x5EFA;&#x8131;&#x58F3;&#x73AF;&#x5883;&#xFF0C;&#x5E76;&#x4E14;&#x624B;&#x52A8;&#x8131;&#x4E00;&#x4E2A;&#x52A0;&#x4E86;&#x67D0;60&#x7684;&#x58F3;&#x7684;<code>App</code>&#x3002;&#x95F2;&#x8BDD;&#x5C11;&#x53D9;&#xFF0C;&#x76F4;&#x63A5;&#x5F00;&#x59CB;&#x5427;&#xFF01;</p>
-<h1 id="&#x4E00;&#x3001;Android&#x7CFB;&#x7EDF;"><a href="#&#x4E00;&#x3001;Android&#x7CFB;&#x7EDF;" class="headerlink" title="&#x4E00;&#x3001;Android&#x7CFB;&#x7EDF;"></a>&#x4E00;&#x3001;<code>Android</code>&#x7CFB;&#x7EDF;</h1><p>&#x2003;&#x2003;&#x73AF;&#x5883;&#x9700;&#x8981;&#x4E00;&#x4E2A;<code>Android</code>&#x7CFB;&#x7EDF;&#xFF0C;&#x5E76;&#x4E14;&#x7CFB;&#x7EDF;&#x7684;&#x7248;&#x672C;&#x63A7;&#x5236;&#x5728;<code>4.0-6.0</code>&#x4E4B;&#x95F4;&#x3002;&#x5EFA;&#x8BAE;&#x4F7F;&#x7528;<code>&#x865A;&#x62DF;&#x673A;</code>/<code>&#x6A21;&#x62DF;&#x5668;</code>&#xFF0C;&#x4E0D;&#x7136;&#x4F60;&#x8FD8;&#x8981;&#x83B7;&#x53D6;<code>root</code>&#x6743;&#x9650;&#xFF0C;&#x5BB9;&#x6613;&#x641E;&#x574F;&#x771F;&#x673A;&#x3002;&#x6211;&#x8FD9;&#x91CC;&#x7528;&#x7684;&#x662F;&#x7F51;&#x6613;&#x6A21;&#x62DF;&#x5668;&#xFF0C;<code>Android</code>&#x7CFB;&#x7EDF;&#x7684;&#x7248;&#x672C;&#x4E3A;<code>6.0.1</code>.<br><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142546.png" alt><br><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142531.png" alt></p>
-<h1 id="&#x4E8C;&#x3001;&#x5B89;&#x88C5;Xposed&#x6846;&#x67B6;"><a href="#&#x4E8C;&#x3001;&#x5B89;&#x88C5;Xposed&#x6846;&#x67B6;" class="headerlink" title="&#x4E8C;&#x3001;&#x5B89;&#x88C5;Xposed&#x6846;&#x67B6;"></a>&#x4E8C;&#x3001;&#x5B89;&#x88C5;Xposed&#x6846;&#x67B6;</h1><p>&#x2003;&#x2003;&#x9700;&#x8981;<code>root</code>&#x6743;&#x9650;&#xFF0C;&#x865A;&#x62DF;&#x673A;&#x76F4;&#x63A5;&#x5141;&#x8BB8;&#x5373;&#x53EF;&#xFF0C;&#x771F;&#x673A;&#x8981;&#x7528;&#x7B2C;&#x4E09;&#x65B9;&#x5DE5;&#x5177;&#x83B7;&#x53D6;&#xFF0C;&#x7F51;&#x4E0A;&#x6709;&#x5F88;&#x591A;&#x6559;&#x7A0B;&#x3002;</p>
-<h2 id="1&#x3001;&#x4E0B;&#x8F7D;Xposed-Installer"><a href="#1&#x3001;&#x4E0B;&#x8F7D;Xposed-Installer" class="headerlink" title="1&#x3001;&#x4E0B;&#x8F7D;Xposed Installer"></a>1&#x3001;&#x4E0B;&#x8F7D;<code>Xposed Installer</code></h2><p>&#x5B98;&#x7F51;&#x5730;&#x5740;&#xFF1A;<code>https://repo.xposed.info/module/de.robv.android.xposed.installer</code><br> <img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142503.png" alt> </p>
-<h2 id="2&#x3001;&#x5B89;&#x88C5;Xposed-Installer"><a href="#2&#x3001;&#x5B89;&#x88C5;Xposed-Installer" class="headerlink" title="2&#x3001;&#x5B89;&#x88C5;Xposed Installer"></a>2&#x3001;&#x5B89;&#x88C5;<code>Xposed Installer</code></h2><p>&#x4E0B;&#x8F7D;&#x5B8C;&#x6BD5;&#x540E;&#xFF0C;&#x76F4;&#x63A5;&#x62D6;&#x5165;&#x6A21;&#x62DF;&#x5668;&#x5B89;&#x88C5;&#x5373;&#x53EF;&#x3002;&#x7136;&#x540E;&#x6253;&#x5F00;&#x8FD9;&#x4E2A;App<br><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142438.png" alt><br><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142426.png" alt><br>&#x2003;&#x2003;&#x7531;&#x4E8E;&#x6211;&#x4E4B;&#x524D;&#x5B89;&#x88C5;&#x8FC7;&#xFF0C;&#x6240;&#x4EE5;&#x6CA1;&#x63D0;&#x793A;&#x8981;root&#x6743;&#x9650;&#xFF0C;&#x7B2C;&#x4E00;&#x6B21;&#x5B89;&#x88C5;&#x7684;&#x65F6;&#x5019;&#x4F1A;&#x63D0;&#x793A;&#x6388;&#x6743;&#x7684;&#xFF0C;&#x6388;&#x4E88;&#x5373;&#x53EF;&#x3002;</p>
-<h1 id="&#x4E09;&#x3001;&#x5B89;&#x88C5;&#x53CD;&#x5C04;&#x5927;&#x5E08;"><a href="#&#x4E09;&#x3001;&#x5B89;&#x88C5;&#x53CD;&#x5C04;&#x5927;&#x5E08;" class="headerlink" title="&#x4E09;&#x3001;&#x5B89;&#x88C5;&#x53CD;&#x5C04;&#x5927;&#x5E08;"></a>&#x4E09;&#x3001;&#x5B89;&#x88C5;<code>&#x53CD;&#x5C04;&#x5927;&#x5E08;</code></h1><p>&#x2003;&#x2003;<code>&#x53CD;&#x5C04;&#x5927;&#x5E08;</code>&#x662F;&#x4E00;&#x4E2A;&#x652F;&#x6301;&#x4E00;&#x952E;&#x8131;&#x58F3;&#x7684;&#x795E;&#x5668;&#xFF0C;&#x8C8C;&#x4F3C;&#x4EC0;&#x4E48;&#x58F3;&#x90FD;&#x80FD;&#x8131;&#xFF0C;&#x4E0D;&#x8FC7;&#x540E;&#x9762;&#x66F4;&#x65B0;&#x7684;&#x58F3;&#x4F1A;&#x4E0D;&#x4F1A;&#x6DFB;&#x52A0;&#x68C0;&#x6D4B;&#x673A;&#x5236;&#x5C31;&#x8BF4;&#x4E0D;&#x6E05;&#x4E86;&#x3002;&#x3002;&#x3002;</p>
-<h2 id="1&#x3001;&#x4E0B;&#x8F7D;&#x53CD;&#x5C04;&#x5927;&#x5E08;"><a href="#1&#x3001;&#x4E0B;&#x8F7D;&#x53CD;&#x5C04;&#x5927;&#x5E08;" class="headerlink" title="1&#x3001;&#x4E0B;&#x8F7D;&#x53CD;&#x5C04;&#x5927;&#x5E08;"></a>1&#x3001;&#x4E0B;&#x8F7D;<code>&#x53CD;&#x5C04;&#x5927;&#x5E08;</code></h2><p>&#x4E0B;&#x8F7D;&#x5730;&#x5740;&#xFF1A;<code>https://www.lanzous.com/i6x1kaf</code><br><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142411.png" alt></p>
-<h2 id="2&#x3001;&#x5B89;&#x88C5;ReflectMaster&#x5E76;&#x6388;&#x6743;"><a href="#2&#x3001;&#x5B89;&#x88C5;ReflectMaster&#x5E76;&#x6388;&#x6743;" class="headerlink" title="2&#x3001;&#x5B89;&#x88C5;ReflectMaster&#x5E76;&#x6388;&#x6743;"></a>2&#x3001;&#x5B89;&#x88C5;<code>ReflectMaster</code>&#x5E76;&#x6388;&#x6743;</h2><p>&#x2003;&#x2003;&#x76F4;&#x63A5;&#x62D6;&#x5165;&#x6A21;&#x62DF;&#x5668;&#x4E2D;&#x8FDB;&#x884C;&#x5B89;&#x88C5;&#xFF0C;&#x7136;&#x540E;&#x6253;&#x5F00;&#x3002;&#x4F1A;&#x63D0;&#x793A;&#x8BA9;&#x4F60;&#x6FC0;&#x6D3B;Xposed&#x3002;<br><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142357.png" alt><br><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142344.png" alt><br><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142331.png" alt><br><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142318.png" alt><br>&#x7136; &#x540E; &#x91CD; &#x542F; &#x6A21; &#x62DF; &#x5668; ! \color{red}&#x7136;&#x540E;&#x91CD;&#x542F;&#x6A21;&#x62DF;&#x5668;!&#x7136;&#x540E;&#x91CD;&#x542F;&#x6A21;&#x62DF;&#x5668;!</p>
-<h1 id="&#x56DB;&#x3001;&#x8131;&#x58F3;&#x5B9E;&#x6218;"><a href="#&#x56DB;&#x3001;&#x8131;&#x58F3;&#x5B9E;&#x6218;" class="headerlink" title="&#x56DB;&#x3001;&#x8131;&#x58F3;&#x5B9E;&#x6218;"></a>&#x56DB;&#x3001;&#x8131;&#x58F3;&#x5B9E;&#x6218;</h1><h2 id="1&#x3001;&#x5B89;&#x88C5;&#x5F85;&#x8131;&#x58F3;&#x7684;&#x8F6F;&#x4EF6;"><a href="#1&#x3001;&#x5B89;&#x88C5;&#x5F85;&#x8131;&#x58F3;&#x7684;&#x8F6F;&#x4EF6;" class="headerlink" title="1&#x3001;&#x5B89;&#x88C5;&#x5F85;&#x8131;&#x58F3;&#x7684;&#x8F6F;&#x4EF6;"></a>1&#x3001;&#x5B89;&#x88C5;&#x5F85;&#x8131;&#x58F3;&#x7684;&#x8F6F;&#x4EF6;</h2><p>&#x2003;&#x2003;&#x9996;&#x5148;&#x5728;&#x6A21;&#x62DF;&#x5668;&#x4E2D;&#x5B89;&#x88C5;&#x597D;&#x5F85;&#x8131;&#x58F3;&#x7684;&#x8F6F;&#x4EF6;&#xFF0C;&#x7528;MT&#x7BA1;&#x7406;&#x5668;&#x53EF;&#x4EE5;&#x67E5;&#x770B;&#x8F6F;&#x4EF6;&#x52A0;&#x7684;&#x662F;&#x4EC0;&#x4E48;&#x58F3;&#x3002;&#xFF08;<code>&#x53CD;&#x5C04;&#x5927;&#x5E08;</code>&#x4E0D;&#x533A;&#x5206;&#x58F3;&#x7C7B;&#x578B;&#xFF0C;&#x662F;&#x58F3;&#x90FD;&#x53EF;&#x4EE5;&#x8131;&#x3002;&#xFF09;<br><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142303.png" alt></p>
-<h2 id="2&#x3001;&#x7528;&#x53CD;&#x5C04;&#x5927;&#x5E08;&#x6253;&#x5F00;&#x5F85;&#x8131;&#x58F3;App"><a href="#2&#x3001;&#x7528;&#x53CD;&#x5C04;&#x5927;&#x5E08;&#x6253;&#x5F00;&#x5F85;&#x8131;&#x58F3;App" class="headerlink" title="2&#x3001;&#x7528;&#x53CD;&#x5C04;&#x5927;&#x5E08;&#x6253;&#x5F00;&#x5F85;&#x8131;&#x58F3;App"></a>2&#x3001;&#x7528;<code>&#x53CD;&#x5C04;&#x5927;&#x5E08;</code>&#x6253;&#x5F00;&#x5F85;&#x8131;&#x58F3;App</h2><p>&#x2003;&#x2003;&#x5148;&#x628A;&#x8F6F;&#x4EF6;&#x9009;&#x4E2D;&#xFF0C;&#x7136;&#x540E;&#x6253;&#x5F00;&#x5F85;&#x8131;&#x58F3;&#x7684;App&#x3002;<br><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142249.png" alt><br><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142236.png" alt><br><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142223.png" alt></p>
-<h2 id="3&#x3001;&#x8131;&#x58F3;-&#x6838;&#x5FC3;&#x6B65;&#x9AA4;"><a href="#3&#x3001;&#x8131;&#x58F3;-&#x6838;&#x5FC3;&#x6B65;&#x9AA4;" class="headerlink" title="3&#x3001;&#x8131;&#x58F3;(&#x6838;&#x5FC3;&#x6B65;&#x9AA4;)"></a>3&#x3001;&#x8131;&#x58F3;(&#x6838;&#x5FC3;&#x6B65;&#x9AA4;)</h2><p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142159.png" alt><br> <img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142134.png" alt><br><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142057.png" alt><br><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142043.png" alt><br><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142025.png" alt><br><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027142009.png" alt></p>
-<h2 id="4&#x3001;&#x7528;jadx&#x53CD;&#x7F16;&#x8BD1;"><a href="#4&#x3001;&#x7528;jadx&#x53CD;&#x7F16;&#x8BD1;" class="headerlink" title="4&#x3001;&#x7528;jadx&#x53CD;&#x7F16;&#x8BD1;"></a>4&#x3001;&#x7528;jadx&#x53CD;&#x7F16;&#x8BD1;</h2><p>&#x2003;&#x2003;jadx&#x5DE5;&#x5177;&#x53EF;&#x4EE5;&#x5C06;dex&#x53CD;&#x7F16;&#x8BD1;&#x6210;java&#x4EE3;&#x7801;&#x3002;<br><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20201027141946.png" alt></p>
-<h1 id="&#x4E94;&#x3001;&#x603B;&#x7ED3;&#x4E0E;&#x4F53;&#x4F1A;"><a href="#&#x4E94;&#x3001;&#x603B;&#x7ED3;&#x4E0E;&#x4F53;&#x4F1A;" class="headerlink" title="&#x4E94;&#x3001;&#x603B;&#x7ED3;&#x4E0E;&#x4F53;&#x4F1A;"></a>&#x4E94;&#x3001;&#x603B;&#x7ED3;&#x4E0E;&#x4F53;&#x4F1A;</h1><p>&#x2003;&#x2003;&#x4EE5;&#x4E0A;&#x5C31;&#x662F;&#x8131;&#x58F3;&#x73AF;&#x5883;&#x642D;&#x5EFA;&#x4E0E;&#x8131;&#x67D0;60&#x58F3;&#x5B9E;&#x6218;&#x7684;&#x4E3B;&#x8981;&#x5185;&#x5BB9;&#x3002;&#x58F3;&#x786E;&#x5B9E;&#x8131;&#x4E86;&#xFF0C;&#x4F46;&#x662F;&#x6CA1;&#x6709;&#x4FEE;&#x590D;&#x6B65;&#x9AA4;&#xFF0C;&#x6BD4;&#x5982;&#x4FEE;&#x6539;<code>Apk</code>&#x4E2D;&#x7684;<code>xml</code>&#x3001;&#x7A0B;&#x5E8F;&#x5165;&#x53E3;&#x7B49;&#x64CD;&#x4F5C;&#x3002;&#x8FD9;&#x4E3B;&#x8981;&#x662F;&#x7531;&#x4E8E;&#x4E0D;&#x540C;&#x7684;&#x58F3;&#xFF0C;&#x4FEE;&#x590D;&#x6B65;&#x9AA4;&#x4E0D;&#x540C;</p>
-<h2 id="&#x516D;&#x3001;&#x9644;&#x4E0A;&#x89C6;&#x9891;&#x6559;&#x7A0B;"><a href="#&#x516D;&#x3001;&#x9644;&#x4E0A;&#x89C6;&#x9891;&#x6559;&#x7A0B;" class="headerlink" title="&#x516D;&#x3001;&#x9644;&#x4E0A;&#x89C6;&#x9891;&#x6559;&#x7A0B;"></a>&#x516D;&#x3001;&#x9644;&#x4E0A;&#x89C6;&#x9891;&#x6559;&#x7A0B;</h2><iframe src="//player.bilibili.com/player.html?aid=669167483&amp;bvid=BV1ba4y1J72d&amp;cid=223857852&amp;page=1&amp;autoplay=no" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
-
-
-
-
-
-<p><strong>&#x672C;&#x6587;&#x8F6C;&#x8F7D;&#x81EA;</strong><a href="/external_links/21481ae807538f6290283602d1e4d5a7.html" target="blank" rel="noopener">https://blog.csdn.net/qq_41855420/article/details/106276824</a></p>
-<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
-<p><em>&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</em></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1775,7 +1693,7 @@
               
                 <a href="https://code.newban.cn/archives/">
               
-                  <span class="site-state-item-count">476</span>
+                  <span class="site-state-item-count">479</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
