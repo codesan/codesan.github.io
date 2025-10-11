@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+<meta name="referrer" content="never">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="nodejs,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="乱码三千 – 分享实用IT技术" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="&amp;#x524D;&amp;#x8A00;&amp;#x6587;&amp;#x7AE0;&amp;#x6570;&amp;#x91CF;&amp;#x8FC7;&amp;#x591A;, &amp;#x6267;&amp;#x884C;hexo g&amp;#x6E32;&amp;#x67D3;&amp;#x65F6;&amp;#x62A5;&amp;#x9519;, &amp;#x5982;&amp;#x4E0B;: 1234567891011121314151617181920212223242526272829303">
+<meta name="keywords" content="nodejs">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于hexo文章数量过多导致编译内存不足的解决">
+<meta property="og:url" content="https://code.newban.cn/488.html">
+<meta property="og:site_name" content="乱码三千 – 分享实用IT技术">
+<meta property="og:description" content="&amp;#x524D;&amp;#x8A00;&amp;#x6587;&amp;#x7AE0;&amp;#x6570;&amp;#x91CF;&amp;#x8FC7;&amp;#x591A;, &amp;#x6267;&amp;#x884C;hexo g&amp;#x6E32;&amp;#x67D3;&amp;#x65F6;&amp;#x62A5;&amp;#x9519;, &amp;#x5982;&amp;#x4E0B;: 1234567891011121314151617181920212223242526272829303">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gitee.com/songjianzaina/site_img/raw/master/img/image-20250910100621554.png">
+<meta property="og:image" content="https://gitee.com/songjianzaina/site_img/raw/master/img/iShot_2025-09-10_10.08.47.gif">
+<meta property="og:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png">
+<meta property="og:updated_time" content="2025-09-10T02:13:29.300Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于hexo文章数量过多导致编译内存不足的解决">
+<meta name="twitter:description" content="&amp;#x524D;&amp;#x8A00;&amp;#x6587;&amp;#x7AE0;&amp;#x6570;&amp;#x91CF;&amp;#x8FC7;&amp;#x591A;, &amp;#x6267;&amp;#x884C;hexo g&amp;#x6E32;&amp;#x67D3;&amp;#x65F6;&amp;#x62A5;&amp;#x9519;, &amp;#x5982;&amp;#x4E0B;: 1234567891011121314151617181920212223242526272829303">
+<meta name="twitter:image" content="https://gitee.com/songjianzaina/site_img/raw/master/img/image-20250910100621554.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+<!--谷歌广告验证代码-->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: "ca-pub-2626449904708114",
+          enable_page_level_ads: true
+     });
+</script>
+<!--谷歌广告验证代码-->
+
+<!--短链广告-->
+<!--<script type="text/javascript">
+    var adfly_id = 25792435;
+    var adfly_advert = 'banner';
+    var popunder = false;
+    var exclude_domains = ['code.newban.cn','newban.cn',  'localhost:4000'];
+</script>
+<script src="https://cdn.adf.ly/js/link-converter.js"></script>-->
+<!--短链广告-->
+
+
+
+  <link rel="canonical" href="https://code.newban.cn/488.html">
+
+
+
+
+
+  <title>关于hexo文章数量过多导致编译内存不足的解决 | 乱码三千 – 分享实用IT技术</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+  
+<a href="https://www.github.com/songjianzaina" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">乱码三千 – 分享实用IT技术</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">乱码三千 – 码出一个新世界</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://www.newban.cn/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="https://code.newban.cn/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">关于hexo文章数量过多导致编译内存不足的解决</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-09-10T10:14:19+08:00">
+                2025-09-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="&#x524D;&#x8A00;"><a href="#&#x524D;&#x8A00;" class="headerlink" title="&#x524D;&#x8A00;"></a>&#x524D;&#x8A00;</h2><p>&#x6587;&#x7AE0;&#x6570;&#x91CF;&#x8FC7;&#x591A;, &#x6267;&#x884C;<code>hexo g</code>&#x6E32;&#x67D3;&#x65F6;&#x62A5;&#x9519;, &#x5982;&#x4E0B;:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">&lt;--- Last few GCs ---&gt;</span><br><span class="line"></span><br><span class="line">[3128:0x102d59000]  3164514 ms: Mark-sweep 9136.8 (9211.6) -&gt; 9124.1 (9213.4) MB, 4252.7 / 0.0 ms  (average mu = 0.099, current mu = 0.022) allocation failure scavenge might not succeed</span><br><span class="line">[3128:0x102d59000]  3168989 ms: Mark-sweep 9138.4 (9213.5) -&gt; 9127.1 (9215.3) MB, 4402.9 / 0.0 ms  (average mu = 0.056, current mu = 0.016) allocation failure scavenge might not succeed</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&lt;--- JS stacktrace ---&gt;</span><br><span class="line"></span><br><span class="line">==== JS stack trace =========================================</span><br><span class="line"></span><br><span class="line">    0: ExitFrame [pc: 0x1009d5fd9]</span><br><span class="line">    1: StubFrame [pc: 0x1009d6ead]</span><br><span class="line">Security context: 0x1032be4808d1 &lt;JSObject&gt;</span><br><span class="line">    2: formatAttrs [0x10326c532831] [/node_modules/dom-serializer/index.js:~22] [pc=0x13101fad4423](this=0x1032ffa02da1 &lt;JSGlobal Object&gt;,0x10333f9ef9e1 &lt;Object map = 0x1032643d71d9&gt;,0x1032fa08d281 &lt;Object map = 0x1032643ffae9&gt;)</span><br><span class="line">    3: /* anonymous */ [0x103256ce9201] [/Use...</span><br><span class="line"></span><br><span class="line">FATAL ERROR: Ineffective mark-compacts near heap <span class="built_in">limit</span> Allocation failed - JavaScript heap out of memory</span><br><span class="line"> 1: 0x1011c9b35 node::Abort() (.cold.1) [/usr/<span class="built_in">local</span>/bin/node]</span><br><span class="line"> 2: 0x10009ca99 node::Abort() [/usr/<span class="built_in">local</span>/bin/node]</span><br><span class="line"> 3: 0x10009cbff node::OnFatalError(char const*, char const*) [/usr/<span class="built_in">local</span>/bin/node]</span><br><span class="line"> 4: 0x1001ddb37 v8::Utils::ReportOOMFailure(v8::internal::Isolate*, char const*, bool) [/usr/<span class="built_in">local</span>/bin/node]</span><br><span class="line"> 5: 0x1001ddad7 v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, bool) [/usr/<span class="built_in">local</span>/bin/node]</span><br><span class="line"> 6: 0x1003659d5 v8::internal::Heap::FatalProcessOutOfMemory(char const*) [/usr/<span class="built_in">local</span>/bin/node]</span><br><span class="line"> 7: 0x10036724a v8::internal::Heap::RecomputeLimits(v8::internal::GarbageCollector) [/usr/<span class="built_in">local</span>/bin/node]</span><br><span class="line"> 8: 0x100363c7c v8::internal::Heap::PerformGarbageCollection(v8::internal::GarbageCollector, v8::GCCallbackFlags) [/usr/<span class="built_in">local</span>/bin/node]</span><br><span class="line"> 9: 0x100361a7e v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace, v8::internal::GarbageCollectionReason, v8::GCCallbackFlags) [/usr/<span class="built_in">local</span>/bin/node]</span><br><span class="line">10: 0x10036d94a v8::internal::Heap::AllocateRawWithLightRetry(int, v8::internal::AllocationType, v8::internal::AllocationOrigin, v8::internal::AllocationAlignment) [/usr/<span class="built_in">local</span>/bin/node]</span><br><span class="line">11: 0x10036d9d1 v8::internal::Heap::AllocateRawWithRetryOrFail(int, v8::internal::AllocationType, v8::internal::AllocationOrigin, v8::internal::AllocationAlignment) [/usr/<span class="built_in">local</span>/bin/node]</span><br><span class="line">12: 0x10033b60a v8::internal::Factory::NewFillerObject(int, bool, v8::internal::AllocationType, v8::internal::AllocationOrigin) [/usr/<span class="built_in">local</span>/bin/node]</span><br><span class="line">13: 0x10068cb88 v8::internal::Runtime_AllocateInYoungGeneration(int, unsigned long*, v8::internal::Isolate*) [/usr/<span class="built_in">local</span>/bin/node]</span><br><span class="line">14: 0x1009d5fd9 Builtins_CEntry_Return1_DontSaveFPRegs_ArgvOnStack_NoBuiltinExit [/usr/<span class="built_in">local</span>/bin/node]</span><br><span class="line">zsh: abort      hexo g</span><br></pre></td></tr></table></figure>
+
+<p>&#x8FD9;&#x662F;&#x7531;&#x4E8E;<code>node.js</code>&#x5185;&#x5B58;&#x9650;&#x5236;&#x5BFC;&#x81F4;&#x7684;, &#x9ED8;&#x8BA4;&#x5806;&#x5185;&#x5B58;&#x4E0A;&#x9650;&#x4E3A;1024MB</p>
+<p>&#x89E3;&#x51B3;&#x65B9;&#x6CD5;&#x4E5F;&#x5F88;&#x7B80;&#x5355;, &#x90A3;&#x5C31;&#x662F;&#x52A0;&#x5927;&#x5806;&#x5185;&#x5B58;&#x4E0A;&#x9650;, &#x6709;&#x56DB;&#x79CD;&#x65B9;&#x6848;</p>
+<h2 id="&#x89E3;&#x51B3;&#x65B9;&#x6848;"><a href="#&#x89E3;&#x51B3;&#x65B9;&#x6848;" class="headerlink" title="&#x89E3;&#x51B3;&#x65B9;&#x6848;"></a>&#x89E3;&#x51B3;&#x65B9;&#x6848;</h2><h3 id="&#x7B2C;&#x4E00;&#x79CD;-&#x4E34;&#x65F6;&#x6027;&#x914D;&#x7F6E;"><a href="#&#x7B2C;&#x4E00;&#x79CD;-&#x4E34;&#x65F6;&#x6027;&#x914D;&#x7F6E;" class="headerlink" title="&#x7B2C;&#x4E00;&#x79CD; &#x4E34;&#x65F6;&#x6027;&#x914D;&#x7F6E;"></a>&#x7B2C;&#x4E00;&#x79CD; &#x4E34;&#x65F6;&#x6027;&#x914D;&#x7F6E;</h3><p>&#x6BD4;&#x5982;&#x7528;&#x4EE5;&#x4E0B;&#x547D;&#x4EE4;&#x6765;&#x66FF;&#x4EE3;<code>hexo g</code>:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node --max-old-space-size=16384 ./node_modules/hexo/bin/hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>&#x8FD9;&#x91CC;<code>--max-old-space-size</code>&#x5C5E;&#x6027;&#x7684;&#x6570;&#x503C;&#x53EF;&#x4EE5;&#x81EA;&#x5B9A;&#x4E49;, &#x6211;&#x8FD9;&#x91CC;&#x9009;&#x62E9;&#x7684;&#x662F;16G, &#x4F60;&#x4E5F;&#x53EF;&#x4EE5;&#x8BBE;&#x7F6E;&#x4E3A;8G, &#x4E5F;&#x5C31;&#x662F;<code>--max-old-space-size=8192</code>, &#x4EE5;&#x6B64;&#x7C7B;&#x63A8;</p>
+<h3 id="&#x7B2C;&#x4E8C;&#x79CD;-&#x7CFB;&#x7EDF;&#x7EA7;&#x5168;&#x5C40;&#x914D;&#x7F6E;"><a href="#&#x7B2C;&#x4E8C;&#x79CD;-&#x7CFB;&#x7EDF;&#x7EA7;&#x5168;&#x5C40;&#x914D;&#x7F6E;" class="headerlink" title="&#x7B2C;&#x4E8C;&#x79CD; &#x7CFB;&#x7EDF;&#x7EA7;&#x5168;&#x5C40;&#x914D;&#x7F6E;"></a>&#x7B2C;&#x4E8C;&#x79CD; &#x7CFB;&#x7EDF;&#x7EA7;&#x5168;&#x5C40;&#x914D;&#x7F6E;</h3><p>&#x4FEE;&#x6539;&#x7535;&#x8111;&#x4E0A;&#x7684;<code>node</code>&#x914D;&#x7F6E;&#x6587;&#x4EF6;</p>
+<ol>
+<li><p>&#x7B2C;&#x4E00;&#x6B65; &#x6253;&#x5F00;<code>launchd.conf</code>&#x914D;&#x7F6E;&#x6587;&#x4EF6;</p>
+   <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x7F16;&#x8F91; Node.js &#x5168;&#x5C40;&#x542F;&#x52A8;&#x914D;&#x7F6E;</span></span><br><span class="line">sudo vim /etc/launchd.conf</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>&#x6DFB;&#x52A0;&#x4EE5;&#x4E0B;&#x5185;&#x5BB9;</p>
+   <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setenv NODE_OPTIONS &quot;--max-old-space-size=16384&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>&#x8FD0;&#x884C;&#x914D;&#x7F6E;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo launchctl load /etc/launchd.conf</span><br><span class="line">reboot  <span class="comment"># &#x91CD;&#x542F;&#x751F;&#x6548;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>&#x9A8C;&#x8BC1;&#x662F;&#x5426;&#x751F;&#x6548;</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="variable">$NODE_OPTIONS</span>  <span class="comment"># &#x5E94;&#x663E;&#x793A; --max-old-space-size=8192</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>&#x7CFB;&#x7EDF;&#x7EA7;&#x914D;&#x7F6E;, &#x9488;&#x5BF9;&#x6240;&#x6709;&#x7528;&#x6237;&#x751F;&#x6548;</p>
+<p>&#x5185;&#x5B58;&#x5927;&#x5C0F;&#x7684;&#x8BBE;&#x7F6E;&#x9700;&#x8981;&#x6839;&#x636E;&#x81EA;&#x5DF1;&#x7535;&#x8111;&#x7684;&#x5B9E;&#x9645;&#x60C5;&#x51B5;&#x6765;&#x5B9A;, &#x907F;&#x514D;&#x8BBE;&#x7F6E;&#x8FC7;&#x9AD8; &#x4ECE;&#x800C;&#x5BFC;&#x81F4;&#x5BFC;&#x81F4;&#x7CFB;&#x7EDF;&#x6574;&#x4F53;&#x6027;&#x80FD;&#x4E0B;&#x964D;</p>
+<h4 id="&#x5173;&#x4E8E;Mac&#x5E73;&#x53F0;&#x7684;&#x66F4;&#x65B0;"><a href="#&#x5173;&#x4E8E;Mac&#x5E73;&#x53F0;&#x7684;&#x66F4;&#x65B0;" class="headerlink" title="&#x5173;&#x4E8E;Mac&#x5E73;&#x53F0;&#x7684;&#x66F4;&#x65B0;"></a>&#x5173;&#x4E8E;Mac&#x5E73;&#x53F0;&#x7684;&#x66F4;&#x65B0;</h4><p>&#x7531;&#x4E8E; <code>/etc/launchd.conf</code>&#x5728;&#x65B0;&#x7248;<code>macOS</code> &#x4E2D;&#x5DF2;&#x88AB;&#x5F03;&#x7528;&#xFF0C;&#x63A8;&#x8350;&#x4F7F;&#x7528;&#x4EE5;&#x4E0B;&#x65B9;&#x5F0F;&#xFF1A;</p>
+<ol>
+<li><p>&#x521B;&#x5EFA;&#x6216;&#x4FEE;&#x6539; <code>launchd plist</code> &#x6587;&#x4EF6;&#xFF08;&#x7CFB;&#x7EDF;&#x7EA7;&#xFF09;</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /Library/LaunchDaemons/com.custom.node.env.plist</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>&#x6DFB;&#x52A0;&#x5185;&#x5BB9;&#xFF1A;</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span><br><span class="line">&lt;!DOCTYPE plist PUBLIC <span class="string">&quot;-//Apple//DTD PLIST 1.0//EN&quot;</span> <span class="string">&quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;</span>&gt;</span><br><span class="line">&lt;plist version=<span class="string">&quot;1.0&quot;</span>&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">    &lt;key&gt;Label&lt;/key&gt;</span><br><span class="line">    &lt;string&gt;com.custom.node.env&lt;/string&gt;</span><br><span class="line">    &lt;key&gt;ProgramArguments&lt;/key&gt;</span><br><span class="line">    &lt;array&gt;</span><br><span class="line">        &lt;string&gt;/bin/launchctl&lt;/string&gt;</span><br><span class="line">        &lt;string&gt;setenv&lt;/string&gt;</span><br><span class="line">        &lt;string&gt;NODE_OPTIONS&lt;/string&gt;</span><br><span class="line">        &lt;string&gt;--max-old-space-size=4096&lt;/string&gt;</span><br><span class="line">    &lt;/array&gt;</span><br><span class="line">    &lt;key&gt;RunAtLoad&lt;/key&gt;</span><br><span class="line">    &lt;<span class="literal">true</span>/&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;/plist&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>&#x52A0;&#x8F7D;&#x914D;&#x7F6E;&#xFF1A;</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo launchctl load /Library/LaunchDaemons/com.custom.node.env.plist</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="&#x7B2C;&#x4E09;&#x79CD;-&#x7528;&#x6237;&#x7EA7;&#x914D;&#x7F6E;"><a href="#&#x7B2C;&#x4E09;&#x79CD;-&#x7528;&#x6237;&#x7EA7;&#x914D;&#x7F6E;" class="headerlink" title="&#x7B2C;&#x4E09;&#x79CD; &#x7528;&#x6237;&#x7EA7;&#x914D;&#x7F6E;"></a>&#x7B2C;&#x4E09;&#x79CD; &#x7528;&#x6237;&#x7EA7;&#x914D;&#x7F6E;</h3><p>&#x901A;&#x8FC7;&#x4FEE;&#x6539;&#x73AF;&#x5883;&#x53D8;&#x91CF;&#x7684;&#x65B9;&#x5F0F;</p>
+<ol>
+<li><p><strong>&#x7F16;&#x8F91; <code>shell</code>&#x914D;&#x7F6E;&#x6587;&#x4EF6;</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nano ~/.zshrc  <span class="comment"># macOS Catalina &#x53CA;&#x4EE5;&#x540E;&#x7248;&#x672C;</span></span><br><span class="line"><span class="comment"># &#x6216;</span></span><br><span class="line">nano ~/.bash_profile <span class="comment"># macOS Catalina &#x4E4B;&#x524D;&#x7248;&#x672C;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>&#x6DFB;&#x52A0;&#x4EE5;&#x4E0B;&#x884C;</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x8BBE;&#x7F6E; Node.js &#x5185;&#x5B58;&#x9650;&#x5236;</span></span><br><span class="line"><span class="built_in">export</span> NODE_OPTIONS=<span class="string">&quot;--max-old-space-size=4096&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>&#x4F7F;&#x914D;&#x7F6E;&#x751F;&#x6548;</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.zshrc  <span class="comment"># &#x6216; source ~/.bash_profile</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>&#x8BE5;&#x914D;&#x7F6E;&#x4EC5;&#x5BF9;&#x5F53;&#x524D;&#x7528;&#x6237;&#x751F;&#x6548;, &#x9002;&#x5408;&#x7528;&#x6237;&#x914D;&#x7F6E;&#x9694;&#x79BB;</p>
+<h3 id="&#x7B2C;&#x56DB;&#x79CD;-&#x9879;&#x76EE;&#x7EA7;&#x914D;&#x7F6E;-&#x66F4;&#x5B89;&#x5168;"><a href="#&#x7B2C;&#x56DB;&#x79CD;-&#x9879;&#x76EE;&#x7EA7;&#x914D;&#x7F6E;-&#x66F4;&#x5B89;&#x5168;" class="headerlink" title="&#x7B2C;&#x56DB;&#x79CD; &#x9879;&#x76EE;&#x7EA7;&#x914D;&#x7F6E;(&#x66F4;&#x5B89;&#x5168;)"></a>&#x7B2C;&#x56DB;&#x79CD; &#x9879;&#x76EE;&#x7EA7;&#x914D;&#x7F6E;(&#x66F4;&#x5B89;&#x5168;)</h3><p>&#x5728; <code>Hexo</code> &#x9879;&#x76EE;&#x7684; <code>package.json</code>&#x4E2D;&#x4FEE;&#x6539;<code>scripts</code>&#xFF1A;</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&quot;scripts&quot;: {</span><br><span class="line">  &quot;build&quot;: &quot;NODE_OPTIONS=&apos;--max-old-space-size=8192&apos; hexo generate&quot;,</span><br><span class="line">  &quot;serve&quot;: &quot;NODE_OPTIONS=&apos;--max-old-space-size=8192&apos; hexo server&quot;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x4E4B;&#x540E;&#x59CB;&#x7EC8;&#x4F7F;&#x7528;&#xFF1A;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm run build  <span class="comment"># &#x4EE3;&#x66FF; hexo generate</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x8FD9;&#x7B97;&#x662F;&#x4E00;&#x79CD;&#x4E00;&#x52B3;&#x6C38;&#x9038;&#x7684;&#x65B9;&#x6848;, &#x54EA;&#x6015;&#x66F4;&#x6362;&#x7535;&#x8111;&#x4E5F;&#x4E0D;&#x6015;, &#x800C;&#x4E14;&#x8FDB;&#x884C;&#x4E86;&#x9879;&#x76EE;&#x9694;&#x79BB;, &#x4E0D;&#x4F1A;&#x5F71;&#x54CD;&#x5230;&#x5176;&#x4ED6;<code>nodejs</code>&#x5DE5;&#x7A0B;, &#x7F3A;&#x70B9;&#x662F;&#x5982;&#x679C;&#x591A;&#x4E2A;&#x5DE5;&#x7A0B;&#x9700;&#x8981;&#x914D;&#x7F6E;, &#x5219;&#x5F97;&#x6328;&#x4E2A;&#x6DFB;&#x52A0;</p>
+<h2 id="&#x6CE8;&#x610F;&#x4E8B;&#x9879;"><a href="#&#x6CE8;&#x610F;&#x4E8B;&#x9879;" class="headerlink" title="&#x6CE8;&#x610F;&#x4E8B;&#x9879;"></a>&#x6CE8;&#x610F;&#x4E8B;&#x9879;</h2><p>&#x5982;&#x679C;&#x8FD0;&#x884C;&#x540E;&#x8FDB;&#x7A0B;&#x88AB;&#x7EC8;&#x6B62;, &#x6BD4;&#x5982;&#x62A5;&#x9519;:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zsh: killed     node --max-old-space-size=16384 ./node_modules/hexo/bin/hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>&#x4E3B;&#x8981;&#x539F;&#x56E0;&#x662F;&#x6CA1;&#x6709;&#x8DB3;&#x591F;&#x7684;&#x7269;&#x7406;&#x5185;&#x5B58; + &#x4EA4;&#x6362;&#x7A7A;&#x95F4;<code>&#xFF08;swap&#xFF09;</code>&#x6765;&#x6EE1;&#x8DB3;&#x9700;&#x6C42;,</p>
+<p>&#x9996;&#x5148;&#x8FD0;&#x884C;<code>top -o mem</code>&#x6307;&#x4EE4;&#x68C0;&#x67E5;&#x5185;&#x5B58;&#x5360;&#x7528;:</p>
+<p><img src="https://gitee.com/songjianzaina/site_img/raw/master/img/image-20250910100621554.png" alt="image-20250910100621554"></p>
+<p>&#x968F;&#x7740;<code>node</code>&#x7F16;&#x8BD1;&#x7684;&#x8FDB;&#x884C;, &#x6211;&#x4EEC;&#x4F1A;&#x53D1;&#x73B0;&#x5B83;&#x7684;&#x5360;&#x7528;&#x5185;&#x5B58;&#x6307;&#x6807;&#x5728;&#x4E0D;&#x65AD;&#x4E0A;&#x5347;,</p>
+<p><img src="https://gitee.com/songjianzaina/site_img/raw/master/img/iShot_2025-09-10_10.08.47.gif" alt="iShot_2025-09-10_10.08.47"></p>
+<p>&#x6B64;&#x65F6;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x8003;&#x8651;&#x901A;&#x8FC7;&#x5173;&#x95ED;&#x5176;&#x4ED6;&#x5E94;&#x7528;&#x6765;&#x7ED9;<code>node</code>&#x8DB3;&#x591F;&#x7684;&#x7A7A;&#x95F4;</p>
+<p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B; &#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</a></em></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="tags/nodejs/" rel="tag"># nodejs</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="487.html" rel="next" title="一些电脑上比较好用的骚操作">
+                <i class="fa fa-chevron-left"></i> 一些电脑上比较好用的骚操作
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="489.html" rel="prev" title="关于分布式集群的搭建">
+                关于分布式集群的搭建 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    <!-- 乱码三千文章内嵌广告 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-layout="in-article" data-ad-format="fluid" data-ad-client="ca-pub-2626449904708114" data-ad-slot="1549007621"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+  <!-- 乱码三千信息流广告 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-6t+ed+2i-1n-4w" data-ad-client="ca-pub-2626449904708114" data-ad-slot="9471729671"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">乱码三千</p>
+              <p class="site-description motion-element" itemprop="description">android程序员一枚,擅长java,kotlin,python,金融投资,欢迎交流~</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="https://code.newban.cn/archives/">
+              
+                  <span class="site-state-item-count">491</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">143</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案"><span class="nav-number">2.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一种-临时性配置"><span class="nav-number">2.1.</span> <span class="nav-text">第一种 临时性配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二种-系统级全局配置"><span class="nav-number">2.2.</span> <span class="nav-text">第二种 系统级全局配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#关于Mac平台的更新"><span class="nav-number">2.2.1.</span> <span class="nav-text">关于Mac平台的更新</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三种-用户级配置"><span class="nav-number">2.3.</span> <span class="nav-text">第三种 用户级配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第四种-项目级配置-更安全"><span class="nav-number">2.4.</span> <span class="nav-text">第四种 项目级配置(更安全)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注意事项"><span class="nav-number">3.</span> <span class="nav-text">注意事项</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">乱码三千</span>
+  <div>
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+  </div>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+  <script type="text/javascript" async src="js/src/mermaid.min.js"></script>
+  <script>
+  if (window.mermaid) {
+        var mermaid_config = {
+            startOnLoad: true,
+            theme: 'default',
+            flowchart:{
+                useMaxWidth: false,
+                htmlLabels: true
+            }                
+        }
+        mermaid.initialize(mermaid_config);
+  }
+  </script>
+  
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+      <style>
+        a.gitment-editor-footer-tip { display: none; }
+        .gitment-container.gitment-footer-container { display: none; }
+      </style>
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'songjianzaina',
+            repo: 'codesan_comment',
+            
+            lang: "zh" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '75fa01da04fd1029841debfa65ce027b566a47e3',
+            
+                client_id: '01a471de64bf7a7789f3'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
