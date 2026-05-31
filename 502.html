@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+<meta name="referrer" content="never">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="mysql,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="乱码三千 – 分享实用IT技术" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="&amp;#x524D;&amp;#x8A00;&amp;#x5728;&amp;#x4F7F;&amp;#x7528; Docker &amp;#x90E8;&amp;#x7F72; MySQL &amp;#x65F6;&amp;#xFF0C;&amp;#x5F88;&amp;#x591A;&amp;#x5F00;&amp;#x53D1;&amp;#x8005;&amp;#x4E60;&amp;#x60EF;&amp;#x8FDB;&amp;#x5165;&amp;#x5BB9;&amp;#x5668;&amp;#x5185;&amp;#x90E8;&amp;#x8FDB;&amp;">
+<meta name="keywords" content="mysql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker 环境下 MySQL 数据库备份与查看操作指南">
+<meta property="og:url" content="https://code.newban.cn/502.html">
+<meta property="og:site_name" content="乱码三千 – 分享实用IT技术">
+<meta property="og:description" content="&amp;#x524D;&amp;#x8A00;&amp;#x5728;&amp;#x4F7F;&amp;#x7528; Docker &amp;#x90E8;&amp;#x7F72; MySQL &amp;#x65F6;&amp;#xFF0C;&amp;#x5F88;&amp;#x591A;&amp;#x5F00;&amp;#x53D1;&amp;#x8005;&amp;#x4E60;&amp;#x60EF;&amp;#x8FDB;&amp;#x5165;&amp;#x5BB9;&amp;#x5668;&amp;#x5185;&amp;#x90E8;&amp;#x8FDB;&amp;">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png">
+<meta property="og:updated_time" content="2026-05-31T02:03:34.804Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker 环境下 MySQL 数据库备份与查看操作指南">
+<meta name="twitter:description" content="&amp;#x524D;&amp;#x8A00;&amp;#x5728;&amp;#x4F7F;&amp;#x7528; Docker &amp;#x90E8;&amp;#x7F72; MySQL &amp;#x65F6;&amp;#xFF0C;&amp;#x5F88;&amp;#x591A;&amp;#x5F00;&amp;#x53D1;&amp;#x8005;&amp;#x4E60;&amp;#x60EF;&amp;#x8FDB;&amp;#x5165;&amp;#x5BB9;&amp;#x5668;&amp;#x5185;&amp;#x90E8;&amp;#x8FDB;&amp;">
+<meta name="twitter:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+<!--谷歌广告验证代码-->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: "ca-pub-2626449904708114",
+          enable_page_level_ads: true
+     });
+</script>
+<!--谷歌广告验证代码-->
+
+<!--短链广告-->
+<!--<script type="text/javascript">
+    var adfly_id = 25792435;
+    var adfly_advert = 'banner';
+    var popunder = false;
+    var exclude_domains = ['code.newban.cn','newban.cn',  'localhost:4000'];
+</script>
+<script src="https://cdn.adf.ly/js/link-converter.js"></script>-->
+<!--短链广告-->
+
+
+
+  <link rel="canonical" href="https://code.newban.cn/502.html">
+
+
+
+
+
+  <title>Docker 环境下 MySQL 数据库备份与查看操作指南 | 乱码三千 – 分享实用IT技术</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+  
+<a href="https://www.github.com/songjianzaina" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">乱码三千 – 分享实用IT技术</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">乱码三千 – 码出一个新世界</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://www.newban.cn/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="https://code.newban.cn/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Docker 环境下 MySQL 数据库备份与查看操作指南</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2026-04-21T18:37:00+08:00">
+                2026-04-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="&#x524D;&#x8A00;"><a href="#&#x524D;&#x8A00;" class="headerlink" title="&#x524D;&#x8A00;"></a>&#x524D;&#x8A00;</h2><p>&#x5728;&#x4F7F;&#x7528; Docker &#x90E8;&#x7F72; MySQL &#x65F6;&#xFF0C;&#x5F88;&#x591A;&#x5F00;&#x53D1;&#x8005;&#x4E60;&#x60EF;&#x8FDB;&#x5165;&#x5BB9;&#x5668;&#x5185;&#x90E8;&#x8FDB;&#x884C;&#x64CD;&#x4F5C;&#xFF0C;&#x7136;&#x800C;&#x8FD9;&#x5E38;&#x5E38;&#x5E26;&#x6765;&#x4EE5;&#x4E0B;&#x75DB;&#x70B9;&#xFF1A;</p>
+<ul>
+<li>&#x5907;&#x4EFD;&#x6587;&#x4EF6;&#x9ED8;&#x8BA4;&#x4FDD;&#x5B58;&#x5728;&#x5BB9;&#x5668;&#x5185;&#x90E8;&#xFF0C;&#x5BB9;&#x5668;&#x4E00;&#x65E6;&#x505C;&#x6B62;&#x6216;&#x5220;&#x9664;&#xFF0C;&#x5907;&#x4EFD;&#x968F;&#x4E4B;&#x4E22;&#x5931;</li>
+<li>&#x64CD;&#x4F5C;&#x6B65;&#x9AA4;&#x7E41;&#x7410;&#xFF0C;&#x9700;&#x8981;&#x5728;&#x5BB9;&#x5668;&#x5185;&#x5916;&#x53CD;&#x590D;&#x5207;&#x6362;&#x7EC8;&#x7AEF;</li>
+<li>&#x4E0D;&#x5229;&#x4E8E;&#x81EA;&#x52A8;&#x5316;&#x811A;&#x672C;&#x7F16;&#x5199;&#xFF0C;&#x624B;&#x52A8;&#x64CD;&#x4F5C;&#x6613;&#x51FA;&#x9519;</li>
+<li>&#x4F7F;&#x7528;&#x78C1;&#x76D8;&#x76EE;&#x5F55;&#x6620;&#x5C04;&#xFF0C;&#x8981;&#x66F4;&#x52A0;&#x65B9;&#x4FBF;&#x4E00;&#x4E9B;&#xFF0C;&#x4F46;&#x4F9D;&#x7136;&#x4E0D;&#x591F;&#x4F18;&#x96C5;</li>
+</ul>
+<p>&#x672C;&#x6587;&#x5C06;&#x7CFB;&#x7EDF;&#x4ECB;&#x7ECD;&#x5982;&#x4F55;&#x5728; Docker &#x73AF;&#x5883;&#x4E2D;&#x5B89;&#x5168;&#x3001;&#x9AD8;&#x6548;&#x5730;&#x5907;&#x4EFD;&#x548C;&#x67E5;&#x770B; MySQL &#x6570;&#x636E;&#x5E93;&#xFF0C;&#x5E76;&#x63D0;&#x4F9B;&#x201D;&#x4E0D;&#x8FDB;&#x5BB9;&#x5668;&#x201D;&#x7684;&#x6700;&#x4F73;&#x5B9E;&#x8DF5;&#x65B9;&#x6848;&#xFF0C;&#x540C;&#x65F6;&#x63D0;&#x4F9B;&#x5B8C;&#x6574;&#x7684;&#x81EA;&#x52A8;&#x5316;&#x5907;&#x4EFD;&#x548C;&#x6062;&#x590D;&#x811A;&#x672C;&#x3002;</p>
+<hr>
+<h2 id="&#x4E00;&#x3001;&#x5907;&#x4EFD;&#x64CD;&#x4F5C;"><a href="#&#x4E00;&#x3001;&#x5907;&#x4EFD;&#x64CD;&#x4F5C;" class="headerlink" title="&#x4E00;&#x3001;&#x5907;&#x4EFD;&#x64CD;&#x4F5C;"></a>&#x4E00;&#x3001;&#x5907;&#x4EFD;&#x64CD;&#x4F5C;</h2><h3 id="1-1-&#x5BB9;&#x5668;&#x5185;&#x90E8;&#x5907;&#x4EFD;&#xFF08;&#x4E0D;&#x63A8;&#x8350;&#x4F46;&#x9700;&#x4E86;&#x89E3;&#xFF09;"><a href="#1-1-&#x5BB9;&#x5668;&#x5185;&#x90E8;&#x5907;&#x4EFD;&#xFF08;&#x4E0D;&#x63A8;&#x8350;&#x4F46;&#x9700;&#x4E86;&#x89E3;&#xFF09;" class="headerlink" title="1.1 &#x5BB9;&#x5668;&#x5185;&#x90E8;&#x5907;&#x4EFD;&#xFF08;&#x4E0D;&#x63A8;&#x8350;&#x4F46;&#x9700;&#x4E86;&#x89E3;&#xFF09;"></a>1.1 &#x5BB9;&#x5668;&#x5185;&#x90E8;&#x5907;&#x4EFD;&#xFF08;&#x4E0D;&#x63A8;&#x8350;&#x4F46;&#x9700;&#x4E86;&#x89E3;&#xFF09;</h3><p>&#x5982;&#x679C;&#x4F60;&#x5DF2;&#x7ECF;&#x8FDB;&#x5165; MySQL &#x5BB9;&#x5668;&#xFF08;<code>docker exec -it mysql bash</code>&#xFF09;&#xFF0C;&#x5907;&#x4EFD;&#x6D41;&#x7A0B;&#x5982;&#x4E0B;&#xFF1A;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x5907;&#x4EFD;&#x5355;&#x4E2A;&#x6570;&#x636E;&#x5E93;&#x5230;&#x5BB9;&#x5668;&#x5185;&#x4E34;&#x65F6;&#x76EE;&#x5F55;</span></span><br><span class="line">mysqldump -u root -p&#x5BC6;&#x7801; &#x6570;&#x636E;&#x5E93;&#x540D; &gt; /tmp/backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x5907;&#x4EFD;&#x6240;&#x6709;&#x6570;&#x636E;&#x5E93;</span></span><br><span class="line">mysqldump -u root -p&#x5BC6;&#x7801; --all-databases &gt; /tmp/all_backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x5907;&#x4EFD;&#x5E76;&#x538B;&#x7F29;</span></span><br><span class="line">mysqldump -u root -p&#x5BC6;&#x7801; &#x6570;&#x636E;&#x5E93;&#x540D; | gzip &gt; /tmp/backup.sql.gz</span><br></pre></td></tr></table></figure>
+
+<p><strong>&#x5173;&#x952E;&#x95EE;&#x9898;</strong>&#xFF1A;&#x5907;&#x4EFD;&#x6587;&#x4EF6;&#x5728;&#x5BB9;&#x5668;&#x5185;&#x90E8;&#xFF0C;&#x5BB9;&#x5668;&#x5220;&#x9664;&#x5219;&#x6587;&#x4EF6;&#x4E22;&#x5931;&#x3002;</p>
+<p><strong>&#x89E3;&#x51B3;&#x65B9;&#x6CD5;</strong>&#xFF1A;&#x5C06;&#x6587;&#x4EF6;&#x4ECE;&#x5BB9;&#x5668;&#x590D;&#x5236;&#x5230;&#x5BBF;&#x4E3B;&#x673A;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x5728;&#x5BBF;&#x4E3B;&#x673A;&#x6267;&#x884C;&#xFF08;&#x53E6;&#x4E00;&#x4E2A;&#x7EC8;&#x7AEF;&#x7A97;&#x53E3;&#xFF09;</span></span><br><span class="line">docker cp &#x5BB9;&#x5668;&#x540D;&#x6216;ID:/tmp/backup.sql /&#x5BBF;&#x4E3B;&#x673A;/&#x76EE;&#x6807;&#x8DEF;&#x5F84;/</span><br></pre></td></tr></table></figure>
+
+<p><strong>&#x5B8C;&#x6574;&#x5DE5;&#x4F5C;&#x6D41;&#x793A;&#x4F8B;</strong>&#xFF1A;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. &#x5BB9;&#x5668;&#x5185;&#x5907;&#x4EFD;</span></span><br><span class="line">root@&#x5BB9;&#x5668;ID:/<span class="comment"># mysqldump -u root -p123456 mydb &gt; /tmp/mydb_backup.sql</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. &#x5BBF;&#x4E3B;&#x673A;&#x590D;&#x5236;&#xFF08;&#x65B0;&#x7EC8;&#x7AEF;&#x7A97;&#x53E3;&#xFF09;</span></span><br><span class="line">$ docker cp mysql-container:/tmp/mydb_backup.sql ~/backups/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. &#x6E05;&#x7406;&#x5BB9;&#x5668;&#x4E34;&#x65F6;&#x6587;&#x4EF6;</span></span><br><span class="line">root@&#x5BB9;&#x5668;ID:/<span class="comment"># rm /tmp/mydb_backup.sql</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-&#x63A8;&#x8350;&#x65B9;&#x6848;&#xFF1A;&#x4E0D;&#x8FDB;&#x5BB9;&#x5668;&#x76F4;&#x63A5;&#x5907;&#x4EFD;"><a href="#1-2-&#x63A8;&#x8350;&#x65B9;&#x6848;&#xFF1A;&#x4E0D;&#x8FDB;&#x5BB9;&#x5668;&#x76F4;&#x63A5;&#x5907;&#x4EFD;" class="headerlink" title="1.2 &#x63A8;&#x8350;&#x65B9;&#x6848;&#xFF1A;&#x4E0D;&#x8FDB;&#x5BB9;&#x5668;&#x76F4;&#x63A5;&#x5907;&#x4EFD;"></a>1.2 &#x63A8;&#x8350;&#x65B9;&#x6848;&#xFF1A;&#x4E0D;&#x8FDB;&#x5BB9;&#x5668;&#x76F4;&#x63A5;&#x5907;&#x4EFD;</h3><p>&#x76F4;&#x63A5;&#x5728;&#x5BBF;&#x4E3B;&#x673A;&#x6267;&#x884C;&#xFF0C;&#x4E00;&#x6B65;&#x5230;&#x4F4D;&#xFF1A;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x5907;&#x4EFD;&#x5355;&#x4E2A;&#x6570;&#x636E;&#x5E93;&#x5230;&#x5BBF;&#x4E3B;&#x673A;</span></span><br><span class="line">docker <span class="built_in">exec</span> mysql-container mysqldump -u root -p&#x5BC6;&#x7801; &#x6570;&#x636E;&#x5E93;&#x540D; &gt; ~/backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x5907;&#x4EFD;&#x6240;&#x6709;&#x6570;&#x636E;&#x5E93;</span></span><br><span class="line">docker <span class="built_in">exec</span> mysql-container mysqldump -u root -p&#x5BC6;&#x7801; --all-databases &gt; ~/all_backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x5907;&#x4EFD;&#x5E76;&#x538B;&#x7F29;</span></span><br><span class="line">docker <span class="built_in">exec</span> mysql-container mysqldump -u root -p&#x5BC6;&#x7801; &#x6570;&#x636E;&#x5E93;&#x540D; | gzip &gt; ~/backup.sql.gz</span><br></pre></td></tr></table></figure>
+
+<p><strong>&#x4E3A;&#x4EC0;&#x4E48;&#x8FD9;&#x662F;&#x6700;&#x4F73;&#x5B9E;&#x8DF5;&#xFF1F;</strong></p>
+<ul>
+<li>&#x2705; &#x7B80;&#x5355;&#xFF1A;&#x5355;&#x6761;&#x547D;&#x4EE4;&#x5B8C;&#x6210;&#x5907;&#x4EFD;</li>
+<li>&#x2705; &#x5B89;&#x5168;&#xFF1A;&#x5907;&#x4EFD;&#x76F4;&#x63A5;&#x4FDD;&#x5B58;&#x5728;&#x5BBF;&#x4E3B;&#x673A;</li>
+<li>&#x2705; &#x81EA;&#x52A8;&#x5316;&#xFF1A;&#x6613;&#x4E8E;&#x96C6;&#x6210;&#x5230;&#x811A;&#x672C;&#x548C;&#x5B9A;&#x65F6;&#x4EFB;&#x52A1;</li>
+<li>&#x2705; &#x8D44;&#x6E90;&#x53CB;&#x597D;&#xFF1A;&#x4E0D;&#x5360;&#x7528;&#x5BB9;&#x5668;&#x5185;&#x78C1;&#x76D8;&#x7A7A;&#x95F4;</li>
+</ul>
+<h3 id="1-3-&#x81EA;&#x52A8;&#x5316;&#x5907;&#x4EFD;&#x811A;&#x672C;"><a href="#1-3-&#x81EA;&#x52A8;&#x5316;&#x5907;&#x4EFD;&#x811A;&#x672C;" class="headerlink" title="1.3 &#x81EA;&#x52A8;&#x5316;&#x5907;&#x4EFD;&#x811A;&#x672C;"></a>1.3 &#x81EA;&#x52A8;&#x5316;&#x5907;&#x4EFD;&#x811A;&#x672C;</h3><p>&#x5BF9;&#x4E8E;&#x751F;&#x4EA7;&#x73AF;&#x5883;&#xFF0C;&#x5EFA;&#x8BAE;&#x4F7F;&#x7528;&#x81EA;&#x52A8;&#x5316;&#x5907;&#x4EFD;&#x811A;&#x672C;&#x3002;&#x4EE5;&#x4E0B;&#x662F;&#x4E00;&#x4E2A;&#x529F;&#x80FD;&#x5B8C;&#x6574;&#x7684;&#x53CC;&#x91CD;&#x5907;&#x4EFD;&#x811A;&#x672C;&#xFF0C;&#x53EF;&#x4FDD;&#x5B58;&#x4E3A; <code>backup-mysql.sh</code>&#xFF1A;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># MySQL &#x53CC;&#x91CD;&#x5907;&#x4EFD;&#x811A;&#x672C;</span></span><br><span class="line"><span class="comment"># 1. &#x5B8C;&#x6574;&#x5907;&#x4EFD;&#x6240;&#x6709;&#x6570;&#x636E;&#x5E93;</span></span><br><span class="line"><span class="comment"># 2. &#x6BCF;&#x4E2A;&#x6570;&#x636E;&#x5E93;&#x5355;&#x72EC;&#x5907;&#x4EFD;</span></span><br><span class="line"><span class="comment"># 3. &#x4FDD;&#x7559;&#x6700;&#x8FD1;3&#x4EFD;&#x5907;&#x4EFD;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ============ &#x914D;&#x7F6E;&#x533A;&#x57DF; ============</span></span><br><span class="line">CONTAINER_NAME=<span class="string">&quot;c_mysql&quot;</span>             <span class="comment"># MySQL&#x5BB9;&#x5668;&#x540D;</span></span><br><span class="line">MYSQL_USER=<span class="string">&quot;root&quot;</span>                    <span class="comment"># MySQL&#x7528;&#x6237;&#x540D;</span></span><br><span class="line">MYSQL_PASSWORD=<span class="string">&quot;songjian&quot;</span>            <span class="comment"># MySQL&#x5BC6;&#x7801;</span></span><br><span class="line">BACKUP_BASE_DIR=<span class="string">&quot;/root/songjian/mysql/backups&quot;</span>  <span class="comment"># &#x5907;&#x4EFD;&#x6839;&#x76EE;&#x5F55;</span></span><br><span class="line">KEEP_BACKUPS=3                       <span class="comment"># &#x4FDD;&#x7559;&#x7684;&#x5907;&#x4EFD;&#x4EFD;&#x6570;</span></span><br><span class="line">LOG_FILE=<span class="string">&quot;/root/songjian/mysql/backup-mysql.log&quot;</span>  <span class="comment"># &#x65E5;&#x5FD7;&#x6587;&#x4EF6;</span></span><br><span class="line"><span class="comment"># ==================================</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x521B;&#x5EFA;&#x5FC5;&#x8981;&#x7684;&#x76EE;&#x5F55;</span></span><br><span class="line">mkdir -p <span class="variable">$BACKUP_BASE_DIR</span></span><br><span class="line">mkdir -p $(dirname <span class="variable">$LOG_FILE</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x65E5;&#x5FD7;&#x51FD;&#x6570;</span></span><br><span class="line"><span class="function"><span class="title">log</span></span>() {</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;[<span class="variable">$(date &apos;+%Y-%m-%d %H:%M:%S&apos;)</span>] <span class="variable">$1</span>&quot;</span> | tee -a <span class="variable">$LOG_FILE</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x9519;&#x8BEF;&#x5904;&#x7406;&#x51FD;&#x6570;</span></span><br><span class="line"><span class="function"><span class="title">error_exit</span></span>() {</span><br><span class="line">    <span class="built_in">log</span> <span class="string">&quot;&#x274C; &#x9519;&#x8BEF;: <span class="variable">$1</span>&quot;</span></span><br><span class="line">    <span class="built_in">exit</span> 1</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x83B7;&#x53D6;&#x5F53;&#x524D;&#x65F6;&#x95F4;&#x6233;</span></span><br><span class="line">BACKUP_TIME=$(date +%Y%m%d_%H%M%S)</span><br><span class="line">BACKUP_DIR=<span class="string">&quot;<span class="variable">$BACKUP_BASE_DIR</span>/<span class="variable">$BACKUP_TIME</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;==========================================&quot;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;&#x5F00;&#x59CB; MySQL &#x53CC;&#x91CD;&#x5907;&#x4EFD;&quot;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;&#x5907;&#x4EFD;&#x65F6;&#x95F4;: <span class="variable">$BACKUP_TIME</span>&quot;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;&#x5907;&#x4EFD;&#x76EE;&#x5F55;: <span class="variable">$BACKUP_DIR</span>&quot;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;&#x5BB9;&#x5668;&#x540D;&#x79F0;: <span class="variable">$CONTAINER_NAME</span>&quot;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;&#x5907;&#x4EFD;&#x8DEF;&#x5F84;: <span class="variable">$BACKUP_BASE_DIR</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x68C0;&#x67E5;&#x5BB9;&#x5668;&#x662F;&#x5426;&#x8FD0;&#x884C;</span></span><br><span class="line">CONTAINER_STATUS=$(docker ps --filter <span class="string">&quot;name=<span class="variable">$CONTAINER_NAME</span>&quot;</span> --format <span class="string">&quot;{{.Names}}&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">&quot;<span class="variable">$CONTAINER_STATUS</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">    error_exit <span class="string">&quot;&#x5BB9;&#x5668; <span class="variable">${CONTAINER_NAME}</span> &#x672A;&#x8FD0;&#x884C;&#xFF01;&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="built_in">log</span> <span class="string">&quot;&#x2705; &#x5BB9;&#x5668;&#x72B6;&#x6001;: &#x8FD0;&#x884C;&#x4E2D; (<span class="variable">$CONTAINER_NAME</span>)&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x521B;&#x5EFA;&#x672C;&#x6B21;&#x5907;&#x4EFD;&#x76EE;&#x5F55;</span></span><br><span class="line">mkdir -p <span class="variable">$BACKUP_DIR</span>/all_databases</span><br><span class="line">mkdir -p <span class="variable">$BACKUP_DIR</span>/separate_databases</span><br><span class="line">mkdir -p <span class="variable">$BACKUP_DIR</span>/logs</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. &#x5907;&#x4EFD;&#x6240;&#x6709;&#x6570;&#x636E;&#x5E93;&#xFF08;&#x5B8C;&#x6574;&#x5907;&#x4EFD;&#xFF09;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;1. &#x5F00;&#x59CB;&#x5B8C;&#x6574;&#x5907;&#x4EFD;&#x6240;&#x6709;&#x6570;&#x636E;&#x5E93;...&quot;</span></span><br><span class="line">ALL_BACKUP_FILE=<span class="string">&quot;<span class="variable">$BACKUP_DIR</span>/all_databases/full_backup.sql.gz&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x6D4B;&#x8BD5; MySQL &#x8FDE;&#x63A5;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;&#x6D4B;&#x8BD5; MySQL &#x8FDE;&#x63A5;...&quot;</span></span><br><span class="line"><span class="keyword">if</span> ! docker <span class="built_in">exec</span> <span class="variable">$CONTAINER_NAME</span> mysql -u<span class="variable">$MYSQL_USER</span> -p<span class="variable">$MYSQL_PASSWORD</span> -e <span class="string">&quot;SELECT 1&quot;</span> &gt;/dev/null 2&gt;&amp;1; <span class="keyword">then</span></span><br><span class="line">    error_exit <span class="string">&quot;&#x65E0;&#x6CD5;&#x8FDE;&#x63A5;&#x5230; MySQL &#x6570;&#x636E;&#x5E93;&#xFF0C;&#x8BF7;&#x68C0;&#x67E5;&#x7528;&#x6237;&#x540D;&#x548C;&#x5BC6;&#x7801;&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="built_in">log</span> <span class="string">&quot;&#x2705; MySQL &#x8FDE;&#x63A5;&#x6D4B;&#x8BD5;&#x6210;&#x529F;&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x6267;&#x884C;&#x5B8C;&#x6574;&#x5907;&#x4EFD;</span></span><br><span class="line">docker <span class="built_in">exec</span> <span class="variable">$CONTAINER_NAME</span> mysqldump -u<span class="variable">$MYSQL_USER</span> -p<span class="variable">$MYSQL_PASSWORD</span> \</span><br><span class="line">  --all-databases \</span><br><span class="line">  --single-transaction \</span><br><span class="line">  --routines \</span><br><span class="line">  --events \</span><br><span class="line">  --triggers \</span><br><span class="line">  --<span class="built_in">set</span>-gtid-purged=OFF 2&gt;&gt; <span class="string">&quot;<span class="variable">$BACKUP_DIR</span>/logs/full_backup.log&quot;</span> | gzip &gt; <span class="variable">$ALL_BACKUP_FILE</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ $? -eq 0 ] &amp;&amp; [ -s <span class="variable">$ALL_BACKUP_FILE</span> ]; <span class="keyword">then</span></span><br><span class="line">    SIZE=$(du -h <span class="variable">$ALL_BACKUP_FILE</span> | cut -f1)</span><br><span class="line">    <span class="built_in">log</span> <span class="string">&quot;   &#x2705; &#x5B8C;&#x6574;&#x5907;&#x4EFD;&#x6210;&#x529F;: <span class="variable">$(basename $ALL_BACKUP_FILE)</span> (<span class="variable">$SIZE</span>)&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="comment"># &#x5C1D;&#x8BD5;&#x4E0D;&#x4F7F;&#x7528; --set-gtid-purged &#x53C2;&#x6570;</span></span><br><span class="line">    <span class="built_in">log</span> <span class="string">&quot;&#x26A0;&#xFE0F; &#x7B2C;&#x4E00;&#x6B21;&#x5907;&#x4EFD;&#x5931;&#x8D25;&#xFF0C;&#x5C1D;&#x8BD5;&#x4E0D;&#x4F7F;&#x7528; GTID &#x53C2;&#x6570;...&quot;</span></span><br><span class="line">    docker <span class="built_in">exec</span> <span class="variable">$CONTAINER_NAME</span> mysqldump -u<span class="variable">$MYSQL_USER</span> -p<span class="variable">$MYSQL_PASSWORD</span> \</span><br><span class="line">      --all-databases \</span><br><span class="line">      --single-transaction \</span><br><span class="line">      --routines \</span><br><span class="line">      --events \</span><br><span class="line">      --triggers 2&gt;&gt; <span class="string">&quot;<span class="variable">$BACKUP_DIR</span>/logs/full_backup_alt.log&quot;</span> | gzip &gt; <span class="variable">$ALL_BACKUP_FILE</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> [ $? -eq 0 ] &amp;&amp; [ -s <span class="variable">$ALL_BACKUP_FILE</span> ]; <span class="keyword">then</span></span><br><span class="line">        SIZE=$(du -h <span class="variable">$ALL_BACKUP_FILE</span> | cut -f1)</span><br><span class="line">        <span class="built_in">log</span> <span class="string">&quot;   &#x2705; &#x5B8C;&#x6574;&#x5907;&#x4EFD;&#x6210;&#x529F;(&#x5907;&#x9009;&#x65B9;&#x6848;): <span class="variable">$(basename $ALL_BACKUP_FILE)</span> (<span class="variable">$SIZE</span>)&quot;</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        error_exit <span class="string">&quot;&#x5B8C;&#x6574;&#x5907;&#x4EFD;&#x5931;&#x8D25;&#xFF01;&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. &#x83B7;&#x53D6;&#x6240;&#x6709;&#x6570;&#x636E;&#x5E93;&#x5217;&#x8868;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;2. &#x83B7;&#x53D6;&#x6570;&#x636E;&#x5E93;&#x5217;&#x8868;...&quot;</span></span><br><span class="line">DATABASES=$(docker <span class="built_in">exec</span> <span class="variable">$CONTAINER_NAME</span> mysql -u<span class="variable">$MYSQL_USER</span> -p<span class="variable">$MYSQL_PASSWORD</span> \</span><br><span class="line">  --skip-column-names \</span><br><span class="line">  -e <span class="string">&quot;SHOW DATABASES;&quot;</span> 2&gt;&gt; <span class="string">&quot;<span class="variable">$BACKUP_DIR</span>/logs/db_list.log&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ $? -ne 0 ]; <span class="keyword">then</span></span><br><span class="line">    error_exit <span class="string">&quot;&#x83B7;&#x53D6;&#x6570;&#x636E;&#x5E93;&#x5217;&#x8868;&#x5931;&#x8D25;&#xFF01;&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x8FC7;&#x6EE4;&#x6389;&#x7CFB;&#x7EDF;&#x6570;&#x636E;&#x5E93;</span></span><br><span class="line">FILTERED_DATABASES=<span class="string">&quot;&quot;</span></span><br><span class="line"><span class="keyword">for</span> DB <span class="keyword">in</span> <span class="variable">$DATABASES</span>; <span class="keyword">do</span></span><br><span class="line">    <span class="keyword">case</span> <span class="variable">$DB</span> <span class="keyword">in</span></span><br><span class="line">        information_schema|performance_schema|sys|mysql)</span><br><span class="line">            <span class="built_in">log</span> <span class="string">&quot;   &#x8DF3;&#x8FC7;&#x7CFB;&#x7EDF;&#x6570;&#x636E;&#x5E93;: <span class="variable">$DB</span>&quot;</span></span><br><span class="line">            ;;</span><br><span class="line">        *)</span><br><span class="line">            FILTERED_DATABASES=<span class="string">&quot;<span class="variable">$FILTERED_DATABASES</span> <span class="variable">$DB</span>&quot;</span></span><br><span class="line">            ;;</span><br><span class="line">    <span class="keyword">esac</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x91CD;&#x65B0;&#x8D4B;&#x503C;</span></span><br><span class="line">DATABASES=<span class="variable">$FILTERED_DATABASES</span></span><br><span class="line">DB_COUNT=$(<span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$DATABASES</span>&quot;</span> | wc -w)</span><br><span class="line"></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;   &#x627E;&#x5230; <span class="variable">$DB_COUNT</span> &#x4E2A;&#x7528;&#x6237;&#x6570;&#x636E;&#x5E93;&#x9700;&#x8981;&#x5355;&#x72EC;&#x5907;&#x4EFD;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x5982;&#x679C;&#x6CA1;&#x6709;&#x6570;&#x636E;&#x5E93;&#xFF0C;&#x53EA;&#x5907;&#x4EFD;&#x5B8C;&#x6574;&#x5907;&#x4EFD;</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$DB_COUNT</span> -eq 0 ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">log</span> <span class="string">&quot;&#x26A0;&#xFE0F; &#x6CA1;&#x6709;&#x627E;&#x5230;&#x7528;&#x6237;&#x6570;&#x636E;&#x5E93;&#xFF0C;&#x53EA;&#x4FDD;&#x7559;&#x5B8C;&#x6574;&#x5907;&#x4EFD;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># &#x521B;&#x5EFA;&#x5907;&#x4EFD;&#x6458;&#x8981;</span></span><br><span class="line">    cat &gt; <span class="string">&quot;<span class="variable">$BACKUP_DIR</span>/backup_summary.txt&quot;</span> &lt;&lt; EOF</span><br><span class="line">&#x5907;&#x4EFD;&#x6458;&#x8981;</span><br><span class="line">========</span><br><span class="line">&#x5907;&#x4EFD;&#x65F6;&#x95F4;: $(date)</span><br><span class="line">&#x5907;&#x4EFD;&#x7F16;&#x53F7;: <span class="variable">$BACKUP_TIME</span></span><br><span class="line">&#x5907;&#x4EFD;&#x76EE;&#x5F55;: <span class="variable">$BACKUP_DIR</span></span><br><span class="line">&#x5BB9;&#x5668;&#x540D;&#x79F0;: <span class="variable">$CONTAINER_NAME</span></span><br><span class="line"></span><br><span class="line">&#x5907;&#x4EFD;&#x5185;&#x5BB9;:</span><br><span class="line">1. &#x5B8C;&#x6574;&#x5907;&#x4EFD;: <span class="variable">$ALL_BACKUP_FILE</span></span><br><span class="line">   &#x5927;&#x5C0F;: $(du -h <span class="variable">$ALL_BACKUP_FILE</span> | cut -f1)</span><br><span class="line"></span><br><span class="line">2. &#x5355;&#x72EC;&#x6570;&#x636E;&#x5E93;&#x5907;&#x4EFD;: 0 &#x4E2A; (&#x6CA1;&#x6709;&#x627E;&#x5230;&#x7528;&#x6237;&#x6570;&#x636E;&#x5E93;)</span><br><span class="line"></span><br><span class="line">&#x5907;&#x4EFD;&#x7EDF;&#x8BA1;:</span><br><span class="line">   &#x6570;&#x636E;&#x5E93;&#x603B;&#x6570;: 0</span><br><span class="line">   &#x5B8C;&#x6574;&#x5907;&#x4EFD;: &#x6210;&#x529F;</span><br><span class="line">   &#x5355;&#x72EC;&#x5907;&#x4EFD;: &#x8DF3;&#x8FC7;</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line">    <span class="comment"># &#x6E05;&#x7406;&#x65E7;&#x5907;&#x4EFD;</span></span><br><span class="line">    cleanup_old_backups</span><br><span class="line">    <span class="built_in">exit</span> 0</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;   &#x9700;&#x8981;&#x5907;&#x4EFD;&#x7684;&#x6570;&#x636E;&#x5E93;: <span class="variable">$DATABASES</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. &#x9010;&#x4E2A;&#x5907;&#x4EFD;&#x6BCF;&#x4E2A;&#x6570;&#x636E;&#x5E93;</span></span><br><span class="line">SUCCESS_COUNT=0</span><br><span class="line">FAIL_COUNT=0</span><br><span class="line">FAILED_DBS=<span class="string">&quot;&quot;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;3. &#x5F00;&#x59CB;&#x9010;&#x4E2A;&#x6570;&#x636E;&#x5E93;&#x5907;&#x4EFD;...&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> DB <span class="keyword">in</span> <span class="variable">$DATABASES</span>; <span class="keyword">do</span></span><br><span class="line">    <span class="built_in">log</span> <span class="string">&quot;   &#x5907;&#x4EFD;&#x6570;&#x636E;&#x5E93;: <span class="variable">$DB</span>&quot;</span></span><br><span class="line">    DB_BACKUP_FILE=<span class="string">&quot;<span class="variable">$BACKUP_DIR</span>/separate_databases/<span class="variable">${DB}</span>.sql.gz&quot;</span></span><br><span class="line"></span><br><span class="line">    docker <span class="built_in">exec</span> <span class="variable">$CONTAINER_NAME</span> mysqldump -u<span class="variable">$MYSQL_USER</span> -p<span class="variable">$MYSQL_PASSWORD</span> \</span><br><span class="line">      --single-transaction \</span><br><span class="line">      --routines \</span><br><span class="line">      --events \</span><br><span class="line">      --triggers \</span><br><span class="line">      <span class="variable">$DB</span> 2&gt;&gt; <span class="string">&quot;<span class="variable">$BACKUP_DIR</span>/logs/<span class="variable">${DB}</span>.log&quot;</span> | gzip &gt; <span class="variable">$DB_BACKUP_FILE</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> [ $? -eq 0 ] &amp;&amp; [ -s <span class="variable">$DB_BACKUP_FILE</span> ]; <span class="keyword">then</span></span><br><span class="line">        SIZE=$(du -h <span class="variable">$DB_BACKUP_FILE</span> | cut -f1)</span><br><span class="line">        <span class="built_in">log</span> <span class="string">&quot;      &#x2705; &#x6210;&#x529F; (<span class="variable">$SIZE</span>)&quot;</span></span><br><span class="line">        ((SUCCESS_COUNT++))</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">log</span> <span class="string">&quot;      &#x274C; &#x5931;&#x8D25;&#xFF0C;&#x5C1D;&#x8BD5;&#x7B80;&#x5355;&#x5907;&#x4EFD;...&quot;</span></span><br><span class="line">        <span class="comment"># &#x5C1D;&#x8BD5;&#x7B80;&#x5316;&#x5907;&#x4EFD;</span></span><br><span class="line">        docker <span class="built_in">exec</span> <span class="variable">$CONTAINER_NAME</span> mysqldump -u<span class="variable">$MYSQL_USER</span> -p<span class="variable">$MYSQL_PASSWORD</span> \</span><br><span class="line">          <span class="variable">$DB</span> 2&gt;&gt; <span class="string">&quot;<span class="variable">$BACKUP_DIR</span>/logs/<span class="variable">${DB}</span>_simple.log&quot;</span> | gzip &gt; <span class="variable">$DB_BACKUP_FILE</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> [ $? -eq 0 ] &amp;&amp; [ -s <span class="variable">$DB_BACKUP_FILE</span> ]; <span class="keyword">then</span></span><br><span class="line">            SIZE=$(du -h <span class="variable">$DB_BACKUP_FILE</span> | cut -f1)</span><br><span class="line">            <span class="built_in">log</span> <span class="string">&quot;      &#x2705; &#x6210;&#x529F;(&#x7B80;&#x5355;&#x6A21;&#x5F0F;) (<span class="variable">$SIZE</span>)&quot;</span></span><br><span class="line">            ((SUCCESS_COUNT++))</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="built_in">log</span> <span class="string">&quot;      &#x274C;&#x274C; &#x5907;&#x4EFD;&#x5931;&#x8D25;&quot;</span></span><br><span class="line">            rm -f <span class="variable">$DB_BACKUP_FILE</span></span><br><span class="line">            FAILED_DBS=<span class="string">&quot;<span class="variable">$FAILED_DBS</span> <span class="variable">$DB</span>&quot;</span></span><br><span class="line">            ((FAIL_COUNT++))</span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;   &#x6570;&#x636E;&#x5E93;&#x5355;&#x72EC;&#x5907;&#x4EFD;&#x5B8C;&#x6210;: &#x6210;&#x529F; <span class="variable">$SUCCESS_COUNT</span> &#x4E2A;, &#x5931;&#x8D25; <span class="variable">$FAIL_COUNT</span> &#x4E2A;&quot;</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$FAIL_COUNT</span> -gt 0 ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">log</span> <span class="string">&quot;   &#x5931;&#x8D25;&#x7684;&#x6570;&#x636E;&#x5E93;: <span class="variable">$FAILED_DBS</span>&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. &#x521B;&#x5EFA;&#x5907;&#x4EFD;&#x6458;&#x8981;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;4. &#x751F;&#x6210;&#x5907;&#x4EFD;&#x6458;&#x8981;...&quot;</span></span><br><span class="line">SUMMARY_FILE=<span class="string">&quot;<span class="variable">$BACKUP_DIR</span>/backup_summary.txt&quot;</span></span><br><span class="line">cat &gt; <span class="variable">$SUMMARY_FILE</span> &lt;&lt; EOF</span><br><span class="line">&#x5907;&#x4EFD;&#x6458;&#x8981;</span><br><span class="line">========</span><br><span class="line">&#x5907;&#x4EFD;&#x65F6;&#x95F4;: $(date)</span><br><span class="line">&#x5907;&#x4EFD;&#x7F16;&#x53F7;: <span class="variable">$BACKUP_TIME</span></span><br><span class="line">&#x5907;&#x4EFD;&#x76EE;&#x5F55;: <span class="variable">$BACKUP_DIR</span></span><br><span class="line">&#x5BB9;&#x5668;&#x540D;&#x79F0;: <span class="variable">$CONTAINER_NAME</span></span><br><span class="line">MySQL &#x7528;&#x6237;: <span class="variable">$MYSQL_USER</span></span><br><span class="line"></span><br><span class="line">&#x5907;&#x4EFD;&#x5185;&#x5BB9;:</span><br><span class="line">1. &#x5B8C;&#x6574;&#x5907;&#x4EFD;: <span class="variable">$ALL_BACKUP_FILE</span></span><br><span class="line">   &#x5927;&#x5C0F;: $(du -h <span class="variable">$ALL_BACKUP_FILE</span> | cut -f1)</span><br><span class="line"></span><br><span class="line">2. &#x5355;&#x72EC;&#x6570;&#x636E;&#x5E93;&#x5907;&#x4EFD; (<span class="variable">$SUCCESS_COUNT</span> &#x4E2A;):</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x6DFB;&#x52A0;&#x6BCF;&#x4E2A;&#x6570;&#x636E;&#x5E93;&#x7684;&#x5907;&#x4EFD;&#x4FE1;&#x606F;</span></span><br><span class="line"><span class="keyword">for</span> DB <span class="keyword">in</span> <span class="variable">$DATABASES</span>; <span class="keyword">do</span></span><br><span class="line">    FILE=<span class="string">&quot;<span class="variable">$BACKUP_DIR</span>/separate_databases/<span class="variable">${DB}</span>.sql.gz&quot;</span></span><br><span class="line">    <span class="keyword">if</span> [ -f <span class="string">&quot;<span class="variable">$FILE</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">        SIZE=$(du -h <span class="string">&quot;<span class="variable">$FILE</span>&quot;</span> 2&gt;/dev/null | cut -f1 || <span class="built_in">echo</span> <span class="string">&quot;&#x672A;&#x77E5;&quot;</span>)</span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;   - <span class="variable">$DB</span>: <span class="variable">$SIZE</span>&quot;</span> &gt;&gt; <span class="variable">$SUMMARY_FILE</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line">cat &gt;&gt; <span class="variable">$SUMMARY_FILE</span> &lt;&lt; EOF</span><br><span class="line"></span><br><span class="line">&#x5907;&#x4EFD;&#x7EDF;&#x8BA1;:</span><br><span class="line">   &#x6570;&#x636E;&#x5E93;&#x603B;&#x6570;: <span class="variable">$DB_COUNT</span></span><br><span class="line">   &#x6210;&#x529F;&#x5907;&#x4EFD;: <span class="variable">$SUCCESS_COUNT</span></span><br><span class="line">   &#x5907;&#x4EFD;&#x5931;&#x8D25;: <span class="variable">$FAIL_COUNT</span></span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -n <span class="string">&quot;<span class="variable">$FAILED_DBS</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;   &#x5931;&#x8D25;&#x5217;&#x8868;: <span class="variable">$FAILED_DBS</span>&quot;</span> &gt;&gt; <span class="variable">$SUMMARY_FILE</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">cat &gt;&gt; <span class="variable">$SUMMARY_FILE</span> &lt;&lt; EOF</span><br><span class="line">   &#x65E5;&#x5FD7;&#x6587;&#x4EF6;: <span class="variable">$BACKUP_DIR</span>/logs/</span><br><span class="line"></span><br><span class="line">&#x751F;&#x6210;&#x65F6;&#x95F4;: $(date)</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. &#x6E05;&#x7406;&#x65E7;&#x5907;&#x4EFD;&#x51FD;&#x6570;</span></span><br><span class="line"><span class="function"><span class="title">cleanup_old_backups</span></span>() {</span><br><span class="line">    <span class="built_in">log</span> <span class="string">&quot;5. &#x6E05;&#x7406;&#x65E7;&#x5907;&#x4EFD;&#xFF08;&#x4FDD;&#x7559;&#x6700;&#x8FD1; <span class="variable">$KEEP_BACKUPS</span> &#x4EFD;&#xFF09;...&quot;</span></span><br><span class="line">    BACKUP_LIST=($(ls -dt <span class="variable">$BACKUP_BASE_DIR</span>/20* 2&gt;/dev/null))</span><br><span class="line">    BACKUP_COUNT=<span class="variable">${#BACKUP_LIST[@]}</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> [ <span class="variable">$BACKUP_COUNT</span> -gt <span class="variable">$KEEP_BACKUPS</span> ]; <span class="keyword">then</span></span><br><span class="line">        TO_DELETE_COUNT=$((BACKUP_COUNT - KEEP_BACKUPS))</span><br><span class="line">        <span class="built_in">log</span> <span class="string">&quot;   &#x53D1;&#x73B0; <span class="variable">$BACKUP_COUNT</span> &#x4EFD;&#x5907;&#x4EFD;&#xFF0C;&#x9700;&#x8981;&#x5220;&#x9664; <span class="variable">$TO_DELETE_COUNT</span> &#x4EFD;&#x65E7;&#x5907;&#x4EFD;&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> ((i=KEEP_BACKUPS; i&lt;BACKUP_COUNT; i++)); <span class="keyword">do</span></span><br><span class="line">            OLD_BACKUP=<span class="variable">${BACKUP_LIST[$i]}</span></span><br><span class="line">            OLD_BACKUP_NAME=$(basename <span class="string">&quot;<span class="variable">$OLD_BACKUP</span>&quot;</span>)</span><br><span class="line">            <span class="built_in">log</span> <span class="string">&quot;   &#x5220;&#x9664;&#x65E7;&#x5907;&#x4EFD;: <span class="variable">$OLD_BACKUP_NAME</span>&quot;</span></span><br><span class="line">            rm -rf <span class="string">&quot;<span class="variable">$OLD_BACKUP</span>&quot;</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># &#x8BB0;&#x5F55;&#x5220;&#x9664;&#x64CD;&#x4F5C;</span></span><br><span class="line">            <span class="built_in">echo</span> <span class="string">&quot;&#x5220;&#x9664;&#x5907;&#x4EFD;: <span class="variable">$OLD_BACKUP_NAME</span> (<span class="variable">$(date)</span>)&quot;</span> &gt;&gt; <span class="string">&quot;<span class="variable">$BACKUP_DIR</span>/logs/cleanup.log&quot;</span></span><br><span class="line">        <span class="keyword">done</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">log</span> <span class="string">&quot;   &#x5F53;&#x524D;&#x6709; <span class="variable">$BACKUP_COUNT</span> &#x4EFD;&#x5907;&#x4EFD;&#xFF0C;&#x65E0;&#x9700;&#x6E05;&#x7406;&#xFF08;&#x6700;&#x591A;&#x4FDD;&#x7559; <span class="variable">$KEEP_BACKUPS</span> &#x4EFD;&#xFF09;&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x6267;&#x884C;&#x6E05;&#x7406;</span></span><br><span class="line">cleanup_old_backups</span><br><span class="line"></span><br><span class="line"><span class="comment"># 6. &#x8BA1;&#x7B97;&#x603B;&#x5927;&#x5C0F;</span></span><br><span class="line">TOTAL_SIZE=$(du -sh <span class="variable">$BACKUP_DIR</span> 2&gt;/dev/null | cut -f1 || <span class="built_in">echo</span> <span class="string">&quot;0B&quot;</span>)</span><br><span class="line">REMAINING_SIZE=$(du -sh <span class="variable">$BACKUP_BASE_DIR</span> 2&gt;/dev/null | cut -f1 || <span class="built_in">echo</span> <span class="string">&quot;0B&quot;</span>)</span><br><span class="line">BACKUP_LIST_CURRENT=($(ls -dt <span class="variable">$BACKUP_BASE_DIR</span>/20* 2&gt;/dev/null))</span><br><span class="line">CURRENT_BACKUP_COUNT=<span class="variable">${#BACKUP_LIST_CURRENT[@]}</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;6. &#x5907;&#x4EFD;&#x5B8C;&#x6210;&#x7EDF;&#x8BA1;&quot;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;   &#x672C;&#x6B21;&#x5907;&#x4EFD;&#x5927;&#x5C0F;: <span class="variable">$TOTAL_SIZE</span>&quot;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;   &#x603B;&#x5907;&#x4EFD;&#x5360;&#x7528;: <span class="variable">$REMAINING_SIZE</span>&quot;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;   &#x5F53;&#x524D;&#x4FDD;&#x7559;&#x5907;&#x4EFD;: <span class="variable">$CURRENT_BACKUP_COUNT</span> &#x4EFD;&quot;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;   &#x5907;&#x4EFD;&#x76EE;&#x5F55;: <span class="variable">$BACKUP_BASE_DIR</span>&quot;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;   &#x5907;&#x4EFD;&#x65E5;&#x5FD7;: <span class="variable">$LOG_FILE</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x751F;&#x6210;&#x6700;&#x7EC8;&#x62A5;&#x544A;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;==========================================&quot;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;&#x2705; MySQL &#x53CC;&#x91CD;&#x5907;&#x4EFD;&#x5B8C;&#x6210;&#xFF01;&quot;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;   &#x5907;&#x4EFD;&#x7F16;&#x53F7;: <span class="variable">$BACKUP_TIME</span>&quot;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;   &#x5B8C;&#x6574;&#x5907;&#x4EFD;: <span class="variable">$(basename $ALL_BACKUP_FILE)</span>&quot;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;   &#x5355;&#x72EC;&#x5907;&#x4EFD;: <span class="variable">$SUCCESS_COUNT</span> &#x4E2A;&#x6570;&#x636E;&#x5E93;&quot;</span></span><br><span class="line"><span class="built_in">log</span> <span class="string">&quot;   &#x4FDD;&#x7559;&#x5907;&#x4EFD;: <span class="variable">$CURRENT_BACKUP_COUNT</span>/<span class="variable">$KEEP_BACKUPS</span> &#x4EFD;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x8F93;&#x51FA;&#x6458;&#x8981;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;===== &#x5907;&#x4EFD;&#x6458;&#x8981; =====&quot;</span></span><br><span class="line">cat <span class="variable">$SUMMARY_FILE</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>&#x8BBE;&#x7F6E;&#x5B9A;&#x65F6;&#x4EFB;&#x52A1;</strong>&#xFF1A;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x7F16;&#x8F91; crontab</span></span><br><span class="line">crontab -e</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x6DFB;&#x52A0;&#x4EE5;&#x4E0B;&#x884C;&#xFF08;&#x6BCF;&#x9694;2&#x5929;&#x7684;&#x51CC;&#x6668;2&#x70B9;&#x6267;&#x884C;&#xFF09;</span></span><br><span class="line">0 2 */2 * * /bin/bash /root/songjian/mysql/backup-mysql.sh</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="&#x4E8C;&#x3001;&#x67E5;&#x770B;&#x64CD;&#x4F5C;&#xFF08;&#x4E0D;&#x8FDB;&#x5BB9;&#x5668;&#xFF09;"><a href="#&#x4E8C;&#x3001;&#x67E5;&#x770B;&#x64CD;&#x4F5C;&#xFF08;&#x4E0D;&#x8FDB;&#x5BB9;&#x5668;&#xFF09;" class="headerlink" title="&#x4E8C;&#x3001;&#x67E5;&#x770B;&#x64CD;&#x4F5C;&#xFF08;&#x4E0D;&#x8FDB;&#x5BB9;&#x5668;&#xFF09;"></a>&#x4E8C;&#x3001;&#x67E5;&#x770B;&#x64CD;&#x4F5C;&#xFF08;&#x4E0D;&#x8FDB;&#x5BB9;&#x5668;&#xFF09;</h2><p>&#x65E0;&#x9700;&#x8FDB;&#x5165;&#x5BB9;&#x5668;&#xFF0C;&#x76F4;&#x63A5;&#x5728;&#x5BBF;&#x4E3B;&#x673A;&#x901A;&#x8FC7; <code>docker exec</code> &#x8C03;&#x7528; MySQL &#x5BA2;&#x6237;&#x7AEF;&#x3002;</p>
+<h3 id="2-1-&#x67E5;&#x770B;&#x6570;&#x636E;&#x5E93;&#x4FE1;&#x606F;"><a href="#2-1-&#x67E5;&#x770B;&#x6570;&#x636E;&#x5E93;&#x4FE1;&#x606F;" class="headerlink" title="2.1 &#x67E5;&#x770B;&#x6570;&#x636E;&#x5E93;&#x4FE1;&#x606F;"></a>2.1 &#x67E5;&#x770B;&#x6570;&#x636E;&#x5E93;&#x4FE1;&#x606F;</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x67E5;&#x770B;&#x6240;&#x6709;&#x6570;&#x636E;&#x5E93;</span></span><br><span class="line">docker <span class="built_in">exec</span> mysql-container mysql -u root -p123456 -e <span class="string">&quot;SHOW DATABASES;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x67E5;&#x770B;&#x5F53;&#x524D;&#x4F7F;&#x7528;&#x7684;&#x6570;&#x636E;&#x5E93;</span></span><br><span class="line">docker <span class="built_in">exec</span> mysql-container mysql -u root -p123456 -e <span class="string">&quot;SELECT DATABASE();&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-&#x67E5;&#x770B;&#x8868;&#x7ED3;&#x6784;"><a href="#2-2-&#x67E5;&#x770B;&#x8868;&#x7ED3;&#x6784;" class="headerlink" title="2.2 &#x67E5;&#x770B;&#x8868;&#x7ED3;&#x6784;"></a>2.2 &#x67E5;&#x770B;&#x8868;&#x7ED3;&#x6784;</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x67E5;&#x770B;&#x6307;&#x5B9A;&#x6570;&#x636E;&#x5E93;&#x7684;&#x6240;&#x6709;&#x8868;</span></span><br><span class="line">docker <span class="built_in">exec</span> mysql-container mysql -u root -p123456 mydb -e <span class="string">&quot;SHOW TABLES;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x67E5;&#x770B;&#x8868;&#x7ED3;&#x6784;</span></span><br><span class="line">docker <span class="built_in">exec</span> mysql-container mysql -u root -p123456 mydb -e <span class="string">&quot;DESC &#x8868;&#x540D;;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x67E5;&#x770B;&#x5EFA;&#x8868;&#x8BED;&#x53E5;</span></span><br><span class="line">docker <span class="built_in">exec</span> mysql-container mysql -u root -p123456 mydb -e <span class="string">&quot;SHOW CREATE TABLE &#x8868;&#x540D;;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-&#x6570;&#x636E;&#x67E5;&#x8BE2;"><a href="#2-3-&#x6570;&#x636E;&#x67E5;&#x8BE2;" class="headerlink" title="2.3 &#x6570;&#x636E;&#x67E5;&#x8BE2;"></a>2.3 &#x6570;&#x636E;&#x67E5;&#x8BE2;</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x67E5;&#x8BE2;&#x6570;&#x636E;&#xFF08;&#x9650;&#x5236;5&#x6761;&#xFF09;</span></span><br><span class="line">docker <span class="built_in">exec</span> mysql-container mysql -u root -p123456 mydb -e <span class="string">&quot;SELECT * FROM users LIMIT 5;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x67E5;&#x8BE2;&#x8BB0;&#x5F55;&#x6570;</span></span><br><span class="line">docker <span class="built_in">exec</span> mysql-container mysql -u root -p123456 mydb -e <span class="string">&quot;SELECT COUNT(*) FROM users;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x5E26;&#x6761;&#x4EF6;&#x7684;&#x67E5;&#x8BE2;</span></span><br><span class="line">docker <span class="built_in">exec</span> mysql-container mysql -u root -p123456 mydb -e <span class="string">&quot;SELECT id, name FROM users WHERE status=1;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-&#x4EA4;&#x4E92;&#x5F0F;&#x6A21;&#x5F0F;"><a href="#2-4-&#x4EA4;&#x4E92;&#x5F0F;&#x6A21;&#x5F0F;" class="headerlink" title="2.4 &#x4EA4;&#x4E92;&#x5F0F;&#x6A21;&#x5F0F;"></a>2.4 &#x4EA4;&#x4E92;&#x5F0F;&#x6A21;&#x5F0F;</h3><p>&#x5982;&#x9700;&#x8FDE;&#x7EED;&#x6267;&#x884C;&#x591A;&#x6761; SQL &#x547D;&#x4EE4;&#xFF0C;&#x4F7F;&#x7528;&#x4EA4;&#x4E92;&#x5F0F;&#x6A21;&#x5F0F;&#xFF1A;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x8FDB;&#x5165; MySQL &#x4EA4;&#x4E92;&#x547D;&#x4EE4;&#x884C;</span></span><br><span class="line">docker <span class="built_in">exec</span> -it mysql-container mysql -u root -p</span><br></pre></td></tr></table></figure>
+
+<p>&#x8F93;&#x5165;&#x5BC6;&#x7801;&#x540E;&#xFF0C;&#x8FDB;&#x5165; <code>mysql&gt;</code> &#x63D0;&#x793A;&#x7B26;&#xFF0C;&#x53EF;&#x6267;&#x884C;&#x4EFB;&#x4F55; SQL &#x547D;&#x4EE4;&#xFF1A;</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">USE</span> mydb;</span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">TABLES</span>;</span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">users</span>;</span><br><span class="line">EXIT;  <span class="comment">-- &#x9000;&#x51FA;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="&#x4E09;&#x3001;&#x6062;&#x590D;&#x64CD;&#x4F5C;"><a href="#&#x4E09;&#x3001;&#x6062;&#x590D;&#x64CD;&#x4F5C;" class="headerlink" title="&#x4E09;&#x3001;&#x6062;&#x590D;&#x64CD;&#x4F5C;"></a>&#x4E09;&#x3001;&#x6062;&#x590D;&#x64CD;&#x4F5C;</h2><h3 id="3-1-&#x624B;&#x52A8;&#x6062;&#x590D;"><a href="#3-1-&#x624B;&#x52A8;&#x6062;&#x590D;" class="headerlink" title="3.1 &#x624B;&#x52A8;&#x6062;&#x590D;"></a>3.1 &#x624B;&#x52A8;&#x6062;&#x590D;</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x6062;&#x590D;&#x5B8C;&#x6574;&#x5907;&#x4EFD;</span></span><br><span class="line">zcat backup.sql.gz | docker <span class="built_in">exec</span> -i mysql-container mysql -u root -p&#x5BC6;&#x7801;</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x6062;&#x590D;&#x5355;&#x4E2A;&#x6570;&#x636E;&#x5E93;</span></span><br><span class="line">zcat database.sql.gz | docker <span class="built_in">exec</span> -i mysql-container mysql -u root -p&#x5BC6;&#x7801; &#x6570;&#x636E;&#x5E93;&#x540D;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-&#x4EA4;&#x4E92;&#x5F0F;&#x6062;&#x590D;&#x811A;&#x672C;"><a href="#3-2-&#x4EA4;&#x4E92;&#x5F0F;&#x6062;&#x590D;&#x811A;&#x672C;" class="headerlink" title="3.2 &#x4EA4;&#x4E92;&#x5F0F;&#x6062;&#x590D;&#x811A;&#x672C;"></a>3.2 &#x4EA4;&#x4E92;&#x5F0F;&#x6062;&#x590D;&#x811A;&#x672C;</h3><p>&#x5BF9;&#x4E8E;&#x590D;&#x6742;&#x7684;&#x6062;&#x590D;&#x9700;&#x6C42;&#xFF0C;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x4EE5;&#x4E0B;&#x4EA4;&#x4E92;&#x5F0F;&#x6062;&#x590D;&#x811A;&#x672C;&#xFF0C;&#x4FDD;&#x5B58;&#x4E3A; <code>interactive-restore.sh</code>&#xFF1A;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># &#x4EA4;&#x4E92;&#x5F0F; MySQL &#x6062;&#x590D;&#x811A;&#x672C;</span></span><br><span class="line"></span><br><span class="line">CONTAINER_NAME=<span class="string">&quot;c_mysql&quot;</span></span><br><span class="line">MYSQL_USER=<span class="string">&quot;root&quot;</span></span><br><span class="line">MYSQL_PASSWORD=<span class="string">&quot;songjian&quot;</span></span><br><span class="line">BACKUP_BASE_DIR=<span class="string">&quot;/root/songjian/mysql/backups&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x58F0;&#x660E;&#x6570;&#x7EC4;&#x53D8;&#x91CF;</span></span><br><span class="line"><span class="built_in">declare</span> -a BACKUP_PATHS</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x663E;&#x793A;&#x83DC;&#x5355;</span></span><br><span class="line"><span class="function"><span class="title">show_menu</span></span>() {</span><br><span class="line">    clear</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;========================================&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;      MySQL &#x6570;&#x636E;&#x5E93;&#x6062;&#x590D;&#x5DE5;&#x5177;&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;========================================&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># &#x5217;&#x51FA;&#x5907;&#x4EFD;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&#x53EF;&#x7528;&#x7684;&#x5907;&#x4EFD;:&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&#x5E8F;&#x53F7; | &#x5907;&#x4EFD;&#x76EE;&#x5F55; | &#x5927;&#x5C0F;&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;----|---------|-----&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">local</span> backups=($(ls -dt <span class="variable">$BACKUP_BASE_DIR</span>/20* 2&gt;/dev/null))</span><br><span class="line">    <span class="built_in">local</span> count=1</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> backup <span class="keyword">in</span> <span class="string">&quot;<span class="variable">${backups[@]}</span>&quot;</span>; <span class="keyword">do</span></span><br><span class="line">        <span class="keyword">if</span> [ -d <span class="string">&quot;<span class="variable">$backup</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">            <span class="built_in">local</span> backup_name=$(basename <span class="string">&quot;<span class="variable">$backup</span>&quot;</span>)</span><br><span class="line">            <span class="built_in">local</span> backup_size=$(du -sh <span class="string">&quot;<span class="variable">$backup</span>&quot;</span> 2&gt;/dev/null | cut -f1 || <span class="built_in">echo</span> <span class="string">&quot;&#x672A;&#x77E5;&quot;</span>)</span><br><span class="line">            <span class="built_in">printf</span> <span class="string">&quot;%-4s | %-15s | %s\n&quot;</span> <span class="string">&quot;<span class="variable">$count</span>&quot;</span> <span class="string">&quot;<span class="variable">$backup_name</span>&quot;</span> <span class="string">&quot;<span class="variable">$backup_size</span>&quot;</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># &#x5B58;&#x50A8;&#x5907;&#x4EFD;&#x8DEF;&#x5F84;</span></span><br><span class="line">            BACKUP_PATHS[<span class="variable">$count</span>]=<span class="string">&quot;<span class="variable">$backup</span>&quot;</span></span><br><span class="line">            ((count++))</span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">done</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> [ <span class="variable">$count</span> -eq 1 ]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&#x672A;&#x627E;&#x5230;&#x4EFB;&#x4F55;&#x5907;&#x4EFD;&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;========================================&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;0. &#x9000;&#x51FA;&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;========================================&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x663E;&#x793A;&#x5907;&#x4EFD;&#x6458;&#x8981;</span></span><br><span class="line"><span class="function"><span class="title">show_backup_summary</span></span>() {</span><br><span class="line">    <span class="built_in">local</span> backup_path=<span class="string">&quot;<span class="variable">$1</span>&quot;</span></span><br><span class="line">    <span class="keyword">if</span> [ -f <span class="string">&quot;<span class="variable">$backup_path</span>/backup_summary.txt&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">        cat <span class="string">&quot;<span class="variable">$backup_path</span>/backup_summary.txt&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x6062;&#x590D;&#x5B8C;&#x6574;&#x5907;&#x4EFD;</span></span><br><span class="line"><span class="function"><span class="title">restore_full_backup</span></span>() {</span><br><span class="line">    <span class="built_in">local</span> backup_path=<span class="string">&quot;<span class="variable">$1</span>&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&#x26A0;&#xFE0F;  &#x8B66;&#x544A;: &#x8FD9;&#x5C06;&#x8986;&#x76D6;&#x6240;&#x6709;&#x73B0;&#x6709;&#x6570;&#x636E;&#x5E93;&#xFF01;&quot;</span></span><br><span class="line">    <span class="built_in">read</span> -p <span class="string">&quot;&#x786E;&#x8BA4;&#x6062;&#x590D;&#x5B8C;&#x6574;&#x5907;&#x4EFD;? (y/N): &quot;</span> confirm</span><br><span class="line">    <span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">$confirm</span>&quot;</span> =~ ^[Yy]$ ]]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&#x5F00;&#x59CB;&#x6062;&#x590D;&#x5B8C;&#x6574;&#x5907;&#x4EFD;...&quot;</span></span><br><span class="line">        zcat <span class="string">&quot;<span class="variable">$backup_path</span>/all_databases/full_backup.sql.gz&quot;</span> | \</span><br><span class="line">            docker <span class="built_in">exec</span> -i <span class="variable">$CONTAINER_NAME</span> mysql -u<span class="variable">$MYSQL_USER</span> -p<span class="variable">$MYSQL_PASSWORD</span></span><br><span class="line">        <span class="keyword">if</span> [ $? -eq 0 ]; <span class="keyword">then</span></span><br><span class="line">            <span class="built_in">echo</span> <span class="string">&quot;&#x2705; &#x5B8C;&#x6574;&#x5907;&#x4EFD;&#x6062;&#x590D;&#x6210;&#x529F;&#xFF01;&quot;</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="built_in">echo</span> <span class="string">&quot;&#x274C; &#x6062;&#x590D;&#x5931;&#x8D25;&#xFF01;&quot;</span></span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&#x64CD;&#x4F5C;&#x5DF2;&#x53D6;&#x6D88;&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x6062;&#x590D;&#x5355;&#x4E2A;&#x6570;&#x636E;&#x5E93;</span></span><br><span class="line"><span class="function"><span class="title">restore_single_database</span></span>() {</span><br><span class="line">    <span class="built_in">local</span> backup_path=<span class="string">&quot;<span class="variable">$1</span>&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># &#x5217;&#x51FA;&#x53EF;&#x6062;&#x590D;&#x7684;&#x6570;&#x636E;&#x5E93;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&#x53EF;&#x6062;&#x590D;&#x7684;&#x6570;&#x636E;&#x5E93;:&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># &#x68C0;&#x67E5;&#x662F;&#x5426;&#x6709;&#x5355;&#x72EC;&#x7684;&#x6570;&#x636E;&#x5E93;&#x5907;&#x4EFD;</span></span><br><span class="line">    <span class="keyword">if</span> [ ! -d <span class="string">&quot;<span class="variable">$backup_path</span>/separate_databases&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&#x6CA1;&#x6709;&#x5355;&#x72EC;&#x7684;&#x6570;&#x636E;&#x5E93;&#x5907;&#x4EFD;&#x76EE;&#x5F55;&quot;</span></span><br><span class="line">        <span class="built_in">return</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># &#x83B7;&#x53D6;&#x6570;&#x636E;&#x5E93;&#x6587;&#x4EF6;&#x5217;&#x8868;</span></span><br><span class="line">    <span class="built_in">local</span> db_files=(<span class="string">&quot;<span class="variable">$backup_path</span>/separate_databases&quot;</span>/*.sql.gz)</span><br><span class="line">    <span class="keyword">if</span> [ <span class="variable">${#db_files[@]}</span> -eq 0 ] || [ ! -f <span class="string">&quot;<span class="variable">${db_files[0]}</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&#x6CA1;&#x6709;&#x5355;&#x72EC;&#x7684;&#x6570;&#x636E;&#x5E93;&#x5907;&#x4EFD;&#x6587;&#x4EF6;&quot;</span></span><br><span class="line">        <span class="built_in">return</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># &#x663E;&#x793A;&#x6570;&#x636E;&#x5E93;&#x5217;&#x8868;</span></span><br><span class="line">    <span class="built_in">local</span> db_count=1</span><br><span class="line">    <span class="built_in">declare</span> -a DB_NAMES</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> db_file <span class="keyword">in</span> <span class="string">&quot;<span class="variable">${db_files[@]}</span>&quot;</span>; <span class="keyword">do</span></span><br><span class="line">        <span class="keyword">if</span> [ -f <span class="string">&quot;<span class="variable">$db_file</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">            <span class="built_in">local</span> db_name=$(basename <span class="string">&quot;<span class="variable">$db_file</span>&quot;</span> .sql.gz)</span><br><span class="line">            <span class="built_in">local</span> size=$(du -h <span class="string">&quot;<span class="variable">$db_file</span>&quot;</span> 2&gt;/dev/null | cut -f1 || <span class="built_in">echo</span> <span class="string">&quot;&#x672A;&#x77E5;&quot;</span>)</span><br><span class="line">            <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$db_count</span>. <span class="variable">$db_name</span> (<span class="variable">$size</span>)&quot;</span></span><br><span class="line">            DB_NAMES[<span class="variable">$db_count</span>]=<span class="string">&quot;<span class="variable">$db_name</span>&quot;</span></span><br><span class="line">            ((db_count++))</span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">done</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="built_in">read</span> -p <span class="string">&quot;&#x8BF7;&#x9009;&#x62E9;&#x6570;&#x636E;&#x5E93;&#x5E8F;&#x53F7; (0&#x53D6;&#x6D88;): &quot;</span> db_choice</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">$db_choice</span>&quot;</span> =~ ^[0-9]+$ ]] &amp;&amp; [ <span class="string">&quot;<span class="variable">$db_choice</span>&quot;</span> -ge 1 ] &amp;&amp; [ <span class="string">&quot;<span class="variable">$db_choice</span>&quot;</span> -lt <span class="variable">$db_count</span> ]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">local</span> DB_NAME=<span class="string">&quot;<span class="variable">${DB_NAMES[$db_choice]}</span>&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&#x26A0;&#xFE0F;  &#x8B66;&#x544A;: &#x8FD9;&#x5C06;&#x8986;&#x76D6;&#x6570;&#x636E;&#x5E93; <span class="variable">$DB_NAME</span>&#xFF01;&quot;</span></span><br><span class="line">        <span class="built_in">read</span> -p <span class="string">&quot;&#x786E;&#x8BA4;&#x6062;&#x590D;&#x6570;&#x636E;&#x5E93; <span class="variable">$DB_NAME</span>? (y/N): &quot;</span> confirm</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">$confirm</span>&quot;</span> =~ ^[Yy]$ ]]; <span class="keyword">then</span></span><br><span class="line">            <span class="built_in">echo</span> <span class="string">&quot;&#x5F00;&#x59CB;&#x6062;&#x590D;&#x6570;&#x636E;&#x5E93; <span class="variable">$DB_NAME</span>...&quot;</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># &#x5220;&#x9664;&#x73B0;&#x6709;&#x6570;&#x636E;&#x5E93;</span></span><br><span class="line">            docker <span class="built_in">exec</span> <span class="variable">$CONTAINER_NAME</span> mysql -u<span class="variable">$MYSQL_USER</span> -p<span class="variable">$MYSQL_PASSWORD</span> -e <span class="string">&quot;DROP DATABASE IF EXISTS \`<span class="variable">$DB_NAME</span>\`;&quot;</span> 2&gt;/dev/null</span><br><span class="line"></span><br><span class="line">            <span class="comment"># &#x521B;&#x5EFA;&#x6570;&#x636E;&#x5E93;</span></span><br><span class="line">            docker <span class="built_in">exec</span> <span class="variable">$CONTAINER_NAME</span> mysql -u<span class="variable">$MYSQL_USER</span> -p<span class="variable">$MYSQL_PASSWORD</span> -e <span class="string">&quot;CREATE DATABASE \`<span class="variable">$DB_NAME</span>\`;&quot;</span> 2&gt;/dev/null</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> [ $? -ne 0 ]; <span class="keyword">then</span></span><br><span class="line">                <span class="built_in">echo</span> <span class="string">&quot;&#x274C; &#x521B;&#x5EFA;&#x6570;&#x636E;&#x5E93;&#x5931;&#x8D25;&#xFF01;&quot;</span></span><br><span class="line">                <span class="built_in">return</span></span><br><span class="line">            <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># &#x6062;&#x590D;&#x6570;&#x636E;&#x5E93;</span></span><br><span class="line">            zcat <span class="string">&quot;<span class="variable">$backup_path</span>/separate_databases/<span class="variable">${DB_NAME}</span>.sql.gz&quot;</span> | \</span><br><span class="line">                docker <span class="built_in">exec</span> -i <span class="variable">$CONTAINER_NAME</span> mysql -u<span class="variable">$MYSQL_USER</span> -p<span class="variable">$MYSQL_PASSWORD</span> <span class="string">&quot;<span class="variable">$DB_NAME</span>&quot;</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> [ $? -eq 0 ]; <span class="keyword">then</span></span><br><span class="line">                <span class="built_in">echo</span> <span class="string">&quot;&#x2705; &#x6570;&#x636E;&#x5E93; <span class="variable">$DB_NAME</span> &#x6062;&#x590D;&#x6210;&#x529F;&#xFF01;&quot;</span></span><br><span class="line"></span><br><span class="line">                <span class="comment"># &#x9A8C;&#x8BC1;&#x6062;&#x590D;&#x7ED3;&#x679C;</span></span><br><span class="line">                <span class="built_in">echo</span> <span class="string">&quot;&#x9A8C;&#x8BC1;&#x6062;&#x590D;&#x7ED3;&#x679C;...&quot;</span></span><br><span class="line">                <span class="built_in">local</span> table_count=$(docker <span class="built_in">exec</span> <span class="variable">$CONTAINER_NAME</span> mysql -u<span class="variable">$MYSQL_USER</span> -p<span class="variable">$MYSQL_PASSWORD</span> --skip-column-names -e <span class="string">&quot;USE \`<span class="variable">$DB_NAME</span>\`; SHOW TABLES;&quot;</span> 2&gt;/dev/null | wc -l)</span><br><span class="line">                <span class="keyword">if</span> [ $? -eq 0 ]; <span class="keyword">then</span></span><br><span class="line">                    <span class="built_in">echo</span> <span class="string">&quot;&#x2705; &#x6570;&#x636E;&#x5E93; <span class="variable">$DB_NAME</span> &#x5305;&#x542B; <span class="variable">$table_count</span> &#x4E2A;&#x8868;&quot;</span></span><br><span class="line">                <span class="keyword">fi</span></span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                <span class="built_in">echo</span> <span class="string">&quot;&#x274C; &#x6062;&#x590D;&#x5931;&#x8D25;&#xFF01;&quot;</span></span><br><span class="line">            <span class="keyword">fi</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="built_in">echo</span> <span class="string">&quot;&#x64CD;&#x4F5C;&#x5DF2;&#x53D6;&#x6D88;&quot;</span></span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">elif</span> [ <span class="string">&quot;<span class="variable">$db_choice</span>&quot;</span> = <span class="string">&quot;0&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&#x64CD;&#x4F5C;&#x5DF2;&#x53D6;&#x6D88;&quot;</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&#x65E0;&#x6548;&#x7684;&#x9009;&#x62E9;&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x68C0;&#x67E5;&#x5BB9;&#x5668;&#x72B6;&#x6001;</span></span><br><span class="line"><span class="function"><span class="title">check_container</span></span>() {</span><br><span class="line">    <span class="keyword">if</span> ! docker ps --filter <span class="string">&quot;name=<span class="variable">$CONTAINER_NAME</span>&quot;</span> --format <span class="string">&quot;{{.Names}}&quot;</span> | grep -q <span class="string">&quot;^<span class="variable">${CONTAINER_NAME}</span>$&quot;</span>; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&#x274C; &#x9519;&#x8BEF;: &#x5BB9;&#x5668; <span class="variable">$CONTAINER_NAME</span> &#x672A;&#x8FD0;&#x884C;&#xFF01;&quot;</span></span><br><span class="line">        <span class="built_in">return</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># &#x6D4B;&#x8BD5; MySQL &#x8FDE;&#x63A5;</span></span><br><span class="line">    <span class="keyword">if</span> ! docker <span class="built_in">exec</span> <span class="variable">$CONTAINER_NAME</span> mysql -u<span class="variable">$MYSQL_USER</span> -p<span class="variable">$MYSQL_PASSWORD</span> -e <span class="string">&quot;SELECT 1&quot;</span> &gt;/dev/null 2&gt;&amp;1; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&#x274C; &#x9519;&#x8BEF;: &#x65E0;&#x6CD5;&#x8FDE;&#x63A5;&#x5230; MySQL &#x6570;&#x636E;&#x5E93;&#xFF0C;&#x8BF7;&#x68C0;&#x67E5;&#x7528;&#x6237;&#x540D;&#x548C;&#x5BC6;&#x7801;&quot;</span></span><br><span class="line">        <span class="built_in">return</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">return</span> 0</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x4E3B;&#x5FAA;&#x73AF;</span></span><br><span class="line"><span class="function"><span class="title">main</span></span>() {</span><br><span class="line">    <span class="comment"># &#x68C0;&#x67E5;&#x5BB9;&#x5668;&#x72B6;&#x6001;</span></span><br><span class="line">    <span class="keyword">if</span> ! check_container; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">exit</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">true</span>; <span class="keyword">do</span></span><br><span class="line">        show_menu</span><br><span class="line"></span><br><span class="line">        <span class="built_in">read</span> -p <span class="string">&quot;&#x8BF7;&#x9009;&#x62E9;&#x5907;&#x4EFD;&#x5E8F;&#x53F7; (0&#x9000;&#x51FA;): &quot;</span> choice</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> [ <span class="string">&quot;<span class="variable">$choice</span>&quot;</span> = <span class="string">&quot;0&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">            <span class="built_in">echo</span> <span class="string">&quot;&#x9000;&#x51FA;&#x6062;&#x590D;&#x5DE5;&#x5177;&quot;</span></span><br><span class="line">            <span class="built_in">exit</span> 0</span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> [ -z <span class="string">&quot;<span class="variable">${BACKUP_PATHS[$choice]}</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">            <span class="built_in">echo</span> <span class="string">&quot;&#x65E0;&#x6548;&#x7684;&#x9009;&#x62E9;&#xFF0C;&#x8BF7;&#x91CD;&#x8BD5;&quot;</span></span><br><span class="line">            <span class="built_in">read</span> -p <span class="string">&quot;&#x6309; Enter &#x7EE7;&#x7EED;...&quot;</span></span><br><span class="line">            <span class="built_in">continue</span></span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">local</span> SELECTED_BACKUP=<span class="string">&quot;<span class="variable">${BACKUP_PATHS[$choice]}</span>&quot;</span></span><br><span class="line">        <span class="built_in">local</span> BACKUP_NAME=$(basename <span class="string">&quot;<span class="variable">$SELECTED_BACKUP</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&#x5DF2;&#x9009;&#x62E9;&#x5907;&#x4EFD;: <span class="variable">$BACKUP_NAME</span>&quot;</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># &#x663E;&#x793A;&#x5907;&#x4EFD;&#x6458;&#x8981;</span></span><br><span class="line">        show_backup_summary <span class="string">&quot;<span class="variable">$SELECTED_BACKUP</span>&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&#x6062;&#x590D;&#x9009;&#x9879;:&quot;</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;1. &#x6062;&#x590D;&#x5B8C;&#x6574;&#x5907;&#x4EFD; (&#x8986;&#x76D6;&#x6240;&#x6709;&#x6570;&#x636E;&#x5E93;)&quot;</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;2. &#x6062;&#x590D;&#x5355;&#x4E2A;&#x6570;&#x636E;&#x5E93;&quot;</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;3. &#x8FD4;&#x56DE;&#x4E0A;&#x7EA7;&#x83DC;&#x5355;&quot;</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">read</span> -p <span class="string">&quot;&#x8BF7;&#x9009;&#x62E9;&#x6062;&#x590D;&#x9009;&#x9879;: &quot;</span> restore_option</span><br><span class="line"></span><br><span class="line">        <span class="keyword">case</span> <span class="variable">$restore_option</span> <span class="keyword">in</span></span><br><span class="line">            1)</span><br><span class="line">                restore_full_backup <span class="string">&quot;<span class="variable">$SELECTED_BACKUP</span>&quot;</span></span><br><span class="line">                ;;</span><br><span class="line">            2)</span><br><span class="line">                restore_single_database <span class="string">&quot;<span class="variable">$SELECTED_BACKUP</span>&quot;</span></span><br><span class="line">                ;;</span><br><span class="line">            3)</span><br><span class="line">                <span class="built_in">continue</span></span><br><span class="line">                ;;</span><br><span class="line">            *)</span><br><span class="line">                <span class="built_in">echo</span> <span class="string">&quot;&#x65E0;&#x6548;&#x7684;&#x9009;&#x9879;&quot;</span></span><br><span class="line">                ;;</span><br><span class="line">        <span class="keyword">esac</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">        <span class="built_in">read</span> -p <span class="string">&quot;&#x6309; Enter &#x7EE7;&#x7EED;...&quot;</span></span><br><span class="line">    <span class="keyword">done</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x6267;&#x884C;&#x4E3B;&#x7A0B;&#x5E8F;</span></span><br><span class="line">main <span class="string">&quot;<span class="variable">$@</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>&#x4F7F;&#x7528;&#x65B9;&#x5F0F;</strong>&#xFF1A;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. &#x7ED9;&#x6267;&#x884C;&#x6743;&#x9650;</span></span><br><span class="line">chmod +x interactive-restore.sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. &#x8FD0;&#x884C;&#x811A;&#x672C;</span></span><br><span class="line">./interactive-restore.sh</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="&#x56DB;&#x3001;&#x53C2;&#x6570;&#x8BF4;&#x660E;&#x4E0E;&#x5B89;&#x5168;&#x63D0;&#x793A;"><a href="#&#x56DB;&#x3001;&#x53C2;&#x6570;&#x8BF4;&#x660E;&#x4E0E;&#x5B89;&#x5168;&#x63D0;&#x793A;" class="headerlink" title="&#x56DB;&#x3001;&#x53C2;&#x6570;&#x8BF4;&#x660E;&#x4E0E;&#x5B89;&#x5168;&#x63D0;&#x793A;"></a>&#x56DB;&#x3001;&#x53C2;&#x6570;&#x8BF4;&#x660E;&#x4E0E;&#x5B89;&#x5168;&#x63D0;&#x793A;</h2><h3 id="4-1-&#x5E38;&#x7528;&#x53C2;&#x6570;"><a href="#4-1-&#x5E38;&#x7528;&#x53C2;&#x6570;" class="headerlink" title="4.1 &#x5E38;&#x7528;&#x53C2;&#x6570;"></a>4.1 &#x5E38;&#x7528;&#x53C2;&#x6570;</h3><table>
+<thead>
+<tr>
+<th>&#x53C2;&#x6570;</th>
+<th>&#x8BF4;&#x660E;</th>
+<th>&#x793A;&#x4F8B;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-u</code></td>
+<td>&#x7528;&#x6237;&#x540D;</td>
+<td><code>-u root</code></td>
+</tr>
+<tr>
+<td><code>-p</code></td>
+<td>&#x5BC6;&#x7801;&#xFF08;&#x6CE8;&#x610F;&#x65E0;&#x7A7A;&#x683C;&#xFF09;</td>
+<td><code>-p123456</code></td>
+</tr>
+<tr>
+<td><code>-e</code></td>
+<td>&#x6267;&#x884C; SQL &#x8BED;&#x53E5;</td>
+<td><code>-e &quot;SHOW DATABASES;&quot;</code></td>
+</tr>
+<tr>
+<td><code>-it</code></td>
+<td>&#x4EA4;&#x4E92;&#x5F0F;&#x7EC8;&#x7AEF;</td>
+<td><code>-it</code></td>
+</tr>
+</tbody></table>
+<h3 id="4-2-&#x5B89;&#x5168;&#x5EFA;&#x8BAE;"><a href="#4-2-&#x5B89;&#x5168;&#x5EFA;&#x8BAE;" class="headerlink" title="4.2 &#x5B89;&#x5168;&#x5EFA;&#x8BAE;"></a>4.2 &#x5B89;&#x5168;&#x5EFA;&#x8BAE;</h3><ol>
+<li><p><strong>&#x5BC6;&#x7801;&#x5B89;&#x5168;</strong>&#xFF1A;&#x907F;&#x514D;&#x5728;&#x547D;&#x4EE4;&#x884C;&#x660E;&#x6587;&#x663E;&#x793A;&#x5BC6;&#x7801;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x65B9;&#x5F0F;1&#xFF1A;&#x624B;&#x52A8;&#x8F93;&#x5165;&#xFF08;&#x63A8;&#x8350;&#xFF09;</span></span><br><span class="line">docker <span class="built_in">exec</span> -it mysql-container mysql -u root -p</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x65B9;&#x5F0F;2&#xFF1A;&#x4F7F;&#x7528;&#x73AF;&#x5883;&#x53D8;&#x91CF;</span></span><br><span class="line"><span class="built_in">export</span> MYSQL_PWD=your_password</span><br><span class="line">docker <span class="built_in">exec</span> mysql-container mysql -u root -e <span class="string">&quot;SHOW DATABASES;&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>&#x5BB9;&#x5668;&#x72B6;&#x6001;</strong>&#xFF1A;&#x786E;&#x4FDD;&#x5BB9;&#x5668;&#x6B63;&#x5728;&#x8FD0;&#x884C;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker ps | grep mysql</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>&#x6743;&#x9650;&#x63A7;&#x5236;</strong>&#xFF1A;&#x4F7F;&#x7528;&#x6700;&#x5C0F;&#x6743;&#x9650;&#x8D26;&#x6237;&#x8FDB;&#x884C;&#x64CD;&#x4F5C;</p>
+</li>
+<li><p><strong>&#x5B9A;&#x671F;&#x6D4B;&#x8BD5;&#x6062;&#x590D;</strong>&#xFF1A;&#x5B9A;&#x671F;&#x9A8C;&#x8BC1;&#x5907;&#x4EFD;&#x6587;&#x4EF6;&#x7684;&#x53EF;&#x7528;&#x6027;</p>
+</li>
+</ol>
+<hr>
+<h2 id="&#x4E94;&#x3001;&#x5FEB;&#x901F;&#x6D4B;&#x8BD5;&#x6307;&#x5357;"><a href="#&#x4E94;&#x3001;&#x5FEB;&#x901F;&#x6D4B;&#x8BD5;&#x6307;&#x5357;" class="headerlink" title="&#x4E94;&#x3001;&#x5FEB;&#x901F;&#x6D4B;&#x8BD5;&#x6307;&#x5357;"></a>&#x4E94;&#x3001;&#x5FEB;&#x901F;&#x6D4B;&#x8BD5;&#x6307;&#x5357;</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. &#x6D4B;&#x8BD5;&#x5907;&#x4EFD;&#x529F;&#x80FD;</span></span><br><span class="line">docker <span class="built_in">exec</span> mysql-container mysqldump -u root -p123456 --all-databases &gt; /tmp/test_backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. &#x9A8C;&#x8BC1;&#x5907;&#x4EFD;&#x6587;&#x4EF6;</span></span><br><span class="line">ls -lh /tmp/test_backup.sql</span><br><span class="line">head -n 5 /tmp/test_backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. &#x6D4B;&#x8BD5;&#x67E5;&#x8BE2;&#x529F;&#x80FD;</span></span><br><span class="line">docker <span class="built_in">exec</span> mysql-container mysql -u root -p123456 -e <span class="string">&quot;SHOW DATABASES;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. &#x6D4B;&#x8BD5;&#x6062;&#x590D;&#x529F;&#x80FD;</span></span><br><span class="line">./interactive-restore.sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. &#x6E05;&#x7406;&#x6D4B;&#x8BD5;&#x6587;&#x4EF6;</span></span><br><span class="line">rm /tmp/test_backup.sql</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="&#x516D;&#x3001;&#x603B;&#x7ED3;&#x4E0E;&#x5EFA;&#x8BAE;"><a href="#&#x516D;&#x3001;&#x603B;&#x7ED3;&#x4E0E;&#x5EFA;&#x8BAE;" class="headerlink" title="&#x516D;&#x3001;&#x603B;&#x7ED3;&#x4E0E;&#x5EFA;&#x8BAE;"></a>&#x516D;&#x3001;&#x603B;&#x7ED3;&#x4E0E;&#x5EFA;&#x8BAE;</h2><h3 id="&#x6838;&#x5FC3;&#x539F;&#x5219;&#xFF1A;&#x5C3D;&#x91CF;&#x4E0D;&#x8FDB;&#x5BB9;&#x5668;"><a href="#&#x6838;&#x5FC3;&#x539F;&#x5219;&#xFF1A;&#x5C3D;&#x91CF;&#x4E0D;&#x8FDB;&#x5BB9;&#x5668;" class="headerlink" title="&#x6838;&#x5FC3;&#x539F;&#x5219;&#xFF1A;&#x5C3D;&#x91CF;&#x4E0D;&#x8FDB;&#x5BB9;&#x5668;"></a>&#x6838;&#x5FC3;&#x539F;&#x5219;&#xFF1A;&#x5C3D;&#x91CF;&#x4E0D;&#x8FDB;&#x5BB9;&#x5668;</h3><table>
+<thead>
+<tr>
+<th>&#x573A;&#x666F;</th>
+<th>&#x63A8;&#x8350;&#x64CD;&#x4F5C;</th>
+<th>&#x547D;&#x4EE4;&#x793A;&#x4F8B;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&#x624B;&#x52A8;&#x5907;&#x4EFD;</td>
+<td>&#x5BBF;&#x4E3B;&#x673A;&#x76F4;&#x63A5;&#x6267;&#x884C;</td>
+<td><code>docker exec mysql&#x5BB9;&#x5668; mysqldump -u &#x7528;&#x6237; -p&#x5BC6;&#x7801; &#x6570;&#x636E;&#x5E93; &gt; &#x5907;&#x4EFD;.sql</code></td>
+</tr>
+<tr>
+<td>&#x5DF2;&#x8FDB;&#x5BB9;&#x5668;</td>
+<td>&#x5907;&#x4EFD;&#x5230; <code>/tmp/</code> &#x540E;&#x590D;&#x5236;</td>
+<td>&#x5BB9;&#x5668;&#x5185;&#x5907;&#x4EFD; &#x2192; <code>docker cp</code> &#x590D;&#x5236; &#x2192; &#x6E05;&#x7406;&#x4E34;&#x65F6;&#x6587;&#x4EF6;</td>
+</tr>
+<tr>
+<td>&#x81EA;&#x52A8;&#x5316;&#x5907;&#x4EFD;</td>
+<td>&#x4F7F;&#x7528;&#x5907;&#x4EFD;&#x811A;&#x672C; + crontab</td>
+<td><code>backup-mysql.sh</code> + &#x5B9A;&#x65F6;&#x4EFB;&#x52A1;</td>
+</tr>
+<tr>
+<td>&#x65E5;&#x5E38;&#x67E5;&#x770B;</td>
+<td>&#x5BBF;&#x4E3B;&#x673A;&#x67E5;&#x8BE2;</td>
+<td><code>docker exec mysql&#x5BB9;&#x5668; mysql -u &#x7528;&#x6237; -p&#x5BC6;&#x7801; -e &quot;SQL&#x8BED;&#x53E5;&quot;</code></td>
+</tr>
+<tr>
+<td>&#x6570;&#x636E;&#x6062;&#x590D;</td>
+<td>&#x4F7F;&#x7528;&#x6062;&#x590D;&#x811A;&#x672C;</td>
+<td><code>./interactive-restore.sh</code></td>
+</tr>
+</tbody></table>
+<h3 id="&#x6700;&#x4F73;&#x5B9E;&#x8DF5;"><a href="#&#x6700;&#x4F73;&#x5B9E;&#x8DF5;" class="headerlink" title="&#x6700;&#x4F73;&#x5B9E;&#x8DF5;"></a>&#x6700;&#x4F73;&#x5B9E;&#x8DF5;</h3><ol>
+<li><strong>&#x81EA;&#x52A8;&#x5316;&#x5907;&#x4EFD;</strong>&#xFF1A;&#x4F7F;&#x7528;&#x63D0;&#x4F9B;&#x7684; <code>backup-mysql.sh</code> &#x811A;&#x672C;&#x5B9E;&#x73B0;&#x5B9A;&#x65F6;&#x53CC;&#x91CD;&#x5907;&#x4EFD;</li>
+<li><strong>&#x4EA4;&#x4E92;&#x5F0F;&#x6062;&#x590D;</strong>&#xFF1A;&#x4F7F;&#x7528; <code>interactive-restore.sh</code> &#x811A;&#x672C;&#x5B89;&#x5168;&#x6062;&#x590D;&#x6570;&#x636E;</li>
+<li><strong>&#x5B9A;&#x671F;&#x9A8C;&#x8BC1;</strong>&#xFF1A;&#x81F3;&#x5C11;&#x6BCF;&#x6708;&#x6D4B;&#x8BD5;&#x4E00;&#x6B21;&#x5907;&#x4EFD;&#x6587;&#x4EF6;&#x7684;&#x6062;&#x590D;&#x6D41;&#x7A0B;</li>
+<li><strong>&#x7248;&#x672C;&#x63A7;&#x5236;</strong>&#xFF1A;&#x5BF9;&#x5907;&#x4EFD;&#x548C;&#x6062;&#x590D;&#x811A;&#x672C;&#x8FDB;&#x884C;&#x7248;&#x672C;&#x7BA1;&#x7406;</li>
+<li><strong>&#x76D1;&#x63A7;&#x544A;&#x8B66;</strong>&#xFF1A;&#x76D1;&#x63A7;&#x5907;&#x4EFD;&#x4EFB;&#x52A1;&#x7684;&#x6267;&#x884C;&#x72B6;&#x6001;&#x548C;&#x78C1;&#x76D8;&#x7A7A;&#x95F4;</li>
+</ol>
+<hr>
+<blockquote>
+<p>&#x63D0;&#x793A;&#xFF1A;&#x6240;&#x6709;&#x547D;&#x4EE4;&#x4E2D;&#x7684;&#x5BB9;&#x5668;&#x540D;&#x3001;&#x7528;&#x6237;&#x540D;&#x3001;&#x5BC6;&#x7801;&#x3001;&#x6570;&#x636E;&#x5E93;&#x540D;&#x8BF7;&#x66FF;&#x6362;&#x4E3A;&#x4F60;&#x7684;&#x5B9E;&#x9645;&#x503C;&#x3002;&#x5BF9;&#x4E8E;&#x751F;&#x4EA7;&#x73AF;&#x5883;&#xFF0C;&#x5EFA;&#x8BAE;&#x5C06;&#x5907;&#x4EFD;&#x811A;&#x672C;&#x5316;&#x5E76;&#x5B9A;&#x671F;&#x6D4B;&#x8BD5;&#x6062;&#x590D;&#x6D41;&#x7A0B;&#x3002;</p>
+</blockquote>
+<p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B; &#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
+<p><em>&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</em></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="tags/mysql/" rel="tag"># mysql</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="501.html" rel="next" title="如何使用 Docker 快速部署 OpenClaw 客户端">
+                <i class="fa fa-chevron-left"></i> 如何使用 Docker 快速部署 OpenClaw 客户端
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="503.html" rel="prev" title="Docker Compose 常用命令汇总">
+                Docker Compose 常用命令汇总 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    <!-- 乱码三千文章内嵌广告 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-layout="in-article" data-ad-format="fluid" data-ad-client="ca-pub-2626449904708114" data-ad-slot="1549007621"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+  <!-- 乱码三千信息流广告 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-6t+ed+2i-1n-4w" data-ad-client="ca-pub-2626449904708114" data-ad-slot="9471729671"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">乱码三千</p>
+              <p class="site-description motion-element" itemprop="description">android程序员一枚,擅长java,kotlin,python,金融投资,欢迎交流~</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="https://code.newban.cn/archives/">
+              
+                  <span class="site-state-item-count">505</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">145</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一、备份操作"><span class="nav-number">2.</span> <span class="nav-text">一、备份操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-容器内部备份（不推荐但需了解）"><span class="nav-number">2.1.</span> <span class="nav-text">1.1 容器内部备份（不推荐但需了解）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-推荐方案：不进容器直接备份"><span class="nav-number">2.2.</span> <span class="nav-text">1.2 推荐方案：不进容器直接备份</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-自动化备份脚本"><span class="nav-number">2.3.</span> <span class="nav-text">1.3 自动化备份脚本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、查看操作（不进容器）"><span class="nav-number">3.</span> <span class="nav-text">二、查看操作（不进容器）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-查看数据库信息"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 查看数据库信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-查看表结构"><span class="nav-number">3.2.</span> <span class="nav-text">2.2 查看表结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-数据查询"><span class="nav-number">3.3.</span> <span class="nav-text">2.3 数据查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-交互式模式"><span class="nav-number">3.4.</span> <span class="nav-text">2.4 交互式模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、恢复操作"><span class="nav-number">4.</span> <span class="nav-text">三、恢复操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-手动恢复"><span class="nav-number">4.1.</span> <span class="nav-text">3.1 手动恢复</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-交互式恢复脚本"><span class="nav-number">4.2.</span> <span class="nav-text">3.2 交互式恢复脚本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、参数说明与安全提示"><span class="nav-number">5.</span> <span class="nav-text">四、参数说明与安全提示</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-常用参数"><span class="nav-number">5.1.</span> <span class="nav-text">4.1 常用参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-安全建议"><span class="nav-number">5.2.</span> <span class="nav-text">4.2 安全建议</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、快速测试指南"><span class="nav-number">6.</span> <span class="nav-text">五、快速测试指南</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六、总结与建议"><span class="nav-number">7.</span> <span class="nav-text">六、总结与建议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#核心原则：尽量不进容器"><span class="nav-number">7.1.</span> <span class="nav-text">核心原则：尽量不进容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最佳实践"><span class="nav-number">7.2.</span> <span class="nav-text">最佳实践</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">乱码三千</span>
+  <div>
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+  </div>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+  <script type="text/javascript" async src="js/src/mermaid.min.js"></script>
+  <script>
+  if (window.mermaid) {
+        var mermaid_config = {
+            startOnLoad: true,
+            theme: 'default',
+            flowchart:{
+                useMaxWidth: false,
+                htmlLabels: true
+            }                
+        }
+        mermaid.initialize(mermaid_config);
+  }
+  </script>
+  
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+      <style>
+        a.gitment-editor-footer-tip { display: none; }
+        .gitment-container.gitment-footer-container { display: none; }
+      </style>
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'songjianzaina',
+            repo: 'codesan_comment',
+            
+            lang: "zh" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '75fa01da04fd1029841debfa65ce027b566a47e3',
+            
+                client_id: '01a471de64bf7a7789f3'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
