@@ -11681,8 +11681,8 @@ android:layout_gravity=&quot;center&quot;/&gt;</code></pre><p><strong>这种方�
   <entry>
     <title>跨服务器数据迁移</title>
     <url>/251.html</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>最近有台云服务器到期, 续费太贵, 打算换一台便宜的, 之前服务器上使用<code>docker</code>部署了几个网站, 涉及到数据和程序迁移的问题, 在此做个记录</p>
-<h3 id="持久化数据迁移"><a href="#持久化数据迁移" class="headerlink" title="持久化数据迁移"></a>持久化数据迁移</h3><p>首先使用<code>scp</code>指令进行数据卷的迁移, 也就是跨服务器数据拷贝</p>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>最近有台云服务器到期, 续费太贵, 打算换一台便宜的, 之前服务器上使用<code>docker</code>部署了几个网站, 涉及到数据和程序迁移的问题, 在此做个记录</p>
+<h2 id="持久化数据迁移"><a href="#持久化数据迁移" class="headerlink" title="持久化数据迁移"></a>持久化数据迁移</h2><p>首先使用<code>scp</code>指令进行数据卷的迁移, 也就是跨服务器数据拷贝</p>
 <p>假设两台机器IP分别为：</p>
 <ul>
 <li><p>服务器A: 114.238.161.75，</p>
@@ -11705,7 +11705,7 @@ android:layout_gravity=&quot;center&quot;/&gt;</code></pre><p><strong>这种方�
 <p>此外 加上<code>-p</code>参数还可以保留原文件的修改时间，访问权限:</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">scp -r  -p root@143.224.34.73:/home/lk /root</span><br></pre></td></tr></table></figure>
 
-<h5 id="scp后台运行"><a href="#scp后台运行" class="headerlink" title="scp后台运行"></a>scp后台运行</h5><ol>
+<h3 id="scp后台运行"><a href="#scp后台运行" class="headerlink" title="scp后台运行"></a>scp后台运行</h3><ol>
 <li><p>方式一 使用<code>nohup</code>, 同时尾部加<code>&amp;</code></p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nohup scp -r  -p root@143.224.34.73:/home/lk /root &amp;</span><br></pre></td></tr></table></figure>
 
@@ -11726,10 +11726,17 @@ android:layout_gravity=&quot;center&quot;/&gt;</code></pre><p><strong>这种方�
 
 
 
-
 </li>
 </ol>
-<h3 id="Docker容器迁移"><a href="#Docker容器迁移" class="headerlink" title="Docker容器迁移"></a>Docker容器迁移</h3><ol>
+<h3 id="scp免密传输"><a href="#scp免密传输" class="headerlink" title="scp免密传输"></a>scp免密传输</h3><p>服务器间每次传输数据需要输入密码, 如果想要实现免密, 可以使用SSH 密钥登录</p>
+<p>在<strong>新服务器</strong>上生成密钥，把公钥拷到旧服务器, 只需在新服务器上执行下面指令即可配置密钥：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 新机器上执行</span></span><br><span class="line">ssh-keygen -t ed25519 -N <span class="string">""</span> -f ~/.ssh/id_ed25519</span><br><span class="line">ssh-copy-id root@&lt;旧机器公网IP&gt;</span><br></pre></td></tr></table></figure>
+
+<p>输一次密码后，以后<code>scp</code>就再也不用输密码了：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nohup scp -r  -p  \</span><br><span class="line">  root@&lt;旧机器公网IP&gt;:/要迁的目录/ \</span><br><span class="line">  /本地目录/ &gt; /root/rsync.log 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+
+<p>关终端、断网、重连都不再需要密码。</p>
+<h2 id="Docker容器迁移"><a href="#Docker容器迁移" class="headerlink" title="Docker容器迁移"></a>Docker容器迁移</h2><ol>
 <li><p>首先 需要将容器保存为镜像</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker commit 容器名称 镜像名称</span><br></pre></td></tr></table></figure>
 </li>
@@ -11747,15 +11754,15 @@ android:layout_gravity=&quot;center&quot;/&gt;</code></pre><p><strong>这种方�
 
 </li>
 </ol>
-<h3 id="数据库迁移"><a href="#数据库迁移" class="headerlink" title="数据库迁移"></a>数据库迁移</h3><p>详情查看《<a href="https://code.newban.cn/131.html">mysql使用命令导入和导出sql文件</a>》</p>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><p><code>docker</code>容器在创建时配置的挂载目录, 如果宿主中挂载的目录不存在则自动创建并写入默认数据, 如果目录已经存在则使用已存在的目录和数据</p>
+<h2 id="数据库迁移"><a href="#数据库迁移" class="headerlink" title="数据库迁移"></a>数据库迁移</h2><p>详情查看《<a href="https://code.newban.cn/131.html">mysql使用命令导入和导出sql文件</a>》</p>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><p><code>docker</code>容器在创建时配置的挂载目录, 如果宿主中挂载的目录不存在则自动创建并写入默认数据, 如果目录已经存在则使用已存在的目录和数据</p>
 <p>也就是说我们在进行容器迁移重新运行时, 不用担心原先目录下的数据会被覆盖重写 </p>
 <p>但是有一点需要注意的是, 原先目录中的配置文件如果包含原服务器中的<code>ip</code>配置, 需要手动修改</p>
 <p>比如我们迁移一个<code>wordpress</code>, 在新服务器中使用以下参数进行启动:</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run -id \</span><br><span class="line">--name=wordpress_sex \</span><br><span class="line">-p 7778:80 \</span><br><span class="line">-h wordpress_sex \</span><br><span class="line">-v /root/wordpress/sex_www:/var/www/html \</span><br><span class="line">-e WORDPRESS_DB_HOST=119.33.15.174:3306 \</span><br><span class="line">-e WORDPRESS_DB_USESR=root \</span><br><span class="line">-e WORDPRESS_DB_PASSWORD=123456 \</span><br><span class="line">-e WORDPRESS_DB_NAME=wordpress_sex \</span><br><span class="line">-d wordpress:latest</span><br></pre></td></tr></table></figure>
 
 <p>由于源文件目录和文件未被覆盖重写, 那么上面数据库相关的配置参数不起作用, 我们需要手动进如源文件目录, 对<code>wp-config.php</code>中数据库配置进行修改, 否则无法访问</p>
-<h5 id="数据库内网访问保证访问速度"><a href="#数据库内网访问保证访问速度" class="headerlink" title="数据库内网访问保证访问速度"></a>数据库内网访问保证访问速度</h5><p>一般来说 我们最好避免直接使用公网<code>ip</code>访问数据库, 而是使用<code>Docker</code>内部桥接网络的方式以容器名替代<code>ip</code>的方式进行访问, 这样既能减少迁移的风险, 又能加快数据的读取 </p>
+<h4 id="数据库内网访问保证访问速度"><a href="#数据库内网访问保证访问速度" class="headerlink" title="数据库内网访问保证访问速度"></a>数据库内网访问保证访问速度</h4><p>一般来说 我们最好避免直接使用公网<code>ip</code>访问数据库, 而是使用<code>Docker</code>内部桥接网络的方式以容器名替代<code>ip</code>的方式进行访问, 这样既能减少迁移的风险, 又能加快数据的读取 </p>
 <p>网站的访问流畅度和数据库的访问速度有非常大的关系, 经测试, 使用桥接网络访问数据库的速度远快于使用公网映射访问  </p>
 <p>大部分人刚开始会将网站的访问速度归结于服务器硬件配置、带宽、程序语言甚至是数据库的数据量太大和<code>sql</code>查询语句不合理上, 殊不知 数据库的访问速度也是重中之重</p>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
@@ -29050,8 +29057,8 @@ public boolean shouldOverrideUrlLoading(WebView view, String httpurl) {
 </ul>
 <h3 id="信号流向"><a href="#信号流向" class="headerlink" title="信号流向"></a>信号流向</h3><p>所有声音信号进入声卡后，由 <code>Reaper</code> 统一处理并混成一路干净的直播混音（STREAM BUS，再通过声卡<code>Loopback</code>或虚拟声卡交给 <code>OBS</code>。原则是：监听走声卡硬件，直播走 OBS，两者互不干扰</p>
 <h2 id="Reaper-编曲模板"><a href="#Reaper-编曲模板" class="headerlink" title="Reaper 编曲模板"></a>Reaper 编曲模板</h2><p>需要给直播创建专用的工程模板, 每次开播直接调用</p>
-<p>首先需要创建的基础轨道有:</p>
-<p>在 Reaper 中建立专用工程模板（File → Project Templates → Save Project as Template）并保存，每次开播直接调用。核心是单独建立一条「STREAM BUS（直播母线）」，只把要送给观众的声音送进去。</p>
+<h3 id="创建轨道"><a href="#创建轨道" class="headerlink" title="创建轨道"></a>创建轨道</h3><p>首先需要创建的基础轨道有:</p>
+<p>在 <code>Reaper</code>中建立专用工程模板（<code>File → Project Templates → Save Project as Template</code>）并保存，每次开播直接调用。核心是单独建立一条「<code>STREAM BUS</code>（直播母线）」，只把要送给观众的声音送进去。</p>
 <table>
 <thead>
 <tr>
@@ -29091,7 +29098,41 @@ public boolean shouldOverrideUrlLoading(WebView view, String httpurl) {
 <td>只此一路送 OBS</td>
 </tr>
 </tbody></table>
+<h3 id="开启人声监听"><a href="#开启人声监听" class="headerlink" title="开启人声监听"></a>开启人声监听</h3><p>点亮音轨中的小喇叭即可开启实时监听, 演唱的时候能实时听到自己的声音:</p>
 <p><img src="https://gitee.com/songjianzaina/site_img1/raw/master/img/image-20260904100811237.png" alt="image-20260904100811237"></p>
+<p>开启监听后, 即便在走带停止不播放的时候你说话也能听到, 观众也能听到, 适合中场休息聊天, 不需要额外设置, 监听喇叭打开就行, 实时录唱和停录说话无缝过渡</p>
+<p>另外, 如果想给监听音频添加效果器, 可以点击右上方<code>Monitor Fx</code>入口:</p>
+<p><img src="https://gitee.com/songjianzaina/site_img1/raw/master/img/image-20260909105235703.png" alt="image-20260909105235703"></p>
+<p>比如添加混响等等, 观众也能听到效果:</p>
+<p><img src="https://gitee.com/songjianzaina/site_img1/raw/master/img/image-20260909105321201.png" alt="image-20260909105321201"></p>
+<p>不过这种监听上添加效果器是作用于所有音轨的, 不建议大家直接在这里加效果器, 建议在各自的音轨上添加各自的效果器更好:</p>
+<p><img src="https://gitee.com/songjianzaina/site_img1/raw/master/img/image-20260909112442536.png" alt="image-20260909112442536"></p>
+<h3 id="循环LOOP设置"><a href="#循环LOOP设置" class="headerlink" title="循环LOOP设置"></a>循环LOOP设置</h3><p>一共有四个地方需要设置:</p>
+<ol>
+<li><p><strong>循环录制完后自动保存<code>MIDI</code>文件并加入工程, 而不需要手动停止录音才保存</strong></p>
+<p><code>Preference→Audio →Loop Recording→勾选At each loop</code>:</p>
+<p><img src="https://gitee.com/songjianzaina/site_img1/raw/master/img/image-20260909085318167.png" alt="image-20260909085318167"></p>
+<p>如果不开启该选项, 那么录制完一遍进入新循环后之前录制的完全听不到, 必须停止录音后音符才会显示出来</p>
+</li>
+<li><p><strong>循环录制时创建新的<code>media item</code></strong></p>
+<p><code>Options→New Recording that overlaps existing media item →Creates new media items</code>:</p>
+<p><img src="https://gitee.com/songjianzaina/site_img1/raw/master/img/image-20260909085534219.png" alt="image-20260909085534219"></p>
+<p><code>Reaper</code>默认选项是<code>splits</code>, 循环录制时会分多个<code>take</code>, 同一时间下只有其中处于活动状态的<code>take</code>才出声, 无法多个<code>take</code>同时出声, 如下:</p>
+<p><img src="https://gitee.com/songjianzaina/site_img1/raw/master/img/image-20260909103938013.png" alt="image-20260909103938013"></p>
+<p>直播时可能随时要对同一个钢琴音色追加补充音符, 或者分开录制鼓组的底鼓军鼓等音色, 那么选择<code>Creates new media items</code>, 可以让多个循环<code>take</code>重叠共同发声</p>
+</li>
+<li><p><strong>给每个音轨开启已录制音频的监听</strong></p>
+<p>右键录音按钮→勾选<code>monitort rack media  when recording</code>:</p>
+<p><img src="https://gitee.com/songjianzaina/site_img1/raw/master/img/image-20260909104629677.png" alt="image-20260909104629677"></p>
+<p>如果不勾选该选项, 那么在循环录制的时候无法实时听到上一段的循环录制, 只能听到当前正在弹的音符</p>
+</li>
+<li><p><strong>给每个音轨开启预录制功能</strong></p>
+<p>右键录音按钮→勾选<code>Automatic record-arm when track selected</code>:</p>
+<p><img src="https://gitee.com/songjianzaina/site_img1/raw/master/img/image-20260909110752450.png" alt="image-20260909110752450"></p>
+<p>这样一来, 我们只需要点击其中一轨, 就可以随时切换不同音轨录音</p>
+<p>其中人声轨道比较特殊, 需要根据自身情况勾选, 如果你演唱一遍过, 那就勾选, 如果一个<code>loop</code>来回唱就不要勾选, 不然多条人声信号叠加, 会比较混乱</p>
+</li>
+</ol>
 <h2 id="关于画中画布局"><a href="#关于画中画布局" class="headerlink" title="关于画中画布局"></a>关于画中画布局</h2><p>假设我们需要实现人脸（手机摄像头）作为主画面，<code>Reaper</code> 录屏小窗叠在人脸上方的画中画效果, <code>OBS</code>很容易能实现这一点, 只需要让Reaper窗口采集源和<code>DroidCam OBS</code>采集源同时存在即可:</p>
 <p><img src="https://gitee.com/songjianzaina/site_img1/raw/master/img/image-20260904095250909.png" alt="image-20260904095250909"></p>
 <p>这两个都是独立视频源，谁在上层谁就盖住下层，直接在预览区拖动/缩放即可，无需额外软件。</p>
@@ -29326,8 +29367,37 @@ public boolean shouldOverrideUrlLoading(WebView view, String httpurl) {
 <p><img src="https://gitee.com/songjianzaina/site_img1/raw/master/img/image-20260902185734424.png" alt="image-20260902185734424"></p>
 <p><img src="https://gitee.com/songjianzaina/site_img1/raw/master/img/image-20260902190158869.png" alt="image-20260902190158869"></p>
 <p>官网: <a href="https://ccswitch.lovable.app/" target="_blank" rel="noopener">点击进入</a></p>
-<h2 id="免费模型"><a href="#免费模型" class="headerlink" title="免费模型"></a>免费模型</h2><p>关于第三方的模型API, 大家可以自行B站或者抖音搜索, 有一些羊毛可以薅</p>
-<p>如果是本地部署的话可以使用<code>qwen2.5</code>模型:</p>
+<h2 id="免费大模型API"><a href="#免费大模型API" class="headerlink" title="免费大模型API"></a>免费大模型API</h2><p>如下:</p>
+<table>
+<thead>
+<tr>
+<th align="left"><strong>平台</strong></th>
+<th align="left"><strong>免费额度</strong></th>
+<th align="left"><strong>模型</strong></th>
+<th align="left"><strong>特点</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>魔搭 API-Inference</strong></td>
+<td align="left"><strong>每日 2000 次</strong></td>
+<td align="left">Qwen/DeepSeek/GLM/MiniMax 等 6万+</td>
+<td align="left">按次不计token，<strong>长上下文不额外烧</strong></td>
+</tr>
+<tr>
+<td align="left"><strong>硅基流动 SiliconFlow</strong></td>
+<td align="left">新用户 <strong>2000万 Tokens（永久）</strong></td>
+<td align="left">DeepSeek/Qwen/Llama，7B以下永久免费</td>
+<td align="left">注册即送，OpenAI 兼容</td>
+</tr>
+<tr>
+<td align="left"><strong>火山方舟（字节）</strong></td>
+<td align="left">文本 <strong>50万 tokens</strong>；视频 Seedance <strong>200万 tokens</strong></td>
+<td align="left">Doubao 全家</td>
+<td align="left">注册送，含视频</td>
+</tr>
+</tbody></table>
+<p>以上只是其中一小部分, 关于第三方的模型API, 大家可以自行B站或者抖音搜索, 有一些羊毛可以薅</p>
+<h2 id="本地部署大模型"><a href="#本地部署大模型" class="headerlink" title="本地部署大模型"></a>本地部署大模型</h2><p>如果是本地自己机器部署的话可以使用<code>qwen2.5</code>开源大模型:</p>
 <table>
 <thead>
 <tr>
