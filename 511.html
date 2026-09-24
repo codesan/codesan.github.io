@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+<meta name="referrer" content="never">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="内网穿透,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="乱码三千 – 分享实用IT技术" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="&amp;#x524D;&amp;#x8A00;&amp;#x6545;&amp;#x4E8B;&amp;#x662F;&amp;#x8FD9;&amp;#x6837;&amp;#x7684;&amp;#x3002; &amp;#x6211;&amp;#x5728;&amp;#x505A; AIGC &amp;#x76F8;&amp;#x5173;&amp;#x7684;&amp;#x5F00;&amp;#x53D1;&amp;#xFF0C;&amp;#x4E3B;&amp;#x529B;&amp;#x73AF;&amp;#x5883;&amp;#x662F;&amp;#x4E00;&amp;">
+<meta name="keywords" content="内网穿透">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何优雅地直连无公网 IP 的远程 GPU 服务器">
+<meta property="og:url" content="https://code.newban.cn/511.html">
+<meta property="og:site_name" content="乱码三千 – 分享实用IT技术">
+<meta property="og:description" content="&amp;#x524D;&amp;#x8A00;&amp;#x6545;&amp;#x4E8B;&amp;#x662F;&amp;#x8FD9;&amp;#x6837;&amp;#x7684;&amp;#x3002; &amp;#x6211;&amp;#x5728;&amp;#x505A; AIGC &amp;#x76F8;&amp;#x5173;&amp;#x7684;&amp;#x5F00;&amp;#x53D1;&amp;#xFF0C;&amp;#x4E3B;&amp;#x529B;&amp;#x73AF;&amp;#x5883;&amp;#x662F;&amp;#x4E00;&amp;">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png">
+<meta property="og:updated_time" content="2026-09-24T08:49:02.902Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何优雅地直连无公网 IP 的远程 GPU 服务器">
+<meta name="twitter:description" content="&amp;#x524D;&amp;#x8A00;&amp;#x6545;&amp;#x4E8B;&amp;#x662F;&amp;#x8FD9;&amp;#x6837;&amp;#x7684;&amp;#x3002; &amp;#x6211;&amp;#x5728;&amp;#x505A; AIGC &amp;#x76F8;&amp;#x5173;&amp;#x7684;&amp;#x5F00;&amp;#x53D1;&amp;#xFF0C;&amp;#x4E3B;&amp;#x529B;&amp;#x73AF;&amp;#x5883;&amp;#x662F;&amp;#x4E00;&amp;">
+<meta name="twitter:image" content="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+<!--谷歌广告验证代码-->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: "ca-pub-2626449904708114",
+          enable_page_level_ads: true
+     });
+</script>
+<!--谷歌广告验证代码-->
+
+<!--短链广告-->
+<!--<script type="text/javascript">
+    var adfly_id = 25792435;
+    var adfly_advert = 'banner';
+    var popunder = false;
+    var exclude_domains = ['code.newban.cn','newban.cn',  'localhost:4000'];
+</script>
+<script src="https://cdn.adf.ly/js/link-converter.js"></script>-->
+<!--短链广告-->
+
+
+
+  <link rel="canonical" href="https://code.newban.cn/511.html">
+
+
+
+
+
+  <title>如何优雅地直连无公网 IP 的远程 GPU 服务器 | 乱码三千 – 分享实用IT技术</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+  
+<a href="https://www.github.com/songjianzaina" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">乱码三千 – 分享实用IT技术</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">乱码三千 – 码出一个新世界</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://www.newban.cn/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="https://code.newban.cn/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://code.newban.cn">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="乱码三千">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="乱码三千 – 分享实用IT技术">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">如何优雅地直连无公网 IP 的远程 GPU 服务器</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2026-09-13T19:29:00+08:00">
+                2026-09-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="&#x524D;&#x8A00;"><a href="#&#x524D;&#x8A00;" class="headerlink" title="&#x524D;&#x8A00;"></a>&#x524D;&#x8A00;</h2><p>&#x6545;&#x4E8B;&#x662F;&#x8FD9;&#x6837;&#x7684;&#x3002;</p>
+<p>&#x6211;&#x5728;&#x505A; AIGC &#x76F8;&#x5173;&#x7684;&#x5F00;&#x53D1;&#xFF0C;&#x4E3B;&#x529B;&#x73AF;&#x5883;&#x662F;&#x4E00;&#x53F0;<strong>&#x6CA1;&#x6709;&#x516C;&#x7F51; IP &#x7684; GPU &#x5B9E;&#x4F8B;&#x4EE5;&#x53CA;&#x4E00;&#x53F0;&#x963F;&#x91CC;&#x4E91;&#x7075;&#x6784;&#x670D;&#x52A1;&#x5668;</strong>&#xFF0C;&#x4E3B;&#x8981;&#x7528;&#x6765;&#x8DD1; <code>ComfyUI</code>&#x3001;&#x8BAD;&#x7EC3;&#x6A21;&#x578B;&#x3002;  </p>
+<p>&#x4F46;&#x4F7F;&#x7528;&#x8FC7;&#x7A0B;&#x4E2D;&#x6709;&#x51E0;&#x4E2A;&#x8BA9;&#x4EBA;&#x96BE;&#x53D7;&#x7684;&#x95EE;&#x9898;&#xFF1A;</p>
+<ul>
+<li>&#x963F;&#x91CC;&#x4E91;&#x5B98;&#x65B9;&#x81EA;&#x5E26;&#x7684;&#x8FDC;&#x7A0B;&#x684C;&#x9762;&#x63A7;&#x5236;&#x5EF6;&#x8FDF;&#x5DE8;&#x5927;&#xFF0C;&#x4F53;&#x9A8C;&#x611F;&#x592A;&#x5DEE;</li>
+<li>&#x6587;&#x4EF6;&#x4F20;&#x8F93;&#x592A;&#x8FC7;&#x9EBB;&#x70E6;&#xFF0C;&#x963F;&#x91CC;&#x4E91;&#x7075;&#x6784;&#x9700;&#x8981;&#x501F;&#x52A9;&#x7F51;&#x76D8;&#x4E2D;&#x8F6C;&#xFF0C;&#x800C;&#x9B54;&#x642D; WebIDE &#x6709;&#x6587;&#x4EF6;&#x5927;&#x5C0F;&#x9650;&#x5236;</li>
+</ul>
+<p>&#x6211;&#x7B2C;&#x4E00;&#x65F6;&#x95F4;&#x60F3;&#x5230;&#x7684;&#x89E3;&#x51B3;&#x529E;&#x6CD5;&#x5C31;&#x662F;&#x5185;&#x7F51;&#x7A7F;&#x900F;&#xFF0C;&#x4E0D;&#x8FC7;&#x7B2C;&#x4E09;&#x65B9;&#x7684;&#x7A7F;&#x900F;&#x5DE5;&#x5177;&#x4E0D;&#x592A;&#x7A33;&#x5B9A;&#xFF0C;&#x8981;&#x4E48;&#x9650;&#x901F;&#x8981;&#x4E48;&#x9891;&#x7E41;&#x6389;&#x7EBF;&#x3002;&#x521A;&#x597D;&#x624B;&#x4E0A;&#x6709;&#x4E00;&#x53F0; 99 &#x5143;&#x7684;&#x963F;&#x91CC;&#x4E91;&#x670D;&#x52A1;&#x5668;&#xFF0C;&#x6211;&#x5BFB;&#x601D;&#x7740;&#x4E0D;&#x7528;&#x4E5F;&#x662F;&#x6D6A;&#x8D39;&#xFF0C;&#x5E72;&#x8106;&#x76F4;&#x63A5;&#x62FF;&#x5B83;&#x6765;&#x5F53;&#x505A;&#x8DF3;&#x677F;&#x673A;</p>
+<p>&#x4E0D;&#x8FC7;&#x6211;&#x5E76;&#x6CA1;&#x6709;&#x8003;&#x8651;&#x81EA;&#x5EFA; frp &#x7684;&#x65B9;&#x5F0F;&#x6765;&#x5B9E;&#x73B0;&#x7A7F;&#x900F;&#xFF0C;&#x56E0;&#x4E3A;&#x5B89;&#x88C5;&#x8F6F;&#x4EF6;&#x6BD4;&#x8F83;&#x9EBB;&#x70E6;&#xFF0C;&#x6BCF;&#x53F0;&#x76EE;&#x6807;&#x673A;&#x5668;&#x90FD;&#x8981;&#x5B89;&#x88C5; frpc &#x5BA2;&#x6237;&#x7AEF;&#x7684;&#x8BDD;&#x592A;&#x6D88;&#x8017;&#x65F6;&#x95F4;&#xFF0C;</p>
+<p>&#x672C;&#x6765;&#x8585;&#x6765;&#x7684;&#x514D;&#x8D39; GPU &#x7B97;&#x529B;&#x65F6;&#x957F;&#x5C31;&#x6709;&#x9650;&#xFF0C;&#x6240;&#x4EE5;&#x7701;&#x4E8B;&#x9AD8;&#x6548;&#x662F;&#x7B2C;&#x4E00;&#x539F;&#x5219;&#x3002;</p>
+<p>&#x4E8E;&#x662F;&#x6211;&#x9009;&#x62E9;&#x4E86; SSH &#x53CD;&#x5411;&#x96A7;&#x9053;&#x7684;&#x65B9;&#x5F0F;&#x6765;&#x7A7F;&#x900F;</p>
+<p>&#x6211;&#x60F3;&#x8981;&#x7684;&#x6548;&#x679C;&#x662F;&#xFF1A;</p>
+<ul>
+<li>&#x672C;&#x5730; VS Code &#x76F4;&#x63A5;&#x6253;&#x5F00;&#x8FDC;&#x7A0B; GPU &#x7684;&#x7EC8;&#x7AEF;&#xFF0C;&#x5E76;&#x5B9E;&#x73B0;&#x6587;&#x4EF6;&#x5B9E;&#x65F6;&#x7F16;&#x8F91;&#x548C;&#x4F20;&#x8F93;</li>
+<li>&#x672C;&#x5730;&#x6D4F;&#x89C8;&#x5668;&#x76F4;&#x63A5;&#x8BBF;&#x95EE; <code>127.0.0.1:8188</code> &#x64CD;&#x4F5C; ComfyUI  </li>
+<li>&#x670D;&#x52A1;&#x5668;&#x548C;&#x672C;&#x5730;&#x7535;&#x8111;&#x91CD;&#x542F;&#x540E;&#x81EA;&#x52A8;&#x6253;&#x901A;&#x96A7;&#x9053;</li>
+</ul>
+<h2 id="&#x5B9E;&#x73B0;&#x539F;&#x7406;"><a href="#&#x5B9E;&#x73B0;&#x539F;&#x7406;" class="headerlink" title="&#x5B9E;&#x73B0;&#x539F;&#x7406;"></a>&#x5B9E;&#x73B0;&#x539F;&#x7406;</h2><p>&#x7A7F;&#x900F;&#x7684;&#x672C;&#x8D28;&#x5C31;&#x662F;&#x501F;&#x9053;&#xFF0C;&#x501F;&#x6709;&#x516C;&#x7F51;IP&#x670D;&#x52A1;&#x5668;&#x7684;&#x9053;</p>
+<p>&#x7F51;&#x7EDC;&#x62D3;&#x6251;&#x5982;&#x4E0B;&#xFF1A;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;     SSH &#x96A7;&#x9053;      &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;     &#x53CD;&#x5411;&#x96A7;&#x9053;      &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span><br><span class="line">&#x2502;  &#x672C;&#x5730;&#x7535;&#x8111; &#x2502; &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x25B6; &#x2502; &#x963F;&#x91CC;&#x4E91; ECS &#x2502; &#x25C0;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500; &#x2502;  GPU &#x5B9E;&#x4F8B; &#x2502;</span><br><span class="line">&#x2502;          &#x2502;                   &#x2502; (&#x516C;&#x7F51; IP) &#x2502;                   &#x2502; (&#x65E0;&#x516C;&#x7F51;) &#x2502;</span><br><span class="line">&#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;                   &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;                   &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span><br><span class="line">    &#x2191;</span><br><span class="line">    &#x2514;&#x2500;&#x2500; &#x6D4F;&#x89C8;&#x5668;&#x8BBF;&#x95EE; 127.0.0.1:8188</span><br></pre></td></tr></table></figure>
+
+<p><strong>&#x5173;&#x952E;&#x70B9;&#x53EA;&#x6709;&#x4E09;&#x4E2A;&#xFF1A;</strong></p>
+<ol>
+<li><strong>GPU &#x4E3B;&#x52A8;&#x8FDE;&#x963F;&#x91CC;&#x4E91;</strong>&#xFF08;&#x56E0;&#x4E3A; GPU &#x80FD;&#x51FA;&#x7F51;&#xFF0C;&#x963F;&#x91CC;&#x4E91;&#x6709;&#x516C;&#x7F51;&#xFF09;</li>
+<li><strong>&#x5EFA;&#x7ACB;&#x53CD;&#x5411;&#x96A7;&#x9053;&#xFF08;-R&#xFF09;</strong>&#xFF1A;&#x628A; GPU &#x7684;&#x7AEF;&#x53E3;&#x201C;&#x4F38;&#x201D;&#x5230;&#x963F;&#x91CC;&#x4E91;&#x672C;&#x673A;</li>
+<li><strong>&#x672C;&#x5730;&#x518D;&#x8FDE;&#x963F;&#x91CC;&#x4E91;&#xFF08;-L&#xFF09;</strong>&#xFF1A;&#x628A;&#x672C;&#x5730;&#x7AEF;&#x53E3;&#x201C;&#x5F15;&#x201D;&#x5230;&#x963F;&#x91CC;&#x4E91;</li>
+</ol>
+<p>&#x6700;&#x7EC8;&#x6548;&#x679C;&#xFF1A;</p>
+<ul>
+<li><code>localhost:8188</code> &#x2192; &#x963F;&#x91CC;&#x4E91; &#x2192; GPU &#x7684; ComfyUI</li>
+<li>VS Code <code>ssh gpu</code> &#x2192; &#x963F;&#x91CC;&#x4E91; &#x2192; GPU &#x7684;&#x7EC8;&#x7AEF;</li>
+</ul>
+<hr>
+<h2 id="&#x5177;&#x4F53;&#x5B9E;&#x73B0;"><a href="#&#x5177;&#x4F53;&#x5B9E;&#x73B0;" class="headerlink" title="&#x5177;&#x4F53;&#x5B9E;&#x73B0;"></a>&#x5177;&#x4F53;&#x5B9E;&#x73B0;</h2><h3 id="&#x51C6;&#x5907;&#x5DE5;&#x4F5C;&#xFF1A;&#x963F;&#x91CC;&#x4E91;&#x4FA7;"><a href="#&#x51C6;&#x5907;&#x5DE5;&#x4F5C;&#xFF1A;&#x963F;&#x91CC;&#x4E91;&#x4FA7;" class="headerlink" title="&#x51C6;&#x5907;&#x5DE5;&#x4F5C;&#xFF1A;&#x963F;&#x91CC;&#x4E91;&#x4FA7;"></a>&#x51C6;&#x5907;&#x5DE5;&#x4F5C;&#xFF1A;&#x963F;&#x91CC;&#x4E91;&#x4FA7;</h3><p>&#x786E;&#x4FDD;&#x963F;&#x91CC;&#x4E91;&#x5141;&#x8BB8;&#x7AEF;&#x53E3;&#x8F6C;&#x53D1;&#xFF1A;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x5728;&#x963F;&#x91CC;&#x4E91;&#x4E0A;&#x6267;&#x884C;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&apos;net.ipv4.ip_forward=1&apos;</span> &gt;&gt; /etc/sysctl.conf</span><br><span class="line">sysctl -p</span><br></pre></td></tr></table></figure>
+
+<p>&#x8FD9;&#x91CC;&#x9700;&#x8981;&#x660E;&#x767D;&#x7684;&#x662F;&#xFF0C;&#x7531;&#x4E8E;&#x6211;&#x4EEC;&#x8D70;&#x7684;&#x662F; SSH 22 &#x7AEF;&#x53E3;&#x901A;&#x9053;&#xFF0C;&#x6240;&#x4EE5;&#x65E0;&#x9700;&#x53BB;&#x963F;&#x91CC;&#x4E91;&#x5B89;&#x5168;&#x7EC4;&#x5F00;&#x653E; 2222 &#x548C; 8188 &#x7B49;&#x7AEF;&#x53E3;&#xFF0C;&#x6709;&#x516C;&#x7F51; ip &#x5373;&#x53EF;&#xFF0C;22 &#x7AEF;&#x53E3;&#x9ED8;&#x8BA4;&#x90FD;&#x662F;&#x5F00;&#x653E;&#x7684;</p>
+<hr>
+<h3 id="&#x7B2C;&#x4E00;&#x6B65;&#xFF1A;GPU-&#x5B9E;&#x4F8B;&#x914D;&#x7F6E;"><a href="#&#x7B2C;&#x4E00;&#x6B65;&#xFF1A;GPU-&#x5B9E;&#x4F8B;&#x914D;&#x7F6E;" class="headerlink" title="&#x7B2C;&#x4E00;&#x6B65;&#xFF1A;GPU &#x5B9E;&#x4F8B;&#x914D;&#x7F6E;"></a>&#x7B2C;&#x4E00;&#x6B65;&#xFF1A;GPU &#x5B9E;&#x4F8B;&#x914D;&#x7F6E;</h3><p>&#x6267;&#x884C;&#x4EE5;&#x4E0B;&#x6307;&#x4EE4;&#xFF0C;&#x8BA9;GPU &#x5B9E;&#x4F8B;&#x4E3B;&#x52A8;&#x5C06;&#x7AEF;&#x53E3;&#x66B4;&#x9732;&#x7ED9;&#x963F;&#x91CC;&#x4E91;&#x670D;&#x52A1;&#x5668;&#xFF08;&#x8BB0;&#x5F97;&#x5C06;IP&#x66FF;&#x6362;&#x6210;&#x4F60;&#x7684;&#xFF09;&#xFF1A;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. &#x521B;&#x5EFA; GPU &#x4E13;&#x7528;&#x5BC6;&#x94A5;</span></span><br><span class="line">ssh-keygen -t ed25519 -f ~/.ssh/gpu_key -N <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. &#x628A;&#x516C;&#x94A5;&#x62F7;&#x8D1D;&#x5230;&#x963F;&#x91CC;&#x4E91;&#xFF08;&#x8BA9; GPU &#x80FD;&#x514D;&#x5BC6;&#x8FDE;&#x963F;&#x91CC;&#x4E91;&#xFF09;</span></span><br><span class="line">ssh-copy-id -i ~/.ssh/gpu_key.pub root@&#x963F;&#x91CC;&#x4E91;&#x516C;&#x7F51; IP</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. &#x5EFA;&#x7ACB;&#x53CD;&#x5411;&#x96A7;&#x9053;&#xFF1A;&#x628A; GPU &#x7684; SSH &#x548C; ComfyUI &#x6620;&#x5C04;&#x5230;&#x963F;&#x91CC;&#x4E91;</span></span><br><span class="line">ssh -N \</span><br><span class="line">  -R 127.0.0.1:2222:127.0.0.1:22 \</span><br><span class="line">  -R 127.0.0.1:8188:127.0.0.1:8188 \</span><br><span class="line">  -i ~/.ssh/gpu_key \</span><br><span class="line">  root@&#x963F;&#x91CC;&#x4E91;&#x516C;&#x7F51; IP</span><br></pre></td></tr></table></figure>
+
+<p>&#x5F53;&#x7136;&#x4E86;&#xFF0C;&#x5982;&#x679C;&#x4F60;&#x4E0D;&#x60F3;&#x6BCF;&#x6B21;&#x624B;&#x52A8;&#x6328;&#x4E2A;&#x590D;&#x5236;&#x547D;&#x4EE4;&#xFF0C;&#x6211;&#x8FD8;&#x51C6;&#x5907;&#x4E86;&#x4E00;&#x952E;&#x5B89;&#x88C5;&#x811A;&#x672C;&#xFF0C;&#x4EE5;&#x4E0B;&#x662F;&#x5728; GPU &#x4E0A;&#x8DD1;&#x7684;&#x811A;&#x672C;&#xFF0C;<strong>&#x6838;&#x5FC3;&#x903B;&#x8F91;&#x662F;&#xFF1A;&#x5BC6;&#x94A5;&#x590D;&#x7528; + &#x53CD;&#x5411;&#x96A7;&#x9053; +&#x524D;&#x53F0;&#x8FD0;&#x884C;</strong>&#xFF1A;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># gpu_tunnel_setup.sh</span></span><br><span class="line"><span class="comment"># &#x7528;&#x6CD5;&#xFF1A;sudo ./gpu_tunnel_setup.sh &lt;&#x5B9E;&#x4F8B;ID&gt; [INDEX]</span></span><br><span class="line"><span class="comment"># &#x4F8B;&#xFF1A;sudo ./gpu_tunnel_setup.sh gpu-01</span></span><br><span class="line"><span class="comment">#     sudo ./gpu_tunnel_setup.sh gpu-01 3</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -euo pipefail</span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== &#x914D;&#x7F6E;&#x533A; =====</span></span><br><span class="line">ALIYUN_HOST=<span class="string">&quot;&#x963F;&#x91CC;&#x4E91;&#x670D;&#x52A1;&#x5668;IP&quot;</span></span><br><span class="line">ALIYUN_USER=<span class="string">&quot;root&quot;</span></span><br><span class="line">PERSIST_DIR=<span class="string">&quot;./gpu_keys&quot;</span></span><br><span class="line">KEY_NAME=<span class="string">&quot;gpu_key&quot;</span></span><br><span class="line">SERVICE_NAME=<span class="string">&quot;gpu-tunnel&quot;</span></span><br><span class="line">SUPERVISOR_CONF_DIR=<span class="string">&quot;/etc/supervisor/conf.d&quot;</span></span><br><span class="line">SUPERVISORD_CONF=<span class="string">&quot;/etc/supervisor/supervisord.conf&quot;</span></span><br><span class="line">SOCK_FILE=<span class="string">&quot;/var/run/supervisor.sock&quot;</span></span><br><span class="line"><span class="comment"># ==================</span></span><br><span class="line"></span><br><span class="line">SSH_BASE=2222</span><br><span class="line">COMFY_BASE=8188</span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== &#x989C;&#x8272; =====</span></span><br><span class="line">GREEN=<span class="string">&apos;\033[0;32m&apos;</span></span><br><span class="line">YELLOW=<span class="string">&apos;\033[1;33m&apos;</span></span><br><span class="line">RED=<span class="string">&apos;\033[0;31m&apos;</span></span><br><span class="line">CYAN=<span class="string">&apos;\033[0;36m&apos;</span></span><br><span class="line">NC=<span class="string">&apos;\033[0m&apos;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">info</span></span>()  { <span class="built_in">echo</span> -e <span class="string">&quot;<span class="variable">${GREEN}</span>[INFO]<span class="variable">${NC}</span> $*&quot;</span>; }</span><br><span class="line"><span class="function"><span class="title">warn</span></span>()  { <span class="built_in">echo</span> -e <span class="string">&quot;<span class="variable">${YELLOW}</span>[WARN]<span class="variable">${NC}</span> $*&quot;</span>; }</span><br><span class="line"><span class="function"><span class="title">err</span></span>()   { <span class="built_in">echo</span> -e <span class="string">&quot;<span class="variable">${RED}</span>[ERROR]<span class="variable">${NC}</span> $*&quot;</span> &gt;&amp;2; }</span><br><span class="line"><span class="function"><span class="title">step</span></span>()  { <span class="built_in">echo</span> -e <span class="string">&quot;\n<span class="variable">${CYAN}</span>==&gt; $*<span class="variable">${NC}</span>&quot;</span>; }</span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== &#x53C2;&#x6570;&#x6821;&#x9A8C; =====</span></span><br><span class="line"><span class="keyword">if</span> [[ -z <span class="string">&quot;<span class="variable">${1:-}</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    err <span class="string">&quot;&#x7528;&#x6CD5;: <span class="variable">$0</span> &lt;&#x5B9E;&#x4F8B;ID&gt; [INDEX]&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;  &#x4F8B;: <span class="variable">$0</span> gpu-01&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;  &#x4F8B;: <span class="variable">$0</span> gpu-01 3&quot;</span></span><br><span class="line">    <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">INSTANCE_ID=<span class="string">&quot;<span class="variable">$1</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [[ -n <span class="string">&quot;<span class="variable">${2:-}</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    INDEX=<span class="string">&quot;<span class="variable">$2</span>&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    INDEX=$(<span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$INSTANCE_ID</span>&quot;</span> | grep -oE <span class="string">&apos;[0-9]+&apos;</span> | head -n1 || <span class="literal">true</span>)</span><br><span class="line">    INDEX=<span class="variable">${INDEX:-1}</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line">[[ <span class="string">&quot;<span class="variable">$INDEX</span>&quot;</span> -eq 0 ]] &amp;&amp; INDEX=1</span><br><span class="line"></span><br><span class="line">SSH_PORT=$(( SSH_BASE + INDEX - 1 ))</span><br><span class="line">COMFY_PORT=$(( COMFY_BASE + INDEX - 1 ))</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;============================================&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot; GPU &#x53CD;&#x5411;&#x96A7;&#x9053;&#x90E8;&#x7F72;&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot; &#x5B9E;&#x4F8B;ID  : <span class="variable">$INSTANCE_ID</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot; INDEX   : <span class="variable">$INDEX</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot; SSH&#x7AEF;&#x53E3; : <span class="variable">$SSH_PORT</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot; ComfyUI : <span class="variable">$COMFY_PORT</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;============================================&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== &#x5BC6;&#x94A5; =====</span></span><br><span class="line">step <span class="string">&quot;&#x51C6;&#x5907; SSH &#x5BC6;&#x94A5;&quot;</span></span><br><span class="line">mkdir -p <span class="string">&quot;<span class="variable">$PERSIST_DIR</span>&quot;</span></span><br><span class="line">chmod 700 <span class="string">&quot;<span class="variable">$PERSIST_DIR</span>&quot;</span></span><br><span class="line"></span><br><span class="line">KEY_PATH=<span class="string">&quot;<span class="variable">$PERSIST_DIR</span>/<span class="variable">$KEY_NAME</span>&quot;</span></span><br><span class="line">PUB_PATH=<span class="string">&quot;<span class="variable">$KEY_PATH</span>.pub&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [[ -f <span class="string">&quot;<span class="variable">$KEY_PATH</span>&quot;</span> &amp;&amp; -f <span class="string">&quot;<span class="variable">$PUB_PATH</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    info <span class="string">&quot;&#x590D;&#x7528;&#x5DF2;&#x6709;&#x5BC6;&#x94A5;: <span class="variable">$KEY_PATH</span>&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    info <span class="string">&quot;&#x751F;&#x6210;&#x65B0;&#x5BC6;&#x94A5;...&quot;</span></span><br><span class="line">    ssh-keygen -t ed25519 -f <span class="string">&quot;<span class="variable">$KEY_PATH</span>&quot;</span> -N <span class="string">&quot;&quot;</span> -C <span class="string">&quot;gpu-<span class="variable">$INSTANCE_ID</span>&quot;</span></span><br><span class="line">    chmod 600 <span class="string">&quot;<span class="variable">$KEY_PATH</span>&quot;</span></span><br><span class="line">    chmod 644 <span class="string">&quot;<span class="variable">$PUB_PATH</span>&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">chmod 600 <span class="string">&quot;<span class="variable">$KEY_PATH</span>&quot;</span></span><br><span class="line">chmod 644 <span class="string">&quot;<span class="variable">$PUB_PATH</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== &#x5B89;&#x88C5; autossh =====</span></span><br><span class="line">step <span class="string">&quot;&#x5B89;&#x88C5; autossh&quot;</span></span><br><span class="line"><span class="keyword">if</span> ! <span class="built_in">command</span> -v autossh &amp;&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">    info <span class="string">&quot;&#x5B89;&#x88C5; autossh...&quot;</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">command</span> -v apt &amp;&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">        apt update &amp;&amp; apt install -y autossh</span><br><span class="line">    <span class="keyword">elif</span> <span class="built_in">command</span> -v yum &amp;&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">        yum install -y autossh</span><br><span class="line">    <span class="keyword">elif</span> <span class="built_in">command</span> -v dnf &amp;&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">        dnf install -y autossh</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        err <span class="string">&quot;&#x65E0;&#x6CD5;&#x5B89;&#x88C5; autossh&#xFF0C;&#x8BF7;&#x624B;&#x52A8;&#x5B89;&#x88C5;&quot;</span></span><br><span class="line">        <span class="built_in">exit</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">AUTOSSH_BIN=$(<span class="built_in">which</span> autossh)</span><br><span class="line">info <span class="string">&quot;autossh: <span class="variable">$AUTOSSH_BIN</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== &#x8FD0;&#x884C;&#x7528;&#x6237; =====</span></span><br><span class="line"><span class="keyword">if</span> [[ -n <span class="string">&quot;<span class="variable">${SUDO_USER:-}</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    RUN_USER=<span class="string">&quot;<span class="variable">$SUDO_USER</span>&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    RUN_USER=<span class="string">&quot;<span class="variable">$(whoami)</span>&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">$RUN_USER</span>&quot;</span> == <span class="string">&quot;root&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    HOME_DIR=<span class="string">&quot;/root&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    HOME_DIR=<span class="string">&quot;<span class="variable">$(eval echo ~$RUN_USER)</span>&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">mkdir -p <span class="string">&quot;<span class="variable">$HOME_DIR</span>/.ssh&quot;</span></span><br><span class="line">chmod 700 <span class="string">&quot;<span class="variable">$HOME_DIR</span>/.ssh&quot;</span></span><br><span class="line"></span><br><span class="line">info <span class="string">&quot;&#x8FD0;&#x884C;&#x7528;&#x6237;: <span class="variable">$RUN_USER</span>&quot;</span></span><br><span class="line">info <span class="string">&quot;HOME&#x76EE;&#x5F55;: <span class="variable">$HOME_DIR</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== &#x4FE1;&#x4EFB;&#x4E3B;&#x673A; + &#x516C;&#x94A5; =====</span></span><br><span class="line">step <span class="string">&quot;&#x914D;&#x7F6E;&#x514D;&#x5BC6;&#x767B;&#x5F55;&quot;</span></span><br><span class="line">info <span class="string">&quot;&#x4FE1;&#x4EFB;&#x963F;&#x91CC;&#x4E91;&#x4E3B;&#x673A; (<span class="variable">$ALIYUN_HOST</span>)...&quot;</span></span><br><span class="line">ssh-keyscan -H <span class="string">&quot;<span class="variable">$ALIYUN_HOST</span>&quot;</span> &gt;&gt; <span class="string">&quot;<span class="variable">$HOME_DIR</span>/.ssh/known_hosts&quot;</span> 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">sort -u <span class="string">&quot;<span class="variable">$HOME_DIR</span>/.ssh/known_hosts&quot;</span> -o <span class="string">&quot;<span class="variable">$HOME_DIR</span>/.ssh/known_hosts&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ssh -o BatchMode=yes -o ConnectTimeout=5 \</span><br><span class="line">    -i <span class="string">&quot;<span class="variable">$KEY_PATH</span>&quot;</span> <span class="string">&quot;<span class="variable">$ALIYUN_USER</span>@<span class="variable">$ALIYUN_HOST</span>&quot;</span> <span class="string">&quot;echo ok&quot;</span> &amp;&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">    info <span class="string">&quot;&#x514D;&#x5BC6;&#x767B;&#x5F55;&#x5DF2;&#x5C31;&#x7EEA;&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    info <span class="string">&quot;&#x5199;&#x5165;&#x516C;&#x94A5;&#x5230; <span class="variable">$ALIYUN_USER</span>@<span class="variable">$ALIYUN_HOST</span>...&quot;</span></span><br><span class="line">    ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no \</span><br><span class="line">        <span class="string">&quot;<span class="variable">$ALIYUN_USER</span>@<span class="variable">$ALIYUN_HOST</span>&quot;</span> \</span><br><span class="line">        <span class="string">&quot;mkdir -p ~/.ssh &amp;&amp; chmod 700 ~/.ssh &amp;&amp; \</span></span><br><span class="line"><span class="string">         echo &apos;<span class="variable">$(cat &quot;$PUB_PATH&quot;)</span>&apos; &gt;&gt; ~/.ssh/authorized_keys &amp;&amp; \</span></span><br><span class="line"><span class="string">         sort -u ~/.ssh/authorized_keys -o ~/.ssh/authorized_keys &amp;&amp; \</span></span><br><span class="line"><span class="string">         chmod 600 ~/.ssh/authorized_keys&quot;</span></span><br><span class="line">    info <span class="string">&quot;&#x516C;&#x94A5;&#x5199;&#x5165;&#x5B8C;&#x6210;&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== &#x7AEF;&#x53E3;&#x68C0;&#x6D4B; =====</span></span><br><span class="line">step <span class="string">&quot;&#x7AEF;&#x53E3;&#x68C0;&#x6D4B;&quot;</span></span><br><span class="line"><span class="keyword">for</span> PORT <span class="keyword">in</span> <span class="variable">$SSH_PORT</span> <span class="variable">$COMFY_PORT</span>; <span class="keyword">do</span></span><br><span class="line">    <span class="keyword">if</span> ss -tlnp 2&gt;/dev/null | grep -q <span class="string">&quot;:<span class="variable">${PORT}</span> &quot;</span>; <span class="keyword">then</span></span><br><span class="line">        warn <span class="string">&quot;&#x7AEF;&#x53E3; <span class="variable">$PORT</span> &#x5DF2;&#x88AB;&#x5360;&#x7528;&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== &#x6784;&#x5EFA; autossh &#x547D;&#x4EE4; =====</span></span><br><span class="line"><span class="function"><span class="title">build_cmd</span></span>() {</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;export AUTOSSH_GATETIME=0 &amp;&amp; export AUTOSSH_POLL=30 &amp;&amp; \</span></span><br><span class="line"><span class="string">export HOME=<span class="variable">$HOME_DIR</span> &amp;&amp; \</span></span><br><span class="line"><span class="string"><span class="variable">$AUTOSSH_BIN</span> -M 0 -N \</span></span><br><span class="line"><span class="string">  -R 127.0.0.1:<span class="variable">${SSH_PORT}</span>:127.0.0.1:22 \</span></span><br><span class="line"><span class="string">  -R 127.0.0.1:<span class="variable">${COMFY_PORT}</span>:127.0.0.1:8188 \</span></span><br><span class="line"><span class="string">  -o ServerAliveInterval=30 \</span></span><br><span class="line"><span class="string">  -o ServerAliveCountMax=3 \</span></span><br><span class="line"><span class="string">  -o ExitOnForwardFailure=yes \</span></span><br><span class="line"><span class="string">  -o UserKnownHostsFile=<span class="variable">$HOME_DIR</span>/.ssh/known_hosts \</span></span><br><span class="line"><span class="string">  -i <span class="variable">${KEY_PATH}</span> \</span></span><br><span class="line"><span class="string">  <span class="variable">${ALIYUN_USER}</span>@<span class="variable">${ALIYUN_HOST}</span>&quot;</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== &#x524D;&#x53F0;&#x542F;&#x52A8; =====</span></span><br><span class="line">step <span class="string">&quot;&#x524D;&#x53F0;&#x542F;&#x52A8; autossh &#x96A7;&#x9053;&quot;</span></span><br><span class="line">FOREGROUND_CMD=$(build_cmd)</span><br><span class="line"></span><br><span class="line">info <span class="string">&quot;&#x6267;&#x884C;&#x547D;&#x4EE4;:&quot;</span></span><br><span class="line">info <span class="string">&quot;<span class="variable">$FOREGROUND_CMD</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">info <span class="string">&quot;&#x6309; Ctrl+C &#x505C;&#x6B62;&#x96A7;&#x9053;&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;============================================&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x76F4;&#x63A5;&#x524D;&#x53F0;&#x6267;&#x884C;&#xFF0C;autossh &#x8F93;&#x51FA;&#x76F4;&#x63A5;&#x6253;&#x5230;&#x7EC8;&#x7AEF;</span></span><br><span class="line"><span class="built_in">eval</span> <span class="string">&quot;<span class="variable">$FOREGROUND_CMD</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x5C06;&#x811A;&#x672C;&#x4E0A;&#x4F20;&#x5230; GPU &#x5B9E;&#x4F8B;&#x4E2D;&#x5E76;&#x6267;&#x884C;&#xFF0C;&#x542F;&#x52A8;&#x53CD;&#x5411;&#x96A7;&#x9053;&#xFF08;&#x8BB0;&#x5F97;&#x5C06;&#x963F;&#x91CC;&#x4E91;IP&#x66FF;&#x6362;&#x6210;&#x4F60;&#x7684;&#x670D;&#x52A1;&#x5668;&#xFF09;</p>
+<p>&#x5982;&#x679C;&#x4F60;&#x4E0D;&#x60F3;&#x6BCF;&#x6B21;&#x542F;&#x52A8;&#x670D;&#x52A1;&#x5668;&#x90FD;&#x8FD0;&#x884C;&#x4E00;&#x904D;&#x811A;&#x672C;, &#x90A3;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5F00;&#x542F; <code>systemd</code>&#x540E;&#x53F0;&#x8FD0;&#x884C;, &#x4EE5;&#x4E0B;&#x662F;&#x8865;&#x5145;&#x5F00;&#x673A;&#x81EA;&#x542F;&#x52A8;&#x529F;&#x80FD;&#x7684;&#x7248;&#x672C;:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br><span class="line">370</span><br><span class="line">371</span><br><span class="line">372</span><br><span class="line">373</span><br><span class="line">374</span><br><span class="line">375</span><br><span class="line">376</span><br><span class="line">377</span><br><span class="line">378</span><br><span class="line">379</span><br><span class="line">380</span><br><span class="line">381</span><br><span class="line">382</span><br><span class="line">383</span><br><span class="line">384</span><br><span class="line">385</span><br><span class="line">386</span><br><span class="line">387</span><br><span class="line">388</span><br><span class="line">389</span><br><span class="line">390</span><br><span class="line">391</span><br><span class="line">392</span><br><span class="line">393</span><br><span class="line">394</span><br><span class="line">395</span><br><span class="line">396</span><br><span class="line">397</span><br><span class="line">398</span><br><span class="line">399</span><br><span class="line">400</span><br><span class="line">401</span><br><span class="line">402</span><br><span class="line">403</span><br><span class="line">404</span><br><span class="line">405</span><br><span class="line">406</span><br><span class="line">407</span><br><span class="line">408</span><br><span class="line">409</span><br><span class="line">410</span><br><span class="line">411</span><br><span class="line">412</span><br><span class="line">413</span><br><span class="line">414</span><br><span class="line">415</span><br><span class="line">416</span><br><span class="line">417</span><br><span class="line">418</span><br><span class="line">419</span><br><span class="line">420</span><br><span class="line">421</span><br><span class="line">422</span><br><span class="line">423</span><br><span class="line">424</span><br><span class="line">425</span><br><span class="line">426</span><br><span class="line">427</span><br><span class="line">428</span><br><span class="line">429</span><br><span class="line">430</span><br><span class="line">431</span><br><span class="line">432</span><br><span class="line">433</span><br><span class="line">434</span><br><span class="line">435</span><br><span class="line">436</span><br><span class="line">437</span><br><span class="line">438</span><br><span class="line">439</span><br><span class="line">440</span><br><span class="line">441</span><br><span class="line">442</span><br><span class="line">443</span><br><span class="line">444</span><br><span class="line">445</span><br><span class="line">446</span><br><span class="line">447</span><br><span class="line">448</span><br><span class="line">449</span><br><span class="line">450</span><br><span class="line">451</span><br><span class="line">452</span><br><span class="line">453</span><br><span class="line">454</span><br><span class="line">455</span><br><span class="line">456</span><br><span class="line">457</span><br><span class="line">458</span><br><span class="line">459</span><br><span class="line">460</span><br><span class="line">461</span><br><span class="line">462</span><br><span class="line">463</span><br><span class="line">464</span><br><span class="line">465</span><br><span class="line">466</span><br><span class="line">467</span><br><span class="line">468</span><br><span class="line">469</span><br><span class="line">470</span><br><span class="line">471</span><br><span class="line">472</span><br><span class="line">473</span><br><span class="line">474</span><br><span class="line">475</span><br><span class="line">476</span><br><span class="line">477</span><br><span class="line">478</span><br><span class="line">479</span><br><span class="line">480</span><br><span class="line">481</span><br><span class="line">482</span><br><span class="line">483</span><br><span class="line">484</span><br><span class="line">485</span><br><span class="line">486</span><br><span class="line">487</span><br><span class="line">488</span><br><span class="line">489</span><br><span class="line">490</span><br><span class="line">491</span><br><span class="line">492</span><br><span class="line">493</span><br><span class="line">494</span><br><span class="line">495</span><br><span class="line">496</span><br><span class="line">497</span><br><span class="line">498</span><br><span class="line">499</span><br><span class="line">500</span><br><span class="line">501</span><br><span class="line">502</span><br><span class="line">503</span><br><span class="line">504</span><br><span class="line">505</span><br><span class="line">506</span><br><span class="line">507</span><br><span class="line">508</span><br><span class="line">509</span><br><span class="line">510</span><br><span class="line">511</span><br><span class="line">512</span><br><span class="line">513</span><br><span class="line">514</span><br><span class="line">515</span><br><span class="line">516</span><br><span class="line">517</span><br><span class="line">518</span><br><span class="line">519</span><br><span class="line">520</span><br><span class="line">521</span><br><span class="line">522</span><br><span class="line">523</span><br><span class="line">524</span><br><span class="line">525</span><br><span class="line">526</span><br><span class="line">527</span><br><span class="line">528</span><br><span class="line">529</span><br><span class="line">530</span><br><span class="line">531</span><br><span class="line">532</span><br><span class="line">533</span><br><span class="line">534</span><br><span class="line">535</span><br><span class="line">536</span><br><span class="line">537</span><br><span class="line">538</span><br><span class="line">539</span><br><span class="line">540</span><br><span class="line">541</span><br><span class="line">542</span><br><span class="line">543</span><br><span class="line">544</span><br><span class="line">545</span><br><span class="line">546</span><br><span class="line">547</span><br><span class="line">548</span><br><span class="line">549</span><br><span class="line">550</span><br><span class="line">551</span><br><span class="line">552</span><br><span class="line">553</span><br><span class="line">554</span><br><span class="line">555</span><br><span class="line">556</span><br><span class="line">557</span><br><span class="line">558</span><br><span class="line">559</span><br><span class="line">560</span><br><span class="line">561</span><br><span class="line">562</span><br><span class="line">563</span><br><span class="line">564</span><br><span class="line">565</span><br><span class="line">566</span><br><span class="line">567</span><br><span class="line">568</span><br><span class="line">569</span><br><span class="line">570</span><br><span class="line">571</span><br><span class="line">572</span><br><span class="line">573</span><br><span class="line">574</span><br><span class="line">575</span><br><span class="line">576</span><br><span class="line">577</span><br><span class="line">578</span><br><span class="line">579</span><br><span class="line">580</span><br><span class="line">581</span><br><span class="line">582</span><br><span class="line">583</span><br><span class="line">584</span><br><span class="line">585</span><br><span class="line">586</span><br><span class="line">587</span><br><span class="line">588</span><br><span class="line">589</span><br><span class="line">590</span><br><span class="line">591</span><br><span class="line">592</span><br><span class="line">593</span><br><span class="line">594</span><br><span class="line">595</span><br><span class="line">596</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># gpu_tunnel_setup.sh</span></span><br><span class="line"><span class="comment"># &#x5168;&#x73AF;&#x5883;&#x517C;&#x5BB9; GPU &#x53CD;&#x5411;&#x96A7;&#x9053;&#x90E8;&#x7F72; / &#x505C;&#x6B62; / &#x72B6;&#x6001;&#x67E5;&#x770B;</span></span><br><span class="line"><span class="comment"># &#x7528;&#x6CD5;&#xFF1A;</span></span><br><span class="line"><span class="comment">#   &#x90E8;&#x7F72;: sudo ./gpu_tunnel_setup.sh &lt;&#x5B9E;&#x4F8B;ID&gt; [INDEX]</span></span><br><span class="line"><span class="comment">#   &#x505C;&#x6B62;: sudo ./gpu_tunnel_setup.sh &lt;&#x5B9E;&#x4F8B;ID&gt; --stop</span></span><br><span class="line"><span class="comment">#   &#x72B6;&#x6001;: sudo ./gpu_tunnel_setup.sh &lt;&#x5B9E;&#x4F8B;ID&gt; --status</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -euo pipefail</span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== &#x914D;&#x7F6E;&#x533A; =====</span></span><br><span class="line">ALIYUN_HOST=<span class="string">&quot;&#x963F;&#x91CC;&#x4E91;&#x670D;&#x52A1;&#x5668;IP&quot;</span></span><br><span class="line">ALIYUN_USER=<span class="string">&quot;root&quot;</span></span><br><span class="line">PERSIST_DIR=<span class="string">&quot;./gpu_keys&quot;</span></span><br><span class="line">KEY_NAME=<span class="string">&quot;gpu_key&quot;</span></span><br><span class="line">SERVICE_NAME=<span class="string">&quot;gpu-tunnel&quot;</span></span><br><span class="line"><span class="comment"># ==================</span></span><br><span class="line"></span><br><span class="line">SSH_BASE=2222</span><br><span class="line">COMFY_BASE=8188</span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== &#x989C;&#x8272; =====</span></span><br><span class="line">GREEN=<span class="string">&apos;\033[0;32m&apos;</span></span><br><span class="line">YELLOW=<span class="string">&apos;\033[1;33m&apos;</span></span><br><span class="line">RED=<span class="string">&apos;\033[0;31m&apos;</span></span><br><span class="line">CYAN=<span class="string">&apos;\033[0;36m&apos;</span></span><br><span class="line">NC=<span class="string">&apos;\033[0m&apos;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">info</span></span>()  { <span class="built_in">echo</span> -e <span class="string">&quot;<span class="variable">${GREEN}</span>[INFO]<span class="variable">${NC}</span> $*&quot;</span>; }</span><br><span class="line"><span class="function"><span class="title">warn</span></span>()  { <span class="built_in">echo</span> -e <span class="string">&quot;<span class="variable">${YELLOW}</span>[WARN]<span class="variable">${NC}</span> $*&quot;</span>; }</span><br><span class="line"><span class="function"><span class="title">err</span></span>()   { <span class="built_in">echo</span> -e <span class="string">&quot;<span class="variable">${RED}</span>[ERROR]<span class="variable">${NC}</span> $*&quot;</span> &gt;&amp;2; }</span><br><span class="line"><span class="function"><span class="title">step</span></span>()  { <span class="built_in">echo</span> -e <span class="string">&quot;\n<span class="variable">${CYAN}</span>==&gt; $*<span class="variable">${NC}</span>&quot;</span>; }</span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== &#x53C2;&#x6570;&#x89E3;&#x6790; =====</span></span><br><span class="line">MODE=<span class="string">&quot;deploy&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [[ -z <span class="string">&quot;<span class="variable">${1:-}</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    err <span class="string">&quot;&#x7528;&#x6CD5;: <span class="variable">$0</span> &lt;&#x5B9E;&#x4F8B;ID&gt; [INDEX|--stop|--status]&quot;</span></span><br><span class="line">    <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">INSTANCE_ID=<span class="string">&quot;<span class="variable">$1</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">${2:-}</span>&quot;</span> == <span class="string">&quot;--stop&quot;</span> ]] || [[ <span class="string">&quot;<span class="variable">${1:-}</span>&quot;</span> == <span class="string">&quot;--stop&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    MODE=<span class="string">&quot;stop&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"><span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">${2:-}</span>&quot;</span> == <span class="string">&quot;--status&quot;</span> ]] || [[ <span class="string">&quot;<span class="variable">${1:-}</span>&quot;</span> == <span class="string">&quot;--status&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    MODE=<span class="string">&quot;status&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x8FD0;&#x884C;&#x7528;&#x6237;</span></span><br><span class="line"><span class="keyword">if</span> [[ -n <span class="string">&quot;<span class="variable">${SUDO_USER:-}</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    RUN_USER=<span class="string">&quot;<span class="variable">$SUDO_USER</span>&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    RUN_USER=<span class="string">&quot;<span class="variable">$(whoami)</span>&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"><span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">$RUN_USER</span>&quot;</span> == <span class="string">&quot;root&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    HOME_DIR=<span class="string">&quot;/root&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    HOME_DIR=<span class="string">&quot;<span class="variable">$(eval echo ~$RUN_USER)</span>&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ============================================================</span></span><br><span class="line"><span class="comment"># &#x67E5;&#x627E;&#x540C;&#x7AEF;&#x53E3;&#x7684; autossh &#x8FDB;&#x7A0B; PID&#xFF08;&#x517C;&#x5BB9;&#x4E0D;&#x540C; pgrep &#x7248;&#x672C;&#xFF09;</span></span><br><span class="line"><span class="comment"># ============================================================</span></span><br><span class="line"><span class="function"><span class="title">find_autossh_pids</span></span>() {</span><br><span class="line">    <span class="built_in">local</span> port=<span class="string">&quot;<span class="variable">$1</span>&quot;</span></span><br><span class="line">    <span class="comment"># &#x65B9;&#x6CD5;1: pgrep -f&#xFF08;&#x5927;&#x591A;&#x6570;&#x7CFB;&#x7EDF;&#xFF09;</span></span><br><span class="line">    <span class="built_in">local</span> pids</span><br><span class="line">    pids=$(pgrep -f <span class="string">&quot;autossh&quot;</span> 2&gt;/dev/null || <span class="literal">true</span>)</span><br><span class="line">    <span class="keyword">if</span> [[ -n <span class="string">&quot;<span class="variable">$pids</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$pids</span>&quot;</span> | <span class="keyword">while</span> <span class="built_in">read</span> pid; <span class="keyword">do</span></span><br><span class="line">            <span class="keyword">if</span> [[ -d <span class="string">&quot;/proc/<span class="variable">$pid</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">                cmdline=$(cat /proc/<span class="variable">$pid</span>/cmdline 2&gt;/dev/null | tr <span class="string">&apos;\0&apos;</span> <span class="string">&apos; &apos;</span> || <span class="literal">true</span>)</span><br><span class="line">                <span class="keyword">if</span> <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$cmdline</span>&quot;</span> | grep -q <span class="string">&quot;<span class="variable">$port</span>&quot;</span>; <span class="keyword">then</span></span><br><span class="line">                    <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$pid</span>&quot;</span></span><br><span class="line">                <span class="keyword">fi</span></span><br><span class="line">            <span class="keyword">fi</span></span><br><span class="line">        <span class="keyword">done</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment"># ============================================================</span></span><br><span class="line"><span class="comment"># --status &#x6A21;&#x5F0F;</span></span><br><span class="line"><span class="comment"># ============================================================</span></span><br><span class="line"><span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">$MODE</span>&quot;</span> == <span class="string">&quot;status&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;============================================&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot; GPU &#x96A7;&#x9053;&#x72B6;&#x6001;&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;============================================&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># &#x8FDB;&#x7A0B;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;--- &#x8FDB;&#x7A0B; ---&quot;</span></span><br><span class="line">    <span class="keyword">if</span> pgrep -af autossh &gt;/dev/null 2&gt;&amp;1; <span class="keyword">then</span></span><br><span class="line">        pgrep -af autossh</span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;--- &#x96A7;&#x9053;&#x7AEF;&#x53E3;&#x6620;&#x5C04; ---&quot;</span></span><br><span class="line">        pgrep -af autossh | grep -oP <span class="string">&apos;(?&lt;=127\.0\.0\.1:)\d+&apos;</span> | sort -u | <span class="keyword">while</span> <span class="built_in">read</span> PORT; <span class="keyword">do</span></span><br><span class="line">            info <span class="string">&quot;&#x8FDC;&#x7A0B; <span class="variable">${ALIYUN_HOST}</span> &#x4E0A;&#x76D1;&#x542C; 127.0.0.1:<span class="variable">${PORT}</span>&quot;</span></span><br><span class="line">        <span class="keyword">done</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        warn <span class="string">&quot;&#x6CA1;&#x6709;&#x8FD0;&#x884C;&#x4E2D;&#x7684; autossh &#x8FDB;&#x7A0B;&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># systemd</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;--- systemd ---&quot;</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">command</span> -v systemctl &amp;&gt;/dev/null &amp;&amp; systemctl list-unit-files 2&gt;/dev/null | grep -q <span class="string">&quot;<span class="variable">${SERVICE_NAME}</span>&quot;</span>; <span class="keyword">then</span></span><br><span class="line">        systemctl status <span class="variable">${SERVICE_NAME}</span>.service --no-pager 2&gt;/dev/null | head -5 || <span class="literal">true</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        info <span class="string">&quot;&#x65E0; systemd &#x670D;&#x52A1;&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># supervisor</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;--- supervisor ---&quot;</span></span><br><span class="line">    <span class="keyword">if</span> [[ -S /var/run/supervisor.sock ]]; <span class="keyword">then</span></span><br><span class="line">        supervisorctl -c /etc/supervisor/supervisord.conf status 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        info <span class="string">&quot;supervisor &#x672A;&#x8FD0;&#x884C;&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># crontab</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;--- crontab ---&quot;</span></span><br><span class="line">    crontab -l 2&gt;/dev/null | grep -v <span class="string">&apos;^#&apos;</span> | grep -v <span class="string">&apos;^$&apos;</span> | grep <span class="string">&apos;autossh&apos;</span> || info <span class="string">&quot;&#x65E0; crontab &#x6761;&#x76EE;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># .bashrc</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;--- shell &#x81EA;&#x542F;&#x52A8; ---&quot;</span></span><br><span class="line">    <span class="keyword">if</span> grep -q <span class="string">&quot;GPU_TUNNEL_AUTO_START&quot;</span> ~/.bashrc 2&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">        info <span class="string">&quot;.bashrc &#x4E2D;&#x6709;&#x81EA;&#x542F;&#x52A8;&#x7247;&#x6BB5;&quot;</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        info <span class="string">&quot;.bashrc &#x4E2D;&#x65E0;&#x81EA;&#x542F;&#x52A8;&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">exit</span> 0</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ============================================================</span></span><br><span class="line"><span class="comment"># --stop &#x6A21;&#x5F0F;</span></span><br><span class="line"><span class="comment"># ============================================================</span></span><br><span class="line"><span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">$MODE</span>&quot;</span> == <span class="string">&quot;stop&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;============================================&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot; &#x505C;&#x6B62; GPU &#x96A7;&#x9053;&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;============================================&quot;</span></span><br><span class="line"></span><br><span class="line">    step <span class="string">&quot;&#x7EC8;&#x6B62; autossh &#x8FDB;&#x7A0B;...&quot;</span></span><br><span class="line">    <span class="keyword">if</span> pgrep -f <span class="string">&apos;autossh&apos;</span> &gt;/dev/null 2&gt;&amp;1; <span class="keyword">then</span></span><br><span class="line">        pkill -9 -f <span class="string">&apos;autossh&apos;</span> || <span class="literal">true</span></span><br><span class="line">        sleep 1</span><br><span class="line">        info <span class="string">&quot;&#x2705; autossh &#x8FDB;&#x7A0B;&#x5DF2;&#x7EC8;&#x6B62;&quot;</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        info <span class="string">&quot;&#x6CA1;&#x6709;&#x8FD0;&#x884C;&#x4E2D;&#x7684; autossh &#x8FDB;&#x7A0B;&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    step <span class="string">&quot;&#x505C;&#x6B62; systemd &#x670D;&#x52A1;...&quot;</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">command</span> -v systemctl &amp;&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">        systemctl stop <span class="variable">${SERVICE_NAME}</span>.service 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">        systemctl <span class="built_in">disable</span> <span class="variable">${SERVICE_NAME}</span>.service 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">        rm -f /etc/systemd/system/<span class="variable">${SERVICE_NAME}</span>.service 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">        systemctl daemon-reload 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">        info <span class="string">&quot;&#x2705; systemd &#x5DF2;&#x6E05;&#x7406;&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    step <span class="string">&quot;&#x505C;&#x6B62; supervisor...&quot;</span></span><br><span class="line">    <span class="keyword">if</span> [[ -S /var/run/supervisor.sock ]]; <span class="keyword">then</span></span><br><span class="line">        supervisorctl -c /etc/supervisor/supervisord.conf stop <span class="variable">${SERVICE_NAME}</span> 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">        supervisorctl -c /etc/supervisor/supervisord.conf remove <span class="variable">${SERVICE_NAME}</span> 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">if</span> [[ -f <span class="string">&quot;/etc/supervisor/conf.d/<span class="variable">${SERVICE_NAME}</span>.conf&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">        rm -f <span class="string">&quot;/etc/supervisor/conf.d/<span class="variable">${SERVICE_NAME}</span>.conf&quot;</span></span><br><span class="line">        info <span class="string">&quot;&#x2705; supervisor &#x914D;&#x7F6E;&#x5DF2;&#x79FB;&#x9664;&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">if</span> pgrep -x supervisord &gt;/dev/null 2&gt;&amp;1; <span class="keyword">then</span></span><br><span class="line">        pkill -x supervisord 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">        info <span class="string">&quot;&#x2705; supervisord &#x5DF2;&#x505C;&#x6B62;&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    step <span class="string">&quot;&#x6E05;&#x7406; crontab...&quot;</span></span><br><span class="line">    TMP_CRON=$(mktemp)</span><br><span class="line">    crontab -l 2&gt;/dev/null | grep -v <span class="string">&apos;autossh&apos;</span> | grep -v <span class="string">&apos;gpu-tunnel&apos;</span> &gt; <span class="string">&quot;<span class="variable">$TMP_CRON</span>&quot;</span> || <span class="literal">true</span></span><br><span class="line">    crontab <span class="string">&quot;<span class="variable">$TMP_CRON</span>&quot;</span> 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">    rm -f <span class="string">&quot;<span class="variable">$TMP_CRON</span>&quot;</span></span><br><span class="line">    info <span class="string">&quot;&#x2705; crontab &#x5DF2;&#x6E05;&#x7406;&quot;</span></span><br><span class="line"></span><br><span class="line">    step <span class="string">&quot;&#x6E05;&#x7406; shell &#x81EA;&#x542F;&#x52A8;...&quot;</span></span><br><span class="line">    <span class="keyword">if</span> grep -q <span class="string">&quot;GPU_TUNNEL_AUTO_START&quot;</span> ~/.bashrc 2&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">        sed -i <span class="string">&apos;/# GPU_TUNNEL_AUTO_START_/,+6d&apos;</span> ~/.bashrc</span><br><span class="line">        info <span class="string">&quot;&#x2705; .bashrc &#x81EA;&#x542F;&#x52A8;&#x5DF2;&#x79FB;&#x9664;&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;============================================&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> -e <span class="string">&quot;<span class="variable">${GREEN}</span>&#x2705; GPU &#x96A7;&#x9053;&#x5DF2;&#x5B8C;&#x5168;&#x505C;&#x6B62;&#x5E76;&#x6E05;&#x7406;<span class="variable">${NC}</span>&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;============================================&quot;</span></span><br><span class="line">    <span class="built_in">exit</span> 0</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ============================================================</span></span><br><span class="line"><span class="comment"># deploy &#x6A21;&#x5F0F;</span></span><br><span class="line"><span class="comment"># ============================================================</span></span><br><span class="line"></span><br><span class="line">INDEX=<span class="string">&quot;<span class="variable">${2:-}</span>&quot;</span></span><br><span class="line"><span class="keyword">if</span> [[ -z <span class="string">&quot;<span class="variable">$INDEX</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    INDEX=$(<span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$INSTANCE_ID</span>&quot;</span> | grep -oE <span class="string">&apos;[0-9]+&apos;</span> | head -n1 || <span class="literal">true</span>)</span><br><span class="line">    INDEX=<span class="variable">${INDEX:-1}</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line">[[ <span class="string">&quot;<span class="variable">$INDEX</span>&quot;</span> -eq 0 ]] &amp;&amp; INDEX=1</span><br><span class="line"></span><br><span class="line">SSH_PORT=$(( SSH_BASE + INDEX - 1 ))</span><br><span class="line">COMFY_PORT=$(( COMFY_BASE + INDEX - 1 ))</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;============================================&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot; GPU &#x53CD;&#x5411;&#x96A7;&#x9053;&#x90E8;&#x7F72;&#xFF08;&#x5168;&#x73AF;&#x5883;&#x517C;&#x5BB9;&#xFF09;&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot; &#x5B9E;&#x4F8B;ID  : <span class="variable">$INSTANCE_ID</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot; INDEX   : <span class="variable">$INDEX</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot; SSH&#x7AEF;&#x53E3; : <span class="variable">$SSH_PORT</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot; ComfyUI : <span class="variable">$COMFY_PORT</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;============================================&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== &#x5BC6;&#x94A5; =====</span></span><br><span class="line">step <span class="string">&quot;&#x51C6;&#x5907; SSH &#x5BC6;&#x94A5;&quot;</span></span><br><span class="line">mkdir -p <span class="string">&quot;<span class="variable">$PERSIST_DIR</span>&quot;</span></span><br><span class="line">chmod 700 <span class="string">&quot;<span class="variable">$PERSIST_DIR</span>&quot;</span></span><br><span class="line"></span><br><span class="line">KEY_PATH=<span class="string">&quot;<span class="variable">$PERSIST_DIR</span>/<span class="variable">$KEY_NAME</span>&quot;</span></span><br><span class="line">PUB_PATH=<span class="string">&quot;<span class="variable">$KEY_PATH</span>.pub&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [[ -f <span class="string">&quot;<span class="variable">$KEY_PATH</span>&quot;</span> &amp;&amp; -f <span class="string">&quot;<span class="variable">$PUB_PATH</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    info <span class="string">&quot;&#x590D;&#x7528;&#x5DF2;&#x6709;&#x5BC6;&#x94A5;: <span class="variable">$KEY_PATH</span>&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    info <span class="string">&quot;&#x751F;&#x6210;&#x65B0;&#x5BC6;&#x94A5;...&quot;</span></span><br><span class="line">    ssh-keygen -t ed25519 -f <span class="string">&quot;<span class="variable">$KEY_PATH</span>&quot;</span> -N <span class="string">&quot;&quot;</span> -C <span class="string">&quot;gpu-<span class="variable">$INSTANCE_ID</span>&quot;</span></span><br><span class="line">    chmod 600 <span class="string">&quot;<span class="variable">$KEY_PATH</span>&quot;</span></span><br><span class="line">    chmod 644 <span class="string">&quot;<span class="variable">$PUB_PATH</span>&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">chmod 600 <span class="string">&quot;<span class="variable">$KEY_PATH</span>&quot;</span></span><br><span class="line">chmod 644 <span class="string">&quot;<span class="variable">$PUB_PATH</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== &#x5B89;&#x88C5; autossh =====</span></span><br><span class="line">step <span class="string">&quot;&#x5B89;&#x88C5; autossh&quot;</span></span><br><span class="line"><span class="keyword">if</span> ! <span class="built_in">command</span> -v autossh &amp;&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">    info <span class="string">&quot;&#x5B89;&#x88C5; autossh...&quot;</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">command</span> -v apt &amp;&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">        apt update &amp;&amp; apt install -y autossh</span><br><span class="line">    <span class="keyword">elif</span> <span class="built_in">command</span> -v yum &amp;&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">        yum install -y autossh</span><br><span class="line">    <span class="keyword">elif</span> <span class="built_in">command</span> -v dnf &amp;&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">        dnf install -y autossh</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        err <span class="string">&quot;&#x65E0;&#x6CD5;&#x5B89;&#x88C5; autossh&#xFF0C;&#x8BF7;&#x624B;&#x52A8;&#x5B89;&#x88C5;&quot;</span></span><br><span class="line">        <span class="built_in">exit</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">AUTOSSH_BIN=$(<span class="built_in">which</span> autossh)</span><br><span class="line">info <span class="string">&quot;autossh: <span class="variable">$AUTOSSH_BIN</span>&quot;</span></span><br><span class="line"></span><br><span class="line">mkdir -p <span class="string">&quot;<span class="variable">$HOME_DIR</span>/.ssh&quot;</span></span><br><span class="line">chmod 700 <span class="string">&quot;<span class="variable">$HOME_DIR</span>/.ssh&quot;</span></span><br><span class="line"></span><br><span class="line">info <span class="string">&quot;&#x8FD0;&#x884C;&#x7528;&#x6237;: <span class="variable">$RUN_USER</span>&quot;</span></span><br><span class="line">info <span class="string">&quot;HOME&#x76EE;&#x5F55;: <span class="variable">$HOME_DIR</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== &#x514D;&#x5BC6;&#x767B;&#x5F55; =====</span></span><br><span class="line">step <span class="string">&quot;&#x914D;&#x7F6E;&#x514D;&#x5BC6;&#x767B;&#x5F55;&quot;</span></span><br><span class="line">ssh-keyscan -H <span class="string">&quot;<span class="variable">$ALIYUN_HOST</span>&quot;</span> &gt;&gt; <span class="string">&quot;<span class="variable">$HOME_DIR</span>/.ssh/known_hosts&quot;</span> 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">sort -u <span class="string">&quot;<span class="variable">$HOME_DIR</span>/.ssh/known_hosts&quot;</span> -o <span class="string">&quot;<span class="variable">$HOME_DIR</span>/.ssh/known_hosts&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ! ssh -o BatchMode=yes -o ConnectTimeout=5 \</span><br><span class="line">    -i <span class="string">&quot;<span class="variable">$KEY_PATH</span>&quot;</span> <span class="string">&quot;<span class="variable">$ALIYUN_USER</span>@<span class="variable">$ALIYUN_HOST</span>&quot;</span> <span class="string">&quot;echo ok&quot;</span> &amp;&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">    info <span class="string">&quot;&#x5199;&#x5165;&#x516C;&#x94A5;...&quot;</span></span><br><span class="line">    ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no \</span><br><span class="line">        <span class="string">&quot;<span class="variable">$ALIYUN_USER</span>@<span class="variable">$ALIYUN_HOST</span>&quot;</span> \</span><br><span class="line">        <span class="string">&quot;mkdir -p ~/.ssh &amp;&amp; chmod 700 ~/.ssh &amp;&amp; \</span></span><br><span class="line"><span class="string">         echo &apos;<span class="variable">$(cat &quot;$PUB_PATH&quot;)</span>&apos; &gt;&gt; ~/.ssh/authorized_keys &amp;&amp; \</span></span><br><span class="line"><span class="string">         sort -u ~/.ssh/authorized_keys -o ~/.ssh/authorized_keys &amp;&amp; \</span></span><br><span class="line"><span class="string">         chmod 600 ~/.ssh/authorized_keys&quot;</span></span><br><span class="line">    info <span class="string">&quot;&#x516C;&#x94A5;&#x5199;&#x5165;&#x5B8C;&#x6210;&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    info <span class="string">&quot;&#x514D;&#x5BC6;&#x767B;&#x5F55;&#x5DF2;&#x5C31;&#x7EEA;&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== &#x7AEF;&#x53E3;&#x68C0;&#x6D4B;&#xFF08;&#x8BF4;&#x660E;&#x662F;&#x8FDC;&#x7A0B;&#x7AEF;&#x53E3;&#xFF09;=====</span></span><br><span class="line">step <span class="string">&quot;&#x7AEF;&#x53E3;&#x68C0;&#x6D4B;&quot;</span></span><br><span class="line"><span class="keyword">for</span> PORT <span class="keyword">in</span> <span class="variable">$SSH_PORT</span> <span class="variable">$COMFY_PORT</span>; <span class="keyword">do</span></span><br><span class="line">    info <span class="string">&quot;&#x7AEF;&#x53E3; <span class="variable">$PORT</span> &#x5C06;&#x5728;&#x8FDC;&#x7A0B;&#x4E3B;&#x673A; <span class="variable">${ALIYUN_HOST}</span> &#x4E0A;&#x76D1;&#x542C;&#xFF08;&#x672C;&#x5730;&#x65E0;&#x9700;&#x76D1;&#x542C;&#xFF09;&quot;</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== autossh &#x547D;&#x4EE4; =====</span></span><br><span class="line"><span class="function"><span class="title">build_autossh_cmd</span></span>() {</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$AUTOSSH_BIN</span> -M 0 -N&quot;</span> \</span><br><span class="line">        <span class="string">&quot;-R 127.0.0.1:<span class="variable">${SSH_PORT}</span>:127.0.0.1:22&quot;</span> \</span><br><span class="line">        <span class="string">&quot;-R 127.0.0.1:<span class="variable">${COMFY_PORT}</span>:127.0.0.1:8188&quot;</span> \</span><br><span class="line">        <span class="string">&quot;-o ServerAliveInterval=30&quot;</span> \</span><br><span class="line">        <span class="string">&quot;-o ServerAliveCountMax=3&quot;</span> \</span><br><span class="line">        <span class="string">&quot;-o ExitOnForwardFailure=yes&quot;</span> \</span><br><span class="line">        <span class="string">&quot;-o UserKnownHostsFile=<span class="variable">$HOME_DIR</span>/.ssh/known_hosts&quot;</span> \</span><br><span class="line">        <span class="string">&quot;-i <span class="variable">${KEY_PATH}</span>&quot;</span> \</span><br><span class="line">        <span class="string">&quot;<span class="variable">${ALIYUN_USER}</span>@<span class="variable">${ALIYUN_HOST}</span>&quot;</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">AUTOSSH_CMD=$(build_autossh_cmd)</span><br><span class="line">LOG_FILE=<span class="string">&quot;/var/log/gpu-tunnel/<span class="variable">${INSTANCE_ID}</span>.log&quot;</span></span><br><span class="line">mkdir -p /var/<span class="built_in">log</span>/gpu-tunnel</span><br><span class="line"></span><br><span class="line"><span class="comment"># ============================================================</span></span><br><span class="line"><span class="comment"># &#x5C42;&#x7EA7; 1&#xFF1A;systemd</span></span><br><span class="line"><span class="comment"># ============================================================</span></span><br><span class="line"><span class="function"><span class="title">try_systemd</span></span>() {</span><br><span class="line">    <span class="keyword">if</span> ! <span class="built_in">command</span> -v systemctl &amp;&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">return</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">if</span> [[ ! -d /run/systemd/system ]]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">return</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">$(ps -p 1 -o comm= 2&gt;/dev/null)</span>&quot;</span> != <span class="string">&quot;systemd&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">return</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    step <span class="string">&quot;&#x68C0;&#x6D4B;&#x5230; systemd&#xFF0C;&#x90E8;&#x7F72; service...&quot;</span></span><br><span class="line"></span><br><span class="line">    cat &gt; <span class="string">&quot;/etc/systemd/system/<span class="variable">${SERVICE_NAME}</span>.service&quot;</span> &lt;&lt;EOF</span><br><span class="line">[Unit]</span><br><span class="line">Description=GPU Reverse Tunnel (<span class="variable">$INSTANCE_ID</span>)</span><br><span class="line">After=network-online.target</span><br><span class="line">Wants=network-online.target</span><br><span class="line">StartLimitIntervalSec=0</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">Type=simple</span><br><span class="line">User=<span class="variable">$RUN_USER</span></span><br><span class="line">Environment=HOME=<span class="variable">$HOME_DIR</span></span><br><span class="line">Environment=AUTOSSH_GATETIME=0</span><br><span class="line">Environment=AUTOSSH_POLL=30</span><br><span class="line">ExecStart=/bin/sh -c <span class="string">&apos;$AUTOSSH_CMD&apos;</span></span><br><span class="line">Restart=always</span><br><span class="line">RestartSec=10</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line">    systemctl daemon-reload</span><br><span class="line">    systemctl <span class="built_in">enable</span> <span class="variable">${SERVICE_NAME}</span>.service</span><br><span class="line">    systemctl restart <span class="variable">${SERVICE_NAME}</span>.service</span><br><span class="line">    sleep 2</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> systemctl is-active --quiet <span class="variable">${SERVICE_NAME}</span>.service; <span class="keyword">then</span></span><br><span class="line">        info <span class="string">&quot;&#x2705; systemd &#x670D;&#x52A1;&#x5DF2;&#x542F;&#x52A8;&#x5E76;&#x5F00;&#x673A;&#x81EA;&#x542F;&quot;</span></span><br><span class="line">        <span class="built_in">return</span> 0</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        warn <span class="string">&quot;systemd &#x670D;&#x52A1;&#x542F;&#x52A8;&#x5931;&#x8D25;&quot;</span></span><br><span class="line">        <span class="built_in">return</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment"># ============================================================</span></span><br><span class="line"><span class="comment"># &#x5C42;&#x7EA7; 2&#xFF1A;supervisor&#xFF08;&#x4FEE;&#x590D;&#x7248;&#xFF1A;timeout + &#x5FEB;&#x901F;&#x5931;&#x8D25;&#xFF09;</span></span><br><span class="line"><span class="comment"># ============================================================</span></span><br><span class="line"><span class="function"><span class="title">try_supervisor</span></span>() {</span><br><span class="line">    <span class="keyword">if</span> ! <span class="built_in">command</span> -v supervisord &amp;&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">        warn <span class="string">&quot;supervisor &#x672A;&#x5B89;&#x88C5;&#xFF0C;&#x8DF3;&#x8FC7;&quot;</span></span><br><span class="line">        <span class="built_in">return</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    step <span class="string">&quot;&#x5C1D;&#x8BD5; supervisor &#x90E8;&#x7F72;...&quot;</span></span><br><span class="line"></span><br><span class="line">    mkdir -p /etc/supervisor/conf.d</span><br><span class="line">    mkdir -p /var/run /var/<span class="built_in">log</span>/supervisor</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> [[ ! -f /etc/supervisor/supervisord.conf ]]; <span class="keyword">then</span></span><br><span class="line">        cat &gt; /etc/supervisor/supervisord.conf &lt;&lt;EOF</span><br><span class="line">[supervisord]</span><br><span class="line">logfile=/var/<span class="built_in">log</span>/supervisor/supervisord.log</span><br><span class="line">pidfile=/var/run/supervisord.pid</span><br><span class="line">childlogdir=/var/<span class="built_in">log</span>/supervisor</span><br><span class="line">nodaemon=<span class="literal">false</span></span><br><span class="line"></span><br><span class="line">[unix_http_server]</span><br><span class="line">file=/var/run/supervisor.sock</span><br><span class="line">chmod=0700</span><br><span class="line"></span><br><span class="line">[supervisorctl]</span><br><span class="line">serverurl=unix:///var/run/supervisor.sock</span><br><span class="line"></span><br><span class="line">[rpcinterface:supervisor]</span><br><span class="line">supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface</span><br><span class="line"></span><br><span class="line">[include]</span><br><span class="line">files = /etc/supervisor/conf.d/*.conf</span><br><span class="line">EOF</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    cat &gt; <span class="string">&quot;/etc/supervisor/conf.d/<span class="variable">${SERVICE_NAME}</span>.conf&quot;</span> &lt;&lt;EOF</span><br><span class="line">[program:<span class="variable">${SERVICE_NAME}</span>]</span><br><span class="line"><span class="built_in">command</span>=<span class="variable">$AUTOSSH_CMD</span></span><br><span class="line">directory=<span class="variable">$HOME_DIR</span></span><br><span class="line">user=<span class="variable">$RUN_USER</span></span><br><span class="line">environment=HOME=<span class="string">&quot;<span class="variable">$HOME_DIR</span>&quot;</span>,AUTOSSH_GATETIME=<span class="string">&quot;0&quot;</span>,AUTOSSH_POLL=<span class="string">&quot;30&quot;</span></span><br><span class="line">autostart=<span class="literal">true</span></span><br><span class="line">autorestart=<span class="literal">true</span></span><br><span class="line">startsecs=5</span><br><span class="line">startretries=999</span><br><span class="line">redirect_stderr=<span class="literal">true</span></span><br><span class="line">stdout_logfile=<span class="variable">$LOG_FILE</span></span><br><span class="line">stdout_logfile_maxbytes=10MB</span><br><span class="line">stdout_logfile_backups=5</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line">    info <span class="string">&quot;&#x7A0B;&#x5E8F;&#x914D;&#x7F6E;&#x5DF2;&#x5199;&#x5165;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># &#x6E05;&#x7406;&#x65E7;&#x6B8B;&#x7559;</span></span><br><span class="line">    rm -f /var/run/supervisor.sock /var/run/supervisord.pid</span><br><span class="line"></span><br><span class="line">    <span class="comment"># timeout &#x9650;&#x5236;&#x542F;&#x52A8;&#xFF0C;5&#x79D2;&#x8D77;&#x4E0D;&#x6765;&#x76F4;&#x63A5;&#x653E;&#x5F03;</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">command</span> -v timeout &amp;&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">        timeout 5 supervisord -c /etc/supervisor/supervisord.conf &gt;/dev/null 2&gt;&amp;1 &amp;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        supervisord -c /etc/supervisor/supervisord.conf &gt;/dev/null 2&gt;&amp;1 &amp;</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    <span class="built_in">local</span> SUPERVISORD_PID=$!</span><br><span class="line">    sleep 2</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> [[ -S /var/run/supervisor.sock ]]; <span class="keyword">then</span></span><br><span class="line">        <span class="comment"># &#x5148; stop &#x518D; start&#xFF0C;&#x907F;&#x514D; &quot;already started&quot; &#x95EE;&#x9898;</span></span><br><span class="line">        supervisorctl -c /etc/supervisor/supervisord.conf stop <span class="variable">${SERVICE_NAME}</span> 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">        supervisorctl -c /etc/supervisor/supervisord.conf reread 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">        supervisorctl -c /etc/supervisor/supervisord.conf update 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">        supervisorctl -c /etc/supervisor/supervisord.conf start <span class="variable">${SERVICE_NAME}</span> 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">        sleep 1</span><br><span class="line">        info <span class="string">&quot;&#x2705; supervisor &#x90E8;&#x7F72;&#x5B8C;&#x6210;&quot;</span></span><br><span class="line">        <span class="built_in">return</span> 0</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">kill</span> -9 <span class="variable">$SUPERVISORD_PID</span> 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">        rm -f /var/run/supervisor.sock /var/run/supervisord.pid</span><br><span class="line">        warn <span class="string">&quot;supervisord &#x65E0;&#x6CD5;&#x521B;&#x5EFA; socket&#xFF08;&#x5BB9;&#x5668;&#x73AF;&#x5883;&#x4E0D;&#x517C;&#x5BB9;&#xFF09;&#xFF0C;&#x8DF3;&#x8FC7;&quot;</span></span><br><span class="line">        <span class="built_in">return</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment"># ============================================================</span></span><br><span class="line"><span class="comment"># &#x5C42;&#x7EA7; 3&#xFF1A;crontab &#x5B88;&#x62A4;</span></span><br><span class="line"><span class="comment"># ============================================================</span></span><br><span class="line"><span class="function"><span class="title">try_crontab</span></span>() {</span><br><span class="line">    step <span class="string">&quot;&#x90E8;&#x7F72; crontab &#x5B88;&#x62A4;...&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ! <span class="built_in">command</span> -v cron &amp;&gt;/dev/null &amp;&amp; ! <span class="built_in">command</span> -v crond &amp;&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">        info <span class="string">&quot;&#x5B89;&#x88C5; cron...&quot;</span></span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">command</span> -v apt &amp;&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">            apt update &amp;&amp; apt install -y cron</span><br><span class="line">        <span class="keyword">elif</span> <span class="built_in">command</span> -v yum &amp;&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">            yum install -y cronie || yum install -y cron || <span class="literal">true</span></span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    TMP_CRON=$(mktemp)</span><br><span class="line">    crontab -u <span class="string">&quot;<span class="variable">$RUN_USER</span>&quot;</span> -l 2&gt;/dev/null | grep -v <span class="string">&quot;autossh.*<span class="variable">${SSH_PORT}</span>&quot;</span> | grep -v <span class="string">&quot;gpu-tunnel&quot;</span> &gt; <span class="string">&quot;<span class="variable">$TMP_CRON</span>&quot;</span> || <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;* * * * * pgrep -f &apos;autossh&apos; | while read pid; do if cat /proc/\$pid/cmdline 2&gt;/dev/null | tr &apos;\\0&apos; &apos; &apos; | grep -q &apos;<span class="variable">${SSH_PORT}</span>&apos;; then exit 0; fi; done &amp;&amp; (export AUTOSSH_GATETIME=0 AUTOSSH_POLL=30 HOME=<span class="variable">$HOME_DIR</span>; <span class="variable">$AUTOSSH_CMD</span> &gt;&gt; <span class="variable">$LOG_FILE</span> 2&gt;&amp;1 &amp;)&quot;</span> &gt;&gt; <span class="string">&quot;<span class="variable">$TMP_CRON</span>&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;@reboot (export AUTOSSH_GATETIME=0 AUTOSSH_POLL=30 HOME=<span class="variable">$HOME_DIR</span>; <span class="variable">$AUTOSSH_CMD</span> &gt;&gt; <span class="variable">$LOG_FILE</span> 2&gt;&amp;1 &amp;)&quot;</span> &gt;&gt; <span class="string">&quot;<span class="variable">$TMP_CRON</span>&quot;</span></span><br><span class="line"></span><br><span class="line">    crontab -u <span class="string">&quot;<span class="variable">$RUN_USER</span>&quot;</span> <span class="string">&quot;<span class="variable">$TMP_CRON</span>&quot;</span> 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">    rm -f <span class="string">&quot;<span class="variable">$TMP_CRON</span>&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">command</span> -v service &amp;&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">        service cron start 2&gt;/dev/null || service crond start 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    info <span class="string">&quot;&#x2705; crontab &#x5B88;&#x62A4;&#x5DF2;&#x90E8;&#x7F72;&#xFF08;&#x6BCF;&#x5206;&#x949F;&#x68C0;&#x67E5; + @reboot &#x81EA;&#x542F;&#xFF09;&quot;</span></span><br><span class="line">    <span class="built_in">return</span> 0</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment"># ============================================================</span></span><br><span class="line"><span class="comment"># &#x5C42;&#x7EA7; 4&#xFF1A;shell &#x81EA;&#x542F;&#x52A8;&#x515C;&#x5E95;</span></span><br><span class="line"><span class="comment"># ============================================================</span></span><br><span class="line"><span class="function"><span class="title">setup_shell_autostart</span></span>() {</span><br><span class="line">    step <span class="string">&quot;&#x914D;&#x7F6E; shell &#x81EA;&#x542F;&#x52A8;&#x515C;&#x5E95;...&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">local</span> SHELL_RC=<span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">$RUN_USER</span>&quot;</span> == <span class="string">&quot;root&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">        SHELL_RC=<span class="string">&quot;/root/.bashrc&quot;</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        SHELL_RC=<span class="string">&quot;<span class="variable">$HOME_DIR</span>/.bashrc&quot;</span></span><br><span class="line">        [[ -f <span class="string">&quot;<span class="variable">$SHELL_RC</span>&quot;</span> ]] || SHELL_RC=<span class="string">&quot;<span class="variable">$HOME_DIR</span>/.profile&quot;</span></span><br><span class="line">        [[ -f <span class="string">&quot;<span class="variable">$SHELL_RC</span>&quot;</span> ]] || touch <span class="string">&quot;<span class="variable">$SHELL_RC</span>&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">local</span> SNIPPET_MARKER=<span class="string">&quot;# GPU_TUNNEL_AUTO_START_<span class="variable">${INSTANCE_ID}</span>&quot;</span></span><br><span class="line">    <span class="keyword">if</span> ! grep -q <span class="string">&quot;<span class="variable">$SNIPPET_MARKER</span>&quot;</span> <span class="string">&quot;<span class="variable">$SHELL_RC</span>&quot;</span> 2&gt;/dev/null; <span class="keyword">then</span></span><br><span class="line">        cat &gt;&gt; <span class="string">&quot;<span class="variable">$SHELL_RC</span>&quot;</span> &lt;&lt;EOF</span><br><span class="line"></span><br><span class="line"><span class="variable">$SNIPPET_MARKER</span></span><br><span class="line"><span class="keyword">if</span> ! pgrep -f <span class="string">&quot;autossh&quot;</span> | <span class="keyword">while</span> <span class="built_in">read</span> pid; <span class="keyword">do</span> cat /proc/\<span class="variable">$pid</span>/cmdline 2&gt;/dev/null | tr <span class="string">&apos;\\0&apos;</span> <span class="string">&apos; &apos;</span> | grep -q <span class="string">&apos;${SSH_PORT}&apos;</span> &amp;&amp; <span class="built_in">echo</span> found; <span class="keyword">done</span> | grep -q found; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">export</span> AUTOSSH_GATETIME=0</span><br><span class="line">    <span class="built_in">export</span> AUTOSSH_POLL=30</span><br><span class="line">    <span class="built_in">export</span> HOME=<span class="variable">$HOME_DIR</span></span><br><span class="line">    <span class="variable">$AUTOSSH_CMD</span> &gt;&gt; <span class="variable">$LOG_FILE</span> 2&gt;&amp;1 &amp;</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line">EOF</span><br><span class="line">        info <span class="string">&quot;&#x2705; shell &#x81EA;&#x542F;&#x52A8;&#x5DF2;&#x5199;&#x5165; <span class="variable">$SHELL_RC</span>&quot;</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        info <span class="string">&quot;shell &#x81EA;&#x542F;&#x52A8;&#x5DF2;&#x5B58;&#x5728;&#xFF0C;&#x8DF3;&#x8FC7;&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment"># ============================================================</span></span><br><span class="line"><span class="comment"># &#x4E3B;&#x6D41;&#x7A0B;</span></span><br><span class="line"><span class="comment"># ============================================================</span></span><br><span class="line">DEPLOYED=<span class="literal">false</span></span><br><span class="line"></span><br><span class="line">step <span class="string">&quot;&#x68C0;&#x6D4B;&#x73AF;&#x5883;&#x5E76;&#x90E8;&#x7F72;...&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x2460; systemd</span></span><br><span class="line"><span class="keyword">if</span> try_systemd; <span class="keyword">then</span></span><br><span class="line">    DEPLOYED=<span class="literal">true</span></span><br><span class="line">    info <span class="string">&quot;&#x6258;&#x7BA1;&#x65B9;&#x5F0F;: systemd&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    warn <span class="string">&quot;systemd &#x4E0D;&#x53EF;&#x7528;&#xFF0C;&#x5C1D;&#x8BD5;&#x4E0B;&#x4E00;&#x5C42;...&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x2461; supervisor</span></span><br><span class="line"><span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">$DEPLOYED</span>&quot;</span> == <span class="string">&quot;false&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    <span class="keyword">if</span> try_supervisor; <span class="keyword">then</span></span><br><span class="line">        DEPLOYED=<span class="literal">true</span></span><br><span class="line">        info <span class="string">&quot;&#x6258;&#x7BA1;&#x65B9;&#x5F0F;: supervisor&quot;</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        warn <span class="string">&quot;supervisor &#x4E0D;&#x53EF;&#x7528;&#xFF0C;&#x5C1D;&#x8BD5;&#x4E0B;&#x4E00;&#x5C42;...&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x2462; crontab</span></span><br><span class="line"><span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">$DEPLOYED</span>&quot;</span> == <span class="string">&quot;false&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    <span class="keyword">if</span> try_crontab; <span class="keyword">then</span></span><br><span class="line">        DEPLOYED=<span class="literal">true</span></span><br><span class="line">        info <span class="string">&quot;&#x6258;&#x7BA1;&#x65B9;&#x5F0F;: crontab&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x2463; shell &#x515C;&#x5E95;</span></span><br><span class="line">setup_shell_autostart</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x2464; &#x6E05;&#x7406;&#x540C;&#x7AEF;&#x53E3;&#x65E7;&#x8FDB;&#x7A0B;&#xFF0C;&#x7136;&#x540E;&#x542F;&#x52A8;</span></span><br><span class="line">step <span class="string">&quot;&#x786E;&#x4FDD;&#x6CA1;&#x6709;&#x540C;&#x7AEF;&#x53E3;&#x7684;&#x65E7;&#x8FDB;&#x7A0B;...&quot;</span></span><br><span class="line">OLD_PIDS=$(find_autossh_pids <span class="string">&quot;<span class="variable">$SSH_PORT</span>&quot;</span>)</span><br><span class="line"><span class="keyword">if</span> [[ -n <span class="string">&quot;<span class="variable">$OLD_PIDS</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$OLD_PIDS</span>&quot;</span> | <span class="keyword">while</span> <span class="built_in">read</span> pid; <span class="keyword">do</span></span><br><span class="line">        <span class="keyword">if</span> [[ -n <span class="string">&quot;<span class="variable">$pid</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">            <span class="built_in">kill</span> -9 <span class="string">&quot;<span class="variable">$pid</span>&quot;</span> 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">            info <span class="string">&quot;&#x5DF2;&#x7EC8;&#x6B62;&#x65E7;&#x8FDB;&#x7A0B; PID=<span class="variable">$pid</span>&quot;</span></span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">done</span></span><br><span class="line">    sleep 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ! pgrep -f <span class="string">&quot;autossh&quot;</span> | <span class="keyword">while</span> <span class="built_in">read</span> pid; <span class="keyword">do</span></span><br><span class="line">    <span class="keyword">if</span> [[ -d <span class="string">&quot;/proc/<span class="variable">$pid</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">        cat /proc/<span class="variable">$pid</span>/cmdline 2&gt;/dev/null | tr <span class="string">&apos;\0&apos;</span> <span class="string">&apos; &apos;</span> | grep -q <span class="string">&quot;<span class="variable">$SSH_PORT</span>&quot;</span> &amp;&amp; <span class="built_in">echo</span> <span class="string">&quot;found&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span> | grep -q <span class="string">&quot;found&quot;</span>; <span class="keyword">then</span></span><br><span class="line">    step <span class="string">&quot;&#x7ACB;&#x5373;&#x542F;&#x52A8;&#x96A7;&#x9053;...&quot;</span></span><br><span class="line">    <span class="built_in">export</span> AUTOSSH_GATETIME=0 AUTOSSH_POLL=30 HOME=<span class="variable">$HOME_DIR</span></span><br><span class="line">    nohup <span class="variable">$AUTOSSH_CMD</span> &gt;&gt; <span class="string">&quot;<span class="variable">$LOG_FILE</span>&quot;</span> 2&gt;&amp;1 &amp;</span><br><span class="line">    sleep 2</span><br><span class="line">    <span class="keyword">if</span> pgrep -f <span class="string">&quot;autossh&quot;</span> | <span class="keyword">while</span> <span class="built_in">read</span> pid; <span class="keyword">do</span></span><br><span class="line">        cat /proc/<span class="variable">$pid</span>/cmdline 2&gt;/dev/null | tr <span class="string">&apos;\0&apos;</span> <span class="string">&apos; &apos;</span> | grep -q <span class="string">&quot;<span class="variable">$SSH_PORT</span>&quot;</span> &amp;&amp; <span class="built_in">echo</span> <span class="string">&quot;found&quot;</span></span><br><span class="line">    <span class="keyword">done</span> | grep -q <span class="string">&quot;found&quot;</span>; <span class="keyword">then</span></span><br><span class="line">        info <span class="string">&quot;&#x2705; &#x96A7;&#x9053;&#x8FDB;&#x7A0B;&#x5DF2;&#x542F;&#x52A8;&quot;</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        warn <span class="string">&quot;&#x26A0;&#xFE0F;  &#x8FDB;&#x7A0B;&#x542F;&#x52A8;&#x53EF;&#x80FD;&#x5931;&#x8D25;&#xFF0C;&#x68C0;&#x67E5;&#x65E5;&#x5FD7;: <span class="variable">$LOG_FILE</span>&quot;</span></span><br><span class="line">        tail -10 <span class="string">&quot;<span class="variable">$LOG_FILE</span>&quot;</span> 2&gt;/dev/null || <span class="literal">true</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    info <span class="string">&quot;&#x96A7;&#x9053;&#x8FDB;&#x7A0B;&#x5DF2;&#x5728;&#x8FD0;&#x884C;&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== &#x5B8C;&#x6210; =====</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;============================================&quot;</span></span><br><span class="line"><span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">$DEPLOYED</span>&quot;</span> == <span class="string">&quot;true&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> -e <span class="string">&quot;<span class="variable">${GREEN}</span>&#x2705; GPU &#x96A7;&#x9053;&#x90E8;&#x7F72;&#x5B8C;&#x6210;&#xFF01;<span class="variable">${NC}</span>&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="built_in">echo</span> -e <span class="string">&quot;<span class="variable">${YELLOW}</span>&#x26A0;&#xFE0F;  &#x90E8;&#x7F72;&#x5B8C;&#x6210;&#xFF08;&#x4EC5; shell &#x515C;&#x5E95;&#x6A21;&#x5F0F;&#xFF09;<span class="variable">${NC}</span>&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&#x1F4CC; &#x8FDE;&#x63A5;&#x4FE1;&#x606F;&#xFF1A;&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;   SSH    : ssh -p <span class="variable">$SSH_PORT</span> <span class="variable">$ALIYUN_USER</span>@<span class="variable">$ALIYUN_HOST</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;   ComfyUI: http://<span class="variable">$ALIYUN_HOST</span>:<span class="variable">$COMFY_PORT</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&#x1F4CC; &#x7BA1;&#x7406;&#xFF1A;&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;   &#x67E5;&#x770B;&#x72B6;&#x6001;: <span class="variable">$0</span> <span class="variable">$INSTANCE_ID</span> --status&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;   &#x505C;&#x6B62;&#x670D;&#x52A1;: <span class="variable">$0</span> <span class="variable">$INSTANCE_ID</span> --stop&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;   &#x67E5;&#x770B;&#x65E5;&#x5FD7;: tail -f <span class="variable">$LOG_FILE</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;============================================&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x4E24;&#x4E2A;&#x7248;&#x672C;, &#x6839;&#x636E;&#x81EA;&#x8EAB;&#x9700;&#x6C42;&#x4EFB;&#x9009;&#x5176;&#x4E00;&#x5373;&#x53EF;</p>
+<hr>
+<h3 id="&#x7B2C;&#x4E8C;&#x6B65;&#xFF1A;&#x672C;&#x5730;&#x7535;&#x8111;&#x7684;&#x914D;&#x7F6E;"><a href="#&#x7B2C;&#x4E8C;&#x6B65;&#xFF1A;&#x672C;&#x5730;&#x7535;&#x8111;&#x7684;&#x914D;&#x7F6E;" class="headerlink" title="&#x7B2C;&#x4E8C;&#x6B65;&#xFF1A;&#x672C;&#x5730;&#x7535;&#x8111;&#x7684;&#x914D;&#x7F6E;"></a>&#x7B2C;&#x4E8C;&#x6B65;&#xFF1A;&#x672C;&#x5730;&#x7535;&#x8111;&#x7684;&#x914D;&#x7F6E;</h3><p>&#x5728;&#x672C;&#x5730;&#x7535;&#x8111;&#x7EC8;&#x7AEF;&#x6267;&#x884C;&#x4EE5;&#x4E0B;&#x547D;&#x4EE4;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. &#x521B;&#x5EFA; SSH &#x5BC6;&#x94A5;</span></span><br><span class="line">ssh-keygen -t ed25519 -f ~/.ssh/comfy_key -N <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. &#x628A;&#x516C;&#x94A5;&#x62F7;&#x8D1D;&#x5230;&#x963F;&#x91CC;&#x4E91;</span></span><br><span class="line">ssh-copy-id -i ~/.ssh/comfy_key.pub root@&#x963F;&#x91CC;&#x4E91;&#x516C;&#x7F51; ip</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. &#x6253;&#x901A;&#x96A7;&#x9053;&#xFF1A;&#x628A;&#x672C;&#x673A; 8188 &#x5F15;&#x5230;&#x963F;&#x91CC;&#x4E91; &#x2192; GPU</span></span><br><span class="line">ssh -N \</span><br><span class="line">  -L 8188:127.0.0.1:8188 \</span><br><span class="line">  -i ~/.ssh/comfy_key \</span><br><span class="line">  root@&#x963F;&#x91CC;&#x4E91;&#x516C;&#x7F51; IP</span><br></pre></td></tr></table></figure>
+
+<p>&#x6B64;&#x65F6;&#x6211;&#x4EEC;&#x5728;&#x6D4F;&#x89C8;&#x5668;&#x4E0A;&#x76F4;&#x63A5;&#x8F93;&#x5165;<code>http://127.0.0.1:8188</code>&#x5373;&#x53EF;&#x8BBF;&#x95EE; GPU &#x5B9E;&#x4F8B;&#x4E2D;&#x7684; <code>ComfyUI</code>&#x4E86;</p>
+<p>&#x4F46;&#x662F;&#x6211;&#x8FD8;&#x8981;&#x5B9E;&#x73B0;&#x7EC8;&#x7AEF;&#x8BBF;&#x95EE;&#xFF0C;&#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x53E6;&#x8D77;&#x4E00;&#x4E2A;&#x7EC8;&#x7AEF;&#xFF0C;&#x5E76;&#x8F93;&#x5165;&#x4EE5;&#x4E0B;&#x6307;&#x4EE4;&#xFF1A;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -J root@&#x963F;&#x91CC;&#x4E91;&#x516C;&#x7F51; IP:22 -p 2222 ubuntu@127.0.0.1</span><br></pre></td></tr></table></figure>
+
+<p>&#x6216;&#x8005;</p>
+<p>&#x5728;&#x7528;&#x6237;&#x76EE;&#x5F55;&#x4E0B;&#x7684; <code>config</code>&#x6587;&#x4EF6;&#x4E2D;&#x6DFB;&#x52A0;&#x5982;&#x4E0B;&#x914D;&#x7F6E;&#xFF1A;</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ===== &#x963F;&#x91CC;&#x4E91;&#x8DF3;&#x677F;&#x673A; =====</span></span><br><span class="line"><span class="string">Host</span> <span class="string">aliyun</span></span><br><span class="line">    <span class="string">HostName</span> <span class="string">&#x963F;&#x91CC;&#x4E91;&#x516C;&#x7F51;</span> <span class="string">IP</span></span><br><span class="line">    <span class="string">User</span> <span class="string">root</span></span><br><span class="line">    <span class="string">IdentityFile</span> <span class="string">~/.ssh/comfy_key</span></span><br><span class="line">    <span class="string">Port</span> <span class="number">22</span></span><br><span class="line">    <span class="string">StrictHostKeyChecking</span> <span class="string">accept-new</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== GPU&#xFF08;&#x7ECF;&#x963F;&#x91CC;&#x4E91;&#x8DF3;&#x8F6C;&#xFF09;=====</span></span><br><span class="line"><span class="string">Host</span> <span class="string">gpu</span></span><br><span class="line">    <span class="string">HostName</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line">    <span class="string">User</span> <span class="string">ubuntu</span></span><br><span class="line">    <span class="string">Port</span> <span class="number">2222</span></span><br><span class="line">    <span class="string">IdentityFile</span> <span class="string">~/.ssh/comfy_key</span></span><br><span class="line">    <span class="string">ProxyJump</span> <span class="string">aliyun</span></span><br><span class="line">    <span class="string">ServerAliveInterval</span> <span class="number">30</span></span><br><span class="line">    <span class="string">ServerAliveCountMax</span> <span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x7136;&#x540E;&#x5728;&#x7EC8;&#x7AEF;&#x4E2D;&#x8FD0;&#x884C; <code>ssh gpu</code>&#xFF0C;&#x4E00;&#x6837;&#x7684;&#x6548;&#x679C;&#xFF0C;&#x4E0D;&#x8FC7;&#x4E3A;&#x4E86;&#x65B9;&#x4FBF; <code>VS Code</code>&#x8FDE;&#x63A5;&#xFF0C;&#x5EFA;&#x8BAE;&#x91C7;&#x7528;&#x914D;&#x7F6E;&#x7684;&#x5F62;&#x5F0F;</p>
+<p>&#x8FD9;&#x91CC;&#x9700;&#x8981;&#x6CE8;&#x610F;&#x7684;&#x662F;&#xFF0C; GPU &#x90E8;&#x5206;&#x7684; <code>User</code>&#x5B57;&#x6BB5;&#x8BE5;&#x586B; <code>root</code>&#x8FD8;&#x662F; <code>ubuntu</code> &#xFF0C;&#x53D6;&#x51B3;&#x4E8E;&#x4F60;&#x7684; GPU &#x670D;&#x52A1;&#x5668;&#x7684;&#x8BBE;&#x7F6E;&#xFF0C;&#x53EF;&#x4EE5;&#x8FD0;&#x884C;&#x4EE5;&#x4E0B;&#x6307;&#x4EE4;&#x67E5;&#x770B;&#x662F;&#x5426;&#x4E3A;<code>root</code>:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">cat /etc/passwd | grep -E <span class="string">&apos;/bin/bash|/bin/zsh&apos;</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x540C;&#x6837;&#x7684;&#xFF0C;&#x672C;&#x5730;&#x7535;&#x8111;&#x4E5F;&#x6709;&#x4E00;&#x952E;&#x914D;&#x7F6E;&#x811A;&#x672C;&#xFF0C;&#x5168;&#x81EA;&#x52A8;&#x5316;&#x7684;&#x540C;&#x65F6;&#x4E0D;&#x7834;&#x574F;&#x539F;&#x6709;&#x7684; <code>SSH</code>&#x914D;&#x7F6E;&#xFF0C;&#x5982;&#x4E0B;&#xFF1A;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># local_tunnel_setup.sh</span></span><br><span class="line"><span class="comment"># &#x517C;&#x5BB9; Linux / macOS</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -e</span><br><span class="line"></span><br><span class="line">ALIYUN_HOST=<span class="string">&quot;&#x963F;&#x91CC;&#x4E91;&#x670D;&#x52A1;&#x5668;IP&quot;</span></span><br><span class="line">ALIYUN_USER=<span class="string">&quot;root&quot;</span></span><br><span class="line">TUNNEL_PORT=<span class="string">&quot;8188&quot;</span></span><br><span class="line">KEY_DIR=<span class="string">&quot;<span class="variable">$HOME</span>/.ssh&quot;</span></span><br><span class="line">KEY_NAME=<span class="string">&quot;comfy_key&quot;</span></span><br><span class="line">BLOCK_NAME=<span class="string">&quot;aliyun-tunnel&quot;</span></span><br><span class="line"></span><br><span class="line">mkdir -p <span class="string">&quot;<span class="variable">$KEY_DIR</span>/config.d&quot;</span></span><br><span class="line">chmod 700 <span class="string">&quot;<span class="variable">$KEY_DIR</span>&quot;</span></span><br><span class="line">touch <span class="string">&quot;<span class="variable">$KEY_DIR</span>/config&quot;</span></span><br><span class="line">chmod 600 <span class="string">&quot;<span class="variable">$KEY_DIR</span>/config&quot;</span></span><br><span class="line"></span><br><span class="line">KEY_PATH=<span class="string">&quot;<span class="variable">$KEY_DIR</span>/<span class="variable">$KEY_NAME</span>&quot;</span></span><br><span class="line">PUB_PATH=<span class="string">&quot;<span class="variable">$KEY_PATH</span>.pub&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x5BC6;&#x94A5;&#x590D;&#x7528;</span></span><br><span class="line"><span class="keyword">if</span> [[ -f <span class="string">&quot;<span class="variable">$KEY_PATH</span>&quot;</span> &amp;&amp; -f <span class="string">&quot;<span class="variable">$PUB_PATH</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&#x2705; &#x590D;&#x7528;&#x672C;&#x5730;&#x5BC6;&#x94A5;&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    ssh-keygen -t ed25519 -f <span class="string">&quot;<span class="variable">$KEY_PATH</span>&quot;</span> -N <span class="string">&quot;&quot;</span> -C <span class="string">&quot;local@<span class="variable">$(hostname)</span>&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x5B89;&#x5168;&#x5408;&#x5E76; SSH &#x914D;&#x7F6E;&#xFF08;&#x4E0D;&#x8986;&#x76D6;&#xFF01;&#xFF09;</span></span><br><span class="line">INCLUDE_LINE=<span class="string">&quot;Include <span class="variable">$KEY_DIR</span>/config.d/*.conf&quot;</span></span><br><span class="line"><span class="keyword">if</span> ! grep -qxF <span class="string">&quot;<span class="variable">$INCLUDE_LINE</span>&quot;</span> <span class="string">&quot;<span class="variable">$KEY_DIR</span>/config&quot;</span>; <span class="keyword">then</span></span><br><span class="line">    <span class="keyword">if</span> [ -s <span class="string">&quot;<span class="variable">$KEY_DIR</span>/config&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">        sed -i <span class="string">&apos;&apos;</span> <span class="string">&quot;1i\\</span></span><br><span class="line"><span class="string"><span class="variable">$INCLUDE_LINE</span></span></span><br><span class="line"><span class="string">&quot;</span> <span class="string">&quot;<span class="variable">$KEY_DIR</span>/config&quot;</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$INCLUDE_LINE</span>&quot;</span> &gt; <span class="string">&quot;<span class="variable">$KEY_DIR</span>/config&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x5199;&#x72EC;&#x7ACB;&#x914D;&#x7F6E;&#x7247;&#x6BB5;</span></span><br><span class="line">cat &gt; <span class="string">&quot;<span class="variable">$KEY_DIR</span>/config.d/<span class="variable">${BLOCK_NAME}</span>.conf&quot;</span> &lt;&lt;EOF</span><br><span class="line"><span class="comment"># Managed by local_tunnel.sh</span></span><br><span class="line">Host aliyun</span><br><span class="line">    HostName <span class="variable">$ALIYUN_HOST</span></span><br><span class="line">    User <span class="variable">$ALIYUN_USER</span></span><br><span class="line">    Port 22</span><br><span class="line">    IdentityFile <span class="variable">$KEY_PATH</span></span><br><span class="line">    StrictHostKeyChecking accept-new</span><br><span class="line"></span><br><span class="line">Host gpu</span><br><span class="line">    HostName 127.0.0.1</span><br><span class="line">    Port 2222</span><br><span class="line">    User root</span><br><span class="line">    ProxyJump aliyun</span><br><span class="line">    IdentityFile <span class="variable">$KEY_PATH</span></span><br><span class="line">    IdentitiesOnly yes</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x6CE8;&#x518C;&#x516C;&#x94A5;</span></span><br><span class="line">ssh-copy-id -i <span class="string">&quot;<span class="variable">$PUB_PATH</span>&quot;</span> <span class="string">&quot;<span class="variable">$ALIYUN_USER</span>@<span class="variable">$ALIYUN_HOST</span>&quot;</span> || <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x8DE8;&#x5E73;&#x53F0;&#x81EA;&#x542F;</span></span><br><span class="line"><span class="keyword">case</span> <span class="string">&quot;<span class="variable">$(uname)</span>&quot;</span> <span class="keyword">in</span></span><br><span class="line">Linux)</span><br><span class="line">    cat &gt; /etc/systemd/system/<span class="built_in">local</span>-comfy-tunnel.service &lt;&lt;EOF</span><br><span class="line">[Unit]</span><br><span class="line">Description=Local SSH Tunnel to GPU</span><br><span class="line">After=network-online.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">Type=simple</span><br><span class="line">User=<span class="variable">$USER</span></span><br><span class="line">ExecStart=/usr/bin/ssh -N \\</span><br><span class="line">  -L <span class="variable">${TUNNEL_PORT}</span>:127.0.0.1:<span class="variable">${TUNNEL_PORT}</span> \\</span><br><span class="line">  -o ServerAliveInterval=30 \\</span><br><span class="line">  -o ServerAliveCountMax=3 \\</span><br><span class="line">  -i <span class="variable">${KEY_PATH}</span> \\</span><br><span class="line">  <span class="variable">${ALIYUN_USER}</span>@<span class="variable">${ALIYUN_HOST}</span></span><br><span class="line">Restart=always</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br><span class="line">EOF</span><br><span class="line">    systemctl daemon-reload</span><br><span class="line">    systemctl <span class="built_in">enable</span> <span class="built_in">local</span>-comfy-tunnel.service</span><br><span class="line">    systemctl restart <span class="built_in">local</span>-comfy-tunnel.service</span><br><span class="line">    ;;</span><br><span class="line">Darwin)</span><br><span class="line">    PLIST=<span class="string">&quot;<span class="variable">$HOME</span>/Library/LaunchAgents/com.user.local-comfy-tunnel.plist&quot;</span></span><br><span class="line">    cat &gt; <span class="string">&quot;<span class="variable">$PLIST</span>&quot;</span> &lt;&lt;EOF</span><br><span class="line">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span><br><span class="line">&lt;!DOCTYPE plist PUBLIC <span class="string">&quot;-//Apple//DTD PLIST 1.0//EN&quot;</span></span><br><span class="line"> <span class="string">&quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;</span>&gt;</span><br><span class="line">&lt;plist version=<span class="string">&quot;1.0&quot;</span>&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">    &lt;key&gt;Label&lt;/key&gt;</span><br><span class="line">    &lt;string&gt;com.user.local-comfy-tunnel&lt;/string&gt;</span><br><span class="line">    &lt;key&gt;ProgramArguments&lt;/key&gt;</span><br><span class="line">    &lt;array&gt;</span><br><span class="line">        &lt;string&gt;$(<span class="built_in">which</span> autossh)&lt;/string&gt;</span><br><span class="line">        &lt;string&gt;-M&lt;/string&gt;&lt;string&gt;0&lt;/string&gt;</span><br><span class="line">        &lt;string&gt;-N&lt;/string&gt;</span><br><span class="line">        &lt;string&gt;-L&lt;/string&gt;</span><br><span class="line">        &lt;string&gt;<span class="variable">${TUNNEL_PORT}</span>:127.0.0.1:<span class="variable">${TUNNEL_PORT}</span>&lt;/string&gt;</span><br><span class="line">        &lt;string&gt;-i&lt;/string&gt;</span><br><span class="line">        &lt;string&gt;<span class="variable">${KEY_PATH}</span>&lt;/string&gt;</span><br><span class="line">        &lt;string&gt;<span class="variable">${ALIYUN_USER}</span>@<span class="variable">${ALIYUN_HOST}</span>&lt;/string&gt;</span><br><span class="line">    &lt;/array&gt;</span><br><span class="line">    &lt;key&gt;RunAtLoad&lt;/key&gt;&lt;<span class="literal">true</span>/&gt;</span><br><span class="line">    &lt;key&gt;KeepAlive&lt;/key&gt;&lt;<span class="literal">true</span>/&gt;</span><br><span class="line">&lt;/dict&gt;</span><br><span class="line">&lt;/plist&gt;</span><br><span class="line">EOF</span><br><span class="line">    launchctl load <span class="string">&quot;<span class="variable">$PLIST</span>&quot;</span></span><br><span class="line">    ;;</span><br><span class="line"><span class="keyword">esac</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&#x2705; &#x672C;&#x5730;&#x96A7;&#x9053;&#x5DF2;&#x542F;&#x52A8;&#xFF0C;&#x8BBF;&#x95EE; http://127.0.0.1:<span class="variable">$TUNNEL_PORT</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>&#x8BE5;&#x811A;&#x672C;&#x517C;&#x5BB9; Mac &#x548C; Linux &#x5E73;&#x53F0;</strong> </p>
+<p>&#x76F4;&#x63A5;&#x62F7;&#x8D1D;&#x5230;&#x672C;&#x5730;&#x7535;&#x8111;&#x8FD0;&#x884C;&#x5373;&#x53EF;,&#xFF08;&#x8BB0;&#x5F97;&#x5C06;&#x963F;&#x91CC;&#x4E91;IP&#x66FF;&#x6362;&#x6210;&#x4F60;&#x7684;&#x670D;&#x52A1;&#x5668;IP&#xFF09;</p>
+<hr>
+<h3 id="&#x7B2C;&#x4E09;&#x6B65;&#xFF1A;&#x5C06;&#x672C;&#x5730;&#x7535;&#x8111;&#x516C;&#x94A5;&#x62F7;&#x8D1D;&#x81F3;GPU&#x670D;&#x52A1;&#x5668;"><a href="#&#x7B2C;&#x4E09;&#x6B65;&#xFF1A;&#x5C06;&#x672C;&#x5730;&#x7535;&#x8111;&#x516C;&#x94A5;&#x62F7;&#x8D1D;&#x81F3;GPU&#x670D;&#x52A1;&#x5668;" class="headerlink" title="&#x7B2C;&#x4E09;&#x6B65;&#xFF1A;&#x5C06;&#x672C;&#x5730;&#x7535;&#x8111;&#x516C;&#x94A5;&#x62F7;&#x8D1D;&#x81F3;GPU&#x670D;&#x52A1;&#x5668;"></a>&#x7B2C;&#x4E09;&#x6B65;&#xFF1A;&#x5C06;&#x672C;&#x5730;&#x7535;&#x8111;&#x516C;&#x94A5;&#x62F7;&#x8D1D;&#x81F3;GPU&#x670D;&#x52A1;&#x5668;</h3><p>&#x96A7;&#x9053;&#x6253;&#x901A;&#x4E4B;&#x540E;, &#x963F;&#x91CC;&#x4E91;&#x670D;&#x52A1;&#x5668;&#x4F5C;&#x4E3A;&#x8DF3;&#x677F;&#x673A;&#x53EA;&#x8D1F;&#x8D23;&#x6570;&#x636E;&#x4F20;&#x8F93;, &#x4E0D;&#x8D1F;&#x8D23;&#x8EAB;&#x4EFD;&#x7684;&#x9A8C;&#x8BC1;</p>
+<p>&#x8981;&#x60F3;&#x5B9E;&#x73B0;&#x672C;&#x5730;&#x548C;<code>GPU</code>&#x670D;&#x52A1;&#x5668;<code>ssh</code>&#x8BBF;&#x95EE;, &#x5FC5;&#x987B;&#x5C06;&#x672C;&#x5730;&#x7684;<code>comfy_key</code>&#x516C;&#x94A5;&#x62F7;&#x8D1D;&#x81F3;GPU&#x670D;&#x52A1;&#x5668;&#x7684;<code>./ssh/authorized_keys</code>&#x6587;&#x4EF6;&#x4E2D;</p>
+<p>&#x5728; <strong>GPU &#x7EC8;&#x7AEF;</strong>&#x91CC;&#x6267;&#x884C;&#x4EE5;&#x4E0B;&#x547D;&#x4EE4;:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. &#x521B;&#x5EFA;&#x76EE;&#x5F55;&#xFF08;&#x6CA1;&#x6709;&#x5C31;&#x5EFA;&#xFF0C;&#x6709;&#x4E86;&#x4E5F;&#x4E0D;&#x62A5;&#x9519;&#xFF09;</span></span><br><span class="line">mkdir -p ~/.ssh</span><br><span class="line">chmod 700 ~/.ssh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. &#x521B;&#x5EFA; authorized_keys&#xFF08;&#x6CA1;&#x6709;&#x5C31;&#x65B0;&#x5EFA;&#xFF0C;&#x6709;&#x4E86;&#x5C31;&#x6253;&#x5F00;&#x7F16;&#x8F91;&#xFF09;</span></span><br><span class="line"><span class="comment"># &#x628A;&#x672C;&#x5730; ~/.ssh/comfy_key.pub &#x7684;&#x8F93;&#x51FA;&#x7C98;&#x8D34;&#x8FDB;&#x53BB;</span></span><br><span class="line">vim ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. &#x4FDD;&#x5B58;&#x9000;&#x51FA;&#x540E;&#xFF0C;&#x6539;&#x6743;&#x9650;</span></span><br><span class="line">chmod 600 ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. &#x786E;&#x8BA4;&#x5185;&#x5BB9;</span></span><br><span class="line">cat ~/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+
+<p>&#x6216;&#x8005;&#x76F4;&#x63A5;&#x4ECE;&#x963F;&#x91CC;&#x4E91;&#x4E2D;&#x590D;&#x5236;&#x516C;&#x94A5;:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. &#x521B;&#x5EFA;&#x76EE;&#x5F55;&#x548C;&#x6587;&#x4EF6;&#xFF08;&#x6CA1;&#x6709;&#x5C31;&#x5EFA;&#xFF09;</span></span><br><span class="line">mkdir -p ~/.ssh</span><br><span class="line">chmod 700 ~/.ssh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. &#x4ECE;&#x963F;&#x91CC;&#x4E91;&#x62C9;&#x53D6; authorized_keys &#x5E76;&#x8FFD;&#x52A0;&#x5230;&#x672C;&#x5730;</span></span><br><span class="line">ssh root@&#x963F;&#x91CC;&#x4E91;IP <span class="string">&quot;cat ~/.ssh/authorized_keys&quot;</span> &gt;&gt; ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. &#x53BB;&#x91CD;&#xFF08;&#x9632;&#x6B62;&#x91CD;&#x590D;&#x6267;&#x884C;&#x5BFC;&#x81F4;&#x591A;&#x884C;&#x91CD;&#x590D;&#xFF09;</span></span><br><span class="line">sort -u ~/.ssh/authorized_keys -o ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. &#x6539;&#x6743;&#x9650;</span></span><br><span class="line">chmod 600 ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. &#x786E;&#x8BA4;&#x5185;&#x5BB9;</span></span><br><span class="line">cat ~/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x7B2C;&#x56DB;&#x6B65;&#xFF1A;&#x5F00;&#x59CB;&#x8BBF;&#x95EE;"><a href="#&#x7B2C;&#x56DB;&#x6B65;&#xFF1A;&#x5F00;&#x59CB;&#x8BBF;&#x95EE;" class="headerlink" title="&#x7B2C;&#x56DB;&#x6B65;&#xFF1A;&#x5F00;&#x59CB;&#x8BBF;&#x95EE;"></a>&#x7B2C;&#x56DB;&#x6B65;&#xFF1A;&#x5F00;&#x59CB;&#x8BBF;&#x95EE;</h3><p>&#x5230;&#x8FD9;&#x91CC;&#xFF0C;&#x6211;&#x60F3;&#x5927;&#x5BB6;&#x5E94;&#x8BE5;&#x90FD;&#x77E5;&#x9053;&#x600E;&#x4E48;&#x7528;&#x4E86;&#xFF0C;&#x8FD9;&#x91CC;&#x4E4B;&#x6240;&#x4EE5;&#x63A8;&#x8350;&#x5927;&#x5BB6;&#x4F7F;&#x7528;<code>VS Code</code>&#x7684;<code>Remote-SSH</code>&#x63D2;&#x4EF6; &#x6765;&#x8FDE;&#x63A5;&#xFF0C;&#x56E0;&#x4E3A;&#x5B83;&#x65E2;&#x53EF;&#x4EE5;&#x8BBF;&#x95EE;&#x7EC8;&#x7AEF;&#xFF0C;&#x53C8;&#x80FD;&#x8BBF;&#x95EE;&#x6587;&#x4EF6;&#xFF0C;&#x7701;&#x53BB;&#x4E86;&#x624B;&#x6572;&#x547D;&#x4EE4;&#xFF0C;&#x4E00;&#x4E3E;&#x4E24;&#x5F97;&#xFF0C;&#x800C;&#x4E14;&#x7528;&#x8D77;&#x6765;&#x4E5F;&#x6BD4;&#x8F83;&#x65B9;&#x4FBF;&#xFF1A;</p>
+<p>&#x5728;<code>VS Code</code>&#x91CC;&#xFF1A;</p>
+<ul>
+<li><code>F1</code> &#x2192; <code>Remote-SSH: Connect to Host</code></li>
+<li>&#x9009;&#x62E9; <code>gpu</code></li>
+</ul>
+<p>&#x4F1A;&#x76F4;&#x63A5;&#x8FDB;&#x5230; <strong>GPU &#x7684;&#x7EC8;&#x7AEF;</strong></p>
+<p>&#x5B83;&#x548C;&#x963F;&#x91CC;&#x4E91;&#x662F;&#x72EC;&#x7ACB;&#x7684;&#x4E92;&#x4E0D;&#x5F71;&#x54CD;&#xFF0C;&#x4F60;&#x60F3;&#x8BBF;&#x95EE;&#x963F;&#x91CC;&#x4E91;&#x7EC8;&#x7AEF;&#xFF0C;&#x8FD8;&#x662F;&#x6309;&#x7167;&#x539F;&#x6765;&#x7684; <code>ssh -p 22 root@&#x963F;&#x91CC;&#x4E91;&#x516C;&#x7F51; IP</code>&#x5C31;&#x884C;</p>
+<hr>
+<h2 id="&#x591A;-GPU-&#x600E;&#x4E48;&#x6269;&#x5C55;&#xFF1F;"><a href="#&#x591A;-GPU-&#x600E;&#x4E48;&#x6269;&#x5C55;&#xFF1F;" class="headerlink" title="&#x591A; GPU &#x600E;&#x4E48;&#x6269;&#x5C55;&#xFF1F;"></a>&#x591A; GPU &#x600E;&#x4E48;&#x6269;&#x5C55;&#xFF1F;</h2><p>&#x5047;&#x8BBE;&#x6211;&#x6709; 3 &#x53F0; GPU&#xFF0C;&#x505A;&#x6CD5;&#x662F;&#xFF1A;</p>
+<table>
+<thead>
+<tr>
+<th>GPU</th>
+<th>SSH &#x7AEF;&#x53E3;</th>
+<th>ComfyUI &#x7AEF;&#x53E3;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>gpu-01</td>
+<td>2222</td>
+<td>8188</td>
+</tr>
+<tr>
+<td>gpu-02</td>
+<td>2223</td>
+<td>8189</td>
+</tr>
+<tr>
+<td>gpu-03</td>
+<td>2224</td>
+<td>8190</td>
+</tr>
+</tbody></table>
+<p>&#x672C;&#x5730; <code>~/.ssh/config</code>&#xFF1A;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Host gpu-01</span><br><span class="line">    HostName 127.0.0.1</span><br><span class="line">    Port 2222</span><br><span class="line">    ProxyJump aliyun-relay</span><br><span class="line"></span><br><span class="line">Host gpu-02</span><br><span class="line">    HostName 127.0.0.1</span><br><span class="line">    Port 2223</span><br><span class="line">    ProxyJump aliyun-relay</span><br></pre></td></tr></table></figure>
+
+<p>VS Code &#x53EF;&#x4EE5;<strong>&#x540C;&#x65F6;&#x8FDE;&#x591A;&#x53F0; GPU</strong>&#xFF0C;&#x4E92;&#x4E0D;&#x5E72;&#x6270;&#x3002;</p>
+<h2 id="&#x95EE;&#x9898;&#x6C47;&#x603B;"><a href="#&#x95EE;&#x9898;&#x6C47;&#x603B;" class="headerlink" title="&#x95EE;&#x9898;&#x6C47;&#x603B;"></a>&#x95EE;&#x9898;&#x6C47;&#x603B;</h2><ol>
+<li><p><code>ssh gpu</code>&#x767B;&#x5F55;<code>GPU</code>&#x63D0;&#x793A;&#x9700;&#x8981;&#x8F93;&#x5165;<code>root@127.0.0.1 password</code></p>
+<p>&#x95EE;&#x9898;&#x51FA;&#x5728;&#x516C;&#x94A5;&#x4E0A;, &#x68C0;&#x67E5;&#x672C;&#x5730;<code>comfy_key.pub</code>&#x516C;&#x94A5;&#x548C;<code>GPU</code>&#x4E2D;<code>authorized_keys</code>&#x4E2D;&#x5B58;&#x50A8;&#x7684;&#x516C;&#x94A5;&#x662F;&#x5426;&#x4E00;&#x81F4;</p>
+<p>&#x53E6;&#x5916;&#x6709;&#x4E00;&#x70B9;&#x9700;&#x8981;&#x6CE8;&#x610F;&#x7684;&#x662F;, &#x4E0D;&#x8981;&#x4F7F;&#x7528;&#x8001;&#x7248;<code>ssh-rsa</code>&#x683C;&#x5F0F;&#x5BC6;&#x94A5;, &#x76EE;&#x524D;&#x5F88;&#x591A;&#x65B0;&#x7CFB;&#x7EDF;, &#x63A8;&#x8350;&#x4F7F;&#x7528;&#x65B0;&#x7684;<code>ssh-ed25519</code>&#x683C;&#x5F0F;&#x5BC6;&#x94A5;</p>
+</li>
+<li><p>&#x5173;&#x4E8E;&#x5BC6;&#x94A5;&#x95EE;&#x9898;</p>
+<p>&#x672C;&#x5730;&#x8FDE;&#x63A5;&#x963F;&#x91CC;&#x4E91;&#x548C;&#x8FDE;&#x63A5;<code>GPU</code>&#x670D;&#x52A1;&#x5668;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x4E0D;&#x540C;&#x7684;&#x5BC6;&#x94A5;, &#x6BD4;&#x5982;:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Managed by local_tunnel.sh</span></span><br><span class="line"><span class="comment"># &#x8FDE;&#x63A5;&#x963F;&#x91CC;&#x4E91;&#x4F7F;&#x7528;aliyun&#x5BC6;&#x94A5;&#x5BF9;, &#x8FDE;&#x63A5;gpu&#x4F7F;&#x7528;comfy_key&#x5BC6;&#x94A5;&#x5BF9;</span></span><br><span class="line"><span class="string">Host</span> <span class="string">aliyun</span></span><br><span class="line">    <span class="string">HostName</span> <span class="string">&#x963F;&#x91CC;&#x4E91;&#x670D;&#x52A1;&#x5668;IP</span></span><br><span class="line">    <span class="string">User</span> <span class="string">root</span></span><br><span class="line">    <span class="string">Port</span> <span class="number">22</span></span><br><span class="line">    <span class="string">IdentityFile</span> <span class="string">/Users/xxx/.ssh/aliyun</span></span><br><span class="line">    <span class="string">StrictHostKeyChecking</span> <span class="string">accept-new</span></span><br><span class="line"></span><br><span class="line"><span class="string">Host</span> <span class="string">gpu</span></span><br><span class="line">    <span class="string">HostName</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line">    <span class="string">Port</span> <span class="number">2222</span></span><br><span class="line">    <span class="string">User</span> <span class="string">root</span></span><br><span class="line">    <span class="string">ProxyJump</span> <span class="string">aliyun</span></span><br><span class="line">    <span class="string">IdentityFile</span> <span class="string">/Users/xxx/.ssh/comfy_key</span></span><br><span class="line">    <span class="string">IdentitiesOnly</span> <span class="literal">yes</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x96A7;&#x9053;&#x5EFA;&#x7ACB;&#x662F;&#x5148;&#x8FDE;&#x63A5;&#x963F;&#x91CC;&#x4E91;&#x670D;&#x52A1;&#x5668;, &#x6210;&#x529F;&#x540E;&#x518D;&#x8FDE;&#x63A5;GPU&#x670D;&#x52A1;&#x5668;, &#x963F;&#x91CC;&#x4E91;&#x53EA;&#x8D1F;&#x8D23;&#x6570;&#x636E;&#x4E2D;&#x8F6C;, &#x800C;&#x4E0D;&#x4F1A;&#x62FF;&#x7740;<code>comfy_key</code>&#x5BC6;&#x94A5;&#x53BB;&#x66FF;&#x6211;&#x4EEC;&#x8FDE;&#x63A5;<code>GPU</code>, &#x8FD9;&#x70B9;&#x9700;&#x8981;&#x660E;&#x767D;,  </p>
+<p>&#x6240;&#x4EE5;, &#x4ED6;&#x4EEC;&#x4E0D;&#x4E00;&#x5B9A;&#x975E;&#x5F97;&#x4F7F;&#x7528;&#x76F8;&#x540C;&#x5BC6;&#x94A5;&#x5BF9;, &#x4E4B;&#x524D;&#x6211;&#x4EEC;&#x4E3A;&#x4E86;&#x65B9;&#x4FBF;&#x7BA1;&#x7406;&#x548C;&#x4F7F;&#x7528;, &#x5171;&#x7528;&#x4E86;&#x76F8;&#x540C;&#x7684;<code>comfy_key</code>&#x5BC6;&#x94A5;</p>
+</li>
+</ol>
+<p><strong>&#x672C;&#x6587;&#x4E3A;&#x4F5C;&#x8005;&#x539F;&#x521B; &#x8F6C;&#x8F7D;&#x65F6;&#x8BF7;&#x6CE8;&#x660E;&#x51FA;&#x5904; &#x8C22;&#x8C22;</strong></p>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">&#x4E71;&#x7801;&#x4E09;&#x5343; &#x2013; &#x70B9;&#x6EF4;&#x79EF;&#x7D2F; ,&#x6B22;&#x8FCE;&#x6765;&#x5230;&#x4E71;&#x7801;&#x4E09;&#x5343;&#x6280;&#x672F;&#x535A;&#x5BA2;&#x7AD9;</a></em></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="tags/内网穿透/" rel="tag"># 内网穿透</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="510.html" rel="next" title="OpenClaw+CC Switch工具实现国内外模型任意切换">
+                <i class="fa fa-chevron-left"></i> OpenClaw+CC Switch工具实现国内外模型任意切换
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    <!-- 乱码三千文章内嵌广告 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-layout="in-article" data-ad-format="fluid" data-ad-client="ca-pub-2626449904708114" data-ad-slot="1549007621"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+  <!-- 乱码三千信息流广告 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-6t+ed+2i-1n-4w" data-ad-client="ca-pub-2626449904708114" data-ad-slot="9471729671"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">乱码三千</p>
+              <p class="site-description motion-element" itemprop="description">android程序员一枚,擅长java,kotlin,python,金融投资,欢迎交流~</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="https://code.newban.cn/archives/">
+              
+                  <span class="site-state-item-count">511</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">146</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现原理"><span class="nav-number">2.</span> <span class="nav-text">实现原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#具体实现"><span class="nav-number">3.</span> <span class="nav-text">具体实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#准备工作：阿里云侧"><span class="nav-number">3.1.</span> <span class="nav-text">准备工作：阿里云侧</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第一步：GPU-实例配置"><span class="nav-number">3.2.</span> <span class="nav-text">第一步：GPU 实例配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二步：本地电脑的配置"><span class="nav-number">3.3.</span> <span class="nav-text">第二步：本地电脑的配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三步：将本地电脑公钥拷贝至GPU服务器"><span class="nav-number">3.4.</span> <span class="nav-text">第三步：将本地电脑公钥拷贝至GPU服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第四步：开始访问"><span class="nav-number">3.5.</span> <span class="nav-text">第四步：开始访问</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多-GPU-怎么扩展？"><span class="nav-number">4.</span> <span class="nav-text">多 GPU 怎么扩展？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题汇总"><span class="nav-number">5.</span> <span class="nav-text">问题汇总</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">乱码三千</span>
+  <div>
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+  </div>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+  <script type="text/javascript" async src="js/src/mermaid.min.js"></script>
+  <script>
+  if (window.mermaid) {
+        var mermaid_config = {
+            startOnLoad: true,
+            theme: 'default',
+            flowchart:{
+                useMaxWidth: false,
+                htmlLabels: true
+            }                
+        }
+        mermaid.initialize(mermaid_config);
+  }
+  </script>
+  
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+      <style>
+        a.gitment-editor-footer-tip { display: none; }
+        .gitment-container.gitment-footer-container { display: none; }
+      </style>
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'songjianzaina',
+            repo: 'codesan_comment',
+            
+            lang: "zh" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '75fa01da04fd1029841debfa65ce027b566a47e3',
+            
+                client_id: '01a471de64bf7a7789f3'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
