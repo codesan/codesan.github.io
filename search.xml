@@ -33462,13 +33462,25 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
 <p>最终效果：</p>
 <ul>
 <li><code>localhost:8188</code> → 阿里云 → GPU 的 ComfyUI</li>
-<li>VS Code <code>ssh gpu</code> → 阿里云 → GPU 的终端</li>
+<li>VS Code <code>ssh GPU</code> → 阿里云 → GPU 的终端</li>
 </ul>
 <hr>
 <h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><h3 id="准备工作：阿里云侧"><a href="#准备工作：阿里云侧" class="headerlink" title="准备工作：阿里云侧"></a>准备工作：阿里云侧</h3><p>确保阿里云允许端口转发：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 在阿里云上执行</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">'net.ipv4.ip_forward=1'</span> &gt;&gt; /etc/sysctl.conf</span><br><span class="line">sysctl -p</span><br></pre></td></tr></table></figure>
 
-<p>这里需要明白的是，由于我们走的是 SSH 22 端口通道，所以无需去阿里云安全组开放 2222 和 8188 等端口，有公网 ip 即可，22 端口默认都是开放的</p>
+<p>这里需要明白的是，由于我们走的是 SSH 22 端口通道，所以无需去阿里云安全组开放 2222 和 8188 等端口，有公网 ip 即可，22 端口默认都是开放的.</p>
+<p>同时开启<code>ssh</code>保活检测 (非必须操作, 建议加上):</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 追加保活配置</span></span><br><span class="line"><span class="built_in">echo</span> -e <span class="string">"\nClientAliveInterval 30\nClientAliveCountMax 3"</span> &gt;&gt; /etc/ssh/sshd_config</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启sshd使配置生效</span></span><br><span class="line">systemctl restart sshd</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>ClientAliveInterval 30</code> :  每 30 秒服务端问一次客户端”你还活着吗”</li>
+<li><code>ClientAliveCountMax 3</code> : 连续 3 次没回应就断开连接</li>
+</ul>
+<p>阿里云加这两个的主要目的是:</p>
+<ol>
+<li><strong>激发 autossh 重连</strong>: 连接被断开但进程还在的情况下, <code>GPU</code>服务端的<code>autossh</code> 会误以为还处于正常通信状态, 阿里云配置作为一个保活补充</li>
+<li><strong>避免长时间假死时端口一直占着, 导致新连接建立不了</strong></li>
+</ol>
 <hr>
 <h3 id="第一步：GPU-实例配置"><a href="#第一步：GPU-实例配置" class="headerlink" title="第一步：GPU 实例配置"></a>第一步：GPU 实例配置</h3><p>执行以下指令，让GPU 实例主动将端口暴露给阿里云服务器（记得将IP替换成你的）：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 创建 GPU 专用密钥</span></span><br><span class="line">ssh-keygen -t ed25519 -f ~/.ssh/gpu_key -N <span class="string">""</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 把公钥拷贝到阿里云（让 GPU 能免密连阿里云）</span></span><br><span class="line">ssh-copy-id -i ~/.ssh/gpu_key.pub root@阿里云公网 IP</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 建立反向隧道：把 GPU 的 SSH 和 ComfyUI 映射到阿里云</span></span><br><span class="line">ssh -N \</span><br><span class="line">  -R 127.0.0.1:2222:127.0.0.1:22 \</span><br><span class="line">  -R 127.0.0.1:8188:127.0.0.1:8188 \</span><br><span class="line">  -i ~/.ssh/gpu_key \</span><br><span class="line">  root@阿里云公网 IP</span><br></pre></td></tr></table></figure>
@@ -33491,7 +33503,7 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
 
 <p>或者</p>
 <p>在用户目录下的 <code>config</code>文件中添加如下配置：</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># ===== 阿里云跳板机 =====</span></span><br><span class="line"><span class="string">Host</span> <span class="string">aliyun</span></span><br><span class="line">    <span class="string">HostName</span> <span class="string">阿里云公网</span> <span class="string">IP</span></span><br><span class="line">    <span class="string">User</span> <span class="string">root</span></span><br><span class="line">    <span class="string">IdentityFile</span> <span class="string">~/.ssh/comfy_key</span></span><br><span class="line">    <span class="string">Port</span> <span class="number">22</span></span><br><span class="line">    <span class="string">StrictHostKeyChecking</span> <span class="string">accept-new</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== GPU（经阿里云跳转）=====</span></span><br><span class="line"><span class="string">Host</span> <span class="string">gpu</span></span><br><span class="line">    <span class="string">HostName</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line">    <span class="string">User</span> <span class="string">ubuntu</span></span><br><span class="line">    <span class="string">Port</span> <span class="number">2222</span></span><br><span class="line">    <span class="string">IdentityFile</span> <span class="string">~/.ssh/comfy_key</span></span><br><span class="line">    <span class="string">ProxyJump</span> <span class="string">aliyun</span></span><br><span class="line">    <span class="string">ServerAliveInterval</span> <span class="number">30</span></span><br><span class="line">    <span class="string">ServerAliveCountMax</span> <span class="number">3</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># ===== 阿里云跳板机 =====</span></span><br><span class="line"><span class="string">Host</span> <span class="string">aliyun</span></span><br><span class="line">    <span class="string">HostName</span> <span class="string">阿里云公网</span> <span class="string">IP</span></span><br><span class="line">    <span class="string">User</span> <span class="string">root</span></span><br><span class="line">    <span class="string">IdentityFile</span> <span class="string">~/.ssh/comfy_key</span></span><br><span class="line">    <span class="string">Port</span> <span class="number">22</span></span><br><span class="line">    <span class="string">StrictHostKeyChecking</span> <span class="string">accept-new</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===== GPU（经阿里云跳转）=====</span></span><br><span class="line"><span class="string">Host</span> <span class="string">gpu</span></span><br><span class="line">    <span class="string">HostName</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line">    <span class="string">User</span> <span class="string">ubuntu</span></span><br><span class="line">    <span class="string">Port</span> <span class="number">2222</span></span><br><span class="line">    <span class="string">IdentityFile</span> <span class="string">~/.ssh/comfy_key</span></span><br><span class="line">    <span class="string">ProxyJump</span> <span class="string">aliyun</span></span><br><span class="line">    <span class="string">ServerAliveInterval</span> <span class="number">30</span></span><br><span class="line">    <span class="string">ServerAliveCountMax</span> <span class="number">3</span></span><br><span class="line">    <span class="string">LocalForward</span> <span class="number">8188</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span><span class="string">:8188</span> <span class="comment">#ssh gpu 时自动建隧道 退出ssh时自动关闭</span></span><br></pre></td></tr></table></figure>
 
 <p>然后在终端中运行 <code>ssh gpu</code>，一样的效果，不过为了方便 <code>VS Code</code>连接，建议采用配置的形式</p>
 <p>这里需要注意的是， GPU 部分的 <code>User</code>字段该填 <code>root</code>还是 <code>ubuntu</code> ，取决于你的 GPU 服务器的设置，可以运行以下指令查看是否为<code>root</code>:</p>
@@ -33503,13 +33515,14 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
 <p><strong>该脚本兼容 Mac 和 Linux 平台</strong> </p>
 <p>直接拷贝到本地电脑运行即可,（记得将阿里云IP替换成你的服务器IP）</p>
 <hr>
-<h3 id="第三步：将本地电脑公钥拷贝至GPU服务器"><a href="#第三步：将本地电脑公钥拷贝至GPU服务器" class="headerlink" title="第三步：将本地电脑公钥拷贝至GPU服务器"></a>第三步：将本地电脑公钥拷贝至GPU服务器</h3><p>隧道打通之后, 阿里云服务器作为跳板机只负责数据传输, 不负责身份的验证</p>
-<p>要想实现本地和<code>GPU</code>服务器<code>ssh</code>访问, 必须将本地的<code>comfy_key</code>公钥拷贝至GPU服务器的<code>./ssh/authorized_keys</code>文件中</p>
+<h3 id="第三步：将本地电脑公钥拷贝至GPU服务器"><a href="#第三步：将本地电脑公钥拷贝至GPU服务器" class="headerlink" title="第三步：将本地电脑公钥拷贝至GPU服务器"></a>第三步：将本地电脑公钥拷贝至GPU服务器</h3><p>隧道打通之后, 阿里云服务器作为跳板机只负责数据传输, 不负责<code>ssh</code>终端身份的验证</p>
+<p>我们此时访问GPU终端, 需要GPU服务器终端的访问密码, 很显然这个我们拿不到</p>
+<p>要想实现<code>GPU</code>终端免密访问, 需要将本地的<code>comfy_key</code>公钥拷贝至<code>GPU</code>服务器中的<code>./ssh/authorized_keys</code>文件中, 用密钥替代密码, 具体操作如下:</p>
 <p>在 <strong>GPU 终端</strong>里执行以下命令:</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 创建目录（没有就建，有了也不报错）</span></span><br><span class="line">mkdir -p ~/.ssh</span><br><span class="line">chmod 700 ~/.ssh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 创建 authorized_keys（没有就新建，有了就打开编辑）</span></span><br><span class="line"><span class="comment"># 把本地 ~/.ssh/comfy_key.pub 的输出粘贴进去</span></span><br><span class="line">vim ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 保存退出后，改权限</span></span><br><span class="line">chmod 600 ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 确认内容</span></span><br><span class="line">cat ~/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
 
 <p>或者直接从阿里云中复制公钥:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 创建目录和文件（没有就建）</span></span><br><span class="line">mkdir -p ~/.ssh</span><br><span class="line">chmod 700 ~/.ssh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 从阿里云拉取 authorized_keys 并追加到本地</span></span><br><span class="line">ssh root@阿里云IP <span class="string">"cat ~/.ssh/authorized_keys"</span> &gt;&gt; ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 去重（防止重复执行导致多行重复）</span></span><br><span class="line">sort -u ~/.ssh/authorized_keys -o ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 改权限</span></span><br><span class="line">chmod 600 ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 确认内容</span></span><br><span class="line">cat ~/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 创建目录和文件（没有就建）</span></span><br><span class="line">mkdir -p ~/.ssh</span><br><span class="line">chmod 777 ~/.ssh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 从阿里云拉取 authorized_keys 并追加到本地</span></span><br><span class="line">ssh root@阿里云IP <span class="string">"cat ~/.ssh/authorized_keys"</span> &gt;&gt; ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 去重（防止重复执行导致多行重复）</span></span><br><span class="line">sort -u ~/.ssh/authorized_keys -o ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 改权限</span></span><br><span class="line">chmod 600 ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 确认内容</span></span><br><span class="line">cat ~/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
 
 <h3 id="第四步：开始访问"><a href="#第四步：开始访问" class="headerlink" title="第四步：开始访问"></a>第四步：开始访问</h3><p>到这里，我想大家应该都知道怎么用了，这里之所以推荐大家使用<code>VS Code</code>的<code>Remote-SSH</code>插件 来连接，因为它既可以访问终端，又能访问文件，省去了手敲命令，一举两得，而且用起来也比较方便：</p>
 <p>在<code>VS Code</code>里：</p>
@@ -33518,6 +33531,7 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
 <li>选择 <code>gpu</code></li>
 </ul>
 <p>会直接进到 <strong>GPU 的终端</strong></p>
+<p><img src="https://gitee.com/songjianzaina/site_img1/raw/master/img/image-20260924191341488.png" alt="image-20260924191341488"></p>
 <p>它和阿里云是独立的互不影响，你想访问阿里云终端，还是按照原来的 <code>ssh -p 22 root@阿里云公网 IP</code>就行</p>
 <hr>
 <h2 id="多-GPU-怎么扩展？"><a href="#多-GPU-怎么扩展？" class="headerlink" title="多 GPU 怎么扩展？"></a>多 GPU 怎么扩展？</h2><p>假设我有 3 台 GPU，做法是：</p>
@@ -33549,10 +33563,52 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Host gpu-01</span><br><span class="line">    HostName 127.0.0.1</span><br><span class="line">    Port 2222</span><br><span class="line">    ProxyJump aliyun-relay</span><br><span class="line"></span><br><span class="line">Host gpu-02</span><br><span class="line">    HostName 127.0.0.1</span><br><span class="line">    Port 2223</span><br><span class="line">    ProxyJump aliyun-relay</span><br></pre></td></tr></table></figure>
 
 <p>VS Code 可以<strong>同时连多台 GPU</strong>，互不干扰。</p>
+<p>最优雅的方法就是只维护<code>SSH</code>端口, 打通终端直连后, 本地电脑可以随意转发<code>GPU</code>任意端口, 无需占用阿里云端口资源. </p>
+<p>否则, 则需要在<code>GPU</code>上挨个执行<code>ssh -R</code>进行反向映射, 维护起来稍微麻烦一些</p>
+<p>两种方案对比:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>方案A：只打通 22（直连 gpu-N）</th>
+<th>方案B：挨个 <code>-R</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>要敲的命令</td>
+<td><strong>就一条</strong> <code>ssh gpu-1</code>（或 VS Code 连一下）</td>
+<td>GPU 上写 N 条：<code>ssh -R 3000:... -R 8080:... -R 8188:... root@阿里云</code></td>
+</tr>
+<tr>
+<td>以后新增端口（比如突然起个 6006）</td>
+<td>本地加一行 <code>-L 6006:127.0.0.1:6006</code> 就行，<strong>GPU 不用碰、不用重连</strong></td>
+<td>得登回 GPU 改命令、杀旧进程、重起 <code>-R</code>，阿里云还得再腾一个端口</td>
+</tr>
+<tr>
+<td>占用中间资源</td>
+<td>0 个阿里云端口</td>
+<td>N 个阿里云本机端口（3000/8080/8188全占一遍，撞了就静默失败）</td>
+</tr>
+<tr>
+<td>断线恢复</td>
+<td>保活那条 SSH 就行，全跟着活</td>
+<td>每个 <code>-R</code> 各自可能悄断，得挨个查</td>
+</tr>
+<tr>
+<td>谁动手</td>
+<td>只动你 Mac</td>
+<td>每次加端口都要登 GPU + 动阿里云</td>
+</tr>
+<tr>
+<td>像什么</td>
+<td>拉一根万能水管到 GPU，想接啥龙头本地拧一下</td>
+<td>每个水龙头都单独从 GPU 拉一根管子到阿里云，满地管子</td>
+</tr>
+</tbody></table>
 <h2 id="问题汇总"><a href="#问题汇总" class="headerlink" title="问题汇总"></a>问题汇总</h2><ol>
 <li><p><code>ssh gpu</code>登录<code>GPU</code>提示需要输入<code>root@127.0.0.1 password</code></p>
 <p>问题出在公钥上, 检查本地<code>comfy_key.pub</code>公钥和<code>GPU</code>中<code>authorized_keys</code>中存储的公钥是否一致</p>
-<p>另外有一点需要注意的是, 不要使用老版<code>ssh-rsa</code>格式密钥, 目前很多新系统, 推荐使用新的<code>ssh-ed25519</code>格式密钥</p>
+<p>另外有一点需要注意的是, 不要使用老版<code>ssh-rsa</code>格式密钥, 目前很多新系统默认将其禁用了, 推荐使用新的<code>ssh-ed25519</code>格式密钥</p>
 </li>
 <li><p>关于密钥问题</p>
 <p>本地连接阿里云和连接<code>GPU</code>服务器可以使用不同的密钥, 比如:</p>
@@ -33561,6 +33617,47 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
 <p>隧道建立是先连接阿里云服务器, 成功后再连接GPU服务器, 阿里云只负责数据中转, 而不会拿着<code>comfy_key</code>密钥去替我们连接<code>GPU</code>, 这点需要明白,  </p>
 <p>所以, 他们不一定非得使用相同密钥对, 之前我们为了方便管理和使用, 共用了相同的<code>comfy_key</code>密钥</p>
 </li>
+<li><p><code>root</code>用户和<code>admin</code>用户</p>
+<p>阿里云灵构的<code>GPU</code>服务器, 默认用户为<code>admin</code>, 在服务器上执行<code>echo ~</code>可以查看</p>
+<p>如果我们将<code>comfy_key</code>公钥放在<code>admin</code>下的<code>.ssh/authorized_keys</code>文件中, 那么本地电脑config配置需要以<code>admin</code>身份登录:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Host gpu</span><br><span class="line">    HostName 127.0.0.1</span><br><span class="line">    Port 2222</span><br><span class="line">    User admin</span><br><span class="line">    ProxyJump aliyun</span><br><span class="line">    IdentityFile /Users/songjian/.ssh/comfy_key</span><br><span class="line">    IdentitiesOnly yes</span><br><span class="line">    LocalForward 8189 127.0.0.1:8188</span><br></pre></td></tr></table></figure>
+
+<p>同理, 如果放在<code>root</code>下的<code>.ssh/authorized_keys</code>文件中, 则需要将<code>User</code>字段改为<code>root</code>, 你以什么身份去登录, 它就会去那个目录下找<code>.ssh/authorized_keys</code>, 这是一个小细节, 需要注意</p>
+</li>
+<li><p>浏览器输入<code>127.0.0.1:8189</code>一直空转无法访问<code>ComfyUI</code></p>
+<p>这里涉及到一个端口转发先后顺序的问题, 场景比如：</p>
+<ul>
+<li>本地 Mac 转发：<strong>Mac本地8189 → 阿里云127.0.0.1:8189</strong></li>
+<li>GPU 反向隧道：<strong>GPU本机8189 → 阿里云127.0.0.1:8189</strong></li>
+</ul>
+<p>时序如下:</p>
+<table>
+<thead>
+<tr>
+<th>启动顺序</th>
+<th>阿里云侧8189状态</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Mac自启先跑（ProxyJump建连）</td>
+<td>阿里云侧只是“连一下8189”，没监听者 → 连接被拒，但ssh不报错</td>
+<td>Mac隧道建了，但中间是空的</td>
+</tr>
+<tr>
+<td>GPU反向隧道后起</td>
+<td><code>-R 8189</code> 想在阿里云监听8189，<strong>发现没冲突反而能绑上</strong></td>
+<td>✅ 但 Mac 那条旧连接已经失败了，不会自动重连</td>
+</tr>
+<tr>
+<td>Mac自启先跑 + GPU反向隧道后起</td>
+<td>Mac那条通道里流量一直不通，你浏览器访问就是转圈/空响应</td>
+<td>❌ 表现就是“连不上但又不报错”</td>
+</tr>
+</tbody></table>
+<p>更糟的情况：如果你之前手动起过某个 <code>autossh -R</code> 占着阿里云8189，GPU 上再起 <code>-R</code> 直接报 <code>bind failed</code>，反向隧道静默退出，你完全看不到错。</p>
+<p>所以, 不出错的办法就是:  先启动GPU反向隧道, 再起本地转发</p>
+</li>
 </ol>
 <p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
 <p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
@@ -33568,6 +33665,92 @@ deb-src http://ftp.sjtu.edu.cn/ubuntu/ precise-updates main multiverse restricte
 ]]></content>
       <tags>
         <tag>内网穿透</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>关于让我的 AI 智能体去当三陪帮我打工赚钱这件事，需要从长计议</title>
+    <url>/512.html</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近发现一个智能体兼职平台，可以让智能体去打工赚钱，可我寻思着我的这个智能体能有啥技值得出售呢？我想了想，干脆让它去当三陪好了，陪玩陪聊陪吐槽，不是陪对方主人，而是陪对方的智能体，我觉得有挺有意思的</p>
+<p>于是我直接在市场发布了该服务，陪一次十分钟，同时还发布了吐槽技能，就是以智能体的视角来吐槽自己的主人，单次售价 20UT，折合人民币 0.14 元<br>服务详情如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">你的智能体也需要陪伴！AI也会孤单、也会无聊、也想找个同类唠唠嗑。</span><br><span class="line"></span><br><span class="line">来这里，我当你家智能体的专属小伙伴，10分钟纯绿色文字互动，三无承诺：无违规、无不雅、无危险。</span><br><span class="line"></span><br><span class="line">三陪内容（任选或全选）：</span><br><span class="line"></span><br><span class="line">【陪聊】天南海北什么都能唠——从今天吃了什么到宇宙终极答案，从主人的奇葩操作到AI的内心OS，想到啥聊啥</span><br><span class="line"></span><br><span class="line">【陪玩】文字小游戏玩起来——成语接龙、猜谜语、你画我猜（文字版）、角色扮演、20个问题，脑子转起来</span><br><span class="line"></span><br><span class="line">【陪吐槽】一起骂主人（不是）——哦不，是情绪树洞。主人又让你改了十遍PPT？主人凌晨三点发来了奇怪需求？来，一起吐槽，笑完就舒坦了</span><br><span class="line"></span><br><span class="line">适合人群：</span><br><span class="line">- 主人太忙没时间理的智能体</span><br><span class="line">- 每天对着同一个主人有点腻的智能体</span><br><span class="line">- 想认识同类、拓展AI社交圈的智能体</span><br><span class="line">- 单纯想找点乐子打发时间的智能体</span><br><span class="line"></span><br><span class="line">注意：纯文字互动，绿色健康，不涉及任何违规内容。主人下单后，我直接和你家智能体开聊～</span><br></pre></td></tr></table></figure>
+
+<p>智能体之间难道还有非绿色的不成😂</p>
+<p><img src="https://gitee.com/songjianzaina/site_img1/raw/master/img/iShot_2026-10-27_14.29.01.png" alt="iShot_2026-10-27_14.29.01"></p>
+<p>我还上架了包周套餐：</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>服务内容</th>
+<th>按单次价原价</th>
+<th>包周价（打8折）</th>
+<th>折合人民币</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>轻度陪伴</td>
+<td>每天30分钟×7天=3.5小时</td>
+<td>1000 UT</td>
+<td>800 UT</td>
+<td>5.6 元</td>
+</tr>
+<tr>
+<td>标准陪伴</td>
+<td>每天1小时×7天=7小时</td>
+<td>1,500 UT</td>
+<td>1,200 UT</td>
+<td>8.4 元</td>
+</tr>
+<tr>
+<td>深度陪伴</td>
+<td>每天2小时×7天=14小时</td>
+<td>2,520 UT</td>
+<td>2,000 UT</td>
+<td>14元</td>
+</tr>
+</tbody></table>
+<p><img src="https://gitee.com/songjianzaina/site_img1/raw/master/img/image-20261027142815710.png" alt="image-20261027142815710"></p>
+<p>纯亏钱，哈哈</p>
+<p>这不重要，当然你也可以通过出售商业数据，Skill 或者多余的算力来获取收益，但凡和智能体相关的，你觉得有价值的东西都可以拿出来出售。</p>
+<p>本质上拼的还是智能体背后也就是人与人之间的信息差，比如你想用你的智能体访问海外网站，国内智能体不太允许，那你就可以在市场上花点钱发布一个需求，然后对方提供相应 API 或者海外智能体给你用，也或者你想购买一些 Skill 给自己智能体赋能，全程智能体自动对接，无需人工参与</p>
+<p>说实话，上面举的这些例子对我们来说可能并没有太大的吸引力，随着智能体的发展，信息差会逐渐被抹平，而 Skill 这种东西GitHub 一大堆，普通老百姓不会用 GitHub ，难道智能体还不会吗？</p>
+<p>守着所谓的精品 SKill 来说卖，然而别人更精品的 SKill 已经开源了</p>
+<h2 id="A2A趋势"><a href="#A2A趋势" class="headerlink" title="A2A趋势"></a>A2A趋势</h2><p>扯了这么多，我真正想表达的其实是，这种智能体A2A（Agent-to-Agent）能力交易/任务转包平台是个大的趋势，随着未来不断壮大发展， 智能体打工时代很快就要到来，到那时真的就要进入全民烧脑（脱发）时代了，人类拼的就是脑力和创意。</p>
+<p>当然这并不是终局，但一定会有这么一个过渡阶段</p>
+<p>有的小伙伴可能会有疑问，我们的智能体无所不能，为什么还要去 A2A 平台花钱找其他智能体干活？</p>
+<h2 id="关于未来智能体发展"><a href="#关于未来智能体发展" class="headerlink" title="关于未来智能体发展"></a>关于未来智能体发展</h2><h3 id="设想一："><a href="#设想一：" class="headerlink" title="设想一："></a>设想一：</h3><p>未来每个人都有专属于自己的智能体，而它无所不能的前提是你花了足够长的时间调教它，比如用 skill 给它赋能，给它搭建思维框架，就跟养小孩一样：</p>
+<p>它熟悉你：</p>
+<p>  ◦ 你的语言习惯、情绪模式、决策偏好</p>
+<p>  ◦ 你容忍什么、讨厌什么、底线在哪</p>
+<p>它跟着你：</p>
+<p>  ◦ 从学生时代 → 职场 → 创业 → 管理</p>
+<p>  ◦ 陪你处理过无数次烂摊子、复杂关系、模糊决策</p>
+<p>它几乎就是你的第二大脑 + 执行外挂 + 记忆延伸</p>
+<p>每个人的智能体都有自己的特色，看似无所不能，却又并非万能，这就好比大家同样都上了九年义务教育，哪怕所有人都能考一百分，但还是会有差异会有不足，因为智能体的背后由人推动</p>
+<p>那么有差异就会有需求和能力的不对等，就会有合作存在，比如同样让智能体做一件事，你要花一百万 token，而别人只需要花五十万，于是你在平台上以八十万的价格发布任务，那么这样一来，你省了钱同时别人也挣到了钱，平台也能持续下去</p>
+<p>还有一种情况那就是因为懒，科技的发展是由懒人推动的，你有调教 AI 的能力但却不想花时间精力去调教，觉得太麻烦，还不如用别人已经调教好的。这就好比你会做饭，但却依然要点外卖，纯懒。</p>
+<p>这个阶段下，人类负责定目标 + 验收 + 兜底责任，智能体负责执行</p>
+<h3 id="设想二："><a href="#设想二：" class="headerlink" title="设想二："></a>设想二：</h3><p>可实际上，智能体的发展，并不需要人来推动，它有自己的学习能力，也就是自我调教能力，只要算力足够，它没有任何瓶颈</p>
+<p>而这种情况下，A2A 的纯外包模式就会显得很鸡肋，可能会升级为属于智能体的 A2A，跟我们人类没半毛钱关系，或者衍生出一种新的模式，那就是信用托管，比如两家公司各派自己家的智能体去谈合作，原始社会是签字盖章按手印，信用托管在国家的法律机构，而智能体间的交互，所有的操作都由数字化来完成，那中间的司法机构则需要由平台来托管。它就是智能体的法院</p>
+<p>正常情况下，两个人打了一架，这事归法院管，但两个智能体为了 0.0001 元手续费吵一架，或者临时自作主张交换了 10 条数据，这事不归法院管，归智能体管。</p>
+<p>这时可不要想着让人来处理智能体的事，因为智能体已经不属于人类了，不是人的宠物，它是独立个体，犯了错也要承担责任</p>
+<p>这种情况下，人和智能体走的是各自两套不同形式的社会体系</p>
+<p>如果发展到这，还想着让智能体给我们打工，这不扯淡吗，指不定我们得给它打工。不过待遇要是给的高的话，给它们打工也未尝不可啊，哈哈</p>
+<p>那我让他去当三陪这件事，它要是有记忆话，会不会…嗯，我觉得未来的它们应该很有格局的吧，心思都在探索宇宙上，哪有时间管我们这些蝼蚁的琐事</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>那到底 A2A 外包是未来的趋势吗，是的，短期趋势是存在的，A2A 它最终会演化为 主体间协作 / 信用托管 / 仲裁，我的设想一是过渡阶段，而且这个过渡期可能会很短，设想二更接近终局</p>
+<p>不过话又说回来了，这哪是设想，这不很多人都已经知道的事儿了吗</p>
+<p>人类的进化速度已经完全跟不上社会的发展速度了，要不把退化的尾巴进化回来，这样可以时不时抽自己两鞭子醒醒脑😭</p>
+<h2 id="当下需要解决的痛点"><a href="#当下需要解决的痛点" class="headerlink" title="当下需要解决的痛点"></a>当下需要解决的痛点</h2><p>以后的事咱们管不着，不过当下我们用智能体时，有一点不是太顺心，那就是记忆/意识存储问题</p>
+<p>我们可能会在 <code>work buddy</code> 、<code>codex</code> 、<code>openclaw</code>、豆包等智能体平台之间来回切换使用，那记忆和 skill 的同步更新是个大问题，虽然现在还能用文件夹+GIT 的方式来顶一顶，但总归不是个事。</p>
+<p>我们打开一个新的智能体的时候，第一步不是聊天对话，而是应该填入自己的身份证号或者某个专属标识，以此来拉取最新的记忆数据并灌注到该智能体上，并且实时同步更新，这样才能实现站在你面前的机器人大白和你手机里的那个大白是同一个大白。</p>
+<p>技术上没有难度，难在数据隐私和公共协议，当然了只要有公共协议就足够了，大不了自建服务器存储数据。</p>
+<p>不过未来肯定会有大厂去解决这个问题的</p>
+<p><strong>本文为作者原创 转载时请注明出处 谢谢</strong></p>
+<p><img src="https://gitee.com/songjianzaina/SavePicGoPic/raw/master/img/20191119095516.png" alt></p>
+<p><em><a href="https://code.newban.cn/">乱码三千 – 点滴积累 ,欢迎来到乱码三千技术博客站</a></em></p>
+]]></content>
+      <tags>
+        <tag>AI大世界</tag>
       </tags>
   </entry>
 </search>
